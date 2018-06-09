@@ -62,7 +62,7 @@ cp /Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a
 cp /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a libgribex.a
 cp /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a libmpidummy.a
 make all
-#make clean
+make clean
 
 # LFA tools
 cd $REP_EMS//UTIL/Tools/LFA
