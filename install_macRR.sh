@@ -77,7 +77,7 @@ cd $REP_EMS/UTIL/post_DEPHY
 f2py -c convert2p.F90 -m convert2p
 f2py -c convert2z.F90 -m convert2z
 
-source deactivaet myuvcdat
+source deactivate myuvcdat
 
 #####################################################
 # Prepare what is needed to run MUSC simulations in REP_MUSC
