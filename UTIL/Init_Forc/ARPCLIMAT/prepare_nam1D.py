@@ -21,7 +21,7 @@ dirout = 'files_L' + str(nlev_out) + '_' + str(int(config.dt)) + 's/'
 #---------------------------------------------------------------
 
 var2read = ['pressure','temp','qv','u','v','ps']
-var2interpol = ['temp','qv','u','v',]
+var2interpol = ['temp','qv','u','v','theta']
 
 data_in = {}
 
@@ -132,6 +132,17 @@ print 'var2interpol =', var2interpol
 for var in var2read:
   data_in[var] = f(var,squeeze=1)	
 #  data_in[var] = f(var)
+
+
+try:
+  data_in['theta'] = f('theta',squeeze=1)
+except:
+  nt = data_in['temp'].shape[0]
+  nlev = data_in['temp'].shape[1]
+  data_in['theta'] = data_in['temp']*0.
+  for it in range(0,nt):
+    for ilev in range(0,nlev):
+      data_in['theta'][it,ilev] = data_in['temp'][it,ilev]*(100000./data_in['pressure'][it,ilev])**(2./7.)
 
 #time = f('omega').getTime()
 #f.close()
@@ -269,7 +280,13 @@ if lnam1D:
 
   print >>g, 'T'
   for ilev in range(0,nlev_out):
-    print >>g, data_out['temp'][0,ilev]
+#    print >>g, data_out['temp'][0,ilev]
+# Pas completement satisfaisant a ce stade...
+    if pph[0,ilev] >= 10000.:
+      print >>g, data_out['theta'][0,ilev]*(pph[0,ilev]/100000.)**(2./7.)
+    else:
+      # Pour eviter des plantages en haute atmosphere
+      print >>g, data_out['temp'][0,ilev]
 
   print >>g, 'QV'
   for ilev in range(0,nlev_out):
@@ -298,11 +315,20 @@ if lnam1D:
   levAxis.id = 'level'
   levAxis.units = 'Pa'
 
-  for var in ['u','v','temp','qv']:
+  for var in ['u','v','temp','qv','theta']:
     tmp = MV2.array(data_out[var][0,:],typecode=MV2.float32)
     tmp.setAxis(0,levAxis)
     tmp.id = var
     g.write(tmp)
+
+  tmp = MV2.array(data_out['temp'][0,:],typecode=MV2.float32)
+  nlev, = levAxis.shape
+  for ilev in range(0,nlev):
+    tmp[ilev] = tmp[ilev]*(100000./levAxis[ilev])**(2./7.)
+
+  tmp.setAxis(0,levAxis)
+  tmp.id = 'theta2'
+  g.write(tmp)  
 
   g.close()
 

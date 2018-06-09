@@ -1,0 +1,10 @@
+ ! NOAA/PMEL TMAP
+ ! FERRET v7.1 (optimized)
+ ! Linux 2.6.32-642.13.1.el6.x86_64 64-bit - 02/15/17
+ ! 23-May-18 15:30     
+
+use GABLS4_SCM_LES_STAGE2.nc
+let wind=(ug^2+vg^2)^0.5
+shade wind
+sh da
+q

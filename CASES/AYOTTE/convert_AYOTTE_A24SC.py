@@ -43,8 +43,8 @@ lev.units = 'm'
 lev.positive = 'up'
 
 
-variables0D = ['orog']
-variables2D = ['sfc_lat_flx','sfc_sens_flx','ps']
+variables0D = [] #['orog']
+variables2D = ['sfc_lat_flx','sfc_sens_flx','ps','ustar']
 variables3D = ['pressure','th','qv','temp','u','v','ug','vg']
 
 variables = variables3D + variables2D + variables0D
@@ -62,6 +62,7 @@ units['sfc_lat_flx'] = 'W m-2'
 units['sfc_sens_flx'] = 'W m-2'
 units['orog'] = 'm'
 units['ps'] = 'Pa'
+units['ustar'] = 'm s-1'
 
 names = {}
 names['pressure'] = 'Pressure'
@@ -76,6 +77,7 @@ names['sfc_lat_flx'] = 'Surface latent heat flux'
 names['sfc_sens_flx'] = 'Surface sensible heat flux'
 names['orog'] = 'Surface orography'
 names['ps'] = 'Surface pressure'
+names['ustar'] = 'Surface ustar'
 
 
 datanew = {}
@@ -121,9 +123,10 @@ for var in ['sfc_lat_flx','sfc_sens_flx']:
   datanew[var][:,0,0] = data[var][:]
 
 datanew['ps'][:,0,0] = datanew['ps'][:,0,0] + data['ps']
-datanew['orog'][0,0] = datanew['orog'][0,0] + data['orog']
+#datanew['orog'][0,0] = datanew['orog'][0,0] + data['orog']
+datanew['ustar'][:,0,0] = datanew['ustar'][:,0,0] + 0.566
 
-g = cdms2.open('AYOTTE_A24SC_driver_test_FC_RR.nc','w')
+g = cdms2.open('AYOTTE_A24SC_driver_FC_RR.nc','w')
 
 for var in variables:
   datanew[var].id = var
@@ -133,7 +136,7 @@ for var in variables:
   datanew[var].units = units[var]
   g.write(datanew[var])
 
-g.description = "No subsidence/ascendance, No T & q Large-scale advection, No radiation buy geostrophic wind" 
+g.description = "No subsidence/ascendance, No T & q large-scale advection, no radiation, geostrophic wind" 
 g.reference = 'Ayotte et al (1996, BLM)'
 g.author = "F Couvreux"
 g.modifications = "2017-07-17: R. Roehrig put all fields on the same vertical and time axes"
@@ -154,8 +157,9 @@ g.nudging_t = 0
 g.nudging_q = 0 
 g.zorog = 0.
 g.z0 = 0.16
-g.ustar = 0.566
+#g.ustar = 0.566
 g.surfaceForcing = "surfaceFlux" 
+g.surfaceForcingWind = "z0"
 g.surfaceType = "ocean"
 
 g.close()

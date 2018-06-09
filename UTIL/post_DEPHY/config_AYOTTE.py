@@ -2,7 +2,7 @@
 saveall = False
 
 
-var2save = ['pf','zf','ph','zh','theta']
+var2save = ['pf','zf','ph','zh','theta','w_up','Mf']
 
 # Pour convert2p, niveau en hPa
 levout = []

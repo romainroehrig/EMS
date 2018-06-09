@@ -111,10 +111,10 @@ g.nudging_t = 0
 g.nudging_q = 0
 g.zorog = 0.
 g.z0 = 0.001019
-g.ustar = 0.28
+#g.ustar = 0.28
 g.surfaceType = "ocean"
 g.surfaceForcing = "surfaceFlux"
-
+g.surfaceForcingWind = "z0"
 
 g.close()
 

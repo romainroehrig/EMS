@@ -165,7 +165,7 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
 
 
   # Case with no radiation or radiation included in temperature advection
-  if attributes['trad'] == 1 or attributes['trad'] == 'adv':
+  if attributes['trad'] in [1,'adv']:
     nam['NAMPHY']['LRAYFM'] = ['.FALSE.',]
     nam['NAERAD']['LRRTM'] =  ['.FALSE.',]
     nam['NAERAD']['NSW'] = ['2',]

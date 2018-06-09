@@ -76,5 +76,6 @@ g.z0 = 0.01
 g.ustar = 0.
 g.surfaceType = "land" 
 g.surfaceForcing = "surfaceFlux"
+g.surfaceForcingWind = "z0"
 
 g.close()

@@ -28,6 +28,11 @@ coefs = {}
 #      Cd, Ch, Ce, Cdn, Chn, Cen
 #      Ugr
 #      z0, z0h, zref, tsurf, qsurf
+for var in ['PUSTAR','PCD','PCH','PCE','ZUSR','ZTSR','ZQSR','PZ0SEA','PZ0HSEA','ZDU','ZDT','ZDQ','ZVMOD','PTA','PQA','PQSAT','PSST','ZTAU','ZHF','ZEF']:
+  varnames[var + '_ECUME'] = var + '_ECUME'
+  names[var + '_ECUME'] = var + '_ECUME'
+  units[var + '_ECUME'] = '-'
+  coefs[var + '_ECUME'] = 1    
 # 6. Variables integrees sur la colonne
 #      prw, lwp, iwp, cwp
 # 7. Variables en surface
@@ -69,6 +74,12 @@ coefs = {}
 #      w_up_bud, dw_buoy, dw_fric, dw_Kd, dw_entr, dw_transp, buoy, Mf, eps_u, eps_u_org, eps_u_tur, entr_u, detr_u, dTv_up
 #      aipcmt, knnd, knlab, ZS15, ZS16, ZTAU,ZWMAX,ZZMAX,ZKMAX,ZINTEGMAX,ZMMAX
 for var in ['ZWMAX','ZZMAX','ZKMAX','ZINTEGMAX','ZMMAX','ZINTEGA']:
+  varnames[var] = var
+  names[var] = var
+  units[var] = '-'
+  coefs[var] = 1
+# Variables du schema TKE
+for var in ['LMECT','TKEDIF','TKEDISS','TKEPRDY','TKEPRTH','TKETEND','PECTCLS','PKCLS','PKUROV','PUSLE','PPRODTH']:
   varnames[var] = var
   names[var] = var
   units[var] = '-'

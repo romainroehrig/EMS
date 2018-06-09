@@ -139,8 +139,16 @@ def prep_nam_SFX(case,filecase,namref,namout=None,subcase=None):
     time = sst.getTime()
     zz0 = float(fin.z0)
   elif surfaceForcing == 'surfaceFlux':
+    surfaceForcingWind = fin.surfaceForcingWind
     hfls = fin('sfc_lat_flx')
     hfss = fin('sfc_sens_flx')
+    if surfaceForcingWind == 'ustar':
+        ustar = fin('ustar')
+    elif surfaceForcingWind == 'z0':
+        zz0 = float(fin.z0)
+    else:
+      print 'surfaceForcingWind unexpected:', surfaceForcingWind
+      sys.exit()
 #    ts = fin('temp')[0,0]
     try:
       ts = fin('ts')
@@ -149,8 +157,6 @@ def prep_nam_SFX(case,filecase,namref,namout=None,subcase=None):
     lat = hfls.getLatitude()[0]
     lon = hfls.getLongitude()[0]
     time = hfls.getAxis(0)
-    zustar = float(fin.ustar)
-    zz0 = float(fin.z0)
   
   fin.close()
 
@@ -373,9 +379,11 @@ def prep_nam_SFX(case,filecase,namref,namout=None,subcase=None):
     nam[nn]['NFORCT'] = [str(nt0),]
     nam[nn]['CSFTQ'] = ["'W/m2'",]
     nam[nn]['XSFCO2'] = ['0.',]
-    nam[nn]['CUSTARTYPE'] = ["'Z0'",]
-    nam[nn]['XUSTAR'] = [str(zustar),]
-    nam[nn]['XZ0'] = [str(zz0),]
+    if surfaceForcingWind == 'ustar':
+      nam[nn]['CUSTARTYPE'] = ["'USTAR'",]
+    elif surfaceForcingWind == 'z0':
+      nam[nn]['CUSTARTYPE'] = ["'Z0'",]
+      nam[nn]['XZ0'] = [str(zz0),]
     nam[nn]['XALB'] = ['0.07',]
     nam[nn]['XEMIS']  = ['1.',]
 #    nam[nn]['XTIMET(1)'] = ['0.',]
@@ -398,6 +406,10 @@ def prep_nam_SFX(case,filecase,namref,namout=None,subcase=None):
     for it in range(0,nt0):
       tt = cdtime.reltime(time[it+ii1],time.units)	  
       nam[nn]['XSFTQ(%(ii)4.i)'%{"ii": it+1}] = ['%(hfls)6.2f'%{"hfls":hfls[it+ii1,0,0]},]
+    if surfaceForcingWind == 'ustar':
+      for it in range(0,nt0):
+        tt = cdtime.reltime(time[it+ii1],time.units)	  
+        nam[nn]['XUSTAR(%(ii)4.i)'%{"ii": it+1}] = ['%(ustar)6.2f'%{"ustar":ustar[it+ii1,0,0]},]
 
 
   if lperf:

@@ -32,8 +32,8 @@ except:
 # In case a case/subcase is provided in argument
 lasked = False
 try:
-    case = argv[3]
-    SUB = argv[4]
+    case = argv[2]
+    SUB = argv[3]
     lasked = True
 except:
     pass

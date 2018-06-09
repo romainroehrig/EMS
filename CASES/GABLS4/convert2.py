@@ -21,7 +21,8 @@ lon.designateLongitude()
 lon.id = 'lon'
 lon.units = 'degrees_east'
 
-variables = ['Surface_temperature','Pinterp','zo','ps','orog','ustar','qvinterp','thinterp','vinterp','uginterp','uinterp','vginterp']
+#variables = ['Surface_temperature','Pinterp','zo','ps','orog','ustar','qvinterp','thinterp','vinterp','uginterp','uinterp','vginterp']
+variables = ['Surface_temperature','Pinterp','zo','ps','orog','qvinterp','thinterp','vinterp','uginterp','uinterp','vginterp']
 
 data = {}
 attributes = {}
@@ -37,7 +38,7 @@ for att in f.listglobal():
 
 f.close()
 
-f = cdms2.open('/cnrm/moana/user/couvreux/GABLS4_INTERCOMPARISON_LES/POUR_OLIVIER/MESONH/24h/gabls4_time_les_MESONH_stage3_zo3.nc')
+f = cdms2.open('/cnrm/tropics/user/couvreux/GABLS4_INTERCOMPARISON_LES/POUR_OLIVIER/MESONH/24h/gabls4_time_les_MESONH_stage3_zo3.nc')
 data['shf'] = f('shf')[:,0]
 f.close()
 
@@ -56,13 +57,14 @@ attributes['startDate'] = '20091211000000'
 attributes['endDate'] = '20091212000000'
 attributes['author'] = 'F. Couvreux, R. Roehrig'
 attributes['surfaceForcing'] = 'ts'
+attributes['surfaceForcingWind'] = 'ustar'
 attributes['case'] = 'GABLS4'
 attributes['description'] = 'No subsidence/ascendance, No T & q Large-scale advection, No radiation but geostrophic wind'
 attributes['forc_geo'] = attributes['for_geo']
 del(attributes['for_geo'])
 attributes['zorog'] = 3223 #float(data['orog'])
-attributes['z0'] = float(data['zo'])
-attributes['ustar'] = float(data['ustar'])
+attributes['z0'] = 0.001 #float(data['zo'])
+#attributes['ustar'] = float(data['ustar'])
 attributes['trad'] = 'adv'
 
 dico = {}
@@ -76,7 +78,7 @@ dico['qv'] = 'qvinterp'
 dico['temp'] = 'tinterp'
 dico['ps'] = 'ps'
 dico['orog'] = 'orog'
-dico['ustar'] = 'ustar'
+#dico['ustar'] = 'ustar'
 dico['z0'] = 'zo'
 
 var2write = ['u','v','temp','qv','ug','vg','pressure','ps','ts']
@@ -171,6 +173,48 @@ tmp.units = 'W m-2'
 newdata['sfc_lat_flx'] = tmp
 
 var2write.append('sfc_lat_flx')
+
+
+XUSTAR = MV2.zeros(25+1,typecode=MV2.float32)
+XUSTAR[1]=0.138679
+XUSTAR[2]=0.127735
+XUSTAR[3]=0.143907
+XUSTAR[4]=0.158719
+XUSTAR[5]=0.168044
+XUSTAR[6]=0.173109
+XUSTAR[7]=0.177049
+XUSTAR[8]=0.176655
+XUSTAR[9]=0.163976
+XUSTAR[10]=0.102127
+XUSTAR[11]=0.0809859
+XUSTAR[12]=0.0889696
+XUSTAR[13]=0.0941792
+XUSTAR[14]=0.0975210
+XUSTAR[15]=0.0974786
+XUSTAR[16]=0.0956932
+XUSTAR[17]=0.0960392
+XUSTAR[18]=0.0950178
+XUSTAR[19]=0.0951953
+XUSTAR[20]=0.0988678
+XUSTAR[21]=0.103377
+XUSTAR[22]=0.105738
+XUSTAR[23]=0.119827
+XUSTAR[24]=0.129067
+XUSTAR[25]=0.129067
+
+tmp = MV2.zeros((nt,1,1),typecode=MV2.float32)
+tmp[:,0,0] = XUSTAR[1:]
+tmp.setAxis(0,time)
+tmp.setAxis(1,lat)
+tmp.setAxis(2,lon)
+tmp.id = 'ustar'
+tmp.long_name = 'ustar'
+tmp.units = 'm s-1'
+
+newdata['ustar'] = tmp
+
+var2write.append('ustar')
+
 
 attributes['surfaceForcing'] = 'surfaceFlux'
 

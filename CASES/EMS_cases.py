@@ -25,6 +25,18 @@ if ldebug:
 
 ####################################
 #### Definition of cases
+
+# CINDY-DYNAMO cases
+case = 'CINDY-DYNAMO'
+cases.append(case)
+subcases[case] = ['NSA3a','NSA3aflux','SSA3a']
+#subcases[case] = ['NSA3aflux','SSA3a']
+subcases[case] = ['NSA3a']
+data_input[case] = {}
+data_input[case]['NSA3a'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3a_driver_RR.nc'
+data_input[case]['NSA3aflux'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3aflux_driver_RR.nc'
+data_input[case]['SSA3a'] = rep0 + '/CINDY-DYNAMO/SSA3a/cindy-dynamo-SSA3a_driver_RR.nc'
+
 # AMMA Cases
 case = 'AMMA'
 cases.append(case)
@@ -53,14 +65,31 @@ subcases[case] = ['REF']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/ARMCu/ARMCu_driver_RR.nc'
 
+# BOMEX Case
+case = 'BOMEX'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+data_input[case]['REF'] = rep0 + '/BOMEX/BOMEX_driver_MPL_RR.nc'
+
 # AYOTTE Cases
 case = 'AYOTTE'
 cases.append(case)
 subcases[case] = ['A00SC','A00WC','A03SC','A05SC','A05WC','A24F','A24SC']
-subcases[case] = ['A24SC']
+#subcases[case] = ['A24SC']
 data_input[case] = {}
 for cc in subcases[case]:
   data_input[case][cc] = rep0 + '/AYOTTE/AYOTTE_{0}_driver_FC_RR.nc'.format(cc)
+
+# Derbyshire cases
+case = 'Derbyshire'
+cases.append(case)
+subcases[case] = ['RH25','RH50','RH70','RH90']
+data_input[case] = {}
+data_input[case]['RH25'] = rep0 + '/Derbyshire/Derbyshire_RH25_driver_RR.nc'
+data_input[case]['RH50'] = rep0 + '/Derbyshire/Derbyshire_RH50_driver_RR.nc'
+data_input[case]['RH70'] = rep0 + '/Derbyshire/Derbyshire_RH70_driver_RR.nc'
+data_input[case]['RH90'] = rep0 + '/Derbyshire/Derbyshire_RH90_driver_RR.nc'
 
 
 if ldebug:
