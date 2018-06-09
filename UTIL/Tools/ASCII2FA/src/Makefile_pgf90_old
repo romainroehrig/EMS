@@ -1,0 +1,23 @@
+# acadfa makefile
+
+FC	=	pgf90
+F90FLAGS = -Mr8 -Mfree -DLX86P -pc 64 -Kieee -byteswapio
+EXEC	=	acadfa_exe
+
+OBJS	=	acadfa1D_main.o \
+		acadfa_sueframe.o \
+		real2spec.o \
+		empty.o 
+
+XRD	=	libxrd.a libgribex.a libmpidummy.a
+LIBS	=	$(XRD) 
+
+%.o:%.F90
+	$(FC) $(F90FLAGS) -c $<
+
+all:	$(OBJS)
+	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
+
+clean:
+	/bin/rm -f $(EXEC) $(OBJS)
+

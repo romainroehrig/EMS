@@ -1,0 +1,46 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module lfa ! in 
+    interface  ! in :lfa
+        subroutine readr(filename,varname,zdim,zchp) ! in :lfa:famusc.f90
+            character*(*) intent(in) :: filename
+            character*(*) intent(in) :: varname
+            integer(kind=4) intent(in) :: zdim
+            real(kind=4) dimension(zdim),intent(out),depend(zdim) :: zchp
+        end subroutine readr
+        subroutine readi(filename,varname,zdim,zchp) ! in :lfa:famusc.f90
+            character*(*) intent(in) :: filename
+            character*(*) intent(in) :: varname
+            integer(kind=4) intent(in) :: zdim
+            integer(kind=4) dimension(zdim),intent(out),depend(zdim) :: zchp
+        end subroutine readi
+        subroutine readc(filename,varname,zdim,zchp) ! in :lfa:famusc.f90
+            character*(*) intent(in) :: filename
+            character*(*) intent(in) :: varname
+            integer(kind=4) intent(in) :: zdim
+            character dimension(zdim,400),intent(out,c),depend(zdim) :: zchp
+        end subroutine readc
+!        subroutine lfareadr(klbouc,kul,cdna,zreel) ! in :lfa:famusc.f90
+!            integer(kind=4) intent(in) :: klbouc
+!            integer(kind=4) intent(in) :: kul
+!            character*(*) intent(in) :: cdna
+!            real(kind=4) dimension(klbouc),intent(out),depend(klbouc) :: zreel
+!        end subroutine lfareadr
+!        subroutine lfareadi(klbouc,kul,cdna,zint) ! in :lfa:famusc.f90
+!            integer(kind=4) intent(in) :: klbouc
+!            integer(kind=4) intent(in) :: kul
+!            character*(*) intent(in) :: cdna
+!            integer(kind=4) dimension(klbouc),intent(out),depend(klbouc) :: zint
+!        end subroutine lfareadi
+!        subroutine lfareadc(klbouc,kul,cdna,zcha) ! in :lfa:famusc.f90
+!            integer(kind=4) intent(in) :: klbouc
+!            integer(kind=4) intent(in) :: kul
+!            character*(*) intent(in) :: cdna
+!            character dimension(klbouc,400),intent(out,c),depend(klbouc) :: zcha
+!        end subroutine lfareadc
+    end interface 
+end python module lfa
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/

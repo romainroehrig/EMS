@@ -1,0 +1,9 @@
+ ! NOAA/PMEL TMAP
+ ! FERRET v6.94  
+ ! Darwin 14.1.0 - 02/26/15
+ ! 30-Apr-18 15:42     
+
+use test.nc
+sh da
+plot temp
+q
