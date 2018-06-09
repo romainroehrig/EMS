@@ -49,6 +49,36 @@ EOF
 
 . ~/.profile
 
+# Some compilation
+
+# lfa python library
+cd $REP_EMS/UTIL/python/lfa
+./makelib.sh
+
+# ascii2lfa binary
+cd $REP_EMS/UTIL/Tools/ASCII2FA/src
+cp /Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxrd.local.a libxrd.a
+cp /Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a libxla.a
+cp /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a libgribex.a
+cp /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a libmpidummy.a
+make all
+#make clean
+
+# LFA tools
+cd $REP_EMS//UTIL/Tools/LFA
+./install
+
+# a few python libraries
+source activate myuvcdat
+
+cd $REP_EMS/UTIL/Init_Forc/ARPCLIMAT
+f2py -c interpvertp.F90 -m interpvertp
+cd $REP_EMS/UTIL/post_DEPHY
+f2py -c convert2p.F90 -m convert2p
+f2py -c convert2z.F90 -m convert2z
+
+source deactivaet myuvcdat
+
 #####################################################
 # Prepare what is needed to run MUSC simulations in REP_MUSC
 [ -d $REP_MUSC ] || mkdir $REP_MUSC

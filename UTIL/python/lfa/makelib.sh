@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source activate myuvcdat
+
 DIR0=`pwd`
 
 for ff in cllang caracteres_lfa lfa
@@ -13,9 +15,12 @@ gfortran -L$DIR0 -llfa -I$DIR0 -fconvert=big-endian -cpp  -c -fPIC -o famusc.o f
 
 f2py -lgfortran -c famusc.pyf famusc.o liblfa.a
 
-rm -f *.o *.mod
+rm -f *.o *.mod *.a
+
+mv lfa.so ../
 
 # Test
-# source activate myuvcdat
 
-python tmp.py
+#python tmp.py
+
+source deactivate myuvcdat

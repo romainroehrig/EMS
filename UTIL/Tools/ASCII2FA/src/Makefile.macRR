@@ -10,10 +10,10 @@ OBJS	=	acadfa1D_main.o \
 		real2spec.o \
 		empty.o 
 
-XRD	 =	libxrd.a 
-XLA	 =	libxla.a 
-GRIBEX   =      libgribex.a 
-MPIDUMMY =      libmpidummy.a
+XRD	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxrd.local.a 
+XLA	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a 
+GRIBEX   =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a 
+MPIDUMMY =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a
 LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY) 
 
 %.o:%.F90
@@ -21,7 +21,6 @@ LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
 
 all:	$(OBJS)
 	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
-	/bin/cp acadfa_exe ../bin/ascii2fa
 
 clean:
 	/bin/rm -f $(EXEC) $(OBJS)

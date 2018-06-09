@@ -252,7 +252,7 @@ sed -f fs lfatail_env.h > lfatail.h ; /bin/rm fs
 rm -f liblfa.a
 cp liblfa_R${PRECRX}I${PRECIX}.a liblfa.a
 make exe
-/bin/rm liblfa.a
+make clean
 echo
 echo " The binaries are moved to DIRBIN (see Makefile)"
 echo " The libraries are `ls liblfa_R*` are in `pwd` "

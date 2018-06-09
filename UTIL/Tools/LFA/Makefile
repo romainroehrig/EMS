@@ -5,7 +5,7 @@
 #
 EXEf=lfac lfafreq lfacre lfalaf lfaminm lfareu lfatest lfa_demo
 EXEF=lfadiffart lfadiffrel lfadiff lfa2lfa lfamoy lfa_autodocumentation
-DIRBIN=/Users/romainroehrig/MUSC/MUSC/UTIL/Tools/LFA/bin
+DIRBIN=bin
 
 all: liblfa.a lfa2lfp lfp2lfa $(EXEf) $(EXEF)
 
@@ -43,4 +43,4 @@ $(EXEF): $(%.f90) liblfa.a
 	rm -f $@.o
 
 clean: 
-	rm -f *.o *.a lfac lfafreq lfacre lfalaf lfaminm lfareu lfatest lfa_demo lfadiffart lfadiffrel lfadiff lfa2lfp lfp2lfa lfa2lfa cllangu lfamoy lfa_autodocumentation
+	rm -rf *.o *.a *.dSYM lfac lfafreq lfacre lfalaf lfaminm lfareu lfatest lfa_demo lfadiffart lfadiffrel lfadiff lfa2lfp lfp2lfa lfa2lfa cllangu lfamoy lfa_autodocumentation
