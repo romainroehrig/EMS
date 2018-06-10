@@ -1,4 +1,5 @@
-!f2py -c interpvertp.F90 -m interpvertp
+!macRR: f2py -c interpvertp.F90 -m interpvertp
+!CNRM: /opt/cdat/bin/f2py -c -I/opt/cdat/include interpvertp.F90 -m interpvertp
 SUBROUTINE interpvertp(nt,nlevin,nlevout,levin,levout,datain,dataout,missing)
 
 IMPLICIT NONE
