@@ -20,7 +20,7 @@ LIBS	 =	$(XRD) $(GRIBEX) $(MPIDUMMY)
 
 all:	$(OBJS)
 	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
-	/bin/cp $(EXEC) ../bin/ascii2fa
+	/bin/cp -f $(EXEC) ../bin/ascii2fa
 
 clean:
 	/bin/rm -f $(EXEC) $(OBJS)
