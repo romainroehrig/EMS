@@ -43,4 +43,4 @@ $(EXEF): $(%.f90) liblfa.a
 	rm -f $@.o
 
 clean: 
-	rm -rf *.o *.a *.dSYM lfac lfafreq lfacre lfalaf lfaminm lfareu lfatest lfa_demo lfadiffart lfadiffrel lfadiff lfa2lfp lfp2lfa lfa2lfa cllangu lfamoy lfa_autodocumentation
+	rm -rf *.o *.a *.mod *.dSYM lfac lfafreq lfacre lfalaf lfaminm lfareu lfatest lfa_demo lfadiffart lfadiffrel lfadiff lfa2lfp lfp2lfa lfa2lfa cllangu lfamoy lfa_autodocumentation
