@@ -1,8 +1,5 @@
 #!/bin/sh
 
-source activate myuvcdat
-alias cdat='python'
-
 cat << EOF > tmp.py
 import os
 

@@ -120,7 +120,7 @@ set -x
 #export DR_HOOK=0
 export DR_HOOK_IGNORE_SIGNALS=-1
 
-#ulimit -s unlimited
+ulimit -s unlimited
 
 date
 ./MASTER -c001 -vmeteo -maladin -e${EXP} -t$TSTEP -f$NSTOP -a$ADVEC  >lola 2>&1
