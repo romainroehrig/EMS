@@ -137,12 +137,20 @@ for var in var2read:
 try:
   data_in['theta'] = f('theta',squeeze=1)
 except:
-  nt = data_in['temp'].shape[0]
-  nlev = data_in['temp'].shape[1]
-  data_in['theta'] = data_in['temp']*0.
-  for it in range(0,nt):
-    for ilev in range(0,nlev):
-      data_in['theta'][it,ilev] = data_in['temp'][it,ilev]*(100000./data_in['pressure'][it,ilev])**(2./7.)
+    if len(data_in['temp'].shape) == 2:
+        nt = data_in['temp'].shape[0]
+        nlev = data_in['temp'].shape[1]
+        data_in['theta'] = data_in['temp']*0.
+        for it in range(0,nt):
+          for ilev in range(0,nlev):
+            data_in['theta'][it,ilev] = data_in['temp'][it,ilev]*(100000./data_in['pressure'][it,ilev])**(2./7.)
+    elif len(data_in['temp'].shape) == 1:
+        nlev = data_in['temp'].shape[0]
+        data_in['theta'] = data_in['temp']*0.
+        for ilev in range(0,nlev):
+          data_in['theta'][ilev] = data_in['temp'][ilev]*(100000./data_in['pressure'][ilev])**(2./7.)
+    else:
+      print 'Shape unexpected:',data_in['theta'].shape,'for variable theta' 
 
 #time = f('omega').getTime()
 #f.close()
