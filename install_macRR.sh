@@ -23,6 +23,7 @@ fi
 [ -d $REP_EMS ] || mkdir $REP_EMS
 cd $REP_EMS
 git clone https://github.com/romainroehrig/EMS.git .
+git checkout macRR
 
 # Modify your .bash_profile to initialize a few environment variables
 cd ~/
