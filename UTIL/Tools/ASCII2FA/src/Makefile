@@ -5,7 +5,7 @@ FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form 
 F90FLAGS =      -fconvert=big-endian -frecord-marker=4 $(M32) -ffree-form -fdefault-real-8 -DADDRESS64 -DHIGHRES
 EXEC	 =	acadfa_exe
 
-OBJS	=	acadfa1D_main.o \
+OBJS	 =	acadfa1D_main.o \
 		acadfa_sueframe.o \
 		real2spec.o \
 		empty.o 
@@ -20,7 +20,7 @@ LIBS	 =	$(XRD) $(GRIBEX) $(MPIDUMMY)
 
 all:	$(OBJS)
 	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
-	/bin/cp acadfa_exe ../bin/ascii2fa
+	/bin/cp $(EXEC) ../bin/ascii2fa
 
 clean:
 	/bin/rm -f $(EXEC) $(OBJS)

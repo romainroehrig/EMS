@@ -5,7 +5,7 @@ FFLAGS	 =      -r8 -i4  -DLX86P  -fendian=big -fno-second-underscore  -g -O0
 F90FLAGS =      -r8 -i4  -DLX86P  -fendian=big -fno-second-underscore -g -O0
 EXEC	 =	acadfa_exe
 
-OBJS	=	acadfa1D_main.o \
+OBJS	 =	acadfa1D_main.o \
 		acadfa_sueframe.o \
 		real2spec.o \
 		empty.o 
@@ -20,7 +20,7 @@ LIBS	 =	$(XRD) $(GRIBEX) $(MPIDUMMY)
 
 all:	$(OBJS)
 	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
-	/bin/cp acadfa_exe ../bin/ascii2fa
+	/bin/cp $(EXEC) ../bin/ascii2fa
 
 clean:
 	/bin/rm -f $(EXEC) $(OBJS)
