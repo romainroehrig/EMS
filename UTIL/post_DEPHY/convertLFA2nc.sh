@@ -2,8 +2,6 @@
 
 # seems necessary in some circumstances (deep shells?)
 unset PYTHONHOME
-source activate myuvcdat
-alias cdat='python'
 
 convert2p=no
 convert2z=no
@@ -26,7 +24,7 @@ else
   rm netcdf/*.nc
 fi
 
-python lfa2nc_part1.py
+/usr/bin/python lfa2nc_part1.py
 cdat lfa2nc_part2.py
 
 mv Out_klevel.nc netcdf/

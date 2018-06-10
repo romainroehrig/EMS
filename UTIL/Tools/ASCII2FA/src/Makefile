@@ -2,7 +2,7 @@
 
 FC	 =	gfortran
 FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
-F90FLAGS =      -fconvert=swap -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -DDARWIN -DADDRESS64 -fdefault-real-8 -fdefault-double-8 -g -O2
+F90FLAGS =      -fconvert=big-endian -frecord-marker=4 $(M32) -ffree-form -fdefault-real-8 -DADDRESS64 -DHIGHRES
 EXEC	 =	acadfa_exe
 
 OBJS	=	acadfa1D_main.o \
@@ -11,10 +11,9 @@ OBJS	=	acadfa1D_main.o \
 		empty.o 
 
 XRD	 =	libxrd.a 
-XLA	 =	libxla.a 
 GRIBEX   =      libgribex.a 
 MPIDUMMY =      libmpidummy.a
-LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY) 
+LIBS	 =	$(XRD) $(GRIBEX) $(MPIDUMMY)
 
 %.o:%.F90
 	$(FC) $(F90FLAGS) -c $<

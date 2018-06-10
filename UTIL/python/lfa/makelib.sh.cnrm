@@ -1,0 +1,18 @@
+
+
+#/opt/cdat/bin/f2py -m lfa -h famusc.pyf famusc.f90 (comment lfaread* subroutines)
+gfortran -I./ -fconvert=big-endian -cpp  -c -fPIC cllang.f90
+gfortran -I./ -fconvert=big-endian -cpp  -c -fPIC caracteres_lfa.f90
+gfortran -I./ -fconvert=big-endian -cpp  -c -fPIC lfa.f90
+ar r liblfa.a *.o
+gfortran -L./ -llfa -I./ -fconvert=big-endian -cpp  -c -fPIC -o famusc.o famusc.f90
+#f2py -L./ -llfa -lm -lgfortran --f77flags='-L./ -llfa -I./ -fPIC -fconvert=big-endian -cpp' --f90flags='-L./ -llfa -I./ -fPIC -fconvert=big-endian -cpp' --fcompiler=gnu95 -c famusc.pyf famusc.o
+/opt/cdat/bin/f2py -I/opt/cdat/include -L./ -llfa -lm -lgfortran --f77flags='-L./ -llfa -I./ -fPIC -fconvert=big-endian -cpp' --f90flags='-L./ -llfa -I./ -fPIC -fconvert=big-endian -cpp' --fcompiler=gnu95 -c famusc.pyf famusc.o
+
+##Ne fonctionne pas...
+#pgf90 -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -c -fPIC cllang.f90
+#pgf90 -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -c -fPIC caracteres_lfa.f90
+#pgf90 -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -c -fPIC lfa.f90
+#ar r liblfa.a *.o
+#pgf90 -L./ -llfa -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -c -fPIC -o famusc.o famusc.f90
+#/opt/cdat/bin/f2py -L./ -llfa --f77flags='-L./ -llfa -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -fPIC' --f90flags='-L./ -llfa -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -fPIC' --fcompiler=pg -c famusc.pyf famusc.o

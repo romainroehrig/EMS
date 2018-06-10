@@ -141,7 +141,7 @@ def install_SFX(model,case,filecase,repout,cycle,PGD,PREP,config,namref,subcase=
 
       g.close()
 
-      os.system('python tmp.py')
+      os.system('cdat tmp.py')
       os.system('rm -f tmp.py')
     
       if lperf:
@@ -177,7 +177,7 @@ def install_SFX(model,case,filecase,repout,cycle,PGD,PREP,config,namref,subcase=
 
         g.close()
 
-        os.system('python tmp.py')
+        os.system('cdat tmp.py')
         os.system('rm -f tmp.py')
 
         os.system('./prepare_SURFEX.sh')
@@ -302,7 +302,7 @@ def install_Run(model,case,filecase,repout,config,configOut,subcase=None,loverwr
 
       g.close()
 
-      os.system('python tmp.py')
+      os.system('cdat tmp.py')
       os.system('rm -f tmp.py')
 
       if lperf:
@@ -323,7 +323,7 @@ def install_Run(model,case,filecase,repout,config,configOut,subcase=None,loverwr
 
         g.close()
 
-        os.system('python tmp.py')
+        os.system('cdat tmp.py')
         os.system('rm -f tmp.py')
 
         if lperf:
@@ -517,13 +517,13 @@ def install_Atlas(case,repout,config,configAtlas,subcase=None,loverwrite=False,l
 
       g.close()
 
-      os.system('python atlas.py')
+      os.system('cdat atlas.py')
 
     else: 
       print 'Directory already exists:', rep
       if lupdate:
         os.chdir(rep)
-        os.system('python atlas.py')
+        os.system('cdat atlas.py')
       else:
         print 'Nothing is done'
 

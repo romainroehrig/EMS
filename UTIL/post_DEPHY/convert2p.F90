@@ -1,4 +1,4 @@
-!f2py -c convert2p.F90 -m convert2p
+!/opt/cdat/bin/f2py -c -I/opt/cdat/include convert2p.F90 -m convert2p
 SUBROUTINE convert2p(nt,nlevin,nlevout,levin,levout,datain,dataout,missing)
 
 IMPLICIT NONE

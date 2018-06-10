@@ -21,6 +21,7 @@ LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
 
 all:	$(OBJS)
 	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
+	/bin/cp acadfa_exe ../bin/ascii2fa
 
 clean:
 	/bin/rm -f $(EXEC) $(OBJS)
