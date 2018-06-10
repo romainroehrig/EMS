@@ -5,7 +5,7 @@ FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form 
 F90FLAGS =      -fconvert=swap -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -DDARWIN -DADDRESS64 -fdefault-real-8 -fdefault-double-8 -g -O2
 EXEC	 =	acadfa_exe
 
-OBJS	=	acadfa1D_main.o \
+OBJS	 =	acadfa1D_main.o \
 		acadfa_sueframe.o \
 		real2spec.o \
 		empty.o 
