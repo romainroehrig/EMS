@@ -44,6 +44,13 @@ subcases[case] = ['REF']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/AMMA/AMMA_20060710_setupI_driver_RR.nc'
 
+# AMMAsec Cases
+case = 'AMMAsec'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+data_input[case]['REF'] = rep0 + '/AMMAsec/AMMAsec_driver_FC_RR.nc'
+
 # FIRE Case
 case = 'FIRE'
 cases.append(case)
