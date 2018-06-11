@@ -74,10 +74,10 @@ cd $REP_MUSC
 install_ATM_cases.py
 [ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/A24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
 
-install_SFX_cases.py config/config_arp631_macRR_CMIP6.py
+install_SFX_cases.py config/config_arp631_CMIP6.py
 [ -f $REP_MUSC/SURFEX/arp631_macRR/CMIP6/AYOTTE/A24SC/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
 [ -f $REP_MUSC/SURFEX/arp631_macRR/CMIP6/AYOTTE/A24SC/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
 
-run_MUSC_cases.py config/config_arp631_macRR_CMIP6.py
+run_MUSC_cases.py config/config_arp631_CMIP6.py AYOTTE A24SC
 [ -f $REP_MUSC/simulations/arp631_macRR/CMIP6/L91_300s/AYOTTE/A24SC/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
 
