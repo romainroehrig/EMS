@@ -1,4 +1,5 @@
 import cdms2
+import math
 import MV2
 import os
 import interpvertp
@@ -209,8 +210,10 @@ pph0 = MV2.zeros((1,nlev_out),typecode=MV2.float32)
 ppf = MV2.where(ppf < 0.1,0.1,ppf)
 
 for ilev in range(0,nlev_out):
-  pph[:,ilev] = (ppf[:,ilev+1]*MV2.log(ppf[:,ilev+1])-ppf[:,ilev]*MV2.log(ppf[:,ilev]))/(ppf[:,ilev+1]-ppf[:,ilev]) - 1.
-  pph0[0,ilev] = (ppf[0,ilev+1]*MV2.log(ppf[0,ilev+1])-ppf[0,ilev]*MV2.log(ppf[0,ilev]))/(ppf[0,ilev+1]-ppf[0,ilev]) - 1.
+  # For reproductibility with CNRM machines
+  for it in range(0,nt):
+    pph[it,ilev] = (ppf[it,ilev+1]*math.log(ppf[it,ilev+1])-ppf[it,ilev]*math.log(ppf[it,ilev]))/(ppf[it,ilev+1]-ppf[it,ilev]) - 1.
+  pph0[0,ilev] = (ppf[0,ilev+1]*math.log(ppf[0,ilev+1])-ppf[0,ilev]*math.log(ppf[0,ilev]))/(ppf[0,ilev+1]-ppf[0,ilev]) - 1.
 
 pph = MV2.exp(pph)	  
 pph0 = MV2.exp(pph0)
