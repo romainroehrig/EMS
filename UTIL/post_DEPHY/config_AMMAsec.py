@@ -1,8 +1,7 @@
 #saveall = True
 saveall = False
 
-
-var2save = ['pf','zf','ph','zh','theta','w_up','Mf']
+var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','shf','tsurf','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','w_up','Mf','alpha_up','ustar','z0']
 
 # Pour convert2p, niveau en hPa
 levout = []
