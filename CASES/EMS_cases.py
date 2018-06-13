@@ -51,12 +51,33 @@ subcases[case] = ['REF']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/AMMAsec/AMMAsec_driver_FC_RR.nc'
 
+# WANGARA Cases
+case = 'WANGARA'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+data_input[case]['REF'] = rep0 + '/WANGARA/WANGARA_driver_FC_RR.nc'
+
+# SCMS Cases
+case = 'SCMS'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+data_input[case]['REF'] = rep0 + '/SCMS/SCMS_driver_FC_RR.nc'
+
 # FIRE Case
 case = 'FIRE'
 cases.append(case)
 subcases[case] = ['REF']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR.nc'
+
+# DYCOMS Case
+case = 'DYCOMS'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+data_input[case]['REF'] = rep0 + '/DYCOMS/DYCOMS_driver_FC_RR.nc'
 
 # RICO Case
 case = 'RICO'
