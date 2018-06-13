@@ -15,13 +15,12 @@ dico['vg'] = 'vgforcing'
 dico['qadvh'] = 'qadvhforcing'
 dico['thadvh'] = 'thadvhforcing'
 dico['w'] = 'wforcing'
-dico['sfc_sens_flx'] = 'sfc_sens_flx'
-dico['sfc_lat_flx'] = 'sfc_lat_flx'
 dico['ps'] = 'ps'
+dico['ts'] = 'Surface_temperature'
 
 data = {}
 
-f = cdms2.open('WANGARA_LES_driver.nc')
+f = cdms2.open('DYCOMS_LES_driver.nc')
 for var in f.listvariables():
     data[var] = f(var)
 
@@ -32,8 +31,8 @@ for var in dico.keys():
 for var in ['u','v','th','qv','Pthermo']:
   nlev, = data[var].shape
   lev = data[var].getAxis(0)
-  tmp = MV2.zeros((10,nlev),typecode=MV2.float32)
-  for i in range(0,10):
+  tmp = MV2.zeros((2,nlev),typecode=MV2.float32)
+  for i in range(0,2):
       tmp[i,:] = data[var][:] 
  
   tmp.setAxis(1,lev)
@@ -43,41 +42,39 @@ for var in ['u','v','th','qv','Pthermo']:
 for var in ['ug','vg','qadvh','thadvh','w']:
   nlev,nt = data[var].shape
   lev = data[var].getAxis(0)
-  time = data[var].getAxis(1)
-  tmp = MV2.zeros((nt,nlev),typecode=MV2.float32)
-  for i in range(0,nt):
-    tmp[i,:] = data[var][:,i]
+#  time = data[var].getAxis(1)
+  tmp = MV2.zeros((2,nlev),typecode=MV2.float32)
+  for i in range(0,2):
+    tmp[i,:] = data[var][:,0]
 
-  tmp.setAxis(0,time)
+#  tmp.setAxis(0,time)
   tmp.setAxis(1,lev)
 
   data[var] = tmp*1.
 
 f.close()
 
-time = [0, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400]
+time = [0, 43200]
 nt = len(time)
 time = cdms2.createAxis(MV2.array(time,typecode=MV2.float32))
 time.designateTime()
 time.id = 'time'
-time.units = 'seconds since 1967-08-16 09:00:00'
+time.units = 'seconds since 1987-07-14 07:00:00'
 time.calendar = 'gregorian'
 
-#time = 0, 10800, 21600, 32400, 43200 ;
-
-lat = MV2.zeros(1,typecode=MV2.float32) + 36.56
+lat = MV2.zeros(1,typecode=MV2.float32) + 33.3
 lat = cdms2.createAxis(lat)
 lat.designateLatitude()
 lat.id = 'lat'
 lat.units = 'degrees_north'
 
-lon = MV2.zeros(1,typecode=MV2.float32) - 100.61
+lon = MV2.zeros(1,typecode=MV2.float32) - 1119.5
 lon = cdms2.createAxis(lon)
 lon.designateLongitude()
 lon.id = 'lon'
 lon.units = 'degrees_east'
 
-lev = [0, 25, 50, 100, 150, 200, 250, 300, 350, 400, 425, 450, 500, 550, 600, 650, 700, 750, 800, 825, 850, 900, 950, 1000, 1100, 1200, 1225, 1300, 1400, 1500, 1600, 1625, 1700, 1800, 1900, 1975, 2000, 2100, 10000]
+lev = [0, 10, 100, 300, 500, 590, 600, 800, 839.95, 840.05, 840.14, 840.3, 845, 850, 900, 945, 1000, 1100, 1157, 1200, 1327, 1500, 2000, 3300, 3400, 10000]
 nlev = len(lev)
 lev = MV2.array(lev,typecode=MV2.float32)
 lev = cdms2.createAxis(lev)
@@ -88,8 +85,8 @@ lev.positive = 'up'
 
 
 variables0D = [] #['orog']
-variables2D = ['sfc_lat_flx','sfc_sens_flx','ps','ustar']
-variables3D = ['pressure','th','qv','temp','u','v','ug','vg']
+variables2D = ['ts','ps']
+variables3D = ['pressure','th','qv','temp','u','v','ug','vg','w']
 
 variables = variables3D + variables2D + variables0D
 
@@ -106,6 +103,7 @@ units['sfc_lat_flx'] = 'W m-2'
 units['sfc_sens_flx'] = 'W m-2'
 units['orog'] = 'm'
 units['ps'] = 'Pa'
+units['ts'] = 'K'
 units['w'] = 'm s-1'
 units['qadvh'] = 'kg kg-1 s-1'
 units['thadvh'] = 'K s-1'
@@ -126,6 +124,7 @@ names['sfc_sens_flx'] = 'Surface sensible heat flux'
 names['ustar'] = 'Surface ustar'
 names['orog'] = 'Surface orography'
 names['ps'] = 'Surface pressure'
+names['ts'] = 'Surface temperarure'
 names['w'] = 'Vertical velocity'
 names['qadvh'] = 'Specific Humidity horizontal advection'
 names['thadvh'] = 'Potential temperature horizontal advection'
@@ -185,15 +184,11 @@ for var in variables3D:
     datanew[var][:,ilev,0,0] = tmp[:]
 
 
-for var in ['sfc_lat_flx','sfc_sens_flx','ustar']:
-    datanew[var][0:nt,0,0] = data[var][0:nt]
-
-
-Lv = 2.5008e6
-datanew['sfc_lat_flx'] = datanew['sfc_lat_flx']*Lv
-
 datanew['ps'][:,0,0] = datanew['ps'][:,0,0] + data['ps']
-#datanew['orog'][0,0] = datanew['orog'][0,0] + data['orog']
+datanew['ts'][:,0,0] = datanew['ts'][:,0,0] + data['ts']
+
+datanew['qv'][:,nlev-1,0,0] = datanew['qv'][:,nlev-1,0,0]*0.
+datanew['qv'][:,nlev-2,0,0] = datanew['qv'][:,nlev-2,0,0]*0.
 
 
 #datanew['tadvh'] = datanew['thadvh']*1.
@@ -204,10 +199,7 @@ datanew['ps'][:,0,0] = datanew['ps'][:,0,0] + data['ps']
 #
 #variables.append('tadvh')
 
-datanew['qv'][:,nlev-1,0,0] = datanew['qv'][:,nlev-1,0,0]*0.
-datanew['qv'][:,nlev-2,0,0] = datanew['qv'][:,nlev-2,0,0]*0.
-
-g = cdms2.open('WANGARA_driver_FC_RR.nc','w')
+g = cdms2.open('DYCOMS_driver_FC_RR.nc','w')
 
 for var in variables:
   datanew[var].id = var
@@ -217,28 +209,28 @@ for var in variables:
   datanew[var].units = units[var]
   g.write(datanew[var])
 
-g.description = "no radiation included, no temperature and  moisture LS tendency"
+g.description = "subsidence and geostrophic wind"
 g.reference = '??'
 g.author = "F Couvreux"
-g.modifications = "2018-06-12: R. Roehrig put all fields on the same vertical and time axes"
-g.case = "WANGARA" 
-g.startDate = "19670816090000" 
-g.endDate = "19670816180000" 
+g.modifications = "2018-06-13: R. Roehrig put all fields on the same vertical and time axes"
+g.case = "DYCOMS" 
+g.startDate = "19870714070000" 
+g.endDate = "19870714190000" 
 g.qadvh = 0
 g.tadvh = 0 
 g.qadvv = 0 
 g.tadvv = 0 
-g.trad = 'adv' 
+g.trad = 0 
 g.forc_omega = 0 
-g.forc_w = 0 
+g.forc_w = 1 
 g.forc_geo = 1 
 g.nudging_u = 0 
 g.nudging_v = 0 
 g.nudging_t = 0 
 g.nudging_q = 0 
 g.zorog = 0.
-g.surfaceForcing = "surfaceFlux" 
-g.surfaceForcingWind = "ustar"
+g.z0 = 0.01
+g.surfaceForcing = "ts" 
 g.surfaceType = "ocean"
 
 g.close()

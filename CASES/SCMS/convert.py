@@ -21,7 +21,7 @@ dico['ps'] = 'ps'
 
 data = {}
 
-f = cdms2.open('WANGARA_LES_driver.nc')
+f = cdms2.open('SCMS_LES_driver.nc')
 for var in f.listvariables():
     data[var] = f(var)
 
@@ -32,8 +32,8 @@ for var in dico.keys():
 for var in ['u','v','th','qv','Pthermo']:
   nlev, = data[var].shape
   lev = data[var].getAxis(0)
-  tmp = MV2.zeros((10,nlev),typecode=MV2.float32)
-  for i in range(0,10):
+  tmp = MV2.zeros((13,nlev),typecode=MV2.float32)
+  for i in range(0,13):
       tmp[i,:] = data[var][:] 
  
   tmp.setAxis(1,lev)
@@ -43,41 +43,41 @@ for var in ['u','v','th','qv','Pthermo']:
 for var in ['ug','vg','qadvh','thadvh','w']:
   nlev,nt = data[var].shape
   lev = data[var].getAxis(0)
-  time = data[var].getAxis(1)
-  tmp = MV2.zeros((nt,nlev),typecode=MV2.float32)
-  for i in range(0,nt):
-    tmp[i,:] = data[var][:,i]
+#  time = data[var].getAxis(1)
+  tmp = MV2.zeros((13,nlev),typecode=MV2.float32)
+  for i in range(0,13):
+    tmp[i,:] = data[var][:,0]
 
-  tmp.setAxis(0,time)
+#  tmp.setAxis(0,time)
   tmp.setAxis(1,lev)
 
   data[var] = tmp*1.
 
 f.close()
 
-time = [0, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400]
+time = [0, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200]
 nt = len(time)
 time = cdms2.createAxis(MV2.array(time,typecode=MV2.float32))
 time.designateTime()
 time.id = 'time'
-time.units = 'seconds since 1967-08-16 09:00:00'
+time.units = 'seconds since 1995-08-05 12:00:00'
 time.calendar = 'gregorian'
 
 #time = 0, 10800, 21600, 32400, 43200 ;
 
-lat = MV2.zeros(1,typecode=MV2.float32) + 36.56
+lat = MV2.zeros(1,typecode=MV2.float32) + 28.7
 lat = cdms2.createAxis(lat)
 lat.designateLatitude()
 lat.id = 'lat'
 lat.units = 'degrees_north'
 
-lon = MV2.zeros(1,typecode=MV2.float32) - 100.61
+lon = MV2.zeros(1,typecode=MV2.float32) - 81
 lon = cdms2.createAxis(lon)
 lon.designateLongitude()
 lon.id = 'lon'
 lon.units = 'degrees_east'
 
-lev = [0, 25, 50, 100, 150, 200, 250, 300, 350, 400, 425, 450, 500, 550, 600, 650, 700, 750, 800, 825, 850, 900, 950, 1000, 1100, 1200, 1225, 1300, 1400, 1500, 1600, 1625, 1700, 1800, 1900, 1975, 2000, 2100, 10000]
+lev = [0, 20, 60, 100, 140, 180, 220, 260, 300, 340, 380, 420, 460, 500, 540, 580, 620, 660, 700, 740, 780, 820, 860, 900, 940, 980, 1020, 1060, 1100, 1140, 1180, 1220, 1260, 1300, 1340, 1380, 1420, 1460, 1500, 1540, 1580, 1620, 1660, 1700, 1740, 1780, 1820, 1860, 1900, 1940, 1980, 2020, 2060, 2100, 2140, 2180, 2220, 2260, 2300, 2340, 2380, 2420, 2460, 2500, 2540, 2580, 2620, 2660, 2700, 2740, 2780, 2820, 2860, 2900, 2940, 2980, 3020, 3060, 3100, 3140, 3180, 3220, 3260, 3300, 3340, 3380, 3420, 3460, 3500, 3540, 3580, 3620, 3660, 3700, 3740, 3780, 3820, 3860, 3900, 3940, 3980, 4020, 4060, 4100, 4140, 4180, 4220, 4260, 4300, 4340, 4380, 4420, 4460, 4500, 4540, 4580, 4620, 4660, 4700, 4740, 4780, 4820, 4860, 4900, 4940, 4980, 5000, 10000]
 nlev = len(lev)
 lev = MV2.array(lev,typecode=MV2.float32)
 lev = cdms2.createAxis(lev)
@@ -88,8 +88,8 @@ lev.positive = 'up'
 
 
 variables0D = [] #['orog']
-variables2D = ['sfc_lat_flx','sfc_sens_flx','ps','ustar']
-variables3D = ['pressure','th','qv','temp','u','v','ug','vg']
+variables2D = ['sfc_lat_flx','sfc_sens_flx','ps']
+variables3D = ['pressure','th','qv','temp','u','v','ug','vg','thadvh','qadvh']
 
 variables = variables3D + variables2D + variables0D
 
@@ -185,29 +185,27 @@ for var in variables3D:
     datanew[var][:,ilev,0,0] = tmp[:]
 
 
-for var in ['sfc_lat_flx','sfc_sens_flx','ustar']:
+for var in ['sfc_lat_flx','sfc_sens_flx']:
     datanew[var][0:nt,0,0] = data[var][0:nt]
 
-
-Lv = 2.5008e6
-datanew['sfc_lat_flx'] = datanew['sfc_lat_flx']*Lv
 
 datanew['ps'][:,0,0] = datanew['ps'][:,0,0] + data['ps']
 #datanew['orog'][0,0] = datanew['orog'][0,0] + data['orog']
 
 
-#datanew['tadvh'] = datanew['thadvh']*1.
-#nt0,nlev0,ny,nx = datanew['tadvh'].shape
-#for ilev in range(0,nlev0):
-#  for it in range(0,nt0):
-#    datanew['tadvh'][it,ilev,0,0] = datanew['thadvh'][it,ilev,0,0]*(datanew['pressure'][it,ilev,0,0]/100000.)**(2./7.)
-#
-#variables.append('tadvh')
+datanew['tadvh'] = datanew['thadvh']*1.
+nt0,nlev0,ny,nx = datanew['tadvh'].shape
+for ilev in range(0,nlev0):
+  for it in range(0,nt0):
+    datanew['tadvh'][it,ilev,0,0] = datanew['thadvh'][it,ilev,0,0]*(datanew['pressure'][it,ilev,0,0]/100000.)**(2./7.)
+
+variables.append('tadvh')
+
 
 datanew['qv'][:,nlev-1,0,0] = datanew['qv'][:,nlev-1,0,0]*0.
 datanew['qv'][:,nlev-2,0,0] = datanew['qv'][:,nlev-2,0,0]*0.
 
-g = cdms2.open('WANGARA_driver_FC_RR.nc','w')
+g = cdms2.open('SCMS_driver_FC_RR.nc','w')
 
 for var in variables:
   datanew[var].id = var
@@ -217,15 +215,15 @@ for var in variables:
   datanew[var].units = units[var]
   g.write(datanew[var])
 
-g.description = "no radiation included, no temperature and  moisture LS tendency"
+g.description = "radiation included in T LS tendency and geostrophic wind"
 g.reference = '??'
 g.author = "F Couvreux"
-g.modifications = "2018-06-12: R. Roehrig put all fields on the same vertical and time axes"
-g.case = "WANGARA" 
-g.startDate = "19670816090000" 
-g.endDate = "19670816180000" 
-g.qadvh = 0
-g.tadvh = 0 
+g.modifications = "2018-06-13: R. Roehrig put all fields on the same vertical and time axes"
+g.case = "SCMS" 
+g.startDate = "19950805120000" 
+g.endDate = "19950806000000" 
+g.qadvh = 1
+g.tadvh = 1 
 g.qadvv = 0 
 g.tadvv = 0 
 g.trad = 'adv' 
@@ -237,8 +235,9 @@ g.nudging_v = 0
 g.nudging_t = 0 
 g.nudging_q = 0 
 g.zorog = 0.
+g.z0 = 0.035
 g.surfaceForcing = "surfaceFlux" 
-g.surfaceForcingWind = "ustar"
+g.surfaceForcingWind = "z0"
 g.surfaceType = "ocean"
 
 g.close()
