@@ -332,7 +332,9 @@ if lnam1D:
     tmp.id = var
     g.write(tmp)
 
-  tmp = MV2.array(data_out['temp'][0,:],typecode=MV2.float32)
+  # Multiply by 1 to really do a deep copy of the array !
+  # Otherwise weird things hereafter.
+  tmp = MV2.array(data_out['temp'][0,:]*1.,typecode=MV2.float32)
   nlev, = levAxis.shape
   for ilev in range(0,nlev):
     tmp[ilev] = tmp[ilev]*(100000./levAxis[ilev])**(2./7.)

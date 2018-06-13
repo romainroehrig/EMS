@@ -1,8 +1,7 @@
 #saveall = True
 saveall = False
 
-var2save = ['pf','zf','temp','qv','u','v','ustar','t2m','cc','rneb','lhf','shf','theta','ql','qi','qr','qsn','tke','rain','tsurf']
-
+var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','shf','tsurf','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','w_up','Mf','alpha_up','ustar','z0']
 
 # Pour convert2p, niveau en hPa
 levout = []
@@ -10,6 +9,7 @@ for i in range(1,41):
   levout.append(i*25.)
 levout.reverse()
 
+# Pour convert2z, niveau en m
 levoutz = []
 for i in range(0,401):
   levoutz.append(i*50.)

@@ -5,7 +5,7 @@ saveall = False
 
 #var2save = var2save + ['alpha_up','w_up','omega_up','alpha_dn','w_dn','omega_dn','cape','T_up','qv_up','omega_ref','w_up_bud','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp','buoy','Mf','eps_u','eps_u_org','eps_u_tur','entr_u','detr_u','dTv_up','wpqp_pbl','wpthp_pbl','wpqp_conv','wpthp_conv','aipcmt','knnd','knlab','wpup_conv','wpup_pbl','wpvp_conv','wpvp_pbl']
 
-var2save = ['pf','zf','ph','zh','theta','qv','ql','qlc','rneb','w_up','Mf']
+var2save = ['pf','zf','ph','zh','theta','qv','ql','qlc','rneb','w_up','Mf','qrc','qic','qr','qi','qsn','qsnc','precls','precc','snowls','snowc','Q1','Q2']
 
 # Pour convert2p, niveau en hPa
 levout = []
