@@ -6,6 +6,21 @@ var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rn
 
 var2save = var2save + ['tntrlw','tntrsw','tntpbl','tntlscp','tntc','tntd','tnupbl','tnuc','tnud','tnvpbl','tnvc','tnvd','tntadv','tntnudg','tnugeo','tnvgeo','tendu','tendv','tendq','tendh','alpha_up','w_up','omega_up','ZS15','ZS16','ZTAU','ZWMAX','ZZMAX','ZKMAX','ZINTEGMAX','ZMMAX','eps_u','eps_u_org','eps_u_tur','Mf','ZINTEGA','dTv_up']
 
+convert2p = False
+convert2z = False
+
+convertkday = False
+convertpday = False
+convertzday = False
+
+convertk1h = False
+convertp1h = False
+convertz1h = False
+
+convertk3h = False # not coded for True
+convertp3h = False
+convertz3h = False # not coded for True
+
 # Pour convert2p, niveau en hPa
 levout = []
 for i in range(1,41):

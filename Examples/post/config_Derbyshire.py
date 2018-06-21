@@ -7,6 +7,21 @@ saveall = False
 
 var2save = ['pf','zf','ph','zh','theta','qv','ql','qlc','rneb','w_up','Mf','qrc','qic','qr','qi','qsn','qsnc','precls','precc','snowls','snowc','Q1','Q2']
 
+convert2p = False
+convert2z = False
+
+convertkday = False
+convertpday = False
+convertzday = False
+
+convertk1h = False
+convertp1h = False
+convertz1h = False
+
+convertk3h = False # not coded for True
+convertp3h = False
+convertz3h = False # not coded for True
+
 # Pour convert2p, niveau en hPa
 levout = []
 for i in range(1,41):
