@@ -10,6 +10,22 @@ var2save = var2save + ['delta_t','delta_q','dt_wake','dq_wake','dt_wake2','dq_wa
 
 var2save = var2save + ['buoy','w_up_bud','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp','dTv_up','ZUDALWAKE','ZBUOWAKE','ZALFW','ZWWMWX','ZVVER','ZDOMEGA','ZWW','ZWX','ZMW','ZMX','ZMTOT']
 
+
+convert2p = False
+convert2z = False
+
+convertkday = False
+convertpday = False
+convertzday = False
+
+convertk1h = False
+convertp1h = False
+convertz1h = False
+
+convertk3h = False # not coded for True
+convertp3h = False
+convertz3h = False # not coded for True
+
 # Pour convert2p, niveau en hPa
 levout = []
 for i in range(1,41):

@@ -181,9 +181,9 @@ echo ' Final cleaning of the workdir $TMPDIR '
 echo ''
 set -x
 
-#set +x
-#rm -rf $TMPDIR/*
-#set -x
+set +x
+rm -rf $TMPDIR/*
+set -x
 #       ********************************************
 #       * Copie eventuelle des routines convert2nc *
 #       * Possible copy of convert2nc routines     *
@@ -199,7 +199,7 @@ then
   echo ''
   set -x
 
-  files2install='convert2z.so convertp_to_daily.py convertk_to_1hourly.py convertz_to_1hourly.py convert2p.py convertk_to_daily.py convertz_to_daily.py convert2p.so     convertLFA2nc.sh lfa2nc_part1.py convert2z.py convertp_to_1hourly.py lfa2nc_part2.py convertp_to_3hourly.py'
+  files2install='convert2z.so convertp_to_daily.py convertk_to_1hourly.py convertz_to_1hourly.py convert2p.py convertk_to_daily.py convertz_to_daily.py convert2p.so     convertLFA2nc.py lfa2nc_part1.py convert2z.py convertp_to_1hourly.py lfa2nc_part2.py convertp_to_3hourly.py'
 
   for file in $files2install
   do
@@ -222,7 +222,7 @@ then
   echo ''
   set -x
   
-  ./convertLFA2nc.sh
+  python convertLFA2nc.py
 
 fi
 
