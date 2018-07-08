@@ -226,4 +226,6 @@ then
 
 fi
 
+date
+
 cd $DIR
