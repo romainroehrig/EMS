@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -evx
+
 #####################################################
 # User specific
 
@@ -10,10 +12,10 @@ REP_MUSC=$HOME/MUSC
 
 
 
-
+DIR0=`pwd`
 
 #####################################################
-# Some Test to avoid overwriting
+# Some tests to avoid overwriting
 
 if [ -d $REP_EMS ]; then
   echo "REP_EMS="$REP_EMS
@@ -103,7 +105,7 @@ ln -s $REP_EMS/main/install_ATM_cases.py install_ATM_cases.py
 ln -s $REP_EMS/main/install_SFX_cases.py install_SFX_cases.py
 ln -s $REP_EMS/main/run_MUSC_cases.py run_MUSC_cases.py
 
-for ff in 'convertLFA2nc.py convertp_to_1hourly.py convertz_to_1hourly.py lfa2nc_part2.py convert2p.py convert2z.py convertk_to_1hourly.py convertp_to_3hourly.py convertz_to_daily.py convert2p.so convert2z.so convertk_to_daily.py convertp_to_daily.py lfa2nc_part1.py'
+for ff in convertLFA2nc.py convertp_to_1hourly.py convertz_to_1hourly.py lfa2nc_part2.py convert2p.py convert2z.py convertk_to_1hourly.py convertp_to_3hourly.py convertz_to_daily.py convert2p.so convert2z.so convertk_to_daily.py convertp_to_daily.py lfa2nc_part1.py
 do
 
   ln -s $REP_EMS/UTIL/post_DEPHY/$ff post/$ff
@@ -117,7 +119,7 @@ cd $REP_MUSC
 source activate myuvcdat
 
 install_ATM_cases.py
-[ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/A24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
+[ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
 
 install_SFX_cases.py config/config_arp631_CMIP6.py
 [ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
@@ -126,3 +128,7 @@ install_SFX_cases.py config/config_arp631_CMIP6.py
 run_MUSC_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
 [ -f $REP_MUSC/simulations/arp631/CMIP6/L91_300s/AYOTTE/24SC/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
 
+
+#####################################################
+# Back in directory where installation was launched
+cd $DIR0
