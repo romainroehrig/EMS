@@ -1,8 +1,7 @@
 import os
 
 # Directory where post-processing files are to be found
-dirpost = os.getenv('REP_EMS') + '/UTIL/post_DEPHY/'
-#dirpost = configMUSC.mainrep + '/UTIL/post/'
+dirpost = os.getenv('REP_MUSC') + '/post/'
 
 # File describing the correspondance between in-model variables 
 # and output postprocessed variables 
