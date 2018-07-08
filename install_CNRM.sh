@@ -31,24 +31,23 @@ fi
 # Download and install EMS in REP_EMS
 [ -d $REP_EMS ] || mkdir $REP_EMS
 cd $REP_EMS
-git clone https://github.com/romainroehrig/EMS.git .
-git checkout macRR
+git clone --single-branch https://github.com/romainroehrig/EMS.git .
 
 # Modify your .bash_profile to initialize a few environment variables
 cd ~/
 
-# save profile
-cat .profile > .profile.EMS-saved_$(date +"%Y-%m-%d_at_%H:%M:%S")
+# save bash_profile
+cat .bash_profile > .bash_profile.EMS-saved_$(date +"%Y-%m-%d_at_%H:%M:%S")
 
 # Modify it
-sed -i '' "/^export REP_EMS=/ s/$/ #commented on $(date)/" .profile
-sed -i '' "s/^export REP_EMS=/#&/" .profile
-sed -i '' "/^export REP_MUSC=/ s/$/ #commented on $(date)/" .profile
-sed -i '' "s/^export REP_MUSC=/#&/" .profile
-sed -i '' "/^export PYTHONPATH=.:\$REP_EMS/ s/$/ #commented on $(date)/" .profile
-sed -i '' "s/^export PYTHONPATH=.:\$REP_EMS/#&/" .profile
+sed -i "/^export REP_EMS=/ s/$/ #commented on $(date)/" .bash_profile
+sed -i "s/^export REP_EMS=/#&/" .bash_profile
+sed -i "/^export REP_MUSC=/ s/$/ #commented on $(date)/" .bash_profile
+sed -i "s/^export REP_MUSC=/#&/" .bash_profile
+sed -i "/^export PYTHONPATH=.:\$REP_EMS/ s/$/ #commented on $(date)/" .bash_profile
+sed -i "s/^export PYTHONPATH=.:\$REP_EMS/#&/" .bash_profile
 
-cat << EOF >> .profile
+cat << EOF >> .bash_profile
 
 # Modifications for Environment for MUSC simulations (EMS)
 # included on $(date)
@@ -57,42 +56,7 @@ export REP_MUSC=$REP_MUSC
 export PYTHONPATH=.:\$REP_EMS/CASES:\$REP_EMS/UTIL/python:\$REP_EMS/UTIL/install/:\$PYTHONPATH
 EOF
 
-. ~/.profile
-
-# Some compilation if you want
-compile="n"
-
-if [ $compile == "y" ]; then
-
-  # lfa python library
-  cd $REP_EMS/UTIL/python/lfa
-  ./makelib.sh
-
-  # ascii2lfa binary
-  cd $REP_EMS/UTIL/Tools/ASCII2FA/src
-  #cp /Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxrd.local.a libxrd.a
-  #cp /Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a libxla.a
-  #cp /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a libgribex.a
-  #cp /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a libmpidummy.a
-  make all
-  make clean
-
-  # LFA tools
-  cd $REP_EMS//UTIL/Tools/LFA
-  ./install
-
-  # a few python libraries
-  source activate myuvcdat
-
-  cd $REP_EMS/UTIL/Init_Forc/ARPCLIMAT
-  f2py -c interpvertp.F90 -m interpvertp
-  cd $REP_EMS/UTIL/post_DEPHY
-  f2py -c convert2p.F90 -m convert2p
-  f2py -c convert2z.F90 -m convert2z
-
-  source deactivate myuvcdat
-
-fi
+. ~/.bash_profile
 
 #####################################################
 # Prepare what is needed to run MUSC simulations in REP_MUSC
@@ -113,8 +77,6 @@ done
 #####################################################
 # Some Testing
 cd $REP_MUSC
-
-source activate myuvcdat
 
 install_ATM_cases.py
 [ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/A24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
