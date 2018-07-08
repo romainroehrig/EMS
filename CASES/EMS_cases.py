@@ -103,8 +103,7 @@ data_input[case]['REF'] = rep0 + '/BOMEX/BOMEX_driver_MPL_RR.nc'
 # AYOTTE Cases
 case = 'AYOTTE'
 cases.append(case)
-subcases[case] = ['A00SC','A00WC','A03SC','A05SC','A05WC','A24F','A24SC']
-#subcases[case] = ['A24SC']
+subcases[case] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
 data_input[case] = {}
 for cc in subcases[case]:
   data_input[case][cc] = rep0 + '/AYOTTE/AYOTTE_{0}_driver_FC_RR.nc'.format(cc)
