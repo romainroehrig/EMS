@@ -106,7 +106,7 @@ cases.append(case)
 subcases[case] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
 data_input[case] = {}
 for cc in subcases[case]:
-  data_input[case][cc] = rep0 + '/AYOTTE/AYOTTE_{0}_driver_FC_RR.nc'.format(cc)
+  data_input[case][cc] = rep0 + '/AYOTTE/AYOTTE_A{0}_driver_FC_RR.nc'.format(cc)
 
 # Derbyshire cases
 case = 'Derbyshire'
