@@ -80,10 +80,10 @@ done
 # Some Testing
 cd $REP_MUSC
 
-install_ATM_cases.py
+install_ATM_cases.py AYOTTE 24SC
 [ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
 
-install_SFX_cases.py config/config_arp631_CMIP6.py
+install_SFX_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
 [ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
 [ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
 
