@@ -221,8 +221,10 @@ then
   echo ' Postprocessing '
   echo ''
   set -x
-  
-  python convertLFA2nc.py
+
+  # seems necessary in some circumstances (deep shells?)
+  unset PYTHONHOME
+  convertLFA2nc.py
 
 fi
 
