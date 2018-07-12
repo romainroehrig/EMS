@@ -20,6 +20,17 @@ import EMS_cases as CC
 import install_MUSC
 
 
+argv = sys.argv
+
+# In case a case/subcase is provided in argument
+lasked = False
+try:
+    case = argv[1]
+    SUB = argv[2]
+    lasked = True
+except:
+    pass
+
 model = configsim.model
 if model not in ['AROME','ARPCLIMAT']:
   print 'Model unexpected:', configsim.model
@@ -39,6 +50,9 @@ if configsim.allcases:
 else:
   cases = configsim.cases
 
+if lasked:
+  cases = [case,]
+
 loverwrite = configmain.loverwrite
 lupdate = configmain.lupdate
 
@@ -48,7 +62,9 @@ data_input = CC.data_input
 for case in cases:
   print case    
   if subcases.has_key(case):
-    for subcase in subcases[case]:	
+    SS = subcases[case]
+    if lasked: SS = [SUB,]      
+    for subcase in SS:	
       print subcase
       install_MUSC.install_ATM(model,case,data_input[case][subcase],repout,nlev,timestep,subcase=subcase,loverwrite=loverwrite,lupdate=lupdate)
   else:
