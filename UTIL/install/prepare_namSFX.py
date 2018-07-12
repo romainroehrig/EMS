@@ -396,20 +396,20 @@ def prep_nam_SFX(case,filecase,namref,namout=None,subcase=None):
       nam[nn]['XTIMET(%(ii)4.i)'%{"ii": it+1}] = ['%(tt)6.2f'%{"tt":tt.torel(tunits0).value},]
     for it in range(0,nt0):
       tt = cdtime.reltime(time[it+ii1],time.units)	  
-      nam[nn]['XTSRAD(%(ii)4.i)'%{"ii": it+1}] = ['%(ts)6.2f'%{"ts":ts[it+ii1,0,0]},]
+      nam[nn]['XTSRAD(%(ii)4.i)'%{"ii": it+1}] = ['%(ts)6.6f'%{"ts":ts[it+ii1,0,0]},]
     for it in range(0,nt0):
       tt = cdtime.reltime(time[it+ii1],time.units)	  
-      nam[nn]['XTIMEF(%(ii)4.i)'%{"ii": it+1}] = ['%(tt)6.2f'%{"tt":tt.torel(tunits0).value},]
+      nam[nn]['XTIMEF(%(ii)4.i)'%{"ii": it+1}] = ['%(tt)6.6f'%{"tt":tt.torel(tunits0).value},]
     for it in range(0,nt0):
       tt = cdtime.reltime(time[it+ii1],time.units)	  
-      nam[nn]['XSFTH(%(ii)4.i)'%{"ii": it+1}] = ['%(hfss)6.2f'%{"hfss":hfss[it+ii1,0,0]},]
+      nam[nn]['XSFTH(%(ii)4.i)'%{"ii": it+1}] = ['%(hfss)6.6f'%{"hfss":hfss[it+ii1,0,0]},]
     for it in range(0,nt0):
       tt = cdtime.reltime(time[it+ii1],time.units)	  
-      nam[nn]['XSFTQ(%(ii)4.i)'%{"ii": it+1}] = ['%(hfls)6.2f'%{"hfls":hfls[it+ii1,0,0]},]
+      nam[nn]['XSFTQ(%(ii)4.i)'%{"ii": it+1}] = ['%(hfls)6.6f'%{"hfls":hfls[it+ii1,0,0]},]
     if surfaceForcingWind == 'ustar':
       for it in range(0,nt0):
         tt = cdtime.reltime(time[it+ii1],time.units)	  
-        nam[nn]['XUSTAR(%(ii)4.i)'%{"ii": it+1}] = ['%(ustar)6.2f'%{"ustar":ustar[it+ii1,0,0]},]
+        nam[nn]['XUSTAR(%(ii)4.i)'%{"ii": it+1}] = ['%(ustar)6.6f'%{"ustar":ustar[it+ii1,0,0]},]
 
 
   if lperf:
