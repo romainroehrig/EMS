@@ -118,7 +118,7 @@ data_input[case]['RH50'] = rep0 + '/Derbyshire/Derbyshire_RH50_driver_RR.nc'
 data_input[case]['RH70'] = rep0 + '/Derbyshire/Derbyshire_RH70_driver_RR.nc'
 data_input[case]['RH90'] = rep0 + '/Derbyshire/Derbyshire_RH90_driver_RR.nc'
 
-# BOMEX Case
+# GABLS4 Case
 case = 'GABLS4'
 cases.append(case)
 subcases[case] = ['OA_FLUX_USTAR']

@@ -30,7 +30,8 @@ if [ ! -d $TMPDIR ] ; then
 fi
 
 cd $TMPDIR
-rm -rf $TMPDIR/* || : 
+find $TMPDIR -name '*' -exec rm -rf {} \;
+#rm -rf $TMPDIR/* || : 
 
 ladate=`date`
 set +x
@@ -159,8 +160,13 @@ echo ' Historic files saving '
 echo ''
 set -x
 
-rm -f $OUTPUTDIR/*
-mv Out* NODE* lola $OUTPUTDIR
+find $OUTPUTDIR -name '*' -exec rm -rf {} \;
+find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
+find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
+find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
+
+#rm -f $OUTPUTDIR/*
+#mv Out* NODE* lola $OUTPUTDIR
 
 set +x
 echo ''
@@ -182,7 +188,8 @@ echo ''
 set -x
 
 set +x
-rm -rf $TMPDIR/*
+#rm -rf $TMPDIR/*
+find $TMPDIR/ -name '*' -exec rm -rf {} \;
 set -x
 #       ********************************************
 #       * Copie eventuelle des routines convert2nc *
@@ -228,6 +235,6 @@ then
 
 fi
 
-cd $DIR
-
 date
+
+cd $DIR
