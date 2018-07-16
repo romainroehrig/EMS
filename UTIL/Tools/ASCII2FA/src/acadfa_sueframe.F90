@@ -68,9 +68,11 @@
       write(6,*)'PVP00=',PVP00
       write(6,*)'PVALH=',PVALH
       write(6,*)'PVBH=',PVBH
-      write(6,*)'LDGARD=',LDGARD 
+      write(6,*)'LDGARD=',LDGARD
+      write(6,*)'ROEHRIG 1' 
       CALL FACADE(CDMCA,ITYPTR,ZSLAPO,ZCLOPO,ZSLOPO,ZCODIL,ITRONC, &
      &   INLATI,INXLON,IDOM,ISUBTR,ZGEOM,KFLEV,PVP00,PVALH,PVBH,LDGARD)
+      write(6,*)'ROEHRIG 2'
       ELSE
         ZVALH(1) = 0.
         ZVALH(2) = 0.

@@ -118,6 +118,13 @@ data_input[case]['RH50'] = rep0 + '/Derbyshire/Derbyshire_RH50_driver_RR.nc'
 data_input[case]['RH70'] = rep0 + '/Derbyshire/Derbyshire_RH70_driver_RR.nc'
 data_input[case]['RH90'] = rep0 + '/Derbyshire/Derbyshire_RH90_driver_RR.nc'
 
+# GABLS4 Case
+case = 'GABLS4'
+cases.append(case)
+subcases[case] = ['FLUX_USTAR']
+data_input[case] = {}
+data_input[case]['FLUX_USTAR'] = rep0 + '/GABLS4/GABLS4_24h_driver_FC_RR_flux_ustar.nc'
+
 
 if ldebug:
   for cc in cases:
