@@ -9,9 +9,9 @@ import math
 def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,lsurfex=False):
 
   """
-    Prepare AROME namelist for MUSC simulation, 
+    Prepare ARPEGE namelist for MUSC simulation, 
     given information in filecase,
-    and from AROME namelist namref
+    and from ARPEGE namelist namref
   """
 
   if namout is None:
@@ -20,7 +20,7 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
       namout = namout + '_' + subcase        
 
   print '-'*40
-  print 'Prepare AROME namelist for MUSC'
+  print 'Prepare ARPEGE namelist for MUSC'
   print 'case:', case, 'subcase:', subcase
   print 'Reference namelist:', namref
   print 'Output namelist:', namout
@@ -72,18 +72,11 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
   for param in nam[nn].keys():
     if param[-6:] == 'NREQIN': nam[nn][param] = ['0',]
     if param[-7:] == 'LREQOUT': nam[nn][param] = ['.FALSE.']
-  nam[nn]['NGFL_EZDIAG'] = ['23',]
-  for it in range(1,24):
-      nam[nn]['YEZDIAG_NL('+str(it)+')%CNAME'] = ["'EZDIAG"+str(it).zfill(2)+"'",]
-  for name in ['TKE','S','R','Q','L','I','G','CVGQ',]:
+  for name in ['TKE','S','R','Q','L','I','CVGQ',]:
       if name == 'CVGQ' : 
         nam[nn]['Y'+name+'_NL%LCDERS'] = ['.FALSE.',]
         nam[nn]['Y'+name+'_NL%LSP'] = ['.FALSE.',]      
         nam[nn]['Y'+name+'_NL%LGP'] = ['.TRUE.',]
-      elif name == 'G':
-        nam[nn]['Y'+name+'_NL%LPT'] = ['.TRUE.',]
-        nam[nn]['Y'+name+'_NL%NCOUPLING'] = ['0',]
-        nam[nn]['Y'+name+'_NL%NREQIN'] = ['0',]
       elif name == 'I':
         nam[nn]['Y'+name+'_NL%LGP'] = ['.TRUE.',]
         nam[nn]['Y'+name+'_NL%LGPINGP'] = ['.TRUE.',]
@@ -145,33 +138,6 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
         nam[nn]['Y'+name+'_NL%REFVALI'] = ['0.000001',]
   
   # Update due to MUSC/ALADIN config
-  nn = 'NAMDYN'
-  nam[nn]['LADVF'] = ['.FALSE.',]
-  nam[nn]['NSITER'] = ['0',]
-
-  # Update NAMDIM
-  nn='NAMDIM'
-  try:
-    del(nam[nn])
-  except KeyError:
-    pass      
-  nam[nn] = {}
-  nam[nn]['NPROMA'] = ['50',]
-
-  # Update NAMDYNA
-  nn='NAMDYNA'
-  try:
-    del(nam[nn])
-  except KeyError:
-    pass      
-  nam[nn] = {}
-  nam[nn]['NDLNPR'] = ['0',]
-
-# Update NAMIO_SERV
-  nn='NAMIO_SERV'
-  nam[nn]['NIO_SERV_BUF_MAXSIZE'] = ['0']
-  nam[nn]['NPROCESS_LEVEL'] = ['0']
-  nam[nn]['NPROC_IO'] = ['0']
 
   # Update NAMCT1
   nn='NAMCT1'
@@ -185,59 +151,10 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
   nam[nn]['N1SDI']=['0',]
   nam[nn]['N1SFXHIS']=['0',]
 
-  # Update NAMCT0
-  nn = 'NAMCT0'
-  nam['NAMCT0'] = {}
-  nam[nn]['LOPT_SCALAR']=['.TRUE.',]
-  nam[nn]['LSCREEN_OPENMP']=['.FALSE.',]
-  nam[nn]['LTWOTL']=['.TRUE.',]
-  nam[nn]['LNHDYN']=['.FALSE.',]
-  nam[nn]['LPC_FULL']=['.FALSE.',]
-  nam[nn]['LPC_NESC']=['.FALSE.',]
-  nam[nn]['LPC_NESCT']=['.FALSE.',]
-  nam[nn]['LPC_NESCV']=['.FALSE.',]
-  nam[nn]['LPC_CHEAP']=['.FALSE.',]
-  nam[nn]['LSPRT']=['.TRUE.',]
-  nam[nn]['LAROME']=['.TRUE.',]
-  nam[nn]['CNPPATH']=["'.'",]
-  nam[nn]['LREGETA']=['.TRUE.',]
-  nam[nn]['CFPATH']=["'ICMSH'",]
-  nam[nn]['LFDBOP']=['.FALSE.',]
-  nam[nn]['LFBDAP']=['.TRUE.',]
-  nam[nn]['LSFORC']=['.TRUE.',]
-  nam[nn]['NFRHIS'] = ['1',]
-  nam[nn]['NFPOS'] = ['0',]
-  nam[nn]['NFRPOS'] = ['1',]
-  nam[nn]['NFRISP'] = ['1',]
-  nam[nn]['NFRSDI'] = ['1',]
-  nam[nn]['NHISTS(0)'] = ['1',]
-  nam[nn]['NPRINTLEV'] = ['2',]
-
   # Update NAMXFU
   nn =  'NAMXFU'
   for param in nam[nn].keys():
     if param[0] == 'L': nam[nn][param] = ['.FALSE.',]
-
-# Update NAMPAR1
-  nn = 'NAMPAR1'
-  del(nam[nn])
-  nam[nn]={}
-  nam[nn]['LEQ_REGIONS']=['.FALSE.',]
-  nam[nn]['LSLONDEM']=['.TRUE.',]
-  nam[nn]['LSPLIT']=['.FALSE.',]
-  nam[nn]['LSYNC_SLCOM']=['.TRUE.',]
-  nam[nn]['LSYNC_TRANS']=['.TRUE.',]
-  nam[nn]['L_GATHERV_WRGP']=['.FALSE.',]
-  nam[nn]['NCOMBFLEN']=['1800000',]
-  nam[nn]['NSTRIN']=['100',]
-  nam[nn]['NSTROUT']=['1',]
-
-# Update NAMPARAR
-  nn='NAMPARAR'
-  nam[nn]['CMF_CLOUD']=["'DIRE'",]
-  nam[nn]['CMF_UPDRAFT']=["'EDKF'",]
-  nam[nn]['LMIXUV']=['.TRUE.',]
-  nam[nn]['NSWB_MNH']=['6',]
 
 # Update NAMARG
 
@@ -246,19 +163,6 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
   nam[nn]['CUSTOP'] = ["'"+NSTOP+"'",]
   nam[nn]['TSTEP'] = [str(timestep),]
 
-# Update NAMCFU
-
-  nn = 'NAMCFU'
-  for param in nam[nn].keys():
-    nam[nn][param] = [".FALSE.",]
-
-# Update NEMELBC0A
-
-  nn = 'NEMELBC0A'
-  nam[nn]['LESPCPL'] = [".FALSE.",]
-
-
-  # -----------------------------------------------------------
   # Case specific modifications in namref
   # -----------------------------------------------------------
 

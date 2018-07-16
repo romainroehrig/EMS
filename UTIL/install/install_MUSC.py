@@ -13,6 +13,7 @@ repinit = os.getcwd()
 
 repARPC_UTIL = mainrep + '/UTIL/Init_Forc/ARPCLIMAT/'
 repARO_UTIL = mainrep + '/UTIL/Init_Forc/AROME/'
+repARP_UTIL = mainrep + '/UTIL/Init_Forc/ARPPNT/'
 repSFX_UTIL = mainrep + '/UTIL/Init_Forc/SURFEX/'
 repRun_UTIL = mainrep + '/UTIL/Runs/'
 repAtlas_UTIL = mainrep + '/UTIL/atlas/'
@@ -36,6 +37,8 @@ def install_ATM(model,case,filecase,repout,nlev,timestep=None,subcase=None,lover
       repUTIL = repARPC_UTIL
     elif model == 'AROME':
       repUTIL = repARO_UTIL
+    elif model == 'ARPPNT':
+      repUTIL = repARP_UTIL
     else:
       print 'Model unexpected:', model
       sys.exit()
@@ -64,7 +67,7 @@ def install_ATM(model,case,filecase,repout,nlev,timestep=None,subcase=None,lover
       print 'Directory already exists:', rep
       if lupdate:
         os.chdir(rep)
-        os.system('ln -s ' + rep + 'L' + str(nlev) + '.dta .')
+        os.system('ln -s ' + repUTIL + 'L' + str(nlev) + '.dta .')
         if timestep is None:
           os.system('./prepare_profile.sh ' + str(nlev))
         else:
