@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -evx
+
 #####################################################
 # User specific
 
@@ -17,13 +19,13 @@ REP_MUSC=$HOME/MUSC
 
 if [ -d $REP_EMS ]; then
   echo "REP_EMS="$REP_EMS
-  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install.sh"
+  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install_CNRM.sh"
   exit
 fi
 
 if [ -d $REP_MUSC ]; then
   echo "REP_MUSC="$REP_MUSC
-  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install.sh"
+  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install_CNRM.sh"
   exit
 fi
 
@@ -67,10 +69,10 @@ ln -s $REP_EMS/main/install_ATM_cases.py install_ATM_cases.py
 ln -s $REP_EMS/main/install_SFX_cases.py install_SFX_cases.py
 ln -s $REP_EMS/main/run_MUSC_cases.py run_MUSC_cases.py
 
-for ff in 'convertLFA2nc.py convertp_to_1hourly.py convertz_to_1hourly.py lfa2nc_part2.py convert2p.py convert2z.py convertk_to_1hourly.py convertp_to_3hourly.py convertz_to_daily.py convert2p.so convert2z.so convertk_to_daily.py convertp_to_daily.py lfa2nc_part1.py'
+for ff in convertLFA2nc.py convertp_to_1hourly.py convertz_to_1hourly.py lfa2nc_part2.py convert2p.py convert2z.py convertk_to_1hourly.py convertp_to_3hourly.py convertz_to_daily.py convert2p.so convert2z.so convertk_to_daily.py convertp_to_daily.py lfa2nc_part1.py
 do
 
-  ln -s $REP_EMS/UTIL/post_DEPHY/$ff post/$ff
+  ln -s $REP_EMS/UTIL/post_DEPHY/$ff $REP_MUSC/post/$ff
 
 done
 
@@ -78,10 +80,10 @@ done
 # Some Testing
 cd $REP_MUSC
 
-install_ATM_cases.py
-[ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/A24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
+install_ATM_cases.py AYOTTE 24SC
+[ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
 
-install_SFX_cases.py config/config_arp631_CMIP6.py
+install_SFX_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
 [ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
 [ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
 
