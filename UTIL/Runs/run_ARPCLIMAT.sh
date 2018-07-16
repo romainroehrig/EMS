@@ -30,7 +30,7 @@ if [ ! -d $TMPDIR ] ; then
 fi
 
 cd $TMPDIR
-find $TMPDIR -name '*' -exec rm -rf {} \;
+find $TMPDIR -name '*' -exec rm -rf {} \ || :
 #rm -rf $TMPDIR/* || : 
 
 ladate=`date`
@@ -160,7 +160,7 @@ echo ' Historic files saving '
 echo ''
 set -x
 
-find $OUTPUTDIR -name '*' -exec rm -rf {} \;
+find $OUTPUTDIR/ -name '*' -exec rm -f {} \;
 find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
 find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
 find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
@@ -229,8 +229,6 @@ then
   echo ''
   set -x
 
-  # seems necessary in some circumstances (deep shells?)
-  unset PYTHONHOME
   convertLFA2nc.py
 
 fi
