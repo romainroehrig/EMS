@@ -1,9 +1,9 @@
 import sys
 import EMS_cases as CC
 
-# model : ARPCLIMAT, AROME (ARPPNT a prevoir si besoin)
+# model : ARPCLIMAT, AROME, ARPPNT
 #model = 'AROME'
-#model = 'ARPCLIMAT'
+#model = 'ARPPNT'
 model = 'ARPCLIMAT'
 
 # If True, all available cases (defined in cases.py) are run
@@ -24,6 +24,13 @@ elif model in ['AROME',]:
   nlev= 90
   # Model time step in seconds
   timestep = 50
+elif model in ['ARPPNT',]:
+  # Number of vertical level
+  nlev= 90
+#  nlev= 105
+  # Model time step in seconds
+  timestep = 360
+#  # Number of vertical level
 else:
   print 'unknown model:', model
   sys.exit()
