@@ -40,7 +40,6 @@ if not(saveall):
 
 # list of files
 
-os.system('ls LFA/*.lfa > var.tmp')
 os.system("find LFA -name '*.lfa' > var.tmp")
 
 f = open('var.tmp')
