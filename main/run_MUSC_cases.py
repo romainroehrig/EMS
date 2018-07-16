@@ -21,7 +21,6 @@ import configmain
 
 
 argv = sys.argv
-argv = sys.argv
 try:
     config_file = argv[1]
     print 'your configuration file is', config_file

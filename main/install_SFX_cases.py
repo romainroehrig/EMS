@@ -30,6 +30,15 @@ except:
     print "ERROR: you must give a configuration file, eg install_SFX_cases config/config_arp631_CMI6.py"
     sys.exit()
 
+# In case a case/subcase is provided in argument
+lasked = False
+try:
+    case = argv[2]
+    SUB = argv[3]
+    lasked = True
+except:
+    pass
+
 try:
     os.remove('config.py')
 except:
@@ -55,6 +64,9 @@ if configsim.allcases:
 else:
   cases = configsim.cases
 
+if lasked:
+  cases = [case,]
+
 loverwrite = configmain.loverwrite
 lupdate = configmain.lupdate
 
@@ -64,7 +76,9 @@ data_input = CC.data_input
 for case in cases:
   print case    
   if subcases.has_key(case):
-    for subcase in subcases[case]:	
+    SS = subcases[case]
+    if lasked: SS = [SUB,]      
+    for subcase in SS:	
       print subcase
       install_MUSC.install_SFX(configsim.model,case,data_input[case][subcase],repout,cycle,PGD,PREP,config,namSFXref,subcase=subcase,loverwrite=loverwrite,lupdate=lupdate)
   else:
