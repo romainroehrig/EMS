@@ -85,12 +85,32 @@ cd /home/common/pack
 if [ -d arp603_export.01.GFORTRAN610.cx ]; then
   echo "pack arp603_export.01.GFORTRAN610.cx already installed in /home/common/pack"
 else
+  echo "pack arp603_export.01.GFORTRAN610.cx is installed in /home/common/pack"
   cp /cnrm/mosca/DATA/rootpack/arp603_export.01.GFORTRAN610.cx-29032018.tgz .
   tar zxvf arp603_export.01.GFORTRAN610.cx-29032018.tgz
   rm -f arp603_export.01.GFORTRAN610.cx-29032018.tgz
 fi
 
-# Testing
+# get 41t1_op1.11_MUSC
+
+install_cy41='n'
+
+if [$install_cy41 == 'y' ]; then
+
+  [ -d $HOME/pack ] || mkdir $HOME/pack
+  cd $HOME/pack
+
+  if [ -d 41t1_op1.11_MUSC ]; then
+    echo "pack 41t1_op1.11_MUSC already installed in /home/common/pack"
+  else
+    echo "pack 41t1_op1.11_MUSC is installed in $HOME/pack"
+    cp /cnrm/amacs/USERS/roehrig/share/MUSC/pack/41t1_op1.11_MUSC.tar.gz
+    tar zxvf 41t1_op1.11_MUSC.tar.gz
+    rm -f 41t1_op1.11_MUSC.tar.gz
+  fi
+
+fi
+# Testing for arp631
 
 cd $REP_MUSC
 
