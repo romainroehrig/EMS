@@ -5,8 +5,8 @@ set -evx
 #####################################################
 # User specific
 
-REP_EMS=$HOME/Tools/EMS_test
-REP_MUSC=$HOME/MUSC_test
+REP_EMS=$HOME/Tools/EMS
+REP_MUSC=$HOME/MUSC
 
 #####################################################
 
