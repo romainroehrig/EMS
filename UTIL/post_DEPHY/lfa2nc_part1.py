@@ -176,7 +176,7 @@ for var in var2save:
   
 
 it = -1
-for file in files:
+for file in sorted(files):
   it = it + 1
   if config.verbose >= 2:
     print file.strip()

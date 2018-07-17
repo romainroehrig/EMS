@@ -5,8 +5,8 @@ set -evx
 #####################################################
 # User specific
 
-REP_EMS=$HOME/Tools/EMS
-REP_MUSC=$HOME/MUSC
+REP_EMS=$HOME/Tools/EMS_test
+REP_MUSC=$HOME/MUSC_test
 
 #####################################################
 
@@ -78,6 +78,20 @@ done
 
 #####################################################
 # Some Testing
+
+# get arp631 pack
+
+cd /home/common/pack
+if [ -d arp603_export.01.GFORTRAN610.cx ]; then
+  echo "pack arp603_export.01.GFORTRAN610.cx already installed in /home/common/pack"
+else
+  cp /cnrm/mosca/DATA/rootpack/arp603_export.01.GFORTRAN610.cx-29032018.tgz .
+  tar zxvf arp603_export.01.GFORTRAN610.cx-29032018.tgz
+  rm -f arp603_export.01.GFORTRAN610.cx-29032018.tgz
+fi
+
+# Testing
+
 cd $REP_MUSC
 
 install_ATM_cases.py AYOTTE 24SC
