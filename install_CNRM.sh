@@ -31,7 +31,7 @@ fi
 
 #####################################################
 # Download and install EMS in REP_EMS
-[ -d $REP_EMS ] || mkdir $REP_EMS
+[ -d $REP_EMS ] || mkdir -p $REP_EMS
 cd $REP_EMS
 git clone --single-branch https://github.com/romainroehrig/EMS.git .
 
@@ -62,7 +62,7 @@ EOF
 
 #####################################################
 # Prepare what is needed to run MUSC simulations in REP_MUSC
-[ -d $REP_MUSC ] || mkdir $REP_MUSC
+[ -d $REP_MUSC ] || mkdir -p $REP_MUSC
 cd $REP_MUSC
 cp -r $REP_EMS/Examples/* .
 ln -s $REP_EMS/main/install_ATM_cases.py install_ATM_cases.py
@@ -81,7 +81,9 @@ done
 
 # get arp631 pack
 
+[ -d /home/common/pack ] || mkdir -p /home/common/pack
 cd /home/common/pack
+
 if [ -d arp603_export.01.GFORTRAN610.cx ]; then
   echo "pack arp603_export.01.GFORTRAN610.cx already installed in /home/common/pack"
 else

@@ -231,7 +231,7 @@ then
 
   # seems necessary in some circumstances (deep shells?)
   unset PYTHONHOME
-  convertLFA2nc.py
+  ./convertLFA2nc.py
 
 fi
 
