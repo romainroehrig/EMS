@@ -12,10 +12,10 @@ REP_MUSC=$HOME/MUSC
 
 
 
-
+DIR0=`pwd`
 
 #####################################################
-# Some Test to avoid overwriting
+# Some tests to avoid overwriting
 
 if [ -d $REP_EMS ]; then
   echo "REP_EMS="$REP_EMS
@@ -126,3 +126,6 @@ cd $REP_MUSC
 ./run_MUSC_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
 [ -f $REP_MUSC/simulations/arp631/CMIP6/L91_300s/AYOTTE/24SC/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
 
+#####################################################
+# Back in directory where installation was launched
+cd $DIR0
