@@ -128,7 +128,8 @@ if attributes['forc_geo'] == 1:
 if attributes['surfaceForcing'] == "surfaceFlux" :
   var2read.append('sfc_sens_flx')	
   var2read.append('sfc_lat_flx')	
-  time = f('sfc_lat_flx').getTime()
+  time_sfc = f('sfc_lat_flx').getAxis(0)
+  nt_sfc = time_sfc.shape[0]
   nb_fs=nb_fs+2
 
 if attributes['ustar'] > 0. :
@@ -196,7 +197,6 @@ vah = MV2.zeros((nlev_out+1),typecode=MV2.float32)
 vbh = MV2.zeros((nlev_out+1),typecode=MV2.float32)
 
 f = open('L' + str(nlev_out) + '.dta')
-#f = open('L' + str(nlev_out) + '.dta')
 
 for ilev in range(0,nlev_out+1):
   line = f.readline().split()
@@ -258,7 +258,7 @@ if lnam1D:
   print >>g, '  LALAPHYS= .TRUE.,'
   print >>g, '  LREASUR = .TRUE.,'
   print >>g, '  NFORC   ='+str(int(nb_f*nt))+ ','  
-  print >>g, '  NFORCS  ='+str(int(nb_fs*nt))+ ','  
+  print >>g, '  NFORCS  ='+str(int(nb_fs*nt_sfc))+ ','  
   print >>g, '  LQCGRP  = .FALSE.,'
   print >>g, '  LQIGRP  = .FALSE.,'
   print >>g, '  LQRGRP  = .FALSE.,'
@@ -318,12 +318,22 @@ if lnam1D:
     for it in range(0,nt): 
       print >>g,' T ADV ',int(it*dt) ,'s'
       for ilev in range(0,nlev_out):
-        print >>g, data_out['tadv'][it,ilev]	
+        print >>g, data_out['tadv'][it,ilev]
+  elif attributes['tadvh'] == 1:
+    for it in range(0,nt): 
+      print >>g,' T ADV ',int(it*dt) ,'s'
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['tadvh'][it,ilev]
   if attributes['qadv'] == 1:
     for it in range(0,nt): 
       print >>g,' Qv ADV ',int(it*dt) ,'s'
       for ilev in range(0,nlev_out):
         print >>g, data_out['qadv'][it,ilev]	
+  elif attributes['qadvh'] == 1:
+    for it in range(0,nt): 
+      print >>g,' Qv ADV ',int(it*dt) ,'s'
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['qadvh'][it,ilev]	        
   if attributes['forc_geo'] == 1:
     for it in range(0,nt): 
       print >>g,' PFUG ',int(it*dt) ,'s'
@@ -333,16 +343,21 @@ if lnam1D:
       print >>g,' PFVG ',int(it*dt),'s'
       for ilev in range(0,nlev_out):
         print >>g, data_out['vg'][it,ilev]
+  if attributes['forc_w'] == 1:
+    for it in range(0,nt): 
+      print >>g,' W ',int(it*dt),'s'
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['w'][it,ilev]
   if attributes['surfaceForcing'] == "surfaceFlux" :
     print >>g, 'SURF.FORC'
-    for it in range(0,nt):
+    for it in range(0,nt_sfc):
       print >>g, 'FCS'
       print >>g, data_in['sfc_sens_flx'][it]
-    for it in range(0,nt):
+    for it in range(0,nt_sfc):
       print >>g, 'FLE'
       print >>g, data_in['sfc_lat_flx'][it]
   if attributes['ustar'] >0. :
-    for it in range(0,nt):
+    for it in range(0,nt_sfc):
       print >>g, 'USTAR'
       print >>g, str(float(attributes['ustar']))
 
@@ -371,7 +386,7 @@ if lnam1D:
   levAxis.designateLevel()
   levAxis.id = 'level'
   levAxis.units = 'Pa'
-  ntAxis = time[:]
+  ntAxis = time_sfc[:]
   ntAxis = cdms2.createAxis(ntAxis)
   ntAxis.designateLevel()
   ntAxis.id = 'time'

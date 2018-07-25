@@ -1,0 +1,1252 @@
+diff --git a/CASES/AMMA/AMMA_20060710_setupI_driver_RR.nc b/CASES/AMMA/AMMA_20060710_setupI_driver_RR.nc
+index a7a40d9..7f842ec 100644
+Binary files a/CASES/AMMA/AMMA_20060710_setupI_driver_RR.nc and b/CASES/AMMA/AMMA_20060710_setupI_driver_RR.nc differ
+diff --git a/CASES/AMMA/convertDEPHY2.py b/CASES/AMMA/convertDEPHY2.py
+index c59a0e4..9d5a2e6 100644
+--- a/CASES/AMMA/convertDEPHY2.py
++++ b/CASES/AMMA/convertDEPHY2.py
+@@ -84,8 +84,8 @@ g.qadvh = 1
+ g.tadvh = 1
+ g.tadvv = 0
+ g.qadvv = 0
+-g.uadvh = 1
+-g.vadvh = 1
++g.uadvh = 0
++g.vadvh = 0
+ g.uadvv = 0
+ g.vadvv = 0
+ 
+diff --git a/Examples/config/config_41t1_AROME_OPER.py b/Examples/config/config_41t1_AROME_OPER.py
+index e9546aa..e49408e 100644
+--- a/Examples/config/config_41t1_AROME_OPER.py
++++ b/Examples/config/config_41t1_AROME_OPER.py
+@@ -7,6 +7,5 @@ cycle = '41t1_op1.11_MUSC'
+ MASTER = '/home/roehrig/pack/' + cycle + '/bin/MASTERODB'
+ PGD = '/home/roehrig/pack/' + cycle + '/bin/PGD'
+ PREP = '/home/roehrig/pack/' + cycle + '/bin/PREP'
+-#namATMref = rep0 + '/main/namelist/AROME/namarp_41t1_AROME_OPER'
+-namATMref = rep0 + '/main/namelist/AROME/namarp_41t1_AROME_HTUNE'
+-#namSFXref = rep0 + '/main/namelist/SURFEX/nam.sfx.tl127.CMIP6.v631'
++namATMref = rep0 + '/namelist/AROME/namarp_41t1_AROME_HTUNE'
++#namSFXref = rep0 + '/namelist/SURFEX/nam.sfx.tl127.CMIP6.v631'
+diff --git a/Examples/config/config_41t1_ARPPNT_OPER.py b/Examples/config/config_41t1_ARPPNT_OPER.py
+index 6b6a1e5..33be0be 100644
+--- a/Examples/config/config_41t1_ARPPNT_OPER.py
++++ b/Examples/config/config_41t1_ARPPNT_OPER.py
+@@ -7,5 +7,5 @@ cycle = '41t1_op1.11_MUSC'
+ MASTER = '/home/roehrig/pack/' + cycle + '/bin/MASTERODB'
+ PGD = '/home/roehrig/pack/' + cycle + '/bin/PGD'
+ PREP = '/home/roehrig/pack/' + cycle + '/bin/PREP'
+-namATMref = rep0 + '/main/namelist/ARPPNT/namarp_41t1_ARPEGE_OPER'
+-#namSFXref = rep0 + '/main/namelist/SURFEX/nam.sfx.tl127.CMIP6.v631'
++namATMref = rep0 + '/namelist/ARPPNT/namarp_41t1_ARPEGE_OPER'
++#namSFXref = rep0 + '/namelist/SURFEX/nam.sfx.tl127.CMIP6.v631'
+diff --git a/Examples/config/config_41t1_OPER.py b/Examples/config/config_41t1_OPER.py
+deleted file mode 100644
+index 247b135..0000000
+--- a/Examples/config/config_41t1_OPER.py
++++ /dev/null
+@@ -1,11 +0,0 @@
+-import os
+-
+-rep0 = os.getenv('REP_MUSC')
+-
+-config = 'OPER'
+-cycle = '41t1_op1.11_MUSC'
+-MASTER = '/home/roehrig/pack/' + cycle + '/bin/MASTERODB'
+-PGD = '/home/roehrig/pack/' + cycle + '/bin/PGD'
+-PREP = '/home/roehrig/pack/' + cycle + '/bin/PREP'
+-namATMref = rep0 + '/main/namelist/AROME/namarp_41t1_AROME_OPER'
+-#namSFXref = rep0 + '/main/namelist/SURFEX/nam.sfx.tl127.CMIP6.v631'
+diff --git a/Examples/config/config_arp631_CMIP6.py b/Examples/config/config_arp631_CMIP6.py
+index 84da07a..bff28f7 100644
+--- a/Examples/config/config_arp631_CMIP6.py
++++ b/Examples/config/config_arp631_CMIP6.py
+@@ -4,8 +4,8 @@ rep0 = os.getenv('REP_MUSC')
+ 
+ config = 'CMIP6'
+ cycle = 'arp631'
+-MASTER = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin//MASTERODB'
+-PGD = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PGD'
+-PREP = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PREP'
++MASTER = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/MASTER'
++PGD = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PGD'
++PREP = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PREP'
+ namATMref = rep0 + '/namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631'
+ namSFXref = rep0 + '/namelist/SURFEX/nam.sfx.tl127.CMIP6.v631'
+diff --git a/UTIL/Init_Forc/AROME/prepare_nam1D.py b/UTIL/Init_Forc/AROME/prepare_nam1D.py
+index 60bc7e7..937d9fa 100755
+--- a/UTIL/Init_Forc/AROME/prepare_nam1D.py
++++ b/UTIL/Init_Forc/AROME/prepare_nam1D.py
+@@ -128,7 +128,8 @@ if attributes['forc_geo'] == 1:
+ if attributes['surfaceForcing'] == "surfaceFlux" :
+   var2read.append('sfc_sens_flx')	
+   var2read.append('sfc_lat_flx')	
+-  time = f('sfc_lat_flx').getTime()
++  time_sfc = f('sfc_lat_flx').getAxis(0)
++  nt_sfc = time_sfc.shape[0]
+   nb_fs=nb_fs+2
+ 
+ if attributes['ustar'] > 0. :
+@@ -196,7 +197,6 @@ vah = MV2.zeros((nlev_out+1),typecode=MV2.float32)
+ vbh = MV2.zeros((nlev_out+1),typecode=MV2.float32)
+ 
+ f = open('L' + str(nlev_out) + '.dta')
+-#f = open('L' + str(nlev_out) + '.dta')
+ 
+ for ilev in range(0,nlev_out+1):
+   line = f.readline().split()
+@@ -258,7 +258,7 @@ if lnam1D:
+   print >>g, '  LALAPHYS= .TRUE.,'
+   print >>g, '  LREASUR = .TRUE.,'
+   print >>g, '  NFORC   ='+str(int(nb_f*nt))+ ','  
+-  print >>g, '  NFORCS  ='+str(int(nb_fs*nt))+ ','  
++  print >>g, '  NFORCS  ='+str(int(nb_fs*nt_sfc))+ ','  
+   print >>g, '  LQCGRP  = .FALSE.,'
+   print >>g, '  LQIGRP  = .FALSE.,'
+   print >>g, '  LQRGRP  = .FALSE.,'
+@@ -318,12 +318,22 @@ if lnam1D:
+     for it in range(0,nt): 
+       print >>g,' T ADV ',int(it*dt) ,'s'
+       for ilev in range(0,nlev_out):
+-        print >>g, data_out['tadv'][it,ilev]	
++        print >>g, data_out['tadv'][it,ilev]
++  elif attributes['tadvh'] == 1:
++    for it in range(0,nt): 
++      print >>g,' T ADV ',int(it*dt) ,'s'
++      for ilev in range(0,nlev_out):
++        print >>g, data_out['tadvh'][it,ilev]
+   if attributes['qadv'] == 1:
+     for it in range(0,nt): 
+       print >>g,' Qv ADV ',int(it*dt) ,'s'
+       for ilev in range(0,nlev_out):
+         print >>g, data_out['qadv'][it,ilev]	
++  elif attributes['qadvh'] == 1:
++    for it in range(0,nt): 
++      print >>g,' Qv ADV ',int(it*dt) ,'s'
++      for ilev in range(0,nlev_out):
++        print >>g, data_out['qadvh'][it,ilev]	        
+   if attributes['forc_geo'] == 1:
+     for it in range(0,nt): 
+       print >>g,' PFUG ',int(it*dt) ,'s'
+@@ -333,16 +343,21 @@ if lnam1D:
+       print >>g,' PFVG ',int(it*dt),'s'
+       for ilev in range(0,nlev_out):
+         print >>g, data_out['vg'][it,ilev]
++  if attributes['forc_w'] == 1:
++    for it in range(0,nt): 
++      print >>g,' W ',int(it*dt),'s'
++      for ilev in range(0,nlev_out):
++        print >>g, data_out['w'][it,ilev]
+   if attributes['surfaceForcing'] == "surfaceFlux" :
+     print >>g, 'SURF.FORC'
+-    for it in range(0,nt):
++    for it in range(0,nt_sfc):
+       print >>g, 'FCS'
+       print >>g, data_in['sfc_sens_flx'][it]
+-    for it in range(0,nt):
++    for it in range(0,nt_sfc):
+       print >>g, 'FLE'
+       print >>g, data_in['sfc_lat_flx'][it]
+   if attributes['ustar'] >0. :
+-    for it in range(0,nt):
++    for it in range(0,nt_sfc):
+       print >>g, 'USTAR'
+       print >>g, str(float(attributes['ustar']))
+ 
+@@ -371,7 +386,7 @@ if lnam1D:
+   levAxis.designateLevel()
+   levAxis.id = 'level'
+   levAxis.units = 'Pa'
+-  ntAxis = time[:]
++  ntAxis = time_sfc[:]
+   ntAxis = cdms2.createAxis(ntAxis)
+   ntAxis.designateLevel()
+   ntAxis.id = 'time'
+diff --git a/UTIL/Init_Forc/ARPCLIMAT/interpvertp.so b/UTIL/Init_Forc/ARPCLIMAT/interpvertp.so
+index f83c6d1..6ba9413 100755
+Binary files a/UTIL/Init_Forc/ARPCLIMAT/interpvertp.so and b/UTIL/Init_Forc/ARPCLIMAT/interpvertp.so differ
+diff --git a/UTIL/Init_Forc/ARPCLIMAT/prepare_nam1D.py b/UTIL/Init_Forc/ARPCLIMAT/prepare_nam1D.py
+index 03daad3..2a23519 100644
+--- a/UTIL/Init_Forc/ARPCLIMAT/prepare_nam1D.py
++++ b/UTIL/Init_Forc/ARPCLIMAT/prepare_nam1D.py
+@@ -1,9 +1,9 @@
+ import cdms2
+-import math
+ import MV2
+ import os
+ import interpvertp
+ import config
++import math
+ 
+ cdms2.setNetcdfShuffleFlag(0)
+ cdms2.setNetcdfDeflateFlag(0)
+diff --git a/UTIL/Init_Forc/ARPCLIMAT/prepare_profile.sh b/UTIL/Init_Forc/ARPCLIMAT/prepare_profile.sh
+index 88ce048..1c47745 100755
+--- a/UTIL/Init_Forc/ARPCLIMAT/prepare_profile.sh
++++ b/UTIL/Init_Forc/ARPCLIMAT/prepare_profile.sh
+@@ -1,8 +1,5 @@
+ #!/bin/sh
+ 
+-source activate myuvcdat
+-alias cdat='python'
+-
+ cat << EOF > tmp.py
+ import os
+ 
+diff --git a/UTIL/Init_Forc/ARPPNT/prepare_nam1D.py b/UTIL/Init_Forc/ARPPNT/prepare_nam1D.py
+index 60bc7e7..937d9fa 100644
+--- a/UTIL/Init_Forc/ARPPNT/prepare_nam1D.py
++++ b/UTIL/Init_Forc/ARPPNT/prepare_nam1D.py
+@@ -128,7 +128,8 @@ if attributes['forc_geo'] == 1:
+ if attributes['surfaceForcing'] == "surfaceFlux" :
+   var2read.append('sfc_sens_flx')	
+   var2read.append('sfc_lat_flx')	
+-  time = f('sfc_lat_flx').getTime()
++  time_sfc = f('sfc_lat_flx').getAxis(0)
++  nt_sfc = time_sfc.shape[0]
+   nb_fs=nb_fs+2
+ 
+ if attributes['ustar'] > 0. :
+@@ -196,7 +197,6 @@ vah = MV2.zeros((nlev_out+1),typecode=MV2.float32)
+ vbh = MV2.zeros((nlev_out+1),typecode=MV2.float32)
+ 
+ f = open('L' + str(nlev_out) + '.dta')
+-#f = open('L' + str(nlev_out) + '.dta')
+ 
+ for ilev in range(0,nlev_out+1):
+   line = f.readline().split()
+@@ -258,7 +258,7 @@ if lnam1D:
+   print >>g, '  LALAPHYS= .TRUE.,'
+   print >>g, '  LREASUR = .TRUE.,'
+   print >>g, '  NFORC   ='+str(int(nb_f*nt))+ ','  
+-  print >>g, '  NFORCS  ='+str(int(nb_fs*nt))+ ','  
++  print >>g, '  NFORCS  ='+str(int(nb_fs*nt_sfc))+ ','  
+   print >>g, '  LQCGRP  = .FALSE.,'
+   print >>g, '  LQIGRP  = .FALSE.,'
+   print >>g, '  LQRGRP  = .FALSE.,'
+@@ -318,12 +318,22 @@ if lnam1D:
+     for it in range(0,nt): 
+       print >>g,' T ADV ',int(it*dt) ,'s'
+       for ilev in range(0,nlev_out):
+-        print >>g, data_out['tadv'][it,ilev]	
++        print >>g, data_out['tadv'][it,ilev]
++  elif attributes['tadvh'] == 1:
++    for it in range(0,nt): 
++      print >>g,' T ADV ',int(it*dt) ,'s'
++      for ilev in range(0,nlev_out):
++        print >>g, data_out['tadvh'][it,ilev]
+   if attributes['qadv'] == 1:
+     for it in range(0,nt): 
+       print >>g,' Qv ADV ',int(it*dt) ,'s'
+       for ilev in range(0,nlev_out):
+         print >>g, data_out['qadv'][it,ilev]	
++  elif attributes['qadvh'] == 1:
++    for it in range(0,nt): 
++      print >>g,' Qv ADV ',int(it*dt) ,'s'
++      for ilev in range(0,nlev_out):
++        print >>g, data_out['qadvh'][it,ilev]	        
+   if attributes['forc_geo'] == 1:
+     for it in range(0,nt): 
+       print >>g,' PFUG ',int(it*dt) ,'s'
+@@ -333,16 +343,21 @@ if lnam1D:
+       print >>g,' PFVG ',int(it*dt),'s'
+       for ilev in range(0,nlev_out):
+         print >>g, data_out['vg'][it,ilev]
++  if attributes['forc_w'] == 1:
++    for it in range(0,nt): 
++      print >>g,' W ',int(it*dt),'s'
++      for ilev in range(0,nlev_out):
++        print >>g, data_out['w'][it,ilev]
+   if attributes['surfaceForcing'] == "surfaceFlux" :
+     print >>g, 'SURF.FORC'
+-    for it in range(0,nt):
++    for it in range(0,nt_sfc):
+       print >>g, 'FCS'
+       print >>g, data_in['sfc_sens_flx'][it]
+-    for it in range(0,nt):
++    for it in range(0,nt_sfc):
+       print >>g, 'FLE'
+       print >>g, data_in['sfc_lat_flx'][it]
+   if attributes['ustar'] >0. :
+-    for it in range(0,nt):
++    for it in range(0,nt_sfc):
+       print >>g, 'USTAR'
+       print >>g, str(float(attributes['ustar']))
+ 
+@@ -371,7 +386,7 @@ if lnam1D:
+   levAxis.designateLevel()
+   levAxis.id = 'level'
+   levAxis.units = 'Pa'
+-  ntAxis = time[:]
++  ntAxis = time_sfc[:]
+   ntAxis = cdms2.createAxis(ntAxis)
+   ntAxis.designateLevel()
+   ntAxis.id = 'time'
+diff --git a/UTIL/Runs/run_AROME.sh b/UTIL/Runs/run_AROME.sh
+index 594ce45..033249d 100755
+--- a/UTIL/Runs/run_AROME.sh
++++ b/UTIL/Runs/run_AROME.sh
+@@ -230,7 +230,7 @@ then
+ 
+   # seems necessary in some circumstances (deep shells?)
+   unset PYTHONHOME
+-  convertLFA2nc.py
++  ./convertLFA2nc.py
+ 
+ fi
+ 
+diff --git a/UTIL/Runs/run_ARPCLIMAT.sh b/UTIL/Runs/run_ARPCLIMAT.sh
+index 1c4512c..94330c2 100755
+--- a/UTIL/Runs/run_ARPCLIMAT.sh
++++ b/UTIL/Runs/run_ARPCLIMAT.sh
+@@ -121,7 +121,7 @@ set -x
+ #export DR_HOOK=0
+ export DR_HOOK_IGNORE_SIGNALS=-1
+ 
+-#ulimit -s unlimited
++ulimit -s unlimited
+ 
+ date
+ ./MASTER -c001 -vmeteo -maladin -e${EXP} -t$TSTEP -f$NSTOP -a$ADVEC  >lola 2>&1
+@@ -229,7 +229,9 @@ then
+   echo ''
+   set -x
+ 
+-  convertLFA2nc.py
++  # seems necessary in some circumstances (deep shells?)
++  unset PYTHONHOME
++  ./convertLFA2nc.py
+ 
+ fi
+ 
+diff --git a/UTIL/Runs/run_ARPPNT.sh b/UTIL/Runs/run_ARPPNT.sh
+new file mode 100755
+index 0000000..042739d
+--- /dev/null
++++ b/UTIL/Runs/run_ARPPNT.sh
+@@ -0,0 +1,239 @@
++#!/bin/sh
++
++#------------------------------------------------------------
++# 			INTIALISATION
++#------------------------------------------------------------
++set -x
++
++. ./param
++
++EXP=ARPE
++ADVEC=sli
++
++#       *************************************
++#       * Directories Initialisation        *
++#       *************************************
++
++DIR=`pwd`
++
++OUTPUTDIR=$DIR/Output/LFA/
++OUTPUTDIR0=$DIR/Output/
++
++if [ ! -d $OUTPUTDIR ] ; then
++  mkdir -p $OUTPUTDIR
++fi
++
++TMPDIR=$HOME/tmp/EXEMUSC
++
++if [ ! -d $TMPDIR ] ; then
++  mkdir $TMPDIR
++fi
++
++cd $TMPDIR
++rm -rf $TMPDIR/* || : 
++
++ladate=`date`
++set +x
++echo '------------------------------------------------------------'
++echo 'run execute le ' $ladate
++echo 'cycle =' $cycle 'config = ' $CONFIG
++echo 'Namelist ARPEGE =' $NAMARP
++#echo 'Namelist Surfex =' $NAMSFX
++echo 'Executable =' $MASTER
++echo 'Time step =' $TSTEP 'seconds; Run stops at ' $NSTOP
++echo 'Number of levels =' $levels
++echo 'Conditions initiales et forcages =' $INITFILE
++echo 'Conditions pour la surface =' $PREP
++echo 'Dossier des sorties =' $OUTPUTDIR
++echo '------------------------------------------------------------'
++set -x
++#       **********************************
++#       *        Get namelists           *
++#       **********************************
++
++set +x
++echo ''
++echo ' Get the namelist AROME'
++echo ''
++set -x
++
++ln -s $DIR/$NAMARP fort.4
++cat < fort.4
++
++set +x
++echo ''
++echo ' Get the namelist SURFEX'
++echo ''
++set -x
++
++ln -s $DIR/$NAMSFX EXSEG1.nam
++cat < EXSEG1.nam
++
++
++#       **********************************
++#       * Get initial and forcing files  *
++#       **********************************
++
++set +x
++echo ''
++echo ' Get Initial conditions for atmosphere and surface '
++echo ' Get Forcing files '
++echo ''
++set -x
++
++
++ln -s $INITFILE ICMSH${EXP}INIT
++ln -s $FORCING_FILES files
++
++ln -s  $PREP TEST.lfi
++ln -s  $PGD PGD.lfi
++
++
++#       **********************************
++#       *            For SURFEX          *
++#       **********************************
++
++
++ln -s $ecoclimap/ecoclimapII_eu_covers_param.bin ecoclimapII_eu_covers_param.bin
++ln -s $ecoclimap/ecoclimapI_covers_param.bin ecoclimapI_covers_param.bin
++
++#       **********************************
++#       *            Execution           *
++#       **********************************
++
++set +x
++echo ''
++echo ' Get the executable file '
++echo ''
++set -x
++
++ln -s $MASTER MASTER
++chmod 755 MASTER
++
++set +x
++echo ''
++echo ' ALADIN job running '
++echo ''
++set -x
++
++#export DR_HOOK_NOT_MPI=1
++#export DR_HOOK=0
++export DR_HOOK_IGNORE_SIGNALS=-1
++
++ulimit -s unlimited
++
++date
++./MASTER >lola 2>&1
++date
++#rm fort.4
++ls -l
++
++set +x
++echo ''
++echo ' Listing for the not parallelised part: file lola'
++echo ''
++set -x
++
++cat lola
++
++if [ -a NODE.001_01 ]
++then
++  for file in NODE*
++  do
++    set +x
++    echo ''
++    echo ' Listing for the parallelised part: file' $file
++    echo ''
++    set -x
++    cat $file
++  done
++fi
++
++#       **********************************
++#       *     Save model results         *
++#       **********************************
++
++set +x
++echo ''
++echo ' Historic files saving '
++echo ''
++set -x
++
++find $OUTPUTDIR/ -name '*' -exec rm -f {} \;
++find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
++find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
++find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
++
++#rm -f $OUTPUTDIR/*
++#mv Out* NODE* lola $OUTPUTDIR
++
++set +x
++echo ''
++echo ' Present files on the workdir $TMPDIR '
++echo ''
++set -x
++
++ls -l
++
++#       **********************************
++#       *        Nettoyage final         *
++#       *        Final Cleaning          *
++#       **********************************
++
++set +x
++echo ''
++echo ' Final cleaning of the workdir $TMPDIR '
++echo ''
++set -x
++
++set +x
++#rm -rf $TMPDIR/*
++find $TMPDIR/ -name '*' -exec rm -rf {} \;
++set -x
++#       ********************************************
++#       * Copie eventuelle des routines convert2nc *
++#       * Possible copy of convert2nc routines     *
++#       ********************************************
++
++if [ $installpost = True ]
++then
++  cd $OUTPUTDIR0
++  rm -f *.py *.sh *.pyc *.so 
++  set +x
++  echo ''
++  echo ' Install post-processing '
++  echo ''
++  set -x
++
++  files2install='convert2z.so convertp_to_daily.py convertk_to_1hourly.py convertz_to_1hourly.py convert2p.py convertk_to_daily.py convertz_to_daily.py convert2p.so     convertLFA2nc.py lfa2nc_part1.py convert2z.py convertp_to_1hourly.py lfa2nc_part2.py convertp_to_3hourly.py'
++
++  for file in $files2install
++  do
++    ln -s $dirpost/$file
++  done
++  ln -s $dirpost/$configpost config.py
++  ln -s $dirpost/$variablesDict variables.py
++fi
++
++#       ********************************************
++#       * Conversion eventuelle en netcdf          *
++#       * Possible conversion in netcdf            *
++#       ********************************************
++
++if [ $runpost = True ]
++then
++  set +x
++  echo ''
++  echo ' Postprocessing '
++  echo ''
++  set -x
++
++  # seems necessary in some circumstances (deep shells?)
++  unset PYTHONHOME
++  ./convertLFA2nc.py
++
++fi
++
++date
++
++cd $DIR
+diff --git a/UTIL/Tools/ASCII2FA/bin/ascii2fa b/UTIL/Tools/ASCII2FA/bin/ascii2fa
+index e8178c3..61c7d98 100755
+Binary files a/UTIL/Tools/ASCII2FA/bin/ascii2fa and b/UTIL/Tools/ASCII2FA/bin/ascii2fa differ
+diff --git a/UTIL/Tools/ASCII2FA/src/Makefile b/UTIL/Tools/ASCII2FA/src/Makefile
+index f2a9b65..a3df309 100755
+--- a/UTIL/Tools/ASCII2FA/src/Makefile
++++ b/UTIL/Tools/ASCII2FA/src/Makefile
+@@ -2,7 +2,7 @@
+ 
+ FC	 =	gfortran
+ FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
+-F90FLAGS =      -fconvert=swap -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -DDARWIN -DADDRESS64 -fdefault-real-8 -fdefault-double-8 -g -O2
++F90FLAGS =      -fconvert=big-endian -frecord-marker=4 $(M32) -ffree-form -fdefault-real-8 -DADDRESS64 -DHIGHRES
+ EXEC	 =	acadfa_exe
+ 
+ OBJS	 =	acadfa1D_main.o \
+@@ -10,12 +10,10 @@ OBJS	 =	acadfa1D_main.o \
+ 		real2spec.o \
+ 		empty.o 
+ 
+-XRD	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxrd.local.a 
+-XLA	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a 
+-#XRD	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.RR.GABLS4/lib/libxrd.local.a 
+-GRIBEX   =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a 
+-MPIDUMMY =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a
+-LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY) 
++XRD	 =	libxrd.a 
++GRIBEX   =      libgribex.a 
++MPIDUMMY =      libmpidummy.a
++LIBS	 =	$(XRD) $(GRIBEX) $(MPIDUMMY)
+ 
+ %.o:%.F90
+ 	$(FC) $(F90FLAGS) -c $<
+diff --git a/UTIL/Tools/ASCII2FA/src/acadfa_sueframe.F90 b/UTIL/Tools/ASCII2FA/src/acadfa_sueframe.F90
+index a3ec332..6528a5d 100644
+--- a/UTIL/Tools/ASCII2FA/src/acadfa_sueframe.F90
++++ b/UTIL/Tools/ASCII2FA/src/acadfa_sueframe.F90
+@@ -68,11 +68,9 @@
+       write(6,*)'PVP00=',PVP00
+       write(6,*)'PVALH=',PVALH
+       write(6,*)'PVBH=',PVBH
+-      write(6,*)'LDGARD=',LDGARD
+-      write(6,*)'ROEHRIG 1' 
++      write(6,*)'LDGARD=',LDGARD 
+       CALL FACADE(CDMCA,ITYPTR,ZSLAPO,ZCLOPO,ZSLOPO,ZCODIL,ITRONC, &
+      &   INLATI,INXLON,IDOM,ISUBTR,ZGEOM,KFLEV,PVP00,PVALH,PVBH,LDGARD)
+-      write(6,*)'ROEHRIG 2'
+       ELSE
+         ZVALH(1) = 0.
+         ZVALH(2) = 0.
+diff --git a/UTIL/Tools/ASCII2FA/src/libxrd.a b/UTIL/Tools/ASCII2FA/src/libxrd.a
+new file mode 100644
+index 0000000..4e4a59c
+Binary files /dev/null and b/UTIL/Tools/ASCII2FA/src/libxrd.a differ
+diff --git a/UTIL/Tools/LFA/bin/cllangu b/UTIL/Tools/LFA/bin/cllangu
+index fb1e1b6..9f95061 100755
+Binary files a/UTIL/Tools/LFA/bin/cllangu and b/UTIL/Tools/LFA/bin/cllangu differ
+diff --git a/UTIL/Tools/LFA/bin/lfa2lfa b/UTIL/Tools/LFA/bin/lfa2lfa
+index 9ea0865..f902433 100755
+Binary files a/UTIL/Tools/LFA/bin/lfa2lfa and b/UTIL/Tools/LFA/bin/lfa2lfa differ
+diff --git a/UTIL/Tools/LFA/bin/lfa2lfp b/UTIL/Tools/LFA/bin/lfa2lfp
+index afc92d1..d2129e6 100755
+Binary files a/UTIL/Tools/LFA/bin/lfa2lfp and b/UTIL/Tools/LFA/bin/lfa2lfp differ
+diff --git a/UTIL/Tools/LFA/bin/lfa_autodocumentation b/UTIL/Tools/LFA/bin/lfa_autodocumentation
+index 81a8c39..fa079a0 100755
+Binary files a/UTIL/Tools/LFA/bin/lfa_autodocumentation and b/UTIL/Tools/LFA/bin/lfa_autodocumentation differ
+diff --git a/UTIL/Tools/LFA/bin/lfa_demo b/UTIL/Tools/LFA/bin/lfa_demo
+index 512a742..64e0248 100755
+Binary files a/UTIL/Tools/LFA/bin/lfa_demo and b/UTIL/Tools/LFA/bin/lfa_demo differ
+diff --git a/UTIL/Tools/LFA/bin/lfac b/UTIL/Tools/LFA/bin/lfac
+index da679d3..cfd4db8 100755
+Binary files a/UTIL/Tools/LFA/bin/lfac and b/UTIL/Tools/LFA/bin/lfac differ
+diff --git a/UTIL/Tools/LFA/bin/lfacre b/UTIL/Tools/LFA/bin/lfacre
+index 49371c4..5a4c669 100755
+Binary files a/UTIL/Tools/LFA/bin/lfacre and b/UTIL/Tools/LFA/bin/lfacre differ
+diff --git a/UTIL/Tools/LFA/bin/lfadiff b/UTIL/Tools/LFA/bin/lfadiff
+index 1098916..ea9c582 100755
+Binary files a/UTIL/Tools/LFA/bin/lfadiff and b/UTIL/Tools/LFA/bin/lfadiff differ
+diff --git a/UTIL/Tools/LFA/bin/lfadiffart b/UTIL/Tools/LFA/bin/lfadiffart
+index db4bfd8..44ba560 100755
+Binary files a/UTIL/Tools/LFA/bin/lfadiffart and b/UTIL/Tools/LFA/bin/lfadiffart differ
+diff --git a/UTIL/Tools/LFA/bin/lfadiffrel b/UTIL/Tools/LFA/bin/lfadiffrel
+index f6fb680..e345de1 100755
+Binary files a/UTIL/Tools/LFA/bin/lfadiffrel and b/UTIL/Tools/LFA/bin/lfadiffrel differ
+diff --git a/UTIL/Tools/LFA/bin/lfafreq b/UTIL/Tools/LFA/bin/lfafreq
+index db12761..f02ec67 100755
+Binary files a/UTIL/Tools/LFA/bin/lfafreq and b/UTIL/Tools/LFA/bin/lfafreq differ
+diff --git a/UTIL/Tools/LFA/bin/lfalaf b/UTIL/Tools/LFA/bin/lfalaf
+index d688e21..c6430df 100755
+Binary files a/UTIL/Tools/LFA/bin/lfalaf and b/UTIL/Tools/LFA/bin/lfalaf differ
+diff --git a/UTIL/Tools/LFA/bin/lfaminm b/UTIL/Tools/LFA/bin/lfaminm
+index b54e404..57bff37 100755
+Binary files a/UTIL/Tools/LFA/bin/lfaminm and b/UTIL/Tools/LFA/bin/lfaminm differ
+diff --git a/UTIL/Tools/LFA/bin/lfamoy b/UTIL/Tools/LFA/bin/lfamoy
+index 24e2039..3dc0bda 100755
+Binary files a/UTIL/Tools/LFA/bin/lfamoy and b/UTIL/Tools/LFA/bin/lfamoy differ
+diff --git a/UTIL/Tools/LFA/bin/lfareu b/UTIL/Tools/LFA/bin/lfareu
+index b9ee641..dfe3cf7 100755
+Binary files a/UTIL/Tools/LFA/bin/lfareu and b/UTIL/Tools/LFA/bin/lfareu differ
+diff --git a/UTIL/Tools/LFA/bin/lfatest b/UTIL/Tools/LFA/bin/lfatest
+index 81268f2..cde8c03 100755
+Binary files a/UTIL/Tools/LFA/bin/lfatest and b/UTIL/Tools/LFA/bin/lfatest differ
+diff --git a/UTIL/Tools/LFA/bin/lfp2lfa b/UTIL/Tools/LFA/bin/lfp2lfa
+index b47a98e..bc737bb 100755
+Binary files a/UTIL/Tools/LFA/bin/lfp2lfa and b/UTIL/Tools/LFA/bin/lfp2lfa differ
+diff --git a/UTIL/install/install_MUSC.py b/UTIL/install/install_MUSC.py
+index 0749123..a1da77f 100644
+--- a/UTIL/install/install_MUSC.py
++++ b/UTIL/install/install_MUSC.py
+@@ -144,7 +144,7 @@ def install_SFX(model,case,filecase,repout,cycle,PGD,PREP,config,namref,subcase=
+ 
+       g.close()
+ 
+-      os.system('python tmp.py')
++      os.system('cdat tmp.py')
+       os.system('rm -f tmp.py')
+     
+       if lperf:
+@@ -180,7 +180,7 @@ def install_SFX(model,case,filecase,repout,cycle,PGD,PREP,config,namref,subcase=
+ 
+         g.close()
+ 
+-        os.system('python tmp.py')
++        os.system('cdat tmp.py')
+         os.system('rm -f tmp.py')
+ 
+         os.system('./prepare_SURFEX.sh')
+@@ -305,7 +305,7 @@ def install_Run(model,case,filecase,repout,config,configOut,subcase=None,loverwr
+ 
+       g.close()
+ 
+-      os.system('python tmp.py')
++      os.system('cdat tmp.py')
+       os.system('rm -f tmp.py')
+ 
+       if lperf:
+@@ -326,7 +326,7 @@ def install_Run(model,case,filecase,repout,config,configOut,subcase=None,loverwr
+ 
+         g.close()
+ 
+-        os.system('python tmp.py')
++        os.system('cdat tmp.py')
+         os.system('rm -f tmp.py')
+ 
+         if lperf:
+@@ -520,13 +520,13 @@ def install_Atlas(case,repout,config,configAtlas,subcase=None,loverwrite=False,l
+ 
+       g.close()
+ 
+-      os.system('python atlas.py')
++      os.system('cdat atlas.py')
+ 
+     else: 
+       print 'Directory already exists:', rep
+       if lupdate:
+         os.chdir(rep)
+-        os.system('python atlas.py')
++        os.system('cdat atlas.py')
+       else:
+         print 'Nothing is done'
+ 
+diff --git a/UTIL/install/prepare_namATM_AROME.py b/UTIL/install/prepare_namATM_AROME.py
+index 0bb0457..d0d9547 100644
+--- a/UTIL/install/prepare_namATM_AROME.py
++++ b/UTIL/install/prepare_namATM_AROME.py
+@@ -271,6 +271,10 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
+   for att in fin.listglobal():
+     attributes[att] = fin.getglobal(att)
+ 
++  if attributes['surfaceForcing'] == "surfaceFlux" :
++    time_sfc = fin('sfc_sens_flx').getAxis(0)
++    nt_sfc = time_sfc.shape[0]
++
+   # Setting latitude and longitude
+   tmp = fin('temp')
+   lat = tmp.getLatitude()[0]
+@@ -342,9 +346,6 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
+   if attributes['forc_omega'] == 1:
+       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
+       nam[nn]['LSOMEGA_FRC'] = ['.TRUE.',]
+-  if attributes['forc_w'] == 1:
+-      nam["NAMCT0"]['LSFORC']=['.TRUE.',]
+-      nam[nn]['LSW_FRC'] = ['TRUE',]
+   if attributes['forc_geo'] == 1:
+       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
+       nam[nn]['LGEOST_UV_FRC'] = ['.TRUE.',]
+@@ -358,6 +359,14 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
+       i=i+1
+       for it in range(0,nt):
+         nam[nn]['NL_GEOST_UV_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]
++  if attributes['forc_w'] == 1:
++      nam["NAMCT0"]['LSFORC']=['.TRUE.',]
++      nam[nn]['LSW_FRC'] = ['TRUE',]  
++      nam[nn]['NLSW_DEB'] = [str(1+i*nt),]
++      nam[nn]['NLSW_NUM'] = [str(nt),]
++      i=i+1
++      for it in range(0,nt):
++        nam[nn]['NL_LSW_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]      
+   else:
+       nam[nn]['LGEOST_UV_FRC'] = ['.FALSE.',]
+   if attributes['nudging_u'] > 0. or attributes['nudging_v'] > 0.:
+@@ -381,15 +390,19 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
+         nam[nn]['RZ0_FORC'] = [str(float(attributes['z0'])),]
+       else:
+         nam[nn]['RZ0_FORC'] = ['0.035',]
+-      nam[nn]["NSH_FORC_DEB"]=[str(int(1+j*nt)),]
+-      nam[nn]["NSH_FORC_NUM"]=[str(nt),]
++      nam[nn]["NSH_FORC_DEB"]=[str(int(1+i*nt+j*nt_sfc)),]
++      nam[nn]["NSH_FORC_NUM"]=[str(nt_sfc),]
+       j=j+1
+-      nam[nn]["NLH_FORC_DEB"]=[str(int(1+j*nt)),]
+-      nam[nn]["NLH_FORC_NUM"]=[str(nt),]
+-      for it in range(0,nt):
+-         nam[nn]['NL_SH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt*it)),]
+-         nam[nn]['NL_LH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt*it)),]
+-      nam["NAMPHYDS"]['NSFORC']=[str(int(2*nt)),]
++      nam[nn]["NLH_FORC_DEB"]=[str(int(1+i*nt+j*nt_sfc)),]
++      nam[nn]["NLH_FORC_NUM"]=[str(nt_sfc),]
++      if nt_sfc == 1:
++        dt_sfc = 0.
++      else:  
++        dt_sfc = time_sfc[1]-time_sfc[0]
++      for it in range(0,nt_sfc):
++         nam[nn]['NL_SH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt_sfc*it)),]
++         nam[nn]['NL_LH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt_sfc*it)),]
++      nam["NAMPHYDS"]['NSFORC']=[str(int(2*nt_sfc)),]
+ 
+   nam['NAMGFL']['NGFL_FORC'] = [str(int(nt*i)),]
+ 
+diff --git a/UTIL/install/prepare_namATM_ARPPNT.py b/UTIL/install/prepare_namATM_ARPPNT.py
+index 55c0fcd..0d137e1 100644
+--- a/UTIL/install/prepare_namATM_ARPPNT.py
++++ b/UTIL/install/prepare_namATM_ARPPNT.py
+@@ -175,6 +175,10 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
+   for att in fin.listglobal():
+     attributes[att] = fin.getglobal(att)
+ 
++  if attributes['surfaceForcing'] == "surfaceFlux" :
++    time_sfc = fin('sfc_sens_flx').getAxis(0)
++    nt_sfc = time_sfc.shape[0]
++
+   # Setting latitude and longitude
+   tmp = fin('temp')
+   lat = tmp.getLatitude()[0]
+@@ -246,9 +250,6 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
+   if attributes['forc_omega'] == 1:
+       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
+       nam[nn]['LSOMEGA_FRC'] = ['.TRUE.',]
+-  if attributes['forc_w'] == 1:
+-      nam["NAMCT0"]['LSFORC']=['.TRUE.',]
+-      nam[nn]['LSW_FRC'] = ['TRUE',]
+   if attributes['forc_geo'] == 1:
+       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
+       nam[nn]['LGEOST_UV_FRC'] = ['.TRUE.',]
+@@ -262,6 +263,14 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
+       i=i+1
+       for it in range(0,nt):
+         nam[nn]['NL_GEOST_UV_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]
++  if attributes['forc_w'] == 1:
++      nam["NAMCT0"]['LSFORC']=['.TRUE.',]
++      nam[nn]['LSW_FRC'] = ['TRUE',]  
++      nam[nn]['NLSW_DEB'] = [str(1+i*nt),]
++      nam[nn]['NLSW_NUM'] = [str(nt),]
++      i=i+1
++      for it in range(0,nt):
++        nam[nn]['NL_LSW_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]      
+   else:
+       nam[nn]['LGEOST_UV_FRC'] = ['.FALSE.',]
+   if attributes['nudging_u'] > 0. or attributes['nudging_v'] > 0.:
+@@ -285,15 +294,19 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
+         nam[nn]['RZ0_FORC'] = [str(float(attributes['z0'])),]
+       else:
+         nam[nn]['RZ0_FORC'] = ['0.035',]
+-      nam[nn]["NSH_FORC_DEB"]=[str(int(1+j*nt)),]
+-      nam[nn]["NSH_FORC_NUM"]=[str(nt),]
++      nam[nn]["NSH_FORC_DEB"]=[str(int(1+i*nt+j*nt_sfc)),]
++      nam[nn]["NSH_FORC_NUM"]=[str(nt_sfc),]
+       j=j+1
+-      nam[nn]["NLH_FORC_DEB"]=[str(int(1+j*nt)),]
+-      nam[nn]["NLH_FORC_NUM"]=[str(nt),]
+-      for it in range(0,nt):
+-         nam[nn]['NL_SH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt*it)),]
+-         nam[nn]['NL_LH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt*it)),]
+-      nam["NAMPHYDS"]['NSFORC']=[str(int(2*nt)),]
++      nam[nn]["NLH_FORC_DEB"]=[str(int(1+i*nt+j*nt_sfc)),]
++      nam[nn]["NLH_FORC_NUM"]=[str(nt_sfc),]
++      if nt_sfc == 1:
++        dt_sfc = 0.
++      else:  
++        dt_sfc = time_sfc[1]-time_sfc[0]
++      for it in range(0,nt_sfc):
++         nam[nn]['NL_SH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt_sfc*it)),]
++         nam[nn]['NL_LH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt_sfc*it)),]
++      nam["NAMPHYDS"]['NSFORC']=[str(int(2*nt_sfc)),]
+ 
+   nam['NAMGFL']['NGFL_FORC'] = [str(int(nt*i)),]
+ 
+diff --git a/UTIL/post_DEPHY/convert2p.so b/UTIL/post_DEPHY/convert2p.so
+index 20cd20c..eed38ec 100755
+Binary files a/UTIL/post_DEPHY/convert2p.so and b/UTIL/post_DEPHY/convert2p.so differ
+diff --git a/UTIL/post_DEPHY/convert2z.so b/UTIL/post_DEPHY/convert2z.so
+index a432ba5..690cb49 100755
+Binary files a/UTIL/post_DEPHY/convert2z.so and b/UTIL/post_DEPHY/convert2z.so differ
+diff --git a/UTIL/post_DEPHY/convertLFA2nc.py b/UTIL/post_DEPHY/convertLFA2nc.py
+index 8bd1f65..a229b45 100755
+--- a/UTIL/post_DEPHY/convertLFA2nc.py
++++ b/UTIL/post_DEPHY/convertLFA2nc.py
+@@ -9,44 +9,44 @@ else:
+     os.system('rm -f netcdf/*')
+ 
+ os.system('python lfa2nc_part1.py')
+-os.system('python lfa2nc_part2.py')
++os.system('cdat lfa2nc_part2.py')
+ 
+ os.system('mv Out_klevel.nc netcdf/')
+ 
+ if config.convertk1h:
+-    os.system('python convertk_to_1hourly.py')
++    os.system('cdat convertk_to_1hourly.py')
+ 
+ if config.convertk3h:
+     print 'convertk3h not coded yet'
+     pass #sys.exit()
+-    #os.system('python convertk_to_3hourly.py')
++    #os.system('cdat convertk_to_3hourly.py')
+ 
+ if config.convertkday:
+-    os.system('python convertk_to_daily.py')
++    os.system('cdat convertk_to_daily.py')
+ 
+ 
+ if config.convert2p:
+-    os.system('python convert2p.py')
++    os.system('cdat convert2p.py')
+     if config.convertp1h:
+-        os.system('python convertp_to_1hourly.py')
++        os.system('cdat convertp_to_1hourly.py')
+ 
+     if config.convertp3h:
+-        os.system('python convertp_to_3hourly.py')
++        os.system('cdat convertp_to_3hourly.py')
+ 
+     if config.convertpday:
+-        os.system('python convertp_to_daily.py')
++        os.system('cdat convertp_to_daily.py')
+ 
+ 
+ if config.convert2z:
+-    os.system('python convert2z.py')
++    os.system('cdat convert2z.py')
+     if config.convertz1h:
+-        os.system('python convertz_to_1hourly.py')
++        os.system('cdat convertz_to_1hourly.py')
+ 
+     if config.convertz3h:
+         print 'convertz3h not coded yet'
+         pass #sys.exit()
+-        #os.system('python convertz_to_3hourly.py')
++        #os.system('cdat convertz_to_3hourly.py')
+ 
+     if config.convertzday:
+-        os.system('python convertz_to_daily.py')
++        os.system('cdat convertz_to_daily.py')
+ 
+diff --git a/UTIL/post_DEPHY/lfa2nc_part1.py b/UTIL/post_DEPHY/lfa2nc_part1.py
+index 35d0063..490d80d 100644
+--- a/UTIL/post_DEPHY/lfa2nc_part1.py
++++ b/UTIL/post_DEPHY/lfa2nc_part1.py
+@@ -176,7 +176,7 @@ for var in var2save:
+   
+ 
+ it = -1
+-for file in files:
++for file in sorted(files):
+   it = it + 1
+   if config.verbose >= 2:
+     print file.strip()
+diff --git a/UTIL/python/lfa.so b/UTIL/python/lfa.so
+index fa60fc2..5ad15d4 100755
+Binary files a/UTIL/python/lfa.so and b/UTIL/python/lfa.so differ
+diff --git a/UTIL/python/lfa/makelib.sh b/UTIL/python/lfa/makelib.sh
+index 6ab2673..245f06e 100755
+--- a/UTIL/python/lfa/makelib.sh
++++ b/UTIL/python/lfa/makelib.sh
+@@ -1,7 +1,5 @@
+ #!/bin/bash
+ 
+-source activate myuvcdat
+-
+ DIR0=`pwd`
+ 
+ for ff in cllang caracteres_lfa lfa
+@@ -13,7 +11,7 @@ done
+ 
+ gfortran -L$DIR0 -llfa -I$DIR0 -fconvert=big-endian -cpp  -c -fPIC -o famusc.o famusc.f90
+ 
+-f2py -lgfortran -c famusc.pyf famusc.o liblfa.a
++/opt/cdat/bin/f2py -I/opt/cdat/include -lgfortran -c famusc.pyf famusc.o liblfa.a
+ 
+ rm -f *.o *.mod *.a
+ 
+@@ -22,5 +20,3 @@ mv lfa.so ../
+ # Test
+ 
+ #python tmp.py
+-
+-source deactivate myuvcdat
+diff --git a/UTIL/python/lfa/makelib.sh.cnrm b/UTIL/python/lfa/makelib.sh.cnrm
+new file mode 100644
+index 0000000..f08dba5
+--- /dev/null
++++ b/UTIL/python/lfa/makelib.sh.cnrm
+@@ -0,0 +1,18 @@
++
++
++#/opt/cdat/bin/f2py -m lfa -h famusc.pyf famusc.f90 (comment lfaread* subroutines)
++gfortran -I./ -fconvert=big-endian -cpp  -c -fPIC cllang.f90
++gfortran -I./ -fconvert=big-endian -cpp  -c -fPIC caracteres_lfa.f90
++gfortran -I./ -fconvert=big-endian -cpp  -c -fPIC lfa.f90
++ar r liblfa.a *.o
++gfortran -L./ -llfa -I./ -fconvert=big-endian -cpp  -c -fPIC -o famusc.o famusc.f90
++#f2py -L./ -llfa -lm -lgfortran --f77flags='-L./ -llfa -I./ -fPIC -fconvert=big-endian -cpp' --f90flags='-L./ -llfa -I./ -fPIC -fconvert=big-endian -cpp' --fcompiler=gnu95 -c famusc.pyf famusc.o
++/opt/cdat/bin/f2py -I/opt/cdat/include -L./ -llfa -lm -lgfortran --f77flags='-L./ -llfa -I./ -fPIC -fconvert=big-endian -cpp' --f90flags='-L./ -llfa -I./ -fPIC -fconvert=big-endian -cpp' --fcompiler=gnu95 -c famusc.pyf famusc.o
++
++##Ne fonctionne pas...
++#pgf90 -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -c -fPIC cllang.f90
++#pgf90 -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -c -fPIC caracteres_lfa.f90
++#pgf90 -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -c -fPIC lfa.f90
++#ar r liblfa.a *.o
++#pgf90 -L./ -llfa -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -c -fPIC -o famusc.o famusc.f90
++#/opt/cdat/bin/f2py -L./ -llfa --f77flags='-L./ -llfa -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -fPIC' --f90flags='-L./ -llfa -I./ -Mpreprocess -Mextend -Kieee -byteswapio info=inform-Dr4pre2 -fPIC' --fcompiler=pg -c famusc.pyf famusc.o
+diff --git a/VERSION b/VERSION
+new file mode 100644
+index 0000000..b202600
+--- /dev/null
++++ b/VERSION
+@@ -0,0 +1 @@
++2018/07/17 : Version 1.0
+diff --git a/install_CNRM.sh b/install_CNRM.sh
+index 88275a3..647a2e1 100755
+--- a/install_CNRM.sh
++++ b/install_CNRM.sh
+@@ -31,7 +31,7 @@ fi
+ 
+ #####################################################
+ # Download and install EMS in REP_EMS
+-[ -d $REP_EMS ] || mkdir $REP_EMS
++[ -d $REP_EMS ] || mkdir -p $REP_EMS
+ cd $REP_EMS
+ git clone --single-branch https://github.com/romainroehrig/EMS.git .
+ 
+@@ -62,7 +62,7 @@ EOF
+ 
+ #####################################################
+ # Prepare what is needed to run MUSC simulations in REP_MUSC
+-[ -d $REP_MUSC ] || mkdir $REP_MUSC
++[ -d $REP_MUSC ] || mkdir -p $REP_MUSC
+ cd $REP_MUSC
+ cp -r $REP_EMS/Examples/* .
+ ln -s $REP_EMS/main/install_ATM_cases.py install_ATM_cases.py
+@@ -78,15 +78,51 @@ done
+ 
+ #####################################################
+ # Some Testing
++
++# get arp631 pack
++
++[ -d /home/common/pack ] || mkdir -p /home/common/pack
++cd /home/common/pack
++
++if [ -d arp603_export.01.GFORTRAN610.cx ]; then
++  echo "pack arp603_export.01.GFORTRAN610.cx already installed in /home/common/pack"
++else
++  echo "pack arp603_export.01.GFORTRAN610.cx is installed in /home/common/pack"
++  cp /cnrm/mosca/DATA/rootpack/arp603_export.01.GFORTRAN610.cx-29032018.tgz .
++  tar zxvf arp603_export.01.GFORTRAN610.cx-29032018.tgz
++  rm -f arp603_export.01.GFORTRAN610.cx-29032018.tgz
++fi
++
++# get 41t1_op1.11_MUSC
++
++install_cy41='n'
++
++if [$install_cy41 == 'y' ]; then
++
++  [ -d $HOME/pack ] || mkdir $HOME/pack
++  cd $HOME/pack
++
++  if [ -d 41t1_op1.11_MUSC ]; then
++    echo "pack 41t1_op1.11_MUSC already installed in /home/common/pack"
++  else
++    echo "pack 41t1_op1.11_MUSC is installed in $HOME/pack"
++    cp /cnrm/amacs/USERS/roehrig/share/MUSC/pack/41t1_op1.11_MUSC.tar.gz
++    tar zxvf 41t1_op1.11_MUSC.tar.gz
++    rm -f 41t1_op1.11_MUSC.tar.gz
++  fi
++
++fi
++# Testing for arp631
++
+ cd $REP_MUSC
+ 
+-install_ATM_cases.py AYOTTE 24SC
++./install_ATM_cases.py AYOTTE 24SC
+ [ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
+ 
+-install_SFX_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
++./install_SFX_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
+ [ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
+ [ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
+ 
+-run_MUSC_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
++./run_MUSC_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
+ [ -f $REP_MUSC/simulations/arp631/CMIP6/L91_300s/AYOTTE/24SC/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
+ 
+diff --git a/install_macRR.sh b/install_macRR.sh
+deleted file mode 100755
+index 288ff3c..0000000
+--- a/install_macRR.sh
++++ /dev/null
+@@ -1,134 +0,0 @@
+-#!/bin/sh
+-
+-set -evx
+-
+-#####################################################
+-# User specific
+-
+-REP_EMS=$HOME/Tools/EMS
+-REP_MUSC=$HOME/MUSC
+-
+-#####################################################
+-
+-
+-
+-DIR0=`pwd`
+-
+-#####################################################
+-# Some tests to avoid overwriting
+-
+-if [ -d $REP_EMS ]; then
+-  echo "REP_EMS="$REP_EMS
+-  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install.sh"
+-  exit
+-fi
+-
+-if [ -d $REP_MUSC ]; then
+-  echo "REP_MUSC="$REP_MUSC
+-  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install.sh"
+-  exit
+-fi
+-
+-#####################################################
+-# Download and install EMS in REP_EMS
+-[ -d $REP_EMS ] || mkdir $REP_EMS
+-cd $REP_EMS
+-git clone https://github.com/romainroehrig/EMS.git .
+-git checkout macRR
+-
+-# Modify your .bash_profile to initialize a few environment variables
+-cd ~/
+-
+-# save profile
+-cat .profile > .profile.EMS-saved_$(date +"%Y-%m-%d_at_%H:%M:%S")
+-
+-# Modify it
+-sed -i '' "/^export REP_EMS=/ s/$/ #commented on $(date)/" .profile
+-sed -i '' "s/^export REP_EMS=/#&/" .profile
+-sed -i '' "/^export REP_MUSC=/ s/$/ #commented on $(date)/" .profile
+-sed -i '' "s/^export REP_MUSC=/#&/" .profile
+-sed -i '' "/^export PYTHONPATH=.:\$REP_EMS/ s/$/ #commented on $(date)/" .profile
+-sed -i '' "s/^export PYTHONPATH=.:\$REP_EMS/#&/" .profile
+-
+-cat << EOF >> .profile
+-
+-# Modifications for Environment for MUSC simulations (EMS)
+-# included on $(date)
+-export REP_EMS=$REP_EMS
+-export REP_MUSC=$REP_MUSC
+-export PYTHONPATH=.:\$REP_EMS/CASES:\$REP_EMS/UTIL/python:\$REP_EMS/UTIL/install/:\$PYTHONPATH
+-EOF
+-
+-. ~/.profile
+-
+-# Some compilation if you want
+-compile="n"
+-
+-if [ $compile == "y" ]; then
+-
+-  # lfa python library
+-  cd $REP_EMS/UTIL/python/lfa
+-  ./makelib.sh
+-
+-  # ascii2lfa binary
+-  cd $REP_EMS/UTIL/Tools/ASCII2FA/src
+-  #cp /Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxrd.local.a libxrd.a
+-  #cp /Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a libxla.a
+-  #cp /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a libgribex.a
+-  #cp /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a libmpidummy.a
+-  make all
+-  make clean
+-
+-  # LFA tools
+-  cd $REP_EMS//UTIL/Tools/LFA
+-  ./install
+-
+-  # a few python libraries
+-  source activate myuvcdat
+-
+-  cd $REP_EMS/UTIL/Init_Forc/ARPCLIMAT
+-  f2py -c interpvertp.F90 -m interpvertp
+-  cd $REP_EMS/UTIL/post_DEPHY
+-  f2py -c convert2p.F90 -m convert2p
+-  f2py -c convert2z.F90 -m convert2z
+-
+-  source deactivate myuvcdat
+-
+-fi
+-
+-#####################################################
+-# Prepare what is needed to run MUSC simulations in REP_MUSC
+-[ -d $REP_MUSC ] || mkdir $REP_MUSC
+-cd $REP_MUSC
+-cp -r $REP_EMS/Examples/* .
+-ln -s $REP_EMS/main/install_ATM_cases.py install_ATM_cases.py
+-ln -s $REP_EMS/main/install_SFX_cases.py install_SFX_cases.py
+-ln -s $REP_EMS/main/run_MUSC_cases.py run_MUSC_cases.py
+-
+-for ff in convertLFA2nc.py convertp_to_1hourly.py convertz_to_1hourly.py lfa2nc_part2.py convert2p.py convert2z.py convertk_to_1hourly.py convertp_to_3hourly.py convertz_to_daily.py convert2p.so convert2z.so convertk_to_daily.py convertp_to_daily.py lfa2nc_part1.py
+-do
+-
+-  ln -s $REP_EMS/UTIL/post_DEPHY/$ff post/$ff
+-
+-done
+-
+-#####################################################
+-# Some Testing
+-cd $REP_MUSC
+-
+-source activate myuvcdat
+-
+-install_ATM_cases.py
+-[ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
+-
+-install_SFX_cases.py config/config_arp631_CMIP6.py
+-[ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
+-[ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
+-
+-run_MUSC_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
+-[ -f $REP_MUSC/simulations/arp631/CMIP6/L91_300s/AYOTTE/24SC/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
+-
+-
+-#####################################################
+-# Back in directory where installation was launched
+-cd $DIR0
+diff --git a/main/install_ATM_cases.py b/main/install_ATM_cases.py
+index 6c31544..ea11b1d 100755
+--- a/main/install_ATM_cases.py
++++ b/main/install_ATM_cases.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env cdat
+ # -*- coding:UTF-8 -*-
+ 
+ #
+diff --git a/main/install_SFX_cases.py b/main/install_SFX_cases.py
+index e145372..86cc76b 100755
+--- a/main/install_SFX_cases.py
++++ b/main/install_SFX_cases.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env cdat
+ # -*- coding:UTF-8 -*-
+ 
+ #
+diff --git a/main/run_MUSC_cases.py b/main/run_MUSC_cases.py
+index 5e75635..594bf8f 100755
+--- a/main/run_MUSC_cases.py
++++ b/main/run_MUSC_cases.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env cdat
+ # -*- coding:UTF-8 -*-
+ 
+ #

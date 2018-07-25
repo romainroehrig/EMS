@@ -37,8 +37,8 @@ set +x
 echo '------------------------------------------------------------'
 echo 'run execute le ' $ladate
 echo 'cycle =' $cycle 'config = ' $CONFIG
-echo 'Namelist AROME =' $NAMARP
-echo 'Namelist Surfex =' $NAMSFX
+echo 'Namelist ARPEGE =' $NAMARP
+#echo 'Namelist Surfex =' $NAMSFX
 echo 'Executable =' $MASTER
 echo 'Time step =' $TSTEP 'seconds; Run stops at ' $NSTOP
 echo 'Number of levels =' $levels

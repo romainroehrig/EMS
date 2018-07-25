@@ -84,8 +84,8 @@ g.qadvh = 1
 g.tadvh = 1
 g.tadvv = 0
 g.qadvv = 0
-g.uadvh = 1
-g.vadvh = 1
+g.uadvh = 0
+g.vadvh = 0
 g.uadvv = 0
 g.vadvv = 0
 

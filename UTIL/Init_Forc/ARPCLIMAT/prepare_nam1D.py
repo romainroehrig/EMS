@@ -1,9 +1,9 @@
 import cdms2
-import math
 import MV2
 import os
 import interpvertp
 import config
+import math
 
 cdms2.setNetcdfShuffleFlag(0)
 cdms2.setNetcdfDeflateFlag(0)

@@ -12,10 +12,10 @@ REP_MUSC=$HOME/MUSC
 
 
 
-
+DIR0=`pwd`
 
 #####################################################
-# Some Test to avoid overwriting
+# Some tests to avoid overwriting
 
 if [ -d $REP_EMS ]; then
   echo "REP_EMS="$REP_EMS
@@ -31,7 +31,7 @@ fi
 
 #####################################################
 # Download and install EMS in REP_EMS
-[ -d $REP_EMS ] || mkdir $REP_EMS
+[ -d $REP_EMS ] || mkdir -p $REP_EMS
 cd $REP_EMS
 git clone --single-branch https://github.com/romainroehrig/EMS.git .
 
@@ -62,7 +62,7 @@ EOF
 
 #####################################################
 # Prepare what is needed to run MUSC simulations in REP_MUSC
-[ -d $REP_MUSC ] || mkdir $REP_MUSC
+[ -d $REP_MUSC ] || mkdir -p $REP_MUSC
 cd $REP_MUSC
 cp -r $REP_EMS/Examples/* .
 ln -s $REP_EMS/main/install_ATM_cases.py install_ATM_cases.py
@@ -78,15 +78,54 @@ done
 
 #####################################################
 # Some Testing
+
+# get arp631 pack
+
+[ -d /home/common/pack ] || mkdir -p /home/common/pack
+cd /home/common/pack
+
+if [ -d arp603_export.01.GFORTRAN610.cx ]; then
+  echo "pack arp603_export.01.GFORTRAN610.cx already installed in /home/common/pack"
+else
+  echo "pack arp603_export.01.GFORTRAN610.cx is installed in /home/common/pack"
+  cp /cnrm/mosca/DATA/rootpack/arp603_export.01.GFORTRAN610.cx-29032018.tgz .
+  tar zxvf arp603_export.01.GFORTRAN610.cx-29032018.tgz
+  rm -f arp603_export.01.GFORTRAN610.cx-29032018.tgz
+fi
+
+# get 41t1_op1.11_MUSC
+
+install_cy41='n'
+
+if [$install_cy41 == 'y' ]; then
+
+  [ -d $HOME/pack ] || mkdir $HOME/pack
+  cd $HOME/pack
+
+  if [ -d 41t1_op1.11_MUSC ]; then
+    echo "pack 41t1_op1.11_MUSC already installed in /home/common/pack"
+  else
+    echo "pack 41t1_op1.11_MUSC is installed in $HOME/pack"
+    cp /cnrm/amacs/USERS/roehrig/share/MUSC/pack/41t1_op1.11_MUSC.tar.gz
+    tar zxvf 41t1_op1.11_MUSC.tar.gz
+    rm -f 41t1_op1.11_MUSC.tar.gz
+  fi
+
+fi
+# Testing for arp631
+
 cd $REP_MUSC
 
-install_ATM_cases.py AYOTTE 24SC
+./install_ATM_cases.py AYOTTE 24SC
 [ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
 
-install_SFX_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
+./install_SFX_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
 [ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
 [ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
 
-run_MUSC_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
+./run_MUSC_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
 [ -f $REP_MUSC/simulations/arp631/CMIP6/L91_300s/AYOTTE/24SC/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
 
+#####################################################
+# Back in directory where installation was launched
+cd $DIR0

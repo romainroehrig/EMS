@@ -19,19 +19,19 @@ DIR0=`pwd`
 
 if [ -d $REP_EMS ]; then
   echo "REP_EMS="$REP_EMS
-  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install.sh"
+  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install_macRR.sh"
   exit
 fi
 
 if [ -d $REP_MUSC ]; then
   echo "REP_MUSC="$REP_MUSC
-  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install.sh"
+  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install_macRR.sh"
   exit
 fi
 
 #####################################################
 # Download and install EMS in REP_EMS
-[ -d $REP_EMS ] || mkdir $REP_EMS
+[ -d $REP_EMS ] || mkdir -p $REP_EMS
 cd $REP_EMS
 git clone https://github.com/romainroehrig/EMS.git .
 git checkout macRR
@@ -98,7 +98,7 @@ fi
 
 #####################################################
 # Prepare what is needed to run MUSC simulations in REP_MUSC
-[ -d $REP_MUSC ] || mkdir $REP_MUSC
+[ -d $REP_MUSC ] || mkdir -p $REP_MUSC
 cd $REP_MUSC
 cp -r $REP_EMS/Examples/* .
 ln -s $REP_EMS/main/install_ATM_cases.py install_ATM_cases.py
@@ -108,7 +108,7 @@ ln -s $REP_EMS/main/run_MUSC_cases.py run_MUSC_cases.py
 for ff in convertLFA2nc.py convertp_to_1hourly.py convertz_to_1hourly.py lfa2nc_part2.py convert2p.py convert2z.py convertk_to_1hourly.py convertp_to_3hourly.py convertz_to_daily.py convert2p.so convert2z.so convertk_to_daily.py convertp_to_daily.py lfa2nc_part1.py
 do
 
-  ln -s $REP_EMS/UTIL/post_DEPHY/$ff post/$ff
+  ln -s $REP_EMS/UTIL/post_DEPHY/$ff $REP_MUSC/post/$ff
 
 done
 
@@ -118,16 +118,15 @@ cd $REP_MUSC
 
 source activate myuvcdat
 
-install_ATM_cases.py
+./install_ATM_cases.py AYOTTE 24SC
 [ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
 
-install_SFX_cases.py config/config_arp631_CMIP6.py
+./install_SFX_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
 [ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
 [ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
 
-run_MUSC_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
+./run_MUSC_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
 [ -f $REP_MUSC/simulations/arp631/CMIP6/L91_300s/AYOTTE/24SC/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
-
 
 #####################################################
 # Back in directory where installation was launched

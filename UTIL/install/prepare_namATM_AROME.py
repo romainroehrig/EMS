@@ -271,6 +271,10 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
   for att in fin.listglobal():
     attributes[att] = fin.getglobal(att)
 
+  if attributes['surfaceForcing'] == "surfaceFlux" :
+    time_sfc = fin('sfc_sens_flx').getAxis(0)
+    nt_sfc = time_sfc.shape[0]
+
   # Setting latitude and longitude
   tmp = fin('temp')
   lat = tmp.getLatitude()[0]
@@ -342,9 +346,6 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
   if attributes['forc_omega'] == 1:
       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
       nam[nn]['LSOMEGA_FRC'] = ['.TRUE.',]
-  if attributes['forc_w'] == 1:
-      nam["NAMCT0"]['LSFORC']=['.TRUE.',]
-      nam[nn]['LSW_FRC'] = ['TRUE',]
   if attributes['forc_geo'] == 1:
       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
       nam[nn]['LGEOST_UV_FRC'] = ['.TRUE.',]
@@ -358,6 +359,14 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
       i=i+1
       for it in range(0,nt):
         nam[nn]['NL_GEOST_UV_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]
+  if attributes['forc_w'] == 1:
+      nam["NAMCT0"]['LSFORC']=['.TRUE.',]
+      nam[nn]['LSW_FRC'] = ['TRUE',]  
+      nam[nn]['NLSW_DEB'] = [str(1+i*nt),]
+      nam[nn]['NLSW_NUM'] = [str(nt),]
+      i=i+1
+      for it in range(0,nt):
+        nam[nn]['NL_LSW_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]      
   else:
       nam[nn]['LGEOST_UV_FRC'] = ['.FALSE.',]
   if attributes['nudging_u'] > 0. or attributes['nudging_v'] > 0.:
@@ -381,15 +390,19 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
         nam[nn]['RZ0_FORC'] = [str(float(attributes['z0'])),]
       else:
         nam[nn]['RZ0_FORC'] = ['0.035',]
-      nam[nn]["NSH_FORC_DEB"]=[str(int(1+j*nt)),]
-      nam[nn]["NSH_FORC_NUM"]=[str(nt),]
+      nam[nn]["NSH_FORC_DEB"]=[str(int(1+i*nt+j*nt_sfc)),]
+      nam[nn]["NSH_FORC_NUM"]=[str(nt_sfc),]
       j=j+1
-      nam[nn]["NLH_FORC_DEB"]=[str(int(1+j*nt)),]
-      nam[nn]["NLH_FORC_NUM"]=[str(nt),]
-      for it in range(0,nt):
-         nam[nn]['NL_SH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt*it)),]
-         nam[nn]['NL_LH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt*it)),]
-      nam["NAMPHYDS"]['NSFORC']=[str(int(2*nt)),]
+      nam[nn]["NLH_FORC_DEB"]=[str(int(1+i*nt+j*nt_sfc)),]
+      nam[nn]["NLH_FORC_NUM"]=[str(nt_sfc),]
+      if nt_sfc == 1:
+        dt_sfc = 0.
+      else:  
+        dt_sfc = time_sfc[1]-time_sfc[0]
+      for it in range(0,nt_sfc):
+         nam[nn]['NL_SH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt_sfc*it)),]
+         nam[nn]['NL_LH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt_sfc*it)),]
+      nam["NAMPHYDS"]['NSFORC']=[str(int(2*nt_sfc)),]
 
   nam['NAMGFL']['NGFL_FORC'] = [str(int(nt*i)),]
 
