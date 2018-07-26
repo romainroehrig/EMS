@@ -25,31 +25,37 @@ if ldebug:
 
 ####################################
 #### Definition of cases
+####################################
 
-# CINDY-DYNAMO cases
-case = 'CINDY-DYNAMO'
+####################################
+#### Stable boundary-layer cases
+
+# GABLS4 Case
+case = 'GABLS4'
 cases.append(case)
-subcases[case] = ['NSA3a','NSA3aflux','SSA3a']
-#subcases[case] = ['NSA3aflux','SSA3a']
-subcases[case] = ['NSA3a']
+subcases[case] = ['OA_FLUX_USTAR']
 data_input[case] = {}
-data_input[case]['NSA3a'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3a_driver_RR.nc'
-data_input[case]['NSA3aflux'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3aflux_driver_RR.nc'
-data_input[case]['SSA3a'] = rep0 + '/CINDY-DYNAMO/SSA3a/cindy-dynamo-SSA3a_driver_RR.nc'
+data_input[case]['Stage3'] = rep0 + '/GABLS4/GABLS4_24h_driver_FC_RR_flux_z03.nc'
+data_input[case]['Stage2'] = rep0 + '/GABLS4/stage2/GABLS4_SCM_LES_STAGE2_RR.nc'
+data_input[case]['OA_FLUX_USTAR'] = rep0 + '/GABLS4/Olivier/GABLS4_24h_driver_FC_RR_flux_ustar.nc'
 
-# LBA case
-case = 'LBA'
+####################################
+#### Dry convection cases
+
+# AYOTTE Cases
+case = 'AYOTTE'
+cases.append(case)
+subcases[case] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
+data_input[case] = {}
+for cc in subcases[case]:
+  data_input[case][cc] = rep0 + '/AYOTTE/AYOTTE_A{0}_driver_FC_RR.nc'.format(cc)
+
+# IHOP Cases
+case = 'IHOP'
 cases.append(case)
 subcases[case] = ['REF']
 data_input[case] = {}
-data_input[case]['REF'] = rep0 + '/LBA/LBA_driver_FC_RR.nc'
-
-# AMMA Cases
-case = 'AMMA'
-cases.append(case)
-subcases[case] = ['REF']
-data_input[case] = {}
-data_input[case]['REF'] = rep0 + '/AMMA/AMMA_20060710_setupI_driver_RR.nc'
+data_input[case]['REF'] = rep0 + '/IHOP/IHOP_driver_FC_RR.nc'
 
 # AMMAsec Cases
 case = 'AMMAsec'
@@ -65,26 +71,15 @@ subcases[case] = ['REF']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/WANGARA/WANGARA_driver_FC_RR.nc'
 
+####################################
+#### Shallow convection cases
+
 # SCMS Cases
 case = 'SCMS'
 cases.append(case)
 subcases[case] = ['REF']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/SCMS/SCMS_driver_FC_RR.nc'
-
-# FIRE Case
-case = 'FIRE'
-cases.append(case)
-subcases[case] = ['REF']
-data_input[case] = {}
-data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR.nc'
-
-# DYCOMS Case
-case = 'DYCOMS'
-cases.append(case)
-subcases[case] = ['REF']
-data_input[case] = {}
-data_input[case]['REF'] = rep0 + '/DYCOMS/DYCOMS_driver_FC_RR.nc'
 
 # RICO Case
 case = 'RICO'
@@ -107,13 +102,49 @@ subcases[case] = ['REF']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/BOMEX/BOMEX_driver_MPL_RR.nc'
 
-# AYOTTE Cases
-case = 'AYOTTE'
+####################################
+#### Stratocumulus cases
+
+# FIRE Case
+case = 'FIRE'
 cases.append(case)
-subcases[case] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
+subcases[case] = ['REF']
 data_input[case] = {}
-for cc in subcases[case]:
-  data_input[case][cc] = rep0 + '/AYOTTE/AYOTTE_A{0}_driver_FC_RR.nc'.format(cc)
+data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR.nc'
+
+# DYCOMS Case
+case = 'DYCOMS'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+data_input[case]['REF'] = rep0 + '/DYCOMS/DYCOMS_driver_FC_RR.nc'
+
+####################################
+#### Deep convection cases
+
+# LBA case
+case = 'LBA'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+data_input[case]['REF'] = rep0 + '/LBA/LBA_driver_FC_RR.nc'
+
+# AMMA Cases
+case = 'AMMA'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+data_input[case]['REF'] = rep0 + '/AMMA/AMMA_20060710_setupI_driver_RR.nc'
+
+# CINDY-DYNAMO cases
+case = 'CINDY-DYNAMO'
+cases.append(case)
+#subcases[case] = ['NSA3a','NSA3aflux','SSA3a']
+subcases[case] = ['NSA3a']
+data_input[case] = {}
+data_input[case]['NSA3a'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3a_driver_RR.nc'
+data_input[case]['NSA3aflux'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3aflux_driver_RR.nc'
+data_input[case]['SSA3a'] = rep0 + '/CINDY-DYNAMO/SSA3a/cindy-dynamo-SSA3a_driver_RR.nc'
 
 # Derbyshire cases
 case = 'Derbyshire'
@@ -125,14 +156,8 @@ data_input[case]['RH50'] = rep0 + '/Derbyshire/Derbyshire_RH50_driver_RR.nc'
 data_input[case]['RH70'] = rep0 + '/Derbyshire/Derbyshire_RH70_driver_RR.nc'
 data_input[case]['RH90'] = rep0 + '/Derbyshire/Derbyshire_RH90_driver_RR.nc'
 
-# GABLS4 Case
-case = 'GABLS4'
-cases.append(case)
-subcases[case] = ['OA_FLUX_USTAR']
-data_input[case] = {}
-data_input[case]['Stage3'] = rep0 + '/GABLS4/GABLS4_24h_driver_FC_RR_flux_z03.nc'
-data_input[case]['Stage2'] = rep0 + '/GABLS4/stage2/GABLS4_SCM_LES_STAGE2_RR.nc'
-data_input[case]['OA_FLUX_USTAR'] = rep0 + '/GABLS4/Olivier/GABLS4_24h_driver_FC_RR_flux_ustar.nc'
+
+####################################
 
 if ldebug:
   for cc in cases:
