@@ -37,6 +37,13 @@ data_input[case]['NSA3a'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3a_drive
 data_input[case]['NSA3aflux'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3aflux_driver_RR.nc'
 data_input[case]['SSA3a'] = rep0 + '/CINDY-DYNAMO/SSA3a/cindy-dynamo-SSA3a_driver_RR.nc'
 
+# LBA case
+case = 'LBA'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+data_input[case]['REF'] = rep0 + '/LBA/LBA_driver_FC_RR.nc'
+
 # AMMA Cases
 case = 'AMMA'
 cases.append(case)
