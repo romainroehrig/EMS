@@ -62,6 +62,7 @@ if attributes['qadv'] == 1:
 if attributes['tadvh'] == 1:
   var2read.append('tadvh')	
   var2interpol.append('tadvh')
+  time = f('tadvh').getTime()
 if attributes['qadvh'] == 1:
   var2read.append('qadvh')	
   var2interpol.append('qadvh')
