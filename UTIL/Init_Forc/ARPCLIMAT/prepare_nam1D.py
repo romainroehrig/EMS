@@ -292,13 +292,13 @@ if lnam1D:
 
   print >>g, 'T'
   for ilev in range(0,nlev_out):
-#    print >>g, data_out['temp'][0,ilev]
+    print >>g, data_out['temp'][0,ilev]
 # Pas completement satisfaisant a ce stade...
-    if pph[0,ilev] >= 10000.:
-      print >>g, data_out['theta'][0,ilev]*(pph[0,ilev]/100000.)**(2./7.)
-    else:
-      # Pour eviter des plantages en haute atmosphere
-      print >>g, data_out['temp'][0,ilev]
+#    if pph[0,ilev] >= 10000.:
+#      print >>g, data_out['theta'][0,ilev]*(pph[0,ilev]/100000.)**(2./7.)
+#    else:
+#      # Pour eviter des plantages en haute atmosphere
+#      print >>g, data_out['temp'][0,ilev]
 
   print >>g, 'QV'
   for ilev in range(0,nlev_out):
