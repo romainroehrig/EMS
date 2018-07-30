@@ -1,0 +1,9 @@
+ ! NOAA/PMEL TMAP
+ ! FERRET v7.1 (optimized)
+ ! Linux 2.6.32-642.13.1.el6.x86_64 64-bit - 02/15/17
+ ! 27-Jul-18 18:19     
+
+use ARMCu_driver_RR.nc
+sh da
+plot SFC_SENS_FLX
+q
