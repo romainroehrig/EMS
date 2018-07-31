@@ -39,6 +39,9 @@ data['ps'].id = 'ps'
 data['ps'].title = 'Surface Pressure'
 data['ps'].units = 'Pa'
 
+data['ts'] = data['ts'] + 10
+data['ts'].id = 'ts'
+
 variables.append('tadv')
 variables.append('ps')
 
@@ -63,7 +66,7 @@ g.qadvh = 0
 g.tadvh = 0 
 g.tadvv = 0 
 g.qadvv = 0 
-g.trad = 0 
+g.trad = 'adv' 
 g.forc_omega = 0 
 g.forc_w = 0 
 g.forc_geo = 1 
@@ -72,7 +75,7 @@ g.nudging_v = 0
 g.nudging_t = 0 
 g.nudging_q = 0 
 g.zorog = 0.
-g.z0 = 0.01
+g.z0 = 0.035
 g.ustar = 0.
 g.surfaceType = "land" 
 g.surfaceForcing = "surfaceFlux"
