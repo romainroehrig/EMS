@@ -33,8 +33,9 @@ lon.designateLongitude()
 lon.id = 'lon'
 lon.units = 'degrees_east'
 
-nlev = 11 + 7
-lev = [0,5,130,829,848,900,908,928,968,1000,1008,1048,1100,1388,1750,1787,2000,3000]
+#lev = [0,5,130,829,848,900,908,928,968,1000,1008,1048,1100,1388,1750,1787,2000,3000,4000]
+lev = range(0,5000,10)
+nlev = len(lev)
 lev = MV2.array(lev,typecode=MV2.float32)
 lev = cdms2.createAxis(lev)
 lev.designateLevel()
@@ -126,6 +127,10 @@ datanew['ps'][:,0,0] = datanew['ps'][:,0,0] + data['ps']
 #datanew['orog'][0,0] = datanew['orog'][0,0] + data['orog']
 datanew['ustar'][:,0,0] = datanew['ustar'][:,0,0] + 0.566
 
+for it in range(0,2):
+  for ilev in range(0,nlev):
+      datanew['temp'][it,ilev,0,0] = datanew['th'][it,ilev,0,0]*(datanew['pressure'][it,ilev,0,0]/100000.)**(2./7.) 
+
 g = cdms2.open('AYOTTE_A24SC_driver_FC_RR.nc','w')
 
 for var in variables:
@@ -158,7 +163,7 @@ g.nudging_q = 0
 g.zorog = 0.
 g.z0 = 0.16
 #g.ustar = 0.566
-g.surfaceForcing = "surfaceFlux" 
+g.surfaceForcing = "surfaceFlux"
 g.surfaceForcingWind = "z0"
 g.surfaceType = "ocean"
 

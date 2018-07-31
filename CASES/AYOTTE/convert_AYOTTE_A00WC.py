@@ -33,7 +33,8 @@ lon.designateLongitude()
 lon.id = 'lon'
 lon.units = 'degrees_east'
 
-lev = [0,5,130,245,670,900,904,925,1000,1010,1100,1116,1138,1159,1350,1670,1750,1903,2000,3000]
+#lev = [0,5,130,245,670,900,904,925,1000,1010,1100,1116,1138,1159,1350,1670,1750,1903,2000,3000,4000]
+lev = range(0,5000,10)
 nlev = len(lev)
 lev = MV2.array(lev,typecode=MV2.float32)
 lev = cdms2.createAxis(lev)
@@ -126,6 +127,10 @@ datanew['ps'][:,0,0] = datanew['ps'][:,0,0] + data['ps']
 #datanew['orog'][0,0] = datanew['orog'][0,0] + data['orog']
 datanew['ustar'][:,0,0] = datanew['ustar'][:,0,0] + 0.667
 
+for it in range(0,2):
+  for ilev in range(0,nlev):
+      datanew['temp'][it,ilev,0,0] = datanew['th'][it,ilev,0,0]*(datanew['pressure'][it,ilev,0,0]/100000.)**(2./7.) 
+
 g = cdms2.open('AYOTTE_A00WC_driver_FC_RR.nc','w')
 
 for var in variables:
@@ -140,7 +145,7 @@ g.description = "No subsidence/ascendance, No T & q large-scale advection, no ra
 g.reference = 'Ayotte et al (1996, BLM)'
 g.author = "F Couvreux"
 g.modifications = "2018-04-20: R. Roehrig put all fields on the same vertical and time axes"
-g.case = "AYOTTE_05SC" 
+g.case = "AYOTTE_00WC" 
 g.startDate = "20091211100000" 
 g.endDate = "20091211160000" 
 g.qadvh = 0 
@@ -158,7 +163,7 @@ g.nudging_q = 0
 g.zorog = 0.
 g.z0 = 0.16
 #g.ustar = 0.667
-g.surfaceForcing = "surfaceFlux" 
+g.surfaceForcing = "surfaceFlux"
 g.surfaceForcingWind = "z0"
 g.surfaceType = "ocean"
 
