@@ -33,7 +33,8 @@ lon.designateLongitude()
 lon.id = 'lon'
 lon.units = 'degrees_east'
 
-lev = [0,5,130,400,415,425,434,444,454,463,473,475,482,492,500,501,511,520,530,540,549,559,568,578,587,597,600,606,616,625,635,644,654,664,673,683,692,702,711,721,730,740,750,759,769,778,788,797,807,816,826,836,845,855,1000,1750,2000,3000]
+#lev = [0,5,130,400,415,425,434,444,454,463,473,475,482,492,500,501,511,520,530,540,549,559,568,578,587,597,600,606,616,625,635,644,654,664,673,683,692,702,711,721,730,740,750,759,769,778,788,797,807,816,826,836,845,855,1000,1750,2000,3000,4000]
+lev = range(0,5000,10)
 nlev = len(lev)
 lev = MV2.array(lev,typecode=MV2.float32)
 lev = cdms2.createAxis(lev)
@@ -126,6 +127,10 @@ datanew['ps'][:,0,0] = datanew['ps'][:,0,0] + data['ps']
 #datanew['orog'][0,0] = datanew['orog'][0,0] + data['orog']
 datanew['ustar'][:,0,0] = datanew['ustar'][:,0,0] + 0.500
 
+for it in range(0,2):
+  for ilev in range(0,nlev):
+      datanew['temp'][it,ilev,0,0] = datanew['th'][it,ilev,0,0]*(datanew['pressure'][it,ilev,0,0]/100000.)**(2./7.) 
+
 g = cdms2.open('AYOTTE_A00SC_driver_FC_RR.nc','w')
 
 for var in variables:
@@ -140,7 +145,7 @@ g.description = "No subsidence/ascendance, No T & q large-scale advection, no ra
 g.reference = 'Ayotte et al (1996, BLM)'
 g.author = "F Couvreux"
 g.modifications = "2018-04-20: R. Roehrig put all fields on the same vertical and time axes"
-g.case = "AYOTTE_05SC" 
+g.case = "AYOTTE_00SC" 
 g.startDate = "20091211100000" 
 g.endDate = "20091211160000" 
 g.qadvh = 0 
