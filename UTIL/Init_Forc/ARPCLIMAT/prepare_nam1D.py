@@ -161,7 +161,12 @@ except:
 #time = f('w').getTime()	
 #else:
 #  time = data_in['w'].getTime()
-nt = time.shape[0]
+try:
+  nt = time.shape[0]
+except:
+  time = data_in['temp'].getTime()
+  nt = time.shape[0]
+
 lev_in = data_in['pressure'].getLevel()
 nlev_in = lev_in.shape[0]
 

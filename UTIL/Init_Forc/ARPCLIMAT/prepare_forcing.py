@@ -46,6 +46,8 @@ for att in f.listglobal():
 
 time0 = f.getAxis('time')
 
+nt = time0.shape[0]
+
 variables3D = []
 
 if attributes['tadv'] == 1:
@@ -135,7 +137,6 @@ names['omega'] = 'Omega'
 names['temp'] = 'T'
 names['qv'] = 'q'
 
-#nt = 736
 nlev = config.nlev
 
 lev = MV2.array(range(0,nlev),typecode=MV2.float)
