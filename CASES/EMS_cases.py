@@ -161,6 +161,13 @@ data_input[case]['RH50'] = rep0 + '/Derbyshire/Derbyshire_RH50_driver_RR.nc'
 data_input[case]['RH70'] = rep0 + '/Derbyshire/Derbyshire_RH70_driver_RR.nc'
 data_input[case]['RH90'] = rep0 + '/Derbyshire/Derbyshire_RH90_driver_RR.nc'
 
+# RCE-MIP
+case = 'RCEMIP'
+cases.append(case)
+subcases[case] = ['SST295','SST300','SST305']
+data_input[case] = {}
+for SST in [295,300,305]:
+  data_input[case]['SST{0}'.format(SST)] = rep0 + '/RCEMIP/RECMIP_SST{0}.nc'.format(SST)
 
 ####################################
 

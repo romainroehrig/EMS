@@ -66,7 +66,7 @@ for var in ['PUSTAR','PCD','PCH','PCE','ZUSR','ZTSR','ZQSR','PZ0SEA','PZ0HSEA','
 #      efluxSfcRad, efluxSfcTurb, efluxSfcConv, efluxSfcAdj, efluxSfcPrSen, efluxSfcPrLat
 #      iMSEadv, iMSEnud, iQw, iEw
 # 12. Especes Gazeuses
-#      rCO2, rCH4, rN2O, rNO2, rCFC11, rCFC12, rCFC22, rCCL4, rO3
+#      rCO2, rCH4, rN2O, rNO2, rCFC11, rCFC12, rCFC22, rCCL4, rO3, O3
 # 13. Variables du schema de convection Bougeault 1985
 #      alpha, Mf, Tu, Thu, qvu, qcu
 # 14. Variables du schema PCMT
@@ -259,6 +259,7 @@ varnames['evapn'] = 'PFEVN'
 varnames['tauu']  = 'PSFU'
 varnames['tauv']  = 'PSFV'
 varnames['ustar']  = 'ZUSTAR'
+varnames['ustarsfx']  = 'ZUSTAR_SFX'
 
 varnames['Cd'] = 'ZCD'
 varnames['Ch'] = 'ZCH'
@@ -480,6 +481,7 @@ varnames['rCFC12'] = 'ZC12'
 varnames['rCFC22'] = 'ZC22'
 varnames['rCCL4'] = 'ZCL4'
 varnames['rO3'] = 'ZOZN'
+varnames['O3'] = 'O3'
 
 ##########################################
 # 13. Variables du schema de convection Bougeault 1985
@@ -513,6 +515,7 @@ varnames['dw_transp'] = 'BILOM+TTRANSP'
 varnames['buoy'] = 'ZBUO_W'
 varnames['Mf'] = 'MF'
 varnames['eps_u'] = 'ZEPSILON_U'
+varnames['del_u'] = 'ZDELTA_U'
 varnames['eps_u_org'] = 'ZEPS_ORG'
 varnames['eps_u_tur'] = 'ZEPS_TUR'
 varnames['entr_u'] = 'ZENTR_U'
@@ -740,6 +743,7 @@ names['evapn'] = 'Evaporation over snow (or ice) and frozen soil'
 names['tauu']  = 'Surface zonal stress'
 names['tauv']  = 'Surface meridional stress'
 names['ustar']  = 'ustar'
+names['ustarsfx']  = 'ustarsfx'
 
 names['Cd'] = 'Surface Exchange Coefficient for Wind'
 names['Ch'] = 'Surface Exchange Coefficient for Heat'
@@ -961,6 +965,7 @@ names['rCFC12'] = 'CFC12 Mixing Ratio'
 names['rCFC22'] = 'CFC22 Mixing Ratio'
 names['rCCL4'] = 'CCL4 Mixing Ratio'
 names['rO3'] = 'O3 Mixing Ratio'
+names['O3'] = 'O3 Mixing Ratio'
 
 ##########################################
 # 13. Variables du schema de convection Bougeault 1985
@@ -994,6 +999,7 @@ names['dw_transp'] = 'Updraft Vertical Velocity Tendency due to Vertical Transpo
 names['buoy'] = 'Convection Buoyancy used in Updraft Vertical Velocity Budget'
 names['Mf'] = 'Convective Mass Flux'
 names['eps_u'] = 'Fractional Convective Updraft Entrainment'
+names['del_u'] = 'Fractional Convective Updraft Detrainment'
 names['eps_u_org'] = 'Fractional Organised Convective Updraft Entrainment'
 names['eps_u_tur'] = 'Fractional Turbulent Convective Updraft Entrainment'
 names['entr_u'] = 'Convective Updraft Entrainment'
@@ -1222,6 +1228,7 @@ units['evapn'] = 'kg/m2/s'
 units['tauu']  = 'kg m-1 s-2'
 units['tauv']  = 'kg m-1 s-2'
 units['ustar']  = 'm/s'
+units['ustarsfx']  = 'm/s'
 
 units['Cd'] = '-'
 units['Ch'] = '-'
@@ -1445,6 +1452,7 @@ units['rCFC12'] = 'kg/kg'
 units['rCFC22'] = 'kg/kg'
 units['rCCL4'] = 'kg/kg'
 units['rO3'] = 'kg/kg'
+units['O3'] = 'ppmv'
 
 ##########################################
 # 13. Variables du schema de convection Bougeault 1985
@@ -1478,8 +1486,9 @@ units['dw_transp'] = 'Pa s-2'
 units['buoy'] = 'm s-2'
 units['Mf'] = 'kg m-2 s-1'
 units['eps_u'] = 'm-1'
-units['eps_u_org'] = 'm-1'
-units['eps_u_tur'] = 'm-1'
+units['del_u'] = 'm-1'
+units['eps_u_org'] = 'Pa-1'
+units['eps_u_tur'] = 'Pa-1'
 units['entr_u'] = 's-1'
 units['detr_u'] = 's-1'
 units['dTv_up'] = 'K'
@@ -1767,6 +1776,7 @@ coefs['evapn'] = 1
 coefs['tauu']  = 1
 coefs['tauv']  = 1
 coefs['ustar']  = 1
+coefs['ustarsfx']  = 1
 
 coefs['Cd'] = 1
 coefs['Ch'] = 1
@@ -1989,6 +1999,7 @@ coefs['rCFC12'] = 1
 coefs['rCFC22'] = 1
 coefs['rCCL4'] = 1
 coefs['rO3'] = 1
+coefs['O3'] = 1.e6 * 28.9644/47.9942 #From mass mixing ratio (kg kg-1) to ppmv
 
 ##########################################
 # 13. Variables du schema de convection Bougeault 1985
@@ -2022,6 +2033,7 @@ coefs['dw_transp'] = 1
 coefs['buoy'] = 1
 coefs['Mf'] = 1
 coefs['eps_u'] = 1
+coefs['del_u'] = 1
 coefs['eps_u_org'] = 1
 coefs['eps_u_tur'] = 1
 coefs['entr_u'] = 1
