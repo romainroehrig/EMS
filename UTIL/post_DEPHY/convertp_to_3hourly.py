@@ -11,12 +11,18 @@ rep0 = './'
 
 nt = 100*24/3
 
-unitsTime = 'hours since 2011-10-01 0:0:0.0'
+f = cdms2.open(rep0 + '/netcdf/Out_plevel.nc')
+tmp = f.getAxis('time')
+dt = tmp[1]-tmp[0]
+t0 = cdtime.reltime(tmp[0]-dt/2.,tmp.units)
+
+unitsTime = tmp.units.replace('seconds','hours') #'hours since 2011-10-01 0:0:0.0'
 
 time0 = cdms2.createAxis(MV2.array(range(0,nt),typecode=MV2.float32))
 for it in range(0,nt):
-  tt = cdtime.comptime(2011,10,1,0,0,0)
-  tt = tt.add(3.*it+1.5,cdtime.Hour)
+#  tt = cdtime.comptime(2011,10,1,0,0,0)
+#  tt = tt.add(3.*it+1.5,cdtime.Hour)
+  tt = t0.add(3.*it+1.5,cdtime.Hour)
   time0[it] = tt.torel(unitsTime).value
 
 time0.designateTime()

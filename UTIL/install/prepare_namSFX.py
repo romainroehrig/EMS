@@ -138,6 +138,15 @@ def prep_nam_SFX(case,filecase,namref,namout=None,subcase=None):
     lon = sst.getLongitude()[0]
     time = sst.getTime()
     zz0 = float(fin.z0)
+    try:
+      alb = float(fin.alb)
+      lalb = True
+    except:
+      lalb = False
+    try:
+      lrce = (int(fin.RCE) == 1)
+    except:
+      lrce = False
   elif surfaceForcing == 'surfaceFlux':
     surfaceForcingWind = fin.surfaceForcingWind
     hfls = fin('sfc_lat_flx')
@@ -361,6 +370,20 @@ def prep_nam_SFX(case,filecase,namref,namout=None,subcase=None):
         nam[nn]['NMONTH_SST(%(ii)4.i)'%{"ii": it+1}] = ['%(month)2.2i'%{"month": tt.tocomp().month},]
         nam[nn]['NDAY_SST(%(ii)4.i)'%{"ii": it+1}] = ['%(day)2.2i'%{"day": tt.tocomp().day},]
         nam[nn]['XTIME_SST(%(ii)4.i)'%{"ii": it+1}] = ['%(seconds)7.1f'%{"seconds": tt.tocomp().hour*3600},]
+
+      if lalb:
+        nam['NAM_SEAFLUXn']['CSEA_ALB'] = ["'UNIF'",]
+        nn = 'NAM_SURF_CSTS'
+        nam[nn]['XALBCOEF_TA96'] = [str(alb),]
+        nam[nn]['XALBSCA_WAT'] = [str(alb),]
+        nam[nn]['XALBWAT'] = [str(alb),]
+
+      if lrce:
+        nn = 'NAM_SURF_ATM'
+        nam[nn]['LALDTHRES'] = ['.TRUE.',]
+        nam[nn]['XCISMIN'] = ['0.',]
+        nam[nn]['XVMODMIN'] = ['1.',]
+        
     elif surfaceType == 'land':
       nn = 'NAM_DATA_TSZ0'
       nam[nn] = {}

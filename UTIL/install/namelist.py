@@ -44,10 +44,20 @@ def writearp(nam,fout):
   for nn in sorted(nam.keys()):
     print >>f, '&' + nn
     for param in sorted(nam[nn].keys()):
-      tmp = '  ' + param + '='	    
-      for val in nam[nn][param]:
-        tmp = tmp + val + ','
-      print >>f, tmp	  
+      if param in ['CFP2DF(1)','CFP3DF(1)','CFPCFU(1)','CFPPHY(1)','CFPXFU(1)']:
+        tmp = '  ' + param + '='	 
+        for i,val in enumerate(nam[nn][param]):
+          if i == 0:
+            tmp = tmp + val + ',\n'
+          else:
+            tmp = tmp + '    ' + val + ',\n'
+        tmp = tmp[:-1]
+      else:
+        tmp = '  ' + param + '='	    
+        for val in nam[nn][param]:
+          tmp = tmp + val + ','
+      print >>f, tmp	 
+     
     print >>f, '/'
 
 

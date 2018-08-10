@@ -46,6 +46,8 @@ for att in f.listglobal():
 
 time0 = f.getAxis('time')
 
+nt = time0.shape[0]
+
 variables3D = []
 
 if attributes['tadv'] == 1:
@@ -188,7 +190,7 @@ for var in variables3D:
     ntin = int(dt0/dt)
 
     if ntin <> dt0/dt:
-      print 'problem'
+      print 'problem', ntin, dt0, dt
       sys.exit()
 
     data_interp = MV2.zeros(((nt-1)*ntin+1,nlev),typecode=MV2.float)
@@ -272,7 +274,7 @@ for var in variables2D:
     ntin = int(dt0/dt)
 
     if ntin <> dt0/dt:
-      print 'problem'
+      print 'problem', ntin, dt0, dt
       sys.exit()
 
     data_interp = MV2.zeros(((nt-1)*ntin+1),typecode=MV2.float)

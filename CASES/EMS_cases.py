@@ -141,10 +141,15 @@ case = 'CINDY-DYNAMO'
 cases.append(case)
 #subcases[case] = ['NSA3a','NSA3aflux','SSA3a']
 subcases[case] = ['NSA3a']
+subcases[case] = ['Revelle-ARM-CSU-13Nov']
+subcases[case] = ['Revelle-PE-13Nov']
 data_input[case] = {}
 data_input[case]['NSA3a'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3a_driver_RR.nc'
 data_input[case]['NSA3aflux'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3aflux_driver_RR.nc'
 data_input[case]['SSA3a'] = rep0 + '/CINDY-DYNAMO/SSA3a/cindy-dynamo-SSA3a_driver_RR.nc'
+data_input[case]['Revelle-ARM-CSU-leg3'] = rep0 + '/CINDY-DYNAMO/RevelleARM1/CINDY-DYNAMO_Revelle-ARM-CSU-leg3_driver_RR_extended.nc'
+data_input[case]['Revelle-ARM-CSU-13Nov'] = rep0 + '/CINDY-DYNAMO/RevelleARM1/CINDY-DYNAMO_Revelle-ARM-CSU-13Nov_driver_RR_extended.nc'
+data_input[case]['Revelle-PE-13Nov'] = rep0 + '/CINDY-DYNAMO/RevellePE/CINDY-DYNAMO_Revelle-PE-13Nov_driver_RR.nc'
 
 # Derbyshire cases
 case = 'Derbyshire'
@@ -156,6 +161,13 @@ data_input[case]['RH50'] = rep0 + '/Derbyshire/Derbyshire_RH50_driver_RR.nc'
 data_input[case]['RH70'] = rep0 + '/Derbyshire/Derbyshire_RH70_driver_RR.nc'
 data_input[case]['RH90'] = rep0 + '/Derbyshire/Derbyshire_RH90_driver_RR.nc'
 
+# RCE-MIP
+case = 'RCEMIP'
+cases.append(case)
+subcases[case] = ['SST295','SST300','SST305']
+data_input[case] = {}
+for SST in [295,300,305]:
+  data_input[case]['SST{0}'.format(SST)] = rep0 + '/RCEMIP/RECMIP_SST{0}.nc'.format(SST)
 
 ####################################
 

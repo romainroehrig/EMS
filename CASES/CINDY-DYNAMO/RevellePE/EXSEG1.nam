@@ -1,0 +1,135 @@
+&NAM_LUNITn  CINIFILE = "COCOA_PREP_RUN1",
+             CINIFILEPGD="COCOA_PREP_RUN1_PGD"/
+
+&NAM_ADVn CUVW_ADV_SCHEME="CEN4TH",
+          CTEMP_SCHEME="RKC4"/
+
+&NAM_DYNn    XTSTEP = 5.,
+             CPRESOPT = "ZRESI",
+             NITR = 4,
+             LVE_RELAX = .FALSE.,
+             XT4DIFU = 500.,
+             NRIMX = 0,
+             NRIMY = 0 /
+
+&NAM_PARAMn  CTURB = "TKEL",
+             CRAD = "ECMW",
+             CCLOUD= "NONE",
+             CDCONV= "NONE" ,
+             CSCONV= "NONE" /
+
+&NAM_SEAFLUXn CSEA_FLUX='COARE3',
+              CSEA_ALB='TA96'  /
+
+&NAM_DIAG_SURFn LSURF_BUDGET=.TRUE.,
+                LSURF_BUDGETC=.TRUE.,
+                N2M=0 /
+
+&NAM_PARAM_RADn XDTRAD = 150.,
+                NRAD_DIAG = 1/
+
+&NAM_LBCn    CLBCX = 2*"CYCL",
+             CLBCY = 2*"CYCL" /
+
+&NAM_TURBn XIMPL = 1.,
+           CTURBLEN = "BL89",
+           CTURBDIM = "1DIM",
+           LTURB_DIAG = .TRUE.,
+           LRMC01=.TRUE.,
+           LTURB_FLX = .TRUE.,
+           LSUBG_COND =.TRUE.,
+           LSIGMAS=.TRUE.,
+           LSIG_CONV=.FALSE.,
+           CSUBG_AUCV='SIGM',
+           CTOM='NONE' /
+
+&NAM_PARAM_MFSHALLn CMF_UPDRAFT='EDKF',
+                    CMF_CLOUD='DIRE',
+                    LMIXUV=.TRUE.,
+                    LMF_FLX=.TRUE./
+
+&NAM_CONFn NSV_USER=0 /
+
+&NAM_CONF   CSPLIT='BSPLITTING',
+            LFLAT = .TRUE.,
+            CEQNSYS = "DUR",
+            LFORCING = .FALSE.,
+            NMODEL = 1,
+            NVERB = 5,
+            NHALO=1,
+            CEXP = "NOADV",
+            CSEG = "RUN01" /
+
+&NAM_DYN  XSEGLEN = 86400.,
+          XASSELIN = 0.1,
+          LCORIO = .TRUE.,
+          LNUMDIFU = .FALSE.,
+          XALKTOP = 0.01,
+          XALZBOT = 3500. /
+
+&NAM_BUDGET  CBUTYPE = 'CART',
+             NBUMOD = 1,
+             XBULEN= 3600.,
+             XBUWRI= 3600.,
+             NBUKL = 1,
+             NBUKH = 150,
+             LBU_KCP = .FALSE.,
+             NBUIL = 2,
+             NBUIH = 2,
+             NBUJL = 2,
+             NBUJH = 2,
+             LBU_ICP = .FALSE.,
+             LBU_JCP = .FALSE./
+
+&NAM_BU_RTH  LBU_RTH = .TRUE.,
+             NASSETH = 1,
+             NADVTH = 1,
+             NFRCTH = 1,
+             NNUDTH = 1,
+             NPREFTH = 1,
+             NDIFTH = 1,
+             NRELTH = 1,
+             NRADTH = 1,
+             NDCONVTH = 1,
+             NMAFLTH = 1,
+             NHTURBTH = 1,
+             NVTURBTH = 1,
+             NDISSHTH = 1,
+             NNEGATH = 1,
+             NCONDTH = 1/
+
+&NAM_FMOUT  XFMOUT(1,1) = 3600.,
+            XFMOUT(1,2) = 7200.,
+            XFMOUT(1,3) = 10800.,
+            XFMOUT(1,4) = 14400.,
+            XFMOUT(1,5) = 18000.,
+            XFMOUT(1,6) = 21600.,
+            XFMOUT(1,7) = 25200.,
+            XFMOUT(1,8) = 28800.,
+            XFMOUT(1,9) = 32400.,
+            XFMOUT(1,10) = 36000.,
+            XFMOUT(1,11) = 39600.,
+            XFMOUT(1,12) = 43200.,
+            XFMOUT(1,13) = 46800.,
+            XFMOUT(1,14) = 50400.,
+            XFMOUT(1,15) = 54000.,
+            XFMOUT(1,16) = 57600.,
+            XFMOUT(1,17) = 61200.,
+            XFMOUT(1,18) = 64800.,
+            XFMOUT(1,19) = 68400.,
+            XFMOUT(1,20) = 72000.,
+            XFMOUT(1,21) = 75600.,
+            XFMOUT(1,22) = 79200.,
+            XFMOUT(1,23) = 82800.,
+            XFMOUT(1,24) = 86400./
+
+&NAM_FRC LGEOST_UV_FRC=.FALSE.,
+         LVERT_MOTION_FRC=.FALSE.,
+         LTEND_THRV_FRC=.FALSE./
+
+&NAM_PARAM_ICE CSEDIM='SPLI' /
+
+&NAM_CONFIO  LLFIREAD=.FALSE.,
+             LLFIOUT=.FALSE.,
+             LCDF4 = .TRUE./
+

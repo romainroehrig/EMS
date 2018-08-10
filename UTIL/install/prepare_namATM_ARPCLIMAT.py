@@ -206,6 +206,38 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
       nam[nn]['RELAX_TAUQ'] = [str(float(attributes['nudging_q'])),]
       nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['p_nudging_q'])),]
 
+  if attributes.has_key('RCE') and attributes['RCE'] == 1:
+      nam['NAMAQUAMF'] = {}
+      nam['NAMCT0']['LRCE'] = ['.TRUE.',]
+      nam['NAMRIP']['RANGLE'] = [str(float(attributes['zangle'])),]
+      nam['NAMSCEN']['RI0'] = [str(float(attributes['I0'])),]
+      nn = 'NAMCLDP'
+      if attributes.has_key('CCN'):
+        tmp = math.log(attributes['CCN']/1.e6)/math.log(10)
+      else:
+        tmp = 2.
+      nam[nn]['RCCNCST'] = [str(tmp),]
+      nam[nn]['RCCNOM'] = ['0.',]
+      nam[nn]['RCCNSS'] = ['0.',]
+      nam[nn]['RCCNSU'] = ['0.',]
+      nn = 'NAERAD'
+      GHG = {}
+      GHG['CO2'] = 348.
+      GHG['CH4'] = 1650.
+      GHG['N2O'] = 306.
+      GHG['CFC11'] = 0.
+      GHG['CFC12'] = 0.
+      coefs = {}
+      coefs['CO2'] = 1.e-6    # ppmv
+      coefs['CH4'] = 1.e-9    # ppbv
+      coefs['N2O'] = 1.e-9    # ppbv
+      coefs['CFC11'] = 1.e-12 # pptv
+      coefs['CFC12'] = 1.e-12 # pptv
+      for g in GHG.keys():
+        if attributes.has_key(g):
+          nam[nn]['RC'+g] = [str(float(attributes[g])*coefs[g]),]
+        else: 
+          nam[nn]['RC'+g] = [str(GHG[g]*coefs[g]),]
 
   # -----------------------------------------------------------
   # Final writing

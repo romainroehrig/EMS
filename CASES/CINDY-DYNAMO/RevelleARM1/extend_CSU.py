@@ -21,7 +21,7 @@ levmax = 0.
 f = cdms2.open('CINDY-DYNAMO_Revelle-ARM-CSU_driver_RR.nc')
 variables = f.listvariables()
 
-f1 = cdms2.open('thermo_ERAI_6hourly.nc')
+f1 = cdms2.open('/home/roehrig/Utilitaires/Romain/MUSC/current/DATA/CINDY-DYNAMO/RevelleARM1/thermo_ERAI_6hourly.nc')
 ta = f1('t', latitude = (latmin,latmax), longitude = (lonmin,lonmax), level = (levmin,levmax))
 ta = MV2.average(ta,axis=3)
 ta = MV2.average(ta,axis=2)
@@ -35,7 +35,7 @@ hus = MV2.average(hus,axis=2)
 
 
 
-fw = cdms2.open('wind_ERAI_6hourly.nc')
+fw = cdms2.open('/home/roehrig/Utilitaires/Romain/MUSC/current/DATA/CINDY-DYNAMO/RevelleARM1/wind_ERAI_6hourly.nc')
 ua = fw('u', latitude = (latmin,latmax), longitude = (lonmin,lonmax), level = (levmin,levmax))
 ua = MV2.average(ua,axis=3)
 ua = MV2.average(ua,axis=2)
@@ -157,7 +157,7 @@ g.p_nudging_q = 10000
 
 
 g.zorog = 0.
-g.s0 = 0.1
+g.z0 = 0.1
 g.surfaceType = 'ocean'
 g.surfaceForcing = 'ts'
 
