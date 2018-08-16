@@ -167,7 +167,7 @@ cases.append(case)
 subcases[case] = ['SST295','SST300','SST305']
 data_input[case] = {}
 for SST in [295,300,305]:
-  data_input[case]['SST{0}'.format(SST)] = rep0 + '/RCEMIP/RECMIP_SST{0}.nc'.format(SST)
+  data_input[case]['SST{0}'.format(SST)] = rep0 + '/RCEMIP/RCEMIP_SST{0}.nc'.format(SST)
 
 ####################################
 

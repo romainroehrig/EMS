@@ -123,7 +123,7 @@ for SST in [295,300,305]:
     data[var].setAxis(2,lon)
 
 
-  g = cdms2.open('RECMIP_SST{0}.nc'.format(SST),'w')
+  g = cdms2.open('RCEMIP_SST{0}.nc'.format(SST),'w')
 
   for var in var2D + var3D:
     g.write(data[var])
