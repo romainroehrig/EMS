@@ -125,9 +125,10 @@ data_input[case]['REF'] = rep0 + '/DYCOMS/DYCOMS_driver_FC_RR.nc'
 # LBA case
 case = 'LBA'
 cases.append(case)
-subcases[case] = ['REF']
+subcases[case] = ['REF','MesoNH']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/LBA/LBA_driver_FC_RR.nc'
+data_input[case]['MesoNH'] = rep0 + '/LBA/LBA_driver_MesoNH_RR.nc'
 
 # AMMA Cases
 case = 'AMMA'

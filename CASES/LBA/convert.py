@@ -63,14 +63,14 @@ for var in ['thadvh']:
 f.close()
 
 #time = 0, 10800, 21600, 32400, 43200 ;
-
-lat = MV2.zeros(1,typecode=MV2.float32) + 13.47
+# Coordinates of Ji-Parana, Brazil
+lat = MV2.zeros(1,typecode=MV2.float32) - 10.88
 lat = cdms2.createAxis(lat)
 lat.designateLatitude()
 lat.id = 'lat'
 lat.units = 'degrees_north'
 
-lon = MV2.zeros(1,typecode=MV2.float32) + 2.18
+lon = MV2.zeros(1,typecode=MV2.float32) + 61.95
 lon = cdms2.createAxis(lon)
 lon.designateLongitude()
 lon.id = 'lon'
@@ -227,7 +227,7 @@ for var in variables:
   datanew[var].units = units[var]
   g.write(datanew[var])
 
-g.description = "Radiation included in temperature large-scale advection"
+g.description = "Radiation included in temperature large-scale advection, no surface friction (ustar=0)"
 g.reference = '??'
 g.author = "F Couvreux"
 g.modifications = "2018-07-24: R. Roehrig put all fields on the same vertical and time axes"
@@ -257,3 +257,50 @@ g.surfaceType = "ocean"
 
 g.close()
 
+
+variables0D = [] #['orog']
+variables2D = ['sfc_lat_flx','sfc_sens_flx','ps']
+variables3D = ['pressure','th','qv','temp','u','v','thadvh','tadvh']
+
+variables = variables3D + variables2D + variables0D
+
+g = cdms2.open('LBA_driver_MesoNH_RR.nc','w')
+
+for var in variables:
+  datanew[var].id = var
+  if var == 'th':
+    datanew[var].id = 'theta'
+  datanew[var].long_name = names[var]    
+  datanew[var].units = units[var]
+  g.write(datanew[var])
+
+g.description = "Radiation included in temperature large-scale advection, surface friction with z0=0.1"
+g.reference = '??'
+g.author = "F Couvreux"
+g.modifications = "2018-07-24: R. Roehrig put all fields on the same vertical and time axes"
+g.case = "LBA" 
+g.startDate = "19990223073000" 
+g.endDate = "19990223133000" 
+g.qadvh = 0
+g.tadvh = 1
+g.qadvv = 0 
+g.tadvv = 0 
+g.trad = 'adv' 
+g.forc_omega = 0 
+g.forc_w = 0 
+g.forc_geo = 0
+g.nudging_u = 3601 
+g.nudging_v = 3601
+g.nudging_t = 0 
+g.nudging_q = 0 
+g.p_nudging_u = 110000
+g.p_nudging_v = 110000
+g.p_nudging_t = 110000
+g.p_nudging_q = 110000
+g.zorog = 0.
+g.surfaceForcing = "surfaceFlux" 
+g.surfaceForcingWind = "z0"
+g.z0 = 0.1
+g.surfaceType = "ocean"
+
+g.close()
