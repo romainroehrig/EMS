@@ -137,7 +137,6 @@ names['omega'] = 'Omega'
 names['temp'] = 'T'
 names['qv'] = 'q'
 
-#nt = 736
 nlev = config.nlev
 
 lev = MV2.array(range(0,nlev),typecode=MV2.float)

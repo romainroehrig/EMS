@@ -125,9 +125,10 @@ data_input[case]['REF'] = rep0 + '/DYCOMS/DYCOMS_driver_FC_RR.nc'
 # LBA case
 case = 'LBA'
 cases.append(case)
-subcases[case] = ['REF']
+subcases[case] = ['REF','MesoNH']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/LBA/LBA_driver_FC_RR.nc'
+data_input[case]['MesoNH'] = rep0 + '/LBA/LBA_driver_MesoNH_RR.nc'
 
 # AMMA Cases
 case = 'AMMA'
@@ -167,7 +168,7 @@ cases.append(case)
 subcases[case] = ['SST295','SST300','SST305']
 data_input[case] = {}
 for SST in [295,300,305]:
-  data_input[case]['SST{0}'.format(SST)] = rep0 + '/RCEMIP/RECMIP_SST{0}.nc'.format(SST)
+  data_input[case]['SST{0}'.format(SST)] = rep0 + '/RCEMIP/RCEMIP_SST{0}.nc'.format(SST)
 
 ####################################
 
