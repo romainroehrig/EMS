@@ -1,0 +1,39 @@
+ ! NOAA/PMEL TMAP
+ ! FERRET v6.94  
+ ! Darwin 14.1.0 - 02/26/15
+ ! 25-Aug-18 17:57     
+
+use ARMCVP_FG.nc
+
+plot/vlimits=100000:0/hlimits=295:400 theta[l=1]
+FRAME/file="theta_init.gif"
+
+plot/vlimits=100000:0/hlimits=0:16 rv[l=1]*1000, qv[l=1]*1000
+FRAME/file="rv_qv_init.gif"
+
+plot/vlimits=100000:0 u[l=1], v[l=1]
+FRAME/file="u_v_init.gif"
+
+
+fill/vlimits=100000:0/levels=(-inf)(-7.5,7.5,0.75)(inf) THADVV*86400
+contour/over/vlimits=100000:0/levels=(-inf)(-7.5,7.5,0.75)(inf) THADVV*86400
+FRAME/file="thadvv.gif"
+
+fill/vlimits=100000:0/levels=(-inf)(-7.5,7.5,0.75)(inf) TADVV*86400
+contour/over/vlimits=100000:0/levels=(-inf)(-7.5,7.5,0.75)(inf) TADVV*86400
+FRAME/file="tadvv.gif"
+
+
+fill/vlimits=100000:0/levels=(-inf)(-3,3,0.3)(inf) RVADVV*86400*1000
+contour/over/vlimits=100000:0/levels=(-inf)(-3,3,0.3)(inf) RVADVV*86400*1000
+FRAME/file="rvadvv.gif"
+
+fill/vlimits=100000:0/levels=(-inf)(-3,3,0.3)(inf) QVADVV*86400*1000
+contour/over/vlimits=100000:0/levels=(-inf)(-3,3,0.3)(inf) QVADVV*86400*1000
+FRAME/file="qvadvv.gif"
+
+plot/vlimits=-50:450 SFC_LAT_FLX,SFC_SENS_FLX
+FRAME/file="fluxes.gif"
+
+plot ts
+FRAME/file="ts.gif"
