@@ -1,0 +1,54 @@
+#!/bin/ksh
+# --------------------------------------------------------------
+# 
+# --------------------------------------------------------------
+# Sujet:
+# Methode:
+# Externes:
+# Auteur:   2003-06, J.M. Piriou.
+# Modifications:
+# --------------------------------------------------------------
+# En entrée:
+# En sortie:
+# --------------------------------------------------------------
+proc=$(basename $0) # nom de la présente procédure.
+pref=`tempo`/$proc.$RANDOM # préfixe des fichiers temporaires.
+dirloc=`pwd` # chemin du répertoire local.
+#
+#-----------------------------------------------
+# Traitement de la ligne de commande.
+#-----------------------------------------------
+#
+if [ $# -ne 1 ]
+then
+	#
+	# Mauvais nombre d'arguments.
+	#
+	echo " "
+	echo "OBJET: "
+	echo " "
+	echo "UTILISATION: $proc DIR"
+	echo " "
+	echo "METHODE: "
+	echo " "
+	echo "EXEMPLE: $proc "
+	echo " "
+	exit
+else
+	#
+	# Nombre d'arguments OK.
+	#
+	fe=$1
+fi
+#
+#-----------------------------------------------
+# Exécution.
+#-----------------------------------------------
+#
+cd $fe
+mevol -yPRE PTT0 Profile.000.00.lfa
+mv PTT0.tmp.evol ../PTT0.tmp.evol.$fe.000.dta
+
+mevol -yPRE PTT0 Profile.024.00.lfa
+mv PTT0.tmp.evol ../PTT0.tmp.evol.$fe.024.dta
+

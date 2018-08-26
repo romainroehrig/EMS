@@ -1,0 +1,429 @@
+ 
+-------------------------------------------------------------------
+ 
+Convert ASCII variable file into LFA file.
+ 
+ Pressure Levels p(np) mb : :     965.0000000000000      
+    915.0000000000000         865.0000000000000         815.0000000000000      
+    765.0000000000000         715.0000000000000         665.0000000000000      
+    615.0000000000000         565.0000000000000         515.0000000000000      
+    465.0000000000000         415.0000000000000         365.0000000000000      
+    315.0000000000000         265.0000000000000         215.0000000000000      
+    165.0000000000000         115.0000000000000     
+ Time t(nt): :     178.4790000000000         178.6040000000000      
+    178.7290000000000         178.8540000000000         178.9790000000000      
+    179.1040000000000         179.2290000000000         179.3540000000000      
+    179.4790000000000         179.6040000000000         179.7290000000000      
+    179.8540000000000         179.9790000000000         180.1040000000000      
+    180.2290000000000         180.3540000000000         180.4790000000000     
+ Year yy(nt): :     1997.000000000000         1997.000000000000      
+    1997.000000000000         1997.000000000000         1997.000000000000      
+    1997.000000000000         1997.000000000000         1997.000000000000      
+    1997.000000000000         1997.000000000000         1997.000000000000      
+    1997.000000000000         1997.000000000000         1997.000000000000      
+    1997.000000000000         1997.000000000000         1997.000000000000     
+ Month mo(nt): :     6.000000000000000         6.000000000000000      
+    6.000000000000000         6.000000000000000         6.000000000000000      
+    6.000000000000000         6.000000000000000         6.000000000000000      
+    6.000000000000000         6.000000000000000         6.000000000000000      
+    6.000000000000000         6.000000000000000         6.000000000000000      
+    6.000000000000000         6.000000000000000         6.000000000000000     
+ Day :     27.00000000000000         27.00000000000000      
+    27.00000000000000         27.00000000000000         27.00000000000000      
+    28.00000000000000         28.00000000000000         28.00000000000000      
+    28.00000000000000         28.00000000000000         28.00000000000000      
+    28.00000000000000         28.00000000000000         29.00000000000000      
+    29.00000000000000         29.00000000000000         29.00000000000000     
+ Hour hh(nt): :     11.00000000000000         14.00000000000000      
+    17.00000000000000         20.00000000000000         23.00000000000000      
+    2.000000000000000         5.000000000000000         8.000000000000000      
+    11.00000000000000         14.00000000000000         17.00000000000000      
+    20.00000000000000         23.00000000000000         2.000000000000000      
+    5.000000000000000         8.000000000000000         11.00000000000000     
+ Minutes mm(nt): :     30.00000000000000         30.00000000000000      
+    30.00000000000000         30.00000000000000         30.00000000000000      
+    30.00000000000000         30.00000000000000         30.00000000000000      
+    30.00000000000000         30.00000000000000         30.00000000000000      
+    30.00000000000000         30.00000000000000         30.00000000000000      
+    30.00000000000000         30.00000000000000         30.00000000000000     
+LFAMINM du fichier :
+l=       1, min=          17 max=          17 moy=   17.00     rcm=   17.00    |I4| N_TIME            
+l=       1, min=          18 max=          18 moy=   18.00     rcm=   18.00    |I4| N_LEV             
+l=      18, min=   115.0     max=   965.0     moy=   540.0     rcm=   599.1    |R8| Pressure Levels p(np) mb :
+l=      17, min=   178.5     max=   180.5     moy=   179.5     rcm=   179.5    |R8| Time t(nt):       
+l=      17, min=   1997.     max=   1997.     moy=   1997.     rcm=   1997.    |R8| Year yy(nt):      
+l=      17, min=   6.000     max=   6.000     moy=   6.000     rcm=   6.000    |R8| Month mo(nt):     
+l=      17, min=   27.00     max=   29.00     moy=   27.94     rcm=   27.95    |R8| Day               
+l=      17, min=   2.000     max=   23.00     moy=   12.41     rcm=   14.09    |R8| Hour hh(nt):      
+l=      17, min=   30.00     max=   30.00     moy=   30.00     rcm=   30.00    |R8| Minutes mm(nt):   
+l=     306, min=   209.6     max=   302.4     moy=   262.1     rcm=   263.6    |R8| Temp_(K)          
+l=     306, min=  0.3611E-02 max=   16.46     moy=   4.522     rcm=   6.851    |R8| H2O_Mixing_Ratio_(g/kg)
+l=     306, min=   1.906     max=   17.03     moy=   6.345     rcm=   7.458    |R8| u_wind_(m/s)      
+l=     306, min=  -3.341     max=   7.405     moy=   1.646     rcm=   2.802    |R8| v_wind_(m/s)      
+l=     306, min=  -4.047     max=   2.674     moy= -0.1879     rcm=   1.165    |R8| omega_(mb/hour)   
+l=     306, min= -0.7222E-05 max=  0.7826E-05 moy=  0.9589E-08 rcm=  0.2949E-05|R8| Wind_Div_(1/s)    
+l=     306, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_Temp_Advec_(K/hour)
+l=     306, min= -0.4192     max=  0.3800     moy=  0.8971E-02 rcm=  0.1387    |R8| Vertical_T_Advec(K/hour)
+l=     306, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_r_Advec_(g/kg/hour)
+l=     306, min= -0.3158E-01 max=  0.7174E-01 moy=  0.6080E-02 rcm=  0.1809E-01|R8| Vertical_r_Advec(g/kg/hour)
+l=     306, min=   299.8     max=   365.8     moy=   322.6     rcm=   323.0    |R8| s(Dry_Static_Energy)(K)
+l=     306, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_s_Advec_(K/hour)
+l=     306, min= -0.2376     max=  0.1266     moy= -0.7160E-02 rcm=  0.6349E-01|R8| Vertical_s_Advec(K/hour)
+l=     306, min= -0.6508     max=  0.7177     moy=  0.2783E-01 rcm=  0.1474    |R8| ds/dt(K/hour)     
+l=     306, min= -0.6633     max=  0.7193     moy=  0.2629E-01 rcm=  0.1490    |R8| DT/dt(K/hour)     
+l=     306, min= -0.1534     max=  0.1753     moy=  0.2704E-01 rcm=  0.6456E-01|R8| dr/dt_(g/kg/hour) 
+l=     306, min= -0.5787     max=  0.6120     moy=  0.2047E-01 rcm=  0.1312    |R8| Q1_(k/hour)       
+l=     306, min= -0.3293     max=  0.2619     moy= -0.3427E-01 rcm=  0.1079    |R8| Q2_(K/hour)       
+l=     306, min=  -4.865     max=   3.491     moy= -0.8065     rcm=   1.787    |R8| Total radiative heating idealized case (K/day)
+ 
+-------------------------------------------------------------------
+ 
+Convert ASCII Ts file into LFA file.
+ 
+LFAMINM du fichier :
+l=      97, min=   291.3     max=   307.5     moy=   298.4     rcm=   298.5    |R8| Ts                
+ 
+-------------------------------------------------------------------
+ 
+Convert ASCII ps file into LFA file.
+ 
+LFAMINM du fichier :
+l=     306, min=   971.5     max=   973.2     moy=   972.3     rcm=   972.3    |R8| Area Mean Ps(mb)  
+ 
+-------------------------------------------------------------------
+ 
+Convert ASCII flux file into LFA file.
+ 
+LFAMINM du fichier :
+l=      97, min=   178.5     max=   180.5     moy=   179.5     rcm=   179.5    |R8| Calday            
+l=      97, min=   1997.     max=   1997.     moy=   1997.     rcm=   1997.    |R8| Year              
+l=      97, min=   6.000     max=   6.000     moy=   6.000     rcm=   6.000    |R8| Month             
+l=      97, min=   27.00     max=   29.00     moy=   27.99     rcm=   28.00    |R8| Day               
+l=      97, min=   0.000     max=   23.00     moy=   11.49     rcm=   13.40    |R8| Hour              
+l=      97, min=   0.000     max=   30.00     moy=   15.15     rcm=   21.32    |R8| Minute            
+l=      97, min=   0.000     max=   408.3     moy=   137.7     rcm=   211.1    |R8| LH (upward W/m2)  
+l=      97, min=  -16.39     max=   123.1     moy=   33.89     rcm=   60.57    |R8| SH (upward W/m2)  
+ 
+-------------------------------------------------------------------
+ 
+Merge variables, Ts, ps and flux into a single LFA file.
+ 
+LFAMINM du fichier :
+l=       1, min=          17 max=          17 moy=   17.00     rcm=   17.00    |I4| N_TIME            
+l=       1, min=          18 max=          18 moy=   18.00     rcm=   18.00    |I4| N_LEV             
+l=      18, min=   115.0     max=   965.0     moy=   540.0     rcm=   599.1    |R8| Pressure Levels p(np) mb :
+l=      17, min=   178.5     max=   180.5     moy=   179.5     rcm=   179.5    |R8| Time t(nt):       
+l=      17, min=   1997.     max=   1997.     moy=   1997.     rcm=   1997.    |R8| Year yy(nt):      
+l=      17, min=   6.000     max=   6.000     moy=   6.000     rcm=   6.000    |R8| Month mo(nt):     
+l=      97, min=   27.00     max=   29.00     moy=   27.99     rcm=   28.00    |R8| Day               
+l=      17, min=   2.000     max=   23.00     moy=   12.41     rcm=   14.09    |R8| Hour hh(nt):      
+l=      17, min=   30.00     max=   30.00     moy=   30.00     rcm=   30.00    |R8| Minutes mm(nt):   
+l=     306, min=   209.6     max=   302.4     moy=   262.1     rcm=   263.6    |R8| Temp_(K)          
+l=     306, min=  0.3611E-02 max=   16.46     moy=   4.522     rcm=   6.851    |R8| H2O_Mixing_Ratio_(g/kg)
+l=     306, min=   1.906     max=   17.03     moy=   6.345     rcm=   7.458    |R8| u_wind_(m/s)      
+l=     306, min=  -3.341     max=   7.405     moy=   1.646     rcm=   2.802    |R8| v_wind_(m/s)      
+l=     306, min=  -4.047     max=   2.674     moy= -0.1879     rcm=   1.165    |R8| omega_(mb/hour)   
+l=     306, min= -0.7222E-05 max=  0.7826E-05 moy=  0.9589E-08 rcm=  0.2949E-05|R8| Wind_Div_(1/s)    
+l=     306, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_Temp_Advec_(K/hour)
+l=     306, min= -0.4192     max=  0.3800     moy=  0.8971E-02 rcm=  0.1387    |R8| Vertical_T_Advec(K/hour)
+l=     306, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_r_Advec_(g/kg/hour)
+l=     306, min= -0.3158E-01 max=  0.7174E-01 moy=  0.6080E-02 rcm=  0.1809E-01|R8| Vertical_r_Advec(g/kg/hour)
+l=     306, min=   299.8     max=   365.8     moy=   322.6     rcm=   323.0    |R8| s(Dry_Static_Energy)(K)
+l=     306, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_s_Advec_(K/hour)
+l=     306, min= -0.2376     max=  0.1266     moy= -0.7160E-02 rcm=  0.6349E-01|R8| Vertical_s_Advec(K/hour)
+l=     306, min= -0.6508     max=  0.7177     moy=  0.2783E-01 rcm=  0.1474    |R8| ds/dt(K/hour)     
+l=     306, min= -0.6633     max=  0.7193     moy=  0.2629E-01 rcm=  0.1490    |R8| DT/dt(K/hour)     
+l=     306, min= -0.1534     max=  0.1753     moy=  0.2704E-01 rcm=  0.6456E-01|R8| dr/dt_(g/kg/hour) 
+l=     306, min= -0.5787     max=  0.6120     moy=  0.2047E-01 rcm=  0.1312    |R8| Q1_(k/hour)       
+l=     306, min= -0.3293     max=  0.2619     moy= -0.3427E-01 rcm=  0.1079    |R8| Q2_(K/hour)       
+l=     306, min=  -4.865     max=   3.491     moy= -0.8065     rcm=   1.787    |R8| Total radiative heating idealized case (K/day)
+l=      97, min=   291.3     max=   307.5     moy=   298.4     rcm=   298.5    |R8| Ts                
+l=     306, min=   971.5     max=   973.2     moy=   972.3     rcm=   972.3    |R8| Area Mean Ps(mb)  
+l=      97, min=   178.5     max=   180.5     moy=   179.5     rcm=   179.5    |R8| Calday            
+l=      97, min=   1997.     max=   1997.     moy=   1997.     rcm=   1997.    |R8| Year              
+l=      97, min=   6.000     max=   6.000     moy=   6.000     rcm=   6.000    |R8| Month             
+l=      97, min=   0.000     max=   23.00     moy=   11.49     rcm=   13.40    |R8| Hour              
+l=      97, min=   0.000     max=   30.00     moy=   15.15     rcm=   21.32    |R8| Minute            
+l=      97, min=   0.000     max=   408.3     moy=   137.7     rcm=   211.1    |R8| LH (upward W/m2)  
+l=      97, min=  -16.39     max=   123.1     moy=   33.89     rcm=   60.57    |R8| SH (upward W/m2)  
+ 
+-------------------------------------------------------------------
+ 
+Vertical interpolation of variables to a prescribed vertical grid.
+ 
+          266  niveaux verticaux dans le fichier 
+ /home/gueremy/M1D_CY25T1_OP3_EXP/run/eurocs_fg_case/data_create_profiles/A_and_B/266_levels.lfa
+Pression de surface = 
+    972.8589        973.2012        972.8380        971.9967        971.5103    
+    971.5473        971.9656        972.5129        972.8589        973.2012    
+    972.8380        971.9967        971.5103        971.5473        971.9656    
+    972.5129        972.8589    
+ N_TIME
+ N_LEV
+ Pressure Levels p(np) mb :
+ Time t(nt):
+ Year yy(nt):
+ Month mo(nt):
+ Day
+ Hour hh(nt):
+ Minutes mm(nt):
+ Temp_(K)
+ Interpolate Temp_(K)
+ H2O_Mixing_Ratio_(g/kg)
+ Interpolate H2O_Mixing_Ratio_(g/kg)
+ u_wind_(m/s)
+ Interpolate u_wind_(m/s)
+ v_wind_(m/s)
+ Interpolate v_wind_(m/s)
+ omega_(mb/hour)
+ Interpolate omega_(mb/hour)
+ Wind_Div_(1/s)
+ Interpolate Wind_Div_(1/s)
+ Horizontal_Temp_Advec_(K/hour)
+ Interpolate Horizontal_Temp_Advec_(K/hour)
+ Vertical_T_Advec(K/hour)
+ Interpolate Vertical_T_Advec(K/hour)
+ Horizontal_r_Advec_(g/kg/hour)
+ Interpolate Horizontal_r_Advec_(g/kg/hour)
+ Vertical_r_Advec(g/kg/hour)
+ Interpolate Vertical_r_Advec(g/kg/hour)
+ s(Dry_Static_Energy)(K)
+ Interpolate s(Dry_Static_Energy)(K)
+ Horizontal_s_Advec_(K/hour)
+ Interpolate Horizontal_s_Advec_(K/hour)
+ Vertical_s_Advec(K/hour)
+ Interpolate Vertical_s_Advec(K/hour)
+ ds/dt(K/hour)
+ Interpolate ds/dt(K/hour)
+ DT/dt(K/hour)
+ Interpolate DT/dt(K/hour)
+ dr/dt_(g/kg/hour)
+ Interpolate dr/dt_(g/kg/hour)
+ Q1_(k/hour)
+ Interpolate Q1_(k/hour)
+ Q2_(K/hour)
+ Interpolate Q2_(K/hour)
+ Total radiative heating idealized case (K/day)
+ Interpolate Total radiative heating idealized case (K/day)
+ Ts
+ Area Mean Ps(mb)
+ Interpolate Area Mean Ps(mb)
+ Calday
+ Year
+ Month
+ Hour
+ Minute
+ LH (upward W/m2)
+ SH (upward W/m2)
+ 
+LFAMINM du fichier :
+l=       1, min=         266 max=         266 moy=   266.0     rcm=   266.0    |I4| NLEV              
+l=       1, min=          17 max=          17 moy=   17.00     rcm=   17.00    |I4| NTIME             
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| VAH               
+l=     267, min=   0.000     max=   1.000     moy=  0.3689     rcm=  0.4514    |R8| VBH               
+l=    4522, min=   199.0     max=   302.9     moy=   241.1     rcm=   242.9    |R8| Temp_(K)          
+l=    4522, min= -0.1291E-01 max=   16.61     moy=   2.063     rcm=   4.421    |R8| H2O_Mixing_Ratio_(g/kg)
+l=    4522, min=  -9.731     max=   17.01     moy=   7.481     rcm=   8.773    |R8| u_wind_(m/s)      
+l=    4522, min=  -3.328     max=   7.370     moy=  0.9865     rcm=   2.143    |R8| v_wind_(m/s)      
+l=    4522, min=  -4.044     max=   2.674     moy= -0.6746E-01 rcm=   1.034    |R8| omega_(mb/hour)   
+l=    4522, min= -0.7196E-05 max=  0.7752E-05 moy= -0.3246E-07 rcm=  0.2657E-05|R8| Wind_Div_(1/s)    
+l=    4522, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_Temp_Advec_(K/hour)
+l=    4522, min= -0.4187     max=  0.3790     moy= -0.3764E-02 rcm=  0.1320    |R8| Vertical_T_Advec(K/hour)
+l=    4522, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_r_Advec_(g/kg/hour)
+l=    4522, min= -0.3118E-01 max=  0.7148E-01 moy=  0.3817E-02 rcm=  0.1335E-01|R8| Vertical_r_Advec(g/kg/hour)
+l=    4522, min=   299.3     max=   404.9     moy=   337.2     rcm=   337.9    |R8| s(Dry_Static_Energy)(K)
+l=    4522, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_s_Advec_(K/hour)
+l=    4522, min= -0.2375     max=  0.1266     moy=  0.2075E-02 rcm=  0.5977E-01|R8| Vertical_s_Advec(K/hour)
+l=    4522, min= -0.6896     max=  0.7468     moy=  0.2508E-01 rcm=  0.1002    |R8| ds/dt(K/hour)     
+l=    4522, min= -0.7028     max=  0.7498     moy=  0.2133E-01 rcm=  0.9933E-01|R8| DT/dt(K/hour)     
+l=    4522, min= -0.1531     max=  0.1747     moy=  0.1679E-01 rcm=  0.4627E-01|R8| dr/dt_(g/kg/hour) 
+l=    4522, min= -0.6207     max=  0.6471     moy=  0.2057E-01 rcm=  0.9166E-01|R8| Q1_(k/hour)       
+l=    4522, min= -0.3289     max=  0.2822     moy= -0.2154E-01 rcm=  0.7482E-01|R8| Q2_(K/hour)       
+l=    4522, min=  -5.049     max=   3.678     moy= -0.1724     rcm=   1.489    |R8| Total radiative heating idealized case (K/day)
+l=    4522, min=   971.5     max=   973.2     moy=   972.3     rcm=   972.3    |R8| Area Mean Ps(mb)  
+ 
+-------------------------------------------------------------------
+ 
+Temporal interpolation of variables to a prescribed temporal grid.
+ 
+ Interpolate Temp_(K)
+ Interpolate H2O_Mixing_Ratio_(g/kg)
+ Interpolate u_wind_(m/s)
+ Interpolate v_wind_(m/s)
+ Interpolate omega_(mb/hour)
+ Interpolate Wind_Div_(1/s)
+ Interpolate Horizontal_Temp_Advec_(K/hour)
+ Interpolate Vertical_T_Advec(K/hour)
+ Interpolate Horizontal_r_Advec_(g/kg/hour)
+ Interpolate Vertical_r_Advec(g/kg/hour)
+ Interpolate s(Dry_Static_Energy)(K)
+ Interpolate Horizontal_s_Advec_(K/hour)
+ Interpolate Vertical_s_Advec(K/hour)
+ Interpolate ds/dt(K/hour)
+ Interpolate DT/dt(K/hour)
+ Interpolate dr/dt_(g/kg/hour)
+ Interpolate Q1_(k/hour)
+ Interpolate Q2_(K/hour)
+ Interpolate Total radiative heating idealized case (K/day)
+ Interpolate Area Mean Ps(mb)
+LFAMINM du fichier :
+l=       1, min=         266 max=         266 moy=   266.0     rcm=   266.0    |I4| NLEV              
+l=       1, min=          97 max=          97 moy=   97.00     rcm=   97.00    |I4| NTIME             
+l=   25802, min=   199.0     max=   302.9     moy=   241.1     rcm=   242.9    |R8| Temp_(K)          
+l=   25802, min= -0.1291E-01 max=   16.61     moy=   2.072     rcm=   4.422    |R8| H2O_Mixing_Ratio_(g/kg)
+l=   25802, min=  -9.731     max=   17.01     moy=   7.462     rcm=   8.747    |R8| u_wind_(m/s)      
+l=   25802, min=  -3.328     max=   7.370     moy=   1.049     rcm=   2.124    |R8| v_wind_(m/s)      
+l=   25802, min=  -4.044     max=   2.674     moy= -0.9734E-01 rcm=  0.9744    |R8| omega_(mb/hour)   
+l=   25802, min= -0.7196E-05 max=  0.7752E-05 moy= -0.2015E-07 rcm=  0.2525E-05|R8| Wind_Div_(1/s)    
+l=   25802, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_Temp_Advec_(K/hour)
+l=   25802, min= -0.4187     max=  0.3790     moy=  0.4329E-03 rcm=  0.1234    |R8| Vertical_T_Advec(K/hour)
+l=   25802, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_r_Advec_(g/kg/hour)
+l=   25802, min= -0.3118E-01 max=  0.7148E-01 moy=  0.3826E-02 rcm=  0.1262E-01|R8| Vertical_r_Advec(g/kg/hour)
+l=   25802, min=   299.3     max=   404.9     moy=   337.2     rcm=   337.9    |R8| s(Dry_Static_Energy)(K)
+l=   25802, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_s_Advec_(K/hour)
+l=   25802, min= -0.2375     max=  0.1266     moy=  0.7488E-03 rcm=  0.5666E-01|R8| Vertical_s_Advec(K/hour)
+l=   25802, min= -0.6896     max=  0.7468     moy=  0.2617E-01 rcm=  0.9665E-01|R8| ds/dt(K/hour)     
+l=   25802, min= -0.7028     max=  0.7498     moy=  0.2253E-01 rcm=  0.9576E-01|R8| DT/dt(K/hour)     
+l=   25802, min= -0.1531     max=  0.1747     moy=  0.1699E-01 rcm=  0.4526E-01|R8| dr/dt_(g/kg/hour) 
+l=   25802, min= -0.6207     max=  0.6471     moy=  0.2296E-01 rcm=  0.8838E-01|R8| Q1_(k/hour)       
+l=   25802, min= -0.3289     max=  0.2822     moy= -0.2212E-01 rcm=  0.7238E-01|R8| Q2_(K/hour)       
+l=   25802, min=  -5.049     max=   3.678     moy= -0.1508     rcm=   1.434    |R8| Total radiative heating idealized case (K/day)
+l=   25802, min=   971.5     max=   973.2     moy=   972.3     rcm=   972.3    |R8| Area Mean Ps(mb)  
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| VAH               
+l=     267, min=   0.000     max=   1.000     moy=  0.3689     rcm=  0.4514    |R8| VBH               
+ 
+-------------------------------------------------------------------
+ 
+Combine fluxes and variables in a single file.
+ 
+LFAMINM du fichier :
+l=       1, min=         266 max=         266 moy=   266.0     rcm=   266.0    |I4| NLEV              
+l=       1, min=          97 max=          97 moy=   97.00     rcm=   97.00    |I4| NTIME             
+l=   25802, min=   199.0     max=   302.9     moy=   241.1     rcm=   242.9    |R8| Temp_(K)          
+l=   25802, min= -0.1291E-01 max=   16.61     moy=   2.072     rcm=   4.422    |R8| H2O_Mixing_Ratio_(g/kg)
+l=   25802, min=  -9.731     max=   17.01     moy=   7.462     rcm=   8.747    |R8| u_wind_(m/s)      
+l=   25802, min=  -3.328     max=   7.370     moy=   1.049     rcm=   2.124    |R8| v_wind_(m/s)      
+l=   25802, min=  -4.044     max=   2.674     moy= -0.9734E-01 rcm=  0.9744    |R8| omega_(mb/hour)   
+l=   25802, min= -0.7196E-05 max=  0.7752E-05 moy= -0.2015E-07 rcm=  0.2525E-05|R8| Wind_Div_(1/s)    
+l=   25802, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_Temp_Advec_(K/hour)
+l=   25802, min= -0.4187     max=  0.3790     moy=  0.4329E-03 rcm=  0.1234    |R8| Vertical_T_Advec(K/hour)
+l=   25802, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_r_Advec_(g/kg/hour)
+l=   25802, min= -0.3118E-01 max=  0.7148E-01 moy=  0.3826E-02 rcm=  0.1262E-01|R8| Vertical_r_Advec(g/kg/hour)
+l=   25802, min=   299.3     max=   404.9     moy=   337.2     rcm=   337.9    |R8| s(Dry_Static_Energy)(K)
+l=   25802, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Horizontal_s_Advec_(K/hour)
+l=   25802, min= -0.2375     max=  0.1266     moy=  0.7488E-03 rcm=  0.5666E-01|R8| Vertical_s_Advec(K/hour)
+l=   25802, min= -0.6896     max=  0.7468     moy=  0.2617E-01 rcm=  0.9665E-01|R8| ds/dt(K/hour)     
+l=   25802, min= -0.7028     max=  0.7498     moy=  0.2253E-01 rcm=  0.9576E-01|R8| DT/dt(K/hour)     
+l=   25802, min= -0.1531     max=  0.1747     moy=  0.1699E-01 rcm=  0.4526E-01|R8| dr/dt_(g/kg/hour) 
+l=   25802, min= -0.6207     max=  0.6471     moy=  0.2296E-01 rcm=  0.8838E-01|R8| Q1_(k/hour)       
+l=   25802, min= -0.3289     max=  0.2822     moy= -0.2212E-01 rcm=  0.7238E-01|R8| Q2_(K/hour)       
+l=   25802, min=  -5.049     max=   3.678     moy= -0.1508     rcm=   1.434    |R8| Total radiative heating idealized case (K/day)
+l=   25802, min=   971.5     max=   973.2     moy=   972.3     rcm=   972.3    |R8| Area Mean Ps(mb)  
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| VAH               
+l=     267, min=   0.000     max=   1.000     moy=  0.3689     rcm=  0.4514    |R8| VBH               
+l=      97, min=   291.3     max=   307.5     moy=   298.4     rcm=   298.5    |R8| Ts                
+l=      97, min=   178.5     max=   180.5     moy=   179.5     rcm=   179.5    |R8| Calday            
+l=      97, min=   1997.     max=   1997.     moy=   1997.     rcm=   1997.    |R8| Year              
+l=      97, min=   6.000     max=   6.000     moy=   6.000     rcm=   6.000    |R8| Month             
+l=      97, min=   27.00     max=   29.00     moy=   27.99     rcm=   28.00    |R8| Day               
+l=      97, min=   0.000     max=   23.00     moy=   11.49     rcm=   13.40    |R8| Hour              
+l=      97, min=   0.000     max=   30.00     moy=   15.15     rcm=   21.32    |R8| Minute            
+l=      97, min=   0.000     max=   408.3     moy=   137.7     rcm=   211.1    |R8| LH (upward W/m2)  
+l=      97, min=  -16.39     max=   123.1     moy=   33.89     rcm=   60.57    |R8| SH (upward W/m2)  
+ 
+-------------------------------------------------------------------
+ 
+Create final LFA file, ready for use in the SCM:
+	- required units (SI)
+	- required article names 
+	- one file at each sampling time
+ 
+LFAMINM du fichier :
+l=       1, min=  -1.702     max=  -1.702     moy=  -1.702     rcm=   1.702    |R8| LONGITUDE         
+l=       1, min=  0.6391     max=  0.6391     moy=  0.6391     rcm=  0.6391    |R8| LATITUDE          
+l=       1, min=    19970627 max=    19970627 moy=  0.1997E+08 rcm=  0.1997E+08|I4| KINDAT            
+l=       1, min=       41400 max=       41400 moy=  0.4140E+05 rcm=  0.4140E+05|I4| KSSSSS            
+l=       1, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| RSTATI            
+l=       1, min=         266 max=         266 moy=   266.0     rcm=   266.0    |I4| KLEV              
+l=       1, min=         267 max=         267 moy=   267.0     rcm=   267.0    |I4| KNEBH             
+l=       1, min=           8 max=           8 moy=   8.000     rcm=   8.000    |I4| KVCLIV            
+l=       1, min=           0 max=           0 moy=   0.000     rcm=   0.000    |I4| KSGST             
+l=       1, min=           1 max=           1 moy=   1.000     rcm=   1.000    |I4| KCSS              
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| VAH               
+l=     267, min=   0.000     max=   1.000     moy=  0.3689     rcm=  0.4514    |R8| VBH               
+l=     266, min=  -9.033     max=   16.60     moy=   7.853     rcm=   9.210    |R8| PUT0              
+l=     266, min=  -2.314     max=   4.836     moy= -0.2296     rcm=   1.639    |R8| PVT0              
+l=     266, min=   201.2     max=   296.8     moy=   240.5     rcm=   242.3    |R8| PTT0              
+l=     266, min= -0.5786E-05 max=  0.1440E-01 moy=  0.1766E-02 rcm=  0.4001E-02|R8| PQT0              
+l=       1, min=   11.49     max=   11.49     moy=   11.49     rcm=   11.49    |R8| PSPT0             
+l=       1, min=   291.3     max=   291.3     moy=   291.3     rcm=   291.3    |R8| PTS0              
+l=       1, min=   291.3     max=   291.3     moy=   291.3     rcm=   291.3    |R8| PTP0              
+l=       1, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PWL0              
+l=       1, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PWS0              
+l=       1, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PWSI0             
+l=       1, min=   800.0     max=   800.0     moy=   800.0     rcm=   800.0    |R8| PWP0              
+l=       1, min=  0.2000E-01 max=  0.2000E-01 moy=  0.2000E-01 rcm=  0.2000E-01|R8| PWPI0             
+l=       1, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PSNS0             
+l=       1, min=  0.1000     max=  0.1000     moy=  0.1000     rcm=  0.1000    |R8| PGZ0F             
+l=       1, min=  0.1000E-01 max=  0.1000E-01 moy=  0.1000E-01 rcm=  0.1000E-01|R8| PGZ0HF            
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PNEBH             
+l=     266, min= -0.5879E-05 max=  0.5706E-05 moy= -0.2712E-06 rcm=  0.3094E-05|R8| PDIVT0            
+l=     266, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PVORT0            
+l=       1, min=   1.000     max=   1.000     moy=   1.000     rcm=   1.000    |R8| PITM              
+l=       1, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PVRLAN            
+l=       1, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PVRLDI            
+l=       1, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PGETRL            
+l=       1, min=   25.00     max=   25.00     moy=   25.00     rcm=   25.00    |R8| PARG              
+l=       1, min=   2.000     max=   2.000     moy=   2.000     rcm=   2.000    |R8| PD2               
+l=       1, min=   3.000     max=   3.000     moy=   3.000     rcm=   3.000    |R8| PIVEG             
+l=       1, min=   1.500     max=   1.500     moy=   1.500     rcm=   1.500    |R8| PLAI              
+l=       1, min=   68.00     max=   68.00     moy=   68.00     rcm=   68.00    |R8| PRSMIN            
+l=       1, min=   50.00     max=   50.00     moy=   50.00     rcm=   50.00    |R8| PSAB              
+l=       1, min=  0.5000E-01 max=  0.5000E-01 moy=  0.5000E-01 rcm=  0.5000E-01|R8| PHV               
+l=       1, min=  0.2000     max=  0.2000     moy=  0.2000     rcm=  0.2000    |R8| PVEG0             
+l=       1, min=  0.1500     max=  0.1500     moy=  0.1500     rcm=  0.1500    |R8| PALBF             
+l=       1, min=  0.9700     max=  0.9700     moy=  0.9700     rcm=  0.9700    |R8| PEMISF            
+l=       1, min=  -4.195     max=  -4.195     moy=  -4.195     rcm=   4.195    |R8| SENSIBLE_HEAT_FLUX
+l=       1, min=  -12.44     max=  -12.44     moy=  -12.44     rcm=   12.44    |R8| LATENT_HEAT_FLUX  
+l=     266, min= -0.4597E-04 max=  0.2881E-04 moy= -0.6853E-05 rcm=  0.1874E-04|R8| RADIATIVE_HEATING 
+l=     266, min= -0.1648E-04 max=  0.3517E-04 moy=  0.7726E-05 rcm=  0.1826E-04|R8| DYN-T             
+l=     266, min= -0.2747E-08 max=  0.1394E-07 moy=  0.1014E-08 rcm=  0.3904E-08|R8| DYN-Q             
+l=     266, min= -0.3508E-01 max=  0.7309E-01 moy=  0.1423E-01 rcm=  0.3307E-01|R8| OMEGA             
+l=     266, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PNEB              
+l=     266, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Q1                
+l=     266, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| Q2                
+l=     266, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| QVTTOT            
+l=     266, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| QVTDYN            
+l=     266, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| QVTSGSTRANSP      
+l=     266, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| QVTTURB           
+l=     266, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| QVTSGSTRANSPCONV  
+l=     266, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| QVTMICROPHYS      
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PFPLCL            
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PFPLCN            
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PFPLSL            
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PFPLSN            
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PFHPCL            
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PFHSCL            
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PFHPCN            
+l=     267, min=   0.000     max=   0.000     moy=   0.000     rcm=   0.000    |R8| PFHSCN            
+l=       1, min=CRM          max=CRM                                           |C | INDICE EXPERIENCE 
+l=     266, min= -0.1460E-01 max=  0.1248E-01 moy= -0.3386E-02 rcm=  0.6762E-02|R8| W                 
+total 16260
+-rwxr-xr-x    1 gueremy  arpege       1219 fév 10  2004 trac_profile
+drwxr-xr-x    3 gueremy  arpege       4096 fév 10  2004 data_received_from_francoise
+-rwxr-xr-x    1 gueremy  arpege       7337 mai 28  2004 ascii2scm_jmp
+-rw-r--r--    1 gueremy  arpege       1593 sep 22  2004 README.txt
+-rw-r--r--    1 gueremy  arpege    6860800 fév 24 08:48 Profile_267_levels.tar
+-rw-r--r--    1 gueremy  arpege     829440 fév 24 08:50 Profile_41_levels_oper.tar
+-rw-r--r--    1 gueremy  arpege    1894400 fév 24 10:57 Profile_60_levels_ECMWF.tar
+drwxr-xr-x    2 gueremy  arpege       4096 fév 24 11:04 A_and_B
+-rw-r--r--    1 gueremy  arpege    1198080 fév 24 11:05 Profile_31_levels_climat.tar
+drwxr-xr-x    2 gueremy  arpege       4096 avr  5 08:31 src
+-rw-r--r--    1 gueremy  arpege    1443840 avr  5 08:58 Profile_41_levels_oper_s.tar
+-rw-r--r--    1 gueremy  arpege    1198080 avr  5 09:12 Profile_31_levels_climat_s.tar
+-rw-r--r--    1 gueremy  arpege    1198080 avr 11 14:48 Profile_31_levels_oper_s.tar
+-rw-r--r--    1 gueremy  arpege    1894400 avr 12 09:43 Profile_60_levels_ECMWF_s.tar
+-rwxr--r--    1 gueremy  arpege       8047 avr 12 09:48 ascii2scm
+drwxr-xr-x    2 gueremy  arpege       4096 avr 12 09:49 tmp
+drwxr-xr-x    2 gueremy  arpege       4096 avr 12 09:49 Profiles
+-rw-r--r--    1 gueremy  arpege      30784 avr 12 09:49 lis

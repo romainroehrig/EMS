@@ -13,7 +13,7 @@ lat.designateLatitude()
 lat.id = 'lat'
 lat.units = 'degrees_north'
 
-lon = MV2.array([97.48,],typecode=MV2.float32)
+lon = MV2.array([-97.48,],typecode=MV2.float32)
 lon = cdms2.createAxis(lon)
 lon.designateLongitude()
 lon.id = 'lon'

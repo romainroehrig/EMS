@@ -173,6 +173,8 @@ nlev_in = lev_in.shape[0]
 if attributes['trad'] == 1:
   if attributes['tadvh'] == 1:	
     data_in['tadvh'] = data_in['tadvh'] + data_in['trad']
+  if attributes['tadvv'] == 1:	
+    data_in['tadvv'] = data_in['tadvv'] + data_in['trad']
 
 pres = data_in['pressure']
 if len(data_in['pressure'].shape) == 1:
@@ -465,6 +467,22 @@ if lforc:
       print >>g, 'Horizontal Meridional Wind Advection', int(dt*it) 
       for ilev in range(0,nlev_out):
         print >>g, data_out['vadvh'][it,ilev]	  
+    g.close()
+
+  if attributes['tadvv'] == 1:
+    g = open(dirout + 'tadvv_profiles_L' + str(nlev_out),'w')
+    for it in range(0,nt):
+      print >>g, 'Vertical Temperature Advection', int(dt*it)    	  
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['tadvv'][it,ilev]	
+    g.close()
+
+  if attributes['qadvv'] == 1:
+    g = open(dirout + 'qadvv_profiles_L' + str(nlev_out),'w')
+    for it in range(0,nt):
+      print >>g, 'Vertical Specific Humidity Advection', int(dt*it)
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['qadvv'][it,ilev]	  
     g.close()
 
   if attributes['tadv'] == 1:
