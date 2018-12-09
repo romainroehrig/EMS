@@ -110,7 +110,7 @@ case = 'FIRE'
 cases.append(case)
 subcases[case] = ['REF']
 data_input[case] = {}
-data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR.nc'
+data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR_v3.nc'
 
 # DYCOMS Case
 case = 'DYCOMS'
@@ -150,9 +150,10 @@ data_input[case]['REF'] = rep0 + '/AMMA/AMMA_20060710_setupI_driver_RR.nc'
 case = 'CINDY-DYNAMO'
 cases.append(case)
 #subcases[case] = ['NSA3a','NSA3aflux','SSA3a']
-subcases[case] = ['NSA3a']
-subcases[case] = ['Revelle-ARM-CSU-13Nov']
-subcases[case] = ['Revelle-PE-13Nov']
+#subcases[case] = ['NSA3a']
+subcases[case] = ['NSA3aflux']
+#subcases[case] = ['Revelle-ARM-CSU-13Nov']
+#subcases[case] = ['Revelle-PE-13Nov']
 data_input[case] = {}
 data_input[case]['NSA3a'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3a_driver_RR.nc'
 data_input[case]['NSA3aflux'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3aflux_driver_RR.nc'

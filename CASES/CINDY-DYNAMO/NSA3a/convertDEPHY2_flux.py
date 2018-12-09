@@ -68,7 +68,8 @@ g.author = 'R. Roehrig'
 
 g.case = 'CINDY-DYNAMO - NSA3a - flux forcing'
 g.startDate = '20111001000000'
-g.endDate = '20111231210000'
+#g.endDate = '20111231210000'
+g.endDate = '20111031210000'
 
 g.qadvh = 1
 g.tadvh = 1
@@ -97,6 +98,7 @@ g.z0 = 0.01
 g.ustar = 0.
 g.surfaceType = 'ocean'
 g.surfaceForcing = 'surfaceFlux'
+g.surfaceForcingWind = 'z0'
 
 g.close()
 

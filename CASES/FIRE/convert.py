@@ -144,7 +144,7 @@ g.nudging_q = 0
 g.zorog = 0.
 g.surfaceType = 'ocean'
 g.surfaceForcing = 'ts'
-g.z0 = 0.1
+g.z0 = 0.0004
 
 g.comment = """
   Forcing: Large scale subsidence in w
