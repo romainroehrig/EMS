@@ -86,7 +86,18 @@ units['qtadvh'] = 'kg kg-1 s-1'
 variables4D = ['height','pressure','temp','theta','thv','thl','ths','u','v','ug','vg','qt','qv','ql','rh','w','thladvh','tadvh','qtadvh']
 variables3D = ['ts','ps','fcorio','rugos']
 
-g = cdms2.open('Fire-I_driver_RR.nc','w')
+data['thladvh'] = data['thladvh']/1000.
+data['qtadvh'] = data['qtadvh']/1000.
+
+nlev,nlat,nlon = data['temp'].shape
+for ilat in range(0,nlat):
+  for ilon in range(0,nlon):
+    for ilev in range(0,nlev):
+      if lev[ilev] >= 70000.:
+        data['temp'][ilev,ilat,ilon] = data['thl'][ilev,ilat,ilon]*(lev[ilev]/100000.)**(2./7.)
+        data['qv'][ilev,ilat,ilon] = data['qt'][ilev,ilat,ilon]
+
+g = cdms2.open('Fire-I_driver_RR_v2.nc','w')
 for var in f.listvariables():
   if var in variables4D:
     data[var] = data[var].reshape((1,nlev,nlat,nlon))	  

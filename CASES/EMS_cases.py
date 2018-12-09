@@ -110,7 +110,8 @@ case = 'FIRE'
 cases.append(case)
 subcases[case] = ['REF']
 data_input[case] = {}
-data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR.nc'
+#data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR.nc'
+data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR_v3.nc'
 
 # DYCOMS Case
 case = 'DYCOMS'
