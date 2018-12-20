@@ -17,8 +17,8 @@ x =vcs.init()
 tunits = 'seconds since 1987-07-01 0:0:0.0'
 
 tmin = cdtime.comptime(1987,7,14,8,0,0)
-#tmax = cdtime.comptime(1987,7,15,21,0,0)
-tmax = cdtime.comptime(1987,7,14,10,0,0)
+tmax = cdtime.comptime(1987,7,15,21,0,0)
+#tmax = cdtime.comptime(1987,7,14,10,0,0)
 
 time = MV2.array(range(0,2),typecode=MV2.float)
 time[0] = tmin.torel(tunits).value
