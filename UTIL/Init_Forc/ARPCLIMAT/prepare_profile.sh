@@ -8,6 +8,7 @@ import os
 
 g = open('tmp.sh','w')
 print >> g, '#!/bin/sh'
+print >> g, 'export OMP_NUM_THREADS=1'
 print >> g, "export ASCII2FA=" + os.getenv('REP_EMS') + "/UTIL/Tools/ASCII2FA/bin/ascii2fa"
 g.close()
 EOF

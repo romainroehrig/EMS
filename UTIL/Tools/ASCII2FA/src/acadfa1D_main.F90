@@ -446,10 +446,18 @@
       DO J = 1,IDGL
         ZFFT(J) = ZOROG*ZG
       ENDDO
+
+      WRITE(6,*)'IDGL=',idgl
+      WRITE(6,*)'NSEFRE=',NSEFRE
+      WRITE(6,*)'INSMAX=',INSMAX
+      WRITE(6,*)'TRIGS=',TRIGS
+      WRITE(6,*)'IFAX=',IFAX
+      WRITE(6,*)'ZFFT=',ZFFT
     
        call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
 
       WRITE(6,*)'GEOP=',ZFFT(1)
+      WRITE(6,*)'ZFFT=',ZFFT
       WRITE(6,*)'ZOUT=',ZOUT
       CALL FAIENC (IREP,IUFD,'SPECSURF',1,'GEOPOTEN',ZOUT,LLCOSP)
 
@@ -463,6 +471,7 @@
         
        call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
       WRITE(6,*)'Ps=',ZFFT(1)
+      WRITE(6,*)'Ps=',ZFFT
       WRITE(6,*)'ZOUT=',ZOUT
       CALL FAIENC(IREP,IUFD,'SURF',1,'PRESSION',ZOUT,LLCOSP)
 
@@ -513,6 +522,8 @@
         WRITE(6,*)'JLEV TEMPE',JLEV,ZFFT(1)
 
          call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
+
+         WRITE(6,*) 'JLEV TEMPE ZOUT=',JLEV,ZOUT
 
         CALL FAIENC (IREP,IUFD,'S',JLEV,'TEMPERATURE',ZOUT,LLCOSP)
       END DO
@@ -571,6 +582,7 @@ print*,'LSPRT=',LSPRT
             ZOUT(J)=ZQ
          ENDDO
          WRITE (6,*)' JLEV HUMI',JLEV,ZOUT(1)
+         WRITE (6,*)' JLEV HUMI',JLEV,ZOUT
          CALL FAIENC (IREP,IUFD,'S',JLEV,'HUMI.SPECIFI',ZOUT,LLCOSP)
       ENDDO
       DEALLOCATE (ZOUT) 
@@ -596,6 +608,8 @@ print*,'QV en spectral'
         WRITE(6,*)'JLEV HUMI',JLEV,ZFFT(1)
            
         call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
+
+        WRITE(6,*) 'JLEV QV ZOUT=',JLEV,ZOUT 
 
         CALL FAIENC (IREP,IUFD,'S',JLEV,'HUMI.SPECIFI',ZOUT,LLCOSP)
       END DO

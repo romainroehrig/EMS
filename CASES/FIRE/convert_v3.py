@@ -17,8 +17,8 @@ x =vcs.init()
 tunits = 'seconds since 1987-07-01 0:0:0.0'
 
 tmin = cdtime.comptime(1987,7,14,8,0,0)
-#tmax = cdtime.comptime(1987,7,15,21,0,0)
-tmax = cdtime.comptime(1987,7,14,10,0,0)
+tmax = cdtime.comptime(1987,7,15,21,0,0)
+#tmax = cdtime.comptime(1987,7,14,10,0,0)
 
 time = MV2.array(range(0,2),typecode=MV2.float)
 time[0] = tmin.torel(tunits).value
@@ -148,12 +148,9 @@ for ilev in range(0,nlev):
     elif lev[ilev] <= 2000:
         data['thl'][:,ilev,:,:] = data['thl'][:,ilev,:,:] + 299.5 + 7.5e-3*(lev[ilev]-595)
         data['qt'][:,ilev,:,:] = data['qt'][:,ilev,:,:] + 0.0066 - 3.e-6*(lev[ilev]-595)
-        data['thladvh'][:,ilev,:,:] = data['thladvh'][:,ilev,:,:] -7.5e-8*max(lev[ilev],500.)
-        data['qtadvh'][:,ilev,:,:] = data['qtadvh'][:,ilev,:,:] +3.e-11*max(lev[ilev],500.)
-        data['w'][:,ilev,:,:] = data['w'][:,ilev,:,:] - 1.e-5*lev[ilev]
     else:
         data['thl'][:,ilev,:,:] = thstd2[ilev]+(299.5 + 7.5e-3*(2000-595)-thstd2[ilev])*math.exp(-(lev[ilev]-2000)/3000.)
-        data['qt'][:,ilev,:,:] = (0.0066 - 3.e-6*(2000.-595.))*math.exp(-(lev[ilev]-2000)/3000.)
+        data['qt'][:,ilev,:,:] = 0. #(0.0066 - 3.e-6*(2000.-595.))*math.exp(-(lev[ilev]-2000)/3000.)
 
 kappa = 2./7.
 p0 = 100000.
