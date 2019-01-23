@@ -294,10 +294,10 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
         nam[nn]['RZ0_FORC'] = [str(float(attributes['z0'])),]
       else:
         nam[nn]['RZ0_FORC'] = ['0.035',]
-      nam[nn]["NSH_FORC_DEB"]=[str(int(1+i*nt+j*nt_sfc)),]
+      nam[nn]["NSH_FORC_DEB"]=[str(int(1+j*nt_sfc)),]
       nam[nn]["NSH_FORC_NUM"]=[str(nt_sfc),]
       j=j+1
-      nam[nn]["NLH_FORC_DEB"]=[str(int(1+i*nt+j*nt_sfc)),]
+      nam[nn]["NLH_FORC_DEB"]=[str(int(1+j*nt_sfc)),]
       nam[nn]["NLH_FORC_NUM"]=[str(nt_sfc),]
       if nt_sfc == 1:
         dt_sfc = 0.
