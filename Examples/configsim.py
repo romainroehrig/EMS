@@ -1,8 +1,9 @@
 import sys
 import EMS_cases as CC
 
-# model : ARPCLIMAT, AROME, ARPPNT
+# model : ARPCLIMAT, AROME, AROME46t1, ARPPNT
 #model = 'AROME'
+#model = 'AROME46t1'
 #model = 'ARPPNT'
 model = 'ARPCLIMAT'
 
@@ -19,7 +20,7 @@ if model in ['ARPCLIMAT',]:
   nlev = 91
   # Model time step in seconds
   timestep = 300
-elif model in ['AROME',]:
+elif model in ['AROME','AROME46t1',]:
   # Number of vertical level
   nlev= 90
   # Model time step in seconds
