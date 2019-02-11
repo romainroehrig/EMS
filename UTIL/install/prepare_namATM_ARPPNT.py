@@ -271,8 +271,6 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
       i=i+1
       for it in range(0,nt):
         nam[nn]['NL_LSW_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]      
-  else:
-      nam[nn]['LGEOST_UV_FRC'] = ['.FALSE.',]
   if attributes['nudging_u'] > 0. or attributes['nudging_v'] > 0.:
       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
       nam[nn]['LUV_NUDG'] = ['.TRUE.',]
