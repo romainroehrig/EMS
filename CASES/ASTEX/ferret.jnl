@@ -1,8 +1,0 @@
- ! NOAA/PMEL TMAP
- ! FERRET v7.42 (optimized)
- ! Darwin 15.6.0 - 07/23/18
- ! 23-Feb-19 17:08     
-
-use ASTEX_GASS-EUCLIPSE_driver_RR.nc
-plot ql
-q
