@@ -1,0 +1,10 @@
+ ! NOAA/PMEL TMAP
+ ! FERRET v7.42 (optimized)
+ ! Darwin 15.6.0 - 07/23/18
+ ! 18-Feb-19 17:40     
+
+use AYOTTE_A05SC_driver_FC
+sh da
+plot TH
+plot THINTERP
+q

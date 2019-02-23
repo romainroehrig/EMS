@@ -21,8 +21,8 @@ dirout = 'files_L' + str(nlev_out) + '_' + str(int(config.dt)) + 's/'
 # Lecture des donnees d'entree
 #---------------------------------------------------------------
 
-var2read = ['pressure','temp','qv','u','v','ps']
-var2interpol = ['temp','qv','u','v','theta']
+var2read = ['pressure','temp','qv','ql','qi','tke','u','v','ps']
+var2interpol = ['temp','qv','ql','qi','tke','u','v','theta']
 
 data_in = {}
 
@@ -132,7 +132,10 @@ print 'var2read =', var2read
 print 'var2interpol =', var2interpol
 
 for var in var2read:
-  data_in[var] = f(var,squeeze=1)	
+    if var in f.listvariables():
+        data_in[var] = f(var,squeeze=1)	
+    else:
+        data_in[var] = f('temp',squeeze=1)*0.
 #  data_in[var] = f(var)
 
 
@@ -183,6 +186,9 @@ if len(data_in['pressure'].shape) == 1:
     pres[it,:] = data_in['pressure'][:]	 
   pres0  = MV2.zeros((1,nlev_in),typecode=MV2.float)
   pres0[0,:] = data_in['pressure'][:]
+else:
+  pres0 = MV2.zeros((1,nlev_in),typecode=MV2.float)
+  pres0[0,:] = data_in['pressure'][0,:]
 
 #---------------------------------------------------------------
 # Calcul des niveaux pressions aux interfaces
@@ -255,14 +261,14 @@ if lnam1D:
   print >>g, '  LALAPHYS= .TRUE.,'
   print >>g, '  LREASUR = .TRUE.,'
   print >>g, '  NFORC   = 0,'
-  print >>g, '  LQCGRP  = .FALSE.,'
-  print >>g, '  LQIGRP  = .FALSE.,'
+  print >>g, '  LQCGRP  = .TRUE.,'
+  print >>g, '  LQIGRP  = .TRUE.,'
   print >>g, '  LQRGRP  = .FALSE.,'
   print >>g, '  LQSGRP  = .FALSE.,'
   print >>g, '  LQGGRP  = .FALSE.,'
   print >>g, '  LCFGRP  = .FALSE.,'
   print >>g, '  LSRCGRP = .FALSE.,'
-  print >>g, '  LTKEGRP = .FALSE.,'
+  print >>g, '  LTKEGRP = .TRUE.,'
   print >>g, '  IYEAR   = ' + str(int(year)) + ','
   print >>g, '  IMONTH  = ' + str(int(month)) + ','
   print >>g, '  IDAY    = ' + str(int(day)) + ','
@@ -310,6 +316,19 @@ if lnam1D:
   print >>g, 'QV'
   for ilev in range(0,nlev_out):
     print >>g, max(0.,data_out['qv'][0,ilev])
+
+  print >>g, 'CLOUD_WATER'
+  for ilev in range(0,nlev_out):
+    print >>g, max(0.,data_out['ql'][0,ilev])
+
+  print >>g, 'ICE_CRYSTAL'
+  for ilev in range(0,nlev_out):
+    print >>g, max(0.,data_out['qi'][0,ilev])
+
+  print >>g, 'TKE'
+  for ilev in range(0,nlev_out):
+    print >>g, max(0.,data_out['tke'][0,ilev])
+
 
   print >>g, 'FORCING'
 

@@ -12,7 +12,6 @@ OBJS	 =	acadfa1D_main.o \
 
 XRD	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxrd.local.a 
 XLA	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a 
-#XRD	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.RR.GABLS4/lib/libxrd.local.a 
 GRIBEX   =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a 
 MPIDUMMY =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a
 LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY) 
