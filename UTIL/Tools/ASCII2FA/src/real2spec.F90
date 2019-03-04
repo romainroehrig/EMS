@@ -71,6 +71,7 @@ real :: zreal(ndgl + 2)
 
 ! initialize I/O array with zeroes
 zreal(:)=0.
+pspec(:)=0.
 zreal(1:ndgl) = preal(1:ndgl) 
 
 ! -----
