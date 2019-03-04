@@ -45,6 +45,7 @@ names['ps'] = 'Surface Pressure'
 names['pressure'] = 'Pressure'
 names['sfc_sens_flx'] = 'Surface sensible heat flux (positive downward)'
 names['sfc_lat_flx'] = 'Surface latent heat flux (positive downward)'
+names['ts'] = 'Surface temperature'
 
 g = cdms2.open('AMMA_20060710_setupI_driver_RR.nc','w')
 for var in varnames.keys():
@@ -61,12 +62,19 @@ for var in varnames.keys():
     data[varnames[var]].units = 'Pa'
 
   if var in ['hfls','hfss']:
-    data[varnames[var]] = data[varnames[var]]*-1.	  
-     		  
+    data[varnames[var]] = data[varnames[var]]*-1.
+
   data[varnames[var]].id = var		  
   data[varnames[var]].title = names[var]
   data[varnames[var]].positive = ''
   g.write(data[varnames[var]])
+
+var = 'ts'
+data[var] = data['hfss']*0. + 320.
+data[var].id = var
+data[var].title = names[var]
+data[var].positive = ''
+g.write(data[var])
 
 g.comment = 'Forcing and initial conditions for 10 July 2006 AMMA Case - Setup I'
 g.reference =\
