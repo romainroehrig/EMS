@@ -110,8 +110,8 @@ case = 'FIRE'
 cases.append(case)
 subcases[case] = ['REF']
 data_input[case] = {}
-#data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR.nc'
-data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR_v3.nc'
+#data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR_v3.nc'
+data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR.nc'
 
 # DYCOMS Case
 case = 'DYCOMS'
@@ -119,6 +119,22 @@ cases.append(case)
 subcases[case] = ['REF']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/DYCOMS/DYCOMS_driver_FC_RR.nc'
+
+# ASTEX cases
+case = 'ASTEX'
+cases.append(case)
+subcases[case] = ['EUCLIPSE']
+data_input[case] = {}
+data_input[case]['EUCLIPSE'] = rep0 + '/ASTEX/ASTEX_GASS-EUCLIPSE_driver_RR.nc'
+
+# SANDU composite cases
+case = 'SANDU'
+cases.append(case)
+subcases[case] = ['REF','FAST','SLOW']
+data_input[case] = {}
+data_input[case]['REF'] = rep0 + '/SANDU/Composite_REF_driver_RR.nc'
+data_input[case]['FAST'] = rep0 + '/SANDU/Composite_FAST_driver_RR.nc'
+data_input[case]['SLOW'] = rep0 + '/SANDU/Composite_SLOW_driver_RR.nc'
 
 ####################################
 #### Deep convection cases
@@ -151,9 +167,10 @@ data_input[case]['REF'] = rep0 + '/AMMA/AMMA_20060710_setupI_driver_RR.nc'
 case = 'CINDY-DYNAMO'
 cases.append(case)
 #subcases[case] = ['NSA3a','NSA3aflux','SSA3a']
-subcases[case] = ['NSA3a']
-subcases[case] = ['Revelle-ARM-CSU-13Nov']
-subcases[case] = ['Revelle-PE-13Nov']
+#subcases[case] = ['NSA3a']
+subcases[case] = ['NSA3aflux']
+#subcases[case] = ['Revelle-ARM-CSU-13Nov']
+#subcases[case] = ['Revelle-PE-13Nov']
 data_input[case] = {}
 data_input[case]['NSA3a'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3a_driver_RR.nc'
 data_input[case]['NSA3aflux'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3aflux_driver_RR.nc'
