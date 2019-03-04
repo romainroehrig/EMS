@@ -59,6 +59,13 @@ data['sfc_lat_flx'].id = 'sfc_lat_flx'
 data['sfc_lat_flx'].units = 'W/m2'
 data['sfc_lat_flx'].title = 'Surface latent heat flux'
 
+data['ustar'] = data['sfc_lat_flx']*0.+0.28
+data['ustar'].id = 'ustar'
+data['ustar'].units = 'm s-1'
+data['ustar'].title = 'usar'
+
+
+
 for ilev in range(0,nlev):
   if lev[ilev] <= 300:
       data['qadvh'][:,ilev,:,:] = -1.2e-8
@@ -78,7 +85,7 @@ data['theta'].id = 'theta'
 
 g = cdms2.open('BOMEX_driver_MPL_RR.nc','w')
 
-for var in ['height','pressure','ps','temp','theta','qv','u','v','w','trad','thrad','qadvh','ug','vg','sfc_sens_flx','sfc_lat_flx','ts']:
+for var in ['height','pressure','ps','temp','theta','qv','u','v','w','trad','thrad','qadvh','ug','vg','sfc_sens_flx','sfc_lat_flx','ts','ustar']:
     if len(data[var].shape) == 4:
         data[var].setAxis(1,lev)
     data[var].setAxis(0,time)
@@ -89,7 +96,7 @@ g.author = "MP Lefebvre (20170628), R. Roehrig (20180404)" ;
 g.version = "20180404" ;
 g.case = "BOMEX" ;
 g.startDate = "19690624000000" ;
-g.endDate = "19690624060000" ;
+g.endDate = "19690624230000" ;
 g.comment = """Forcing and initial confitions for BOMEX case
 Large-scale subsidence w applied to qt, thetal, u, v
 Radiative cooling dtheta/dt
@@ -110,11 +117,11 @@ g.nudging_v = 0
 g.nudging_t = 0
 g.nudging_q = 0
 g.zorog = 0.
-g.z0 = 0.001019
+#g.z0 = 0.001019
 #g.ustar = 0.28
 g.surfaceType = "ocean"
 g.surfaceForcing = "surfaceFlux"
-g.surfaceForcingWind = "z0"
+g.surfaceForcingWind = "ustar"
 
 g.close()
 

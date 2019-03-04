@@ -322,7 +322,7 @@ def install_Run(model,case,filecase,repout,config,configOut,subcase=None,loverwr
         print >> g, 'filecase = "' + filecase + '"'
         print >> g, 'namref = "' + config['namSFXref'] + '"'
         print >> g, 'namout = "namsfx_' + config['name'] + '"'
-        print >> g, 'prepare_namSFX.prep_nam_SFX(case,filecase,namref,namout=namout)'
+        print >> g, 'prepare_namSFX.prep_nam_SFX(case,filecase,namref,namout=namout,subcase="'+subcase+'")'
 
         g.close()
 

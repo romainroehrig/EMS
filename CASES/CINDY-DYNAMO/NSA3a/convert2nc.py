@@ -457,7 +457,7 @@ data['vqs'   ] = data['vqs'] / 1000. * -1
 data['flat'  ] = data['flat'] /3.45*100.
 data['sens'  ] = data['sens'] /3.45*100.
 data['Qrad'  ] = data['Qrad'] /3.45*100.
-data['Qrad_CERES'] = data['Qrad'] /3.45*100.
+data['Qrad_CERES'] = data['Qrad_CERES'] /3.45*100.
 
 data['advTs' ] = data['hTs'] + data['vTs']
 data['advqs' ] = data['hqs'] + data['vqs']

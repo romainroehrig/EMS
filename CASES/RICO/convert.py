@@ -49,8 +49,17 @@ tmp.setAxis(2,lat)
 tmp.setAxis(3,lon)
 data[var] = tmp
 
+nlev,nlat,nlon = data['temp'].shape
 
-for var in ['temp','qv','u','v','height','pressure']:
+data['tke'] = data['temp']*0.
+for ilev in range(0,nlev):
+    data['tke'][ilev,0,0] = max(0,1-data['height'][ilev,0,0]/4000.) 
+
+data['tke'].id = 'tke'
+data['tke'].title = 'TKE'
+data['tke'].units = 'm2 s-2'
+
+for var in ['temp','qv','u','v','height','pressure','tke']:
   nlev,nlat,nlon = data[var].shape	
   tmp = data[var].reshape((1,nlev,nlat,nlon))
   for att in data[var].listattributes():
@@ -64,7 +73,7 @@ for var in ['temp','qv','u','v','height','pressure']:
   data[var] = tmp
 
 g = cdms2.open('rico_driver_RR.nc','w')
-for var in f.listvariables():
+for var in f.listvariables() + ['tke',]:
   if len(data[var].shape) == 4:	
     data[var].setAxis(1,lev)
     data[var].setAxis(2,lat)
@@ -87,13 +96,14 @@ g.author = 'R. Roehrig'
 
 g.case = 'RICO'
 g.startDate = '20041216000000'
-g.endDate =   '20041218210000'
+g.endDate =   '20041217000000'
+#g.endDate =   '20041218210000'
 
 g.qadvh = 1
 g.tadvh = 1
 g.tadvv = 0
 g.qadvv = 0
-g.trad = 0 #1 ????
+g.trad = "adv" #0 #1 ????
 
 g.forc_omega = 1
 g.forc_w = 0

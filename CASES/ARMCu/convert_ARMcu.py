@@ -39,7 +39,7 @@ data['ps'].id = 'ps'
 data['ps'].title = 'Surface Pressure'
 data['ps'].units = 'Pa'
 
-data['ts'] = data['ts'] + 10
+data['ts'] = data['ts']*0. + 320.
 data['ts'].id = 'ts'
 
 variables.append('tadv')
