@@ -235,6 +235,5 @@ for file in sorted(files):
 
         data[var][it] = tmp
 
-
 f.close()
 

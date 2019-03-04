@@ -41,6 +41,7 @@ if saveall:
       var2save.append(var)
       varnames[var] = var
       names[var] = var
+      coefs[var] = 1.
       varunits[var] = '-'
 else:
   var2save0 = f.listvariables()
@@ -54,6 +55,7 @@ else:
       var2save1.append(var)
       varnames[var] = var
       names[var] = var
+      coefs[var] = 1.
       varunits[var] = '-'
   var2save = set(var2save).intersection(set(var2save1))
 
@@ -274,7 +276,7 @@ if lmisr:
 g = cdms2.open('Out_klevel.nc','w')
 for var in var2save:
   if config.verbose >= 1:
-    print var	
+    print var
   data = f(varnames[var])*coefs[var]
   data = MV2.array(data, typecode=MV2.float32)
   if var in ['cltcalipso','cllcalipso','clmcalipso','clhcalipso','clcalipso','cllcalipsoice','clmcalipsoice','clhcalipsoice','cltcalipsoice','cllcalipsoliq','clmcalipsoliq','clhcalipsoliq','cltcalipsoliq','cllcalipsoun','clmcalipsoun','clhcalipsoun','cltcalipsoun','clcalipso','lidarBetaMol532','clcalipsoice','clcalipsoliq','clcalipsoun','clcalipsotmp','clcalipsotmpice','clcalipsotmpliq','clcalipsotmpun','parasolRefl','cltlidarradar','clcalipso2','cltisccp','pctisccp','tauisccp','albisccp','meantbisccp','meantbclrisccp','boxtauisccp','boxptopisccp','cltmodis','clwmodis','climodis','clhmodis','clmmodis','cllmodis','tautmodis','tauwmodis','tauimodis','tautlogmodis','tauwlogmodis','tauilogmodis','reffclwmodis','reffclimodis','pctmodis','lwpmodis','iwpmodis','fracout', 'atb532', 'dbze94','cfadDbze94','cfadLidarsr532','clisccp', 'clmodis','clMISR']:

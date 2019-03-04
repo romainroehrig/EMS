@@ -70,6 +70,12 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
   nam[nn]['YCVGQ_NL%LSP'] = ['.TRUE.',]
   for param in nam[nn].keys():
     if param[-6:] == 'NREQIN': nam[nn][param] = ['0',]
+  if 'YL_NL%NREQIN' in nam[nn].keys():
+    nam[nn]['YL_NL%NREQIN'] = ['1',]
+  if 'YI_NL%NREQIN' in nam[nn].keys():    
+    nam[nn]['YI_NL%NREQIN'] = ['1',]
+  if 'YTKE_NL%NREQIN' in nam[nn].keys():    
+    nam[nn]['YTKE_NL%NREQIN'] = ['1',]
 
   # Update due to MUSC/ALADIN config
   nn = 'NAMDYN'

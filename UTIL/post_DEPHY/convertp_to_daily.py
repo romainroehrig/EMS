@@ -1,6 +1,7 @@
 import cdms2
 import MV2
 import cdtime
+import numpy as np
 #from sets import Set
 
 cdms2.setNetcdfShuffleFlag(0)
@@ -17,7 +18,7 @@ nt0 = time0.shape[0]
 t0 = cdtime.reltime(time0[0],time0.units)
 dt = time0[1]-time0[0]
 
-nt = int(nt0*dt/86400)-1
+nt = int(nt0*dt/86400)#-1
 
 kt = int(86400/dt)
 nt1 = kt*nt
@@ -42,6 +43,13 @@ for var in f.listvariables():
   rms = 0.
 
   tmp = f(var, squeeze=1)
+  if len(tmp.shape) == 2 and tmp.shape[1] >= 10:
+    lev = tmp.getLevel()
+
+  if var in ['rsuscs','rsdscs']:
+    tmp = MV2.where(np.isnan(tmp),0,tmp) # problem with nan values... to be understood in MUSC...
+
+  #print MV2.min(tmp),MV2.max(tmp)
 
   for it in range(0,kt+1):
     if it == 0:
@@ -57,8 +65,9 @@ for var in f.listvariables():
   data.setAxis(0,time)
   rms.setAxis(0,time)
 
+  #print MV2.min(data),MV2.max(data)
+
   if len(tmp.shape) == 2 and tmp.shape[1] >= 10:
-    lev = tmp.getLevel()	 
     data.setAxis(1,lev)
     rms.setAxis(1,lev)
 

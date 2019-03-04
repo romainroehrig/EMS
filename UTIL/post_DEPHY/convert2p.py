@@ -69,8 +69,10 @@ for var in var2save:
     for att in data0.listattributes():
       data.setattribute(att,data0.getattribute(att))
 
+    #print MV2.min(data), MV2.max(data)
     g.write(data)
   else:
+    #print MV2.min(data0), MV2.max(data0)
     g.write(data0)	  
 
 
