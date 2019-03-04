@@ -32,7 +32,7 @@ except:
     pass
 
 model = configsim.model
-if model not in ['AROME','ARPPNT','ARPCLIMAT']:
+if model not in ['AROME','AROME46t1','ARPPNT','ARPCLIMAT']:
   print 'Model unexpected:', configsim.model
   sys.exit()
 
@@ -41,7 +41,7 @@ repout = REP_MUSC + '/ATM/' + model + '/'
 
 nlev = configsim.nlev
 timestep = configsim.timestep
-if model in ['AROME','ARPPNT']:
+if model in ['AROME','AROME46t1','ARPPNT']:
     timestep = None
 
 

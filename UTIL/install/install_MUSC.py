@@ -13,6 +13,7 @@ repinit = os.getcwd()
 
 repARPC_UTIL = mainrep + '/UTIL/Init_Forc/ARPCLIMAT/'
 repARO_UTIL = mainrep + '/UTIL/Init_Forc/AROME/'
+repARO46t1_UTIL = mainrep + '/UTIL/Init_Forc/AROME46t1/'
 repARP_UTIL = mainrep + '/UTIL/Init_Forc/ARPPNT/'
 repSFX_UTIL = mainrep + '/UTIL/Init_Forc/SURFEX/'
 repRun_UTIL = mainrep + '/UTIL/Runs/'
@@ -37,6 +38,8 @@ def install_ATM(model,case,filecase,repout,nlev,timestep=None,subcase=None,lover
       repUTIL = repARPC_UTIL
     elif model == 'AROME':
       repUTIL = repARO_UTIL
+    elif model == 'AROME46t1':
+      repUTIL = repARO46t1_UTIL      
     elif model == 'ARPPNT':
       repUTIL = repARP_UTIL
     else:

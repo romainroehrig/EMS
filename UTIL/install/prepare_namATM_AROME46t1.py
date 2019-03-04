@@ -43,15 +43,15 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
         if obj == 'NBPROC_IO': nam[namin][param][i] = '1'
 
   # Aerosols and Ozone
-  nam['NAMPHY']['LOZONE'] = ['.FALSE.',]
-  nam['NAMPHY']['LRAYFM'] = ['.FALSE.',]
-  nam['NAMPHY']['LO3ABC'] = ['.FALSE.',]
-  nam['NAMPHY']['LAEROSEA'] = ['.FALSE.',]
-  nam['NAMPHY']['LAEROLAN'] = ['.FALSE.',]
-  nam['NAMPHY']['LAEROSOO'] = ['.FALSE.',]
-  nam['NAMPHY']['LAERODES'] = ['.FALSE.',]
-  nam['NAMPHY']['LEDR'] = ['.FALSE.',]
-  nam['NAMPHY']['LO3FL'] = ['.FALSE.',]
+  #nam['NAMPHY']['LOZONE'] = ['.FALSE.',]
+  #nam['NAMPHY']['LRAYFM'] = ['.FALSE.',]
+  #nam['NAMPHY']['LO3ABC'] = ['.FALSE.',]
+  #nam['NAMPHY']['LAEROSEA'] = ['.FALSE.',]
+  #nam['NAMPHY']['LAEROLAN'] = ['.FALSE.',]
+  #nam['NAMPHY']['LAEROSOO'] = ['.FALSE.',]
+  #nam['NAMPHY']['LAERODES'] = ['.FALSE.',]
+  #nam['NAMPHY']['LEDR'] = ['.FALSE.',]
+  #nam['NAMPHY']['LO3FL'] = ['.FALSE.',]
 
   # Empty a few namelists
   for nn in ['NAMFPC','NAMFPD','NAMLSFORC','NAMDYNA','NAMFPSC2_DEP']:
@@ -156,95 +156,93 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
   except KeyError:
     pass      
   nam[nn] = {}
-  nam[nn]['NPROMA'] = ['50',]
+  nam[nn]['NPROMA'] = ['-4',]
 
   # Update NAMDYNA
-  nn='NAMDYNA'
-  try:
-    del(nam[nn])
-  except KeyError:
-    pass      
-  nam[nn] = {}
-  nam[nn]['NDLNPR'] = ['0',]
+  #nn='NAMDYNA'
+  #try:
+  #  del(nam[nn])
+  #except KeyError:
+  #  pass      
+  #nam[nn] = {}
+  #nam[nn]['NDLNPR'] = ['0',]
 
 # Update NAMIO_SERV
-  nn='NAMIO_SERV'
-  nam[nn]['NIO_SERV_BUF_MAXSIZE'] = ['0']
-  nam[nn]['NPROCESS_LEVEL'] = ['0']
-  nam[nn]['NPROC_IO'] = ['0']
+  #nn='NAMIO_SERV'
+  #nam[nn]['NIO_SERV_BUF_MAXSIZE'] = ['0']
+  #nam[nn]['NPROCESS_LEVEL'] = ['0']
+  #nam[nn]['NPROC_IO'] = ['0']
 
   # Update NAMCT1
-  nn='NAMCT1'
-  del(nam[nn])
-  nam[nn] = {}
-  nam[nn]['LRFILAF'] = ['.FALSE.',]
-  nam[nn]['N1HIS']=['0',]
-  nam[nn]['N1ISP']=['0',]
-  nam[nn]['N1POS']=['1',]
-  nam[nn]['N1RES']=['0',]
-  nam[nn]['N1SDI']=['0',]
-  nam[nn]['N1SFXHIS']=['0',]
+  #nn='NAMCT1'
+  #del(nam[nn])
+  #nam[nn] = {}
+  #nam[nn]['LRFILAF'] = ['.FALSE.',]
+  #nam[nn]['N1POS']=['1',]
+  #nam[nn]['N1RES']=['0',]
+  #nam[nn]['N1SFXHIS']=['0',]
 
   # Update NAMCT0
   nn = 'NAMCT0'
-  nam['NAMCT0'] = {}
-  nam[nn]['LOPT_SCALAR']=['.TRUE.',]
-  nam[nn]['LSCREEN_OPENMP']=['.FALSE.',]
-  nam[nn]['LTWOTL']=['.TRUE.',]
-  nam[nn]['LNHDYN']=['.FALSE.',]
-  nam[nn]['LPC_FULL']=['.FALSE.',]
-  nam[nn]['LPC_NESC']=['.FALSE.',]
-  nam[nn]['LPC_NESCT']=['.FALSE.',]
-  nam[nn]['LPC_NESCV']=['.FALSE.',]
-  nam[nn]['LPC_CHEAP']=['.FALSE.',]
-  nam[nn]['LSPRT']=['.TRUE.',]
-  nam[nn]['LAROME']=['.TRUE.',]
-  nam[nn]['CNPPATH']=["'.'",]
-  nam[nn]['LREGETA']=['.TRUE.',]
-  nam[nn]['CFPATH']=["'ICMSH'",]
-  nam[nn]['LFDBOP']=['.FALSE.',]
-  nam[nn]['LFBDAP']=['.TRUE.',]
+  #nam['NAMCT0'] = {}
+  #nam[nn]['LAROME']=['.TRUE.',]
+  #nam[nn]['LREGETA']=['.TRUE.',]
+  #nam[nn]['LSPRT']=['.TRUE.',]
+  #nam[nn]['CNPPATH']=["'.'",]
+  #nam[nn]['LFDBOP']=['.FALSE.',]
+  #nam[nn]['LFBDAP']=['.TRUE.',]
   nam[nn]['LSFORC']=['.TRUE.',]
-  nam[nn]['NFRHIS'] = ['1',]
-  nam[nn]['NFPOS'] = ['0',]
-  nam[nn]['NFRPOS'] = ['1',]
-  nam[nn]['NFRISP'] = ['1',]
-  nam[nn]['NFRSDI'] = ['1',]
-  nam[nn]['NHISTS(0)'] = ['1',]
-  nam[nn]['NPRINTLEV'] = ['2',]
+  nam[nn]['LSFORCS']=['.TRUE.',]
+  #nam[nn]['NFRHIS'] = ['1',]
+  #nam[nn]['NFPOS'] = ['1',]
+  #nam[nn]['NFRPOS'] = ['1',]
+  #nam[nn]['NFRSDI'] = ['1',]
+  #nam[nn]['NHISTS(0)'] = ['1',]
+  #nam[nn]['LGRIB_API']=['.FALSE.',]
+  #nam[nn]['LALLOPR']=['.FALSE.',]
+  #nam[nn]['NUNDEFLD'] = ['-99999999',]
 
   # Update NAMXFU
   nn =  'NAMXFU'
   for param in nam[nn].keys():
     if param[0] == 'L': nam[nn][param] = ['.FALSE.',]
 
+# Update NAMPAR0
+  nn = 'NAMPAR0'
+  del(nam[nn])
+  nam[nn]={}
+  nam[nn][' MBX_SIZE']=['2048000000',]
+  nam[nn][' NOUTPUT']=['1',]
+  nam[nn][' NPROC']=['1',]
+  nam[nn][' MP_TYPE']=['2',]
+  nam[nn][' LOPT_SCALAR']=['.TRUE.',]
+  nam[nn][' NPRINTLEV']=['1',]
+
 # Update NAMPAR1
   nn = 'NAMPAR1'
   del(nam[nn])
   nam[nn]={}
+  nam[nn]['L_GATHERV_WRGP']=['.FALSE.',]
   nam[nn]['LEQ_REGIONS']=['.FALSE.',]
   nam[nn]['LSLONDEM']=['.TRUE.',]
   nam[nn]['LSPLIT']=['.FALSE.',]
   nam[nn]['LSYNC_SLCOM']=['.TRUE.',]
   nam[nn]['LSYNC_TRANS']=['.TRUE.',]
-  nam[nn]['L_GATHERV_WRGP']=['.FALSE.',]
   nam[nn]['NCOMBFLEN']=['1800000',]
-  nam[nn]['NSTRIN']=['100',]
+  nam[nn]['NSTRIN']=['1',]
   nam[nn]['NSTROUT']=['1',]
-
+ 
 # Update NAMPARAR
-  nn='NAMPARAR'
-  nam[nn]['CMF_CLOUD']=["'DIRE'",]
-  nam[nn]['CMF_UPDRAFT']=["'EDKF'",]
-  nam[nn]['LMIXUV']=['.TRUE.',]
-  nam[nn]['NSWB_MNH']=['6',]
+  #nn='NAMPARAR'
+  #nam[nn]['CMF_CLOUD']=["'DIRE'",]
+  #nam[nn]['CMF_UPDRAFT']=["'EDKF'",]
+  #nam[nn]['LMIXUV']=['.TRUE.',]
+  #nam[nn]['NSWB_MNH']=['6',]
 
 # Update NAMARG
 
   nn = 'NAMARG'
   nam[nn]['CNMEXP'] = ["'ARPE'",]
-  nam[nn]['CUSTOP'] = ["'"+NSTOP+"'",]
-  nam[nn]['TSTEP'] = [str(timestep),]
 
 # Update NAMCFU
 
@@ -254,8 +252,8 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
 
 # Update NEMELBC0A
 
-  nn = 'NEMELBC0A'
-  nam[nn]['LESPCPL'] = [".FALSE.",]
+  #nn = 'NEMELBC0A'
+  #nam[nn]['LESPCPL'] = [".FALSE.",]
 
 
   # -----------------------------------------------------------
@@ -292,9 +290,10 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
   second = int(startDate[12:14])
   
 #  second = 0
-  nam['NAMRIP']['NINDAT'] = [startDate[0:8],]
-  nam['NAMRIP']['NSSSSS'] = [str(int(hour*3600+minute*60+second)),]
-
+  #nam['NAMRIP']['NINDAT'] = [startDate[0:8],]
+  #nam['NAMRIP']['NSSSSS'] = [str(int(hour*3600+minute*60+second)),]
+  nam['NAMRIP']['TSTEP'] = [str(timestep),]
+  nam['NAMRIP']['CSTOP'] = ["'"+NSTOP+"'",]
 
   # Case with no radiation or radiation included in temperature advection
   nam['NAERAD']['LRRTM'] =  ['.FALSE.',]

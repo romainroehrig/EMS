@@ -271,8 +271,6 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
       i=i+1
       for it in range(0,nt):
         nam[nn]['NL_LSW_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]      
-  else:
-      nam[nn]['LGEOST_UV_FRC'] = ['.FALSE.',]
   if attributes['nudging_u'] > 0. or attributes['nudging_v'] > 0.:
       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
       nam[nn]['LUV_NUDG'] = ['.TRUE.',]
@@ -294,10 +292,10 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
         nam[nn]['RZ0_FORC'] = [str(float(attributes['z0'])),]
       else:
         nam[nn]['RZ0_FORC'] = ['0.035',]
-      nam[nn]["NSH_FORC_DEB"]=[str(int(1+i*nt+j*nt_sfc)),]
+      nam[nn]["NSH_FORC_DEB"]=[str(int(1+j*nt_sfc)),]
       nam[nn]["NSH_FORC_NUM"]=[str(nt_sfc),]
       j=j+1
-      nam[nn]["NLH_FORC_DEB"]=[str(int(1+i*nt+j*nt_sfc)),]
+      nam[nn]["NLH_FORC_DEB"]=[str(int(1+j*nt_sfc)),]
       nam[nn]["NLH_FORC_NUM"]=[str(nt_sfc),]
       if nt_sfc == 1:
         dt_sfc = 0.
