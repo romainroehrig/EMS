@@ -3,7 +3,7 @@
 #------------------------------------------------------------
 # 			INTIALISATION
 #------------------------------------------------------------
-set -x
+set -vx
 
 . ./param
 
@@ -25,12 +25,12 @@ fi
 
 TMPDIR=$HOME/tmp/EXEMUSC
 
-if [ ! -d $TMPDIR ] ; then
-  mkdir $TMPDIR
-fi
+rm -rf $TMPDIR
+mkdir $TMPDIR
 
 cd $TMPDIR
-find $TMPDIR -name '*' -exec rm -rf {} \ || :
+
+#find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
 #rm -rf $TMPDIR/* || : 
 
 ladate=`date`
