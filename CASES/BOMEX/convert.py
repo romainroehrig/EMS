@@ -62,7 +62,7 @@ data['sfc_lat_flx'].title = 'Surface latent heat flux'
 data['ustar'] = data['sfc_lat_flx']*0.+0.28
 data['ustar'].id = 'ustar'
 data['ustar'].units = 'm s-1'
-data['ustar'].title = 'usar'
+data['ustar'].title = 'ustar'
 
 
 
