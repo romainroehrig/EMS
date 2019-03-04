@@ -18,7 +18,7 @@ f.close()
 time = cdms2.createAxis(MV2.array([0.,3600*6],typecode=MV2.float32))
 time.designateTime()
 time.id = 'time'
-time.units = 'seconds since 2009-12-11 10:00:00'
+time.units = 'seconds since 2009-12-11 00:00:00'
 time.calendar = 'gregorian'
 
 lat = MV2.zeros(1,typecode=MV2.float32) + 45
@@ -146,8 +146,8 @@ g.reference = 'Ayotte et al (1996, BLM)'
 g.author = "F Couvreux"
 g.modifications = "2018-04-20: R. Roehrig put all fields on the same vertical and time axes"
 g.case = "AYOTTE_05SC" 
-g.startDate = "20091211100000" 
-g.endDate = "20091211160000" 
+g.startDate = "20091211000000" 
+g.endDate = "20091211060000" 
 g.qadvh = 0 
 g.tadvh = 0 
 g.qadvv = 0 
