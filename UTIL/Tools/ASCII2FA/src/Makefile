@@ -11,8 +11,8 @@ OBJS	 =	acadfa1D_main.o \
 		empty.o 
 
 XRD	 =	libxrd.a 
-GRIBEX   =      libgribex.a 
-MPIDUMMY =      libmpidummy.a
+GRIBEX   =      /home/common/sync/gfortran/auxlibs/lib/libgribex.a 
+MPIDUMMY =      /home/common/sync/gfortran/auxlibs/lib/libmpidummy.a
 LIBS	 =	$(XRD) $(GRIBEX) $(MPIDUMMY)
 
 %.o:%.F90
