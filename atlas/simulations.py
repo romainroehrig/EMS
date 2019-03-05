@@ -5,24 +5,10 @@ varnames = {}
 coefs = {}
 lines = {}
 
-#cases = ['AYOTTE','ARMCU','FIRE','BOMEX','RICO','AMMA','SANDU']
-#subcases = {}
-#for case in cases:
-#    subcases[case] = ['REF',] 
-
-#subcases['AYOTTE'] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
-#subcases['SANDU'] =  ['REF','FAST','SLOW']
-
 for case in  cases:
   files[case] = {}
-  varnames[case] = {}
-  coefs[case] = {}
-  lines[case] = {}
   for subcase in subcases[case]:
     files[case][subcase] = {}
-    varnames[case][subcase] = {}
-    coefs[case][subcase] = {}
-    lines[case][subcase] = {}
 
 #################
 

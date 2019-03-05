@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 # -*- coding:UTF-8 -*-
 
-import cdtime
-import references
-import simulations
-import diag_simu
-import os,sys
+import os, sys
+sys.path = ['./config/','./util/'] + sys.path
 
-import cdms2
-import MV2
-import matplotlib.pyplot as plt
-
+import cdms2, MV2
 import math
 import numpy as np
 from scipy.interpolate import interp1d
+import cdtime
+
+import matplotlib.pyplot as plt
+
+import references
+import simulations
+import diag_simu
 
 def plot_metric(ax,data,metrics2combine,coef=1.,xlabel=[],ylabel='',ylim=None,yticks=None,plotlegend=False,colors=None):
   nmetrics = len(metrics2combine)
@@ -83,6 +84,7 @@ def f_rmse(ref,sim,zmin,zmax):
 
 
 case = 'BOMEX'
+subcase = 'REF'
 
 var2compute = ['zcb','zct','theta_0_500','qv_0_500','max_cf']
 if not(os.path.exists('tmp')):
@@ -91,13 +93,13 @@ if not(os.path.exists('tmp')):
 fin = {}
 lines = {}
 for k in simulations.sim2plot:
-    fin[k] = 'tmp/{0}_{1}.nc'.format(k,case)
-    diag_simu.prepare(simulations.files[case][k],fin[k],var2compute)
-    lines[k] = simulations.lines[case][k]
+    fin[k] = 'tmp/{0}_{1}_{2}.nc'.format(k,case,subcase)
+    diag_simu.prepare(simulations.files[case][subcase][k],fin[k],var2compute)
+    lines[k] = simulations.lines[k]
 
 for k in ['LES']: #references.files[case].keys():
-    fin[k] = references.files[case][k]
-    lines[k] = references.lines[case][k]
+    fin[k] = references.files[case][subcase][k]
+    lines[k] = references.lines[case][subcase][k]
 
 repout = './atlas/{0}/{1}/METRICS/'.format(simulations.name_atlas,case)
 if not(os.path.exists(repout)):
