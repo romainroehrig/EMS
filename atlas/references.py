@@ -89,17 +89,32 @@ lines[case][subcase][sim] = 'k'
 # SANDU
 case = 'SANDU'
 
-for subcase in ['REF','SLOW','FAST']:
-  files[case][subcase] = {}
-  varnames[case][subcase] = {}
-  coefs[case][subcase] = {}
-  lines[case][subcase] = {}
+tmp = ['k', 'k--','b--','g--','b-.']
 
-  sim = 'LES'
-  files[case][subcase][sim] = '/Users/romainroehrig/scripts/SCM/Sandu/LES/SANDU_{0}_LES_SAM_RR.nc'.format(subcase)
+for subcase in ['REF','SLOW','FAST']:
+#  files[case][subcase] = {}
+#  varnames[case][subcase] = {}
+#  coefs[case][subcase] = {}
+#  lines[case][subcase] = {}
+
+  for i,sim in enumerate(['SAM','DALES','DHARMA','UCLA']):
+    files[case][subcase][sim] = '/Users/romainroehrig/data/LES/SANDU/SANDU_{0}_LES_{1}_RR.nc'.format(subcase,sim)
+    varnames[case][subcase][sim] = {}
+    coefs[case][subcase][sim] = {}
+    lines[case][subcase][sim] = tmp[i]
+
+#################
+# ASTEX
+case = 'ASTEX'
+subcase = 'EUCLIPSE'
+
+tmp = ['k', 'k--','b--','g--','b-.']
+
+for i,sim in enumerate(['SAM','UCLA','DALES','DHARMA','MetOffice']):
+  files[case][subcase][sim] = '/Users/romainroehrig/data/LES/ASTEX/ASTEX_{0}_LES_{1}_RR.nc'.format(subcase,sim)
   varnames[case][subcase][sim] = {}
   coefs[case][subcase][sim] = {}
-  lines[case][subcase][sim] = 'k'
+  lines[case][subcase][sim] = tmp[i]
 
 #################
 # BOMEX
@@ -160,7 +175,7 @@ lines[case][subcase][sim] = 'k'
 
 
 #################
-# AMMA
+# CINDY-DYNAMO
 case = 'CINDY-DYNAMO'
 subcase = 'NSA3aflux'
 
