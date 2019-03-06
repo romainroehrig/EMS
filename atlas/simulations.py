@@ -15,6 +15,9 @@ for case in  cases:
 sim2plot = ['CMIP6',]
 name_atlas = 'CMIP6'
 
+#sim2plot = ['CMIP6','CMIP6_bestcf',]
+#name_atlas = 'CMIP6_bestcf'
+
 #sim2plot = ['CMIP6_pcmt_num','CMIP6',]
 #name_atlas = 'CMIP6_pcmt_num'
 
@@ -37,7 +40,7 @@ for sim in sim2plot:
   coefs[sim]['shf'] = -1.
   coefs[sim]['lhf'] = -1.
 
-for sim in ['CMIP6',]:
+for sim in ['CMIP6','CMIP6_bestcf',]:
   for case in cases:
     for subcase in subcases[case]:
       files[case][subcase][sim] =  '/Users/romainroehrig/MUSC/simulations//arp631.diag/{0}/L91_300s/{1}/{2}/Output/netcdf/Out_klevel.nc'.format(sim,case,subcase)
@@ -98,6 +101,7 @@ for case in cases:
 # Lines
 
 lines['CMIP6'] = 'r-'
+lines['CMIP6_bestcf'] = 'b-'
 lines['CMIP6_pcmt_num'] = 'b-'
 lines['CMIP6_pcmt_num_tmp'] = 'r-'
 lines['CMIP6_pcmt_num_tmp2'] = 'r-'

@@ -1,6 +1,6 @@
 import cdtime
 
-cases = ['AYOTTE','ARMCU','FIRE','BOMEX','RICO','AMMA','SANDU','ASTEX','CINDY-DYNAMO']
+cases = ['AYOTTE','IHOP','ARMCU','FIRE','BOMEX','RICO','AMMA','SANDU','ASTEX','CINDY-DYNAMO']
 subcases = {}
 for case in cases:
     subcases[case] = ['REF',] 
@@ -21,6 +21,13 @@ case = 'AYOTTE'
 for subcase in subcases[case]:
   tmin[case][subcase] = cdtime.comptime(2009,12,11,0)
   tmax[case][subcase] = cdtime.comptime(2009,12,11,6)
+
+# IHOP
+case = 'IHOP'
+for subcase in subcases[case]:
+  tmin[case][subcase] = cdtime.comptime(2002,6,14,6)
+  tmax[case][subcase] = cdtime.comptime(2009,6,14,12)
+
 
 # BOMEX
 case = 'BOMEX'

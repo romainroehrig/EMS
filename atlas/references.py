@@ -41,6 +41,17 @@ for subcase in ['00SC','00WC','03SC','05SC','05WC','24F','24SC']:
 
 #################
 # ARMCU
+case = 'IHOP'
+subcase = 'REF'
+
+sim = 'LES'
+files[case][subcase][sim] = '/Users/romainroehrig/data/LES/IHOP/IHOP_LES_MESONH_RR.nc'
+varnames[case][subcase][sim] = {}
+coefs[case][subcase][sim] = {}
+lines[case][subcase][sim] = 'k'
+
+#################
+# ARMCU
 case = 'ARMCU'
 subcase = 'REF'
 
