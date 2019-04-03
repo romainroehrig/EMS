@@ -2,6 +2,7 @@
 
 import cdms2 
 import MV2
+import cdtime
 
 cdms2.setNetcdfShuffleFlag(0)
 cdms2.setNetcdfDeflateFlag(0)
@@ -70,7 +71,16 @@ for var in varnames.keys():
   g.write(data[varnames[var]])
 
 var = 'ts'
-data[var] = data['hfss']*0. + 320.
+data[var] = data['hfss']*0. 
+f = cdms2.open('nimmetS1.b1.20060710.000000.cdf')
+time = data[var].getAxis(0)
+nt,nlat,nlon = data[var].shape
+for it in range(0,nt-1):
+    tt = cdtime.reltime(time[it],time.units)
+    data[var][it,0,0] = f('temp_mean', time = tt) + 273.15
+tt = cdtime.comptime(2006,7,10,0,0,0)
+data[var][nt-1,0,0] = f('temp_mean', time = tt) + 273.15
+f.close()
 data[var].id = var
 data[var].title = names[var]
 data[var].positive = ''
