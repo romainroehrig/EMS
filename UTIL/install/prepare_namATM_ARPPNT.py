@@ -167,7 +167,7 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
   # -----------------------------------------------------------
 
   attributes = {}
-  for att in ['tadvh','qdvh','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v','surfaceForcing','z0','ustar']:
+  for att in ['tadvh','qdvh','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v','surfaceForcing','surfaceForcingWind']:
     attributes[att] = 0
 
   for att in ['p_nudging_t','p_nudging_q','p_nudging_u','p_nudging_v']:
@@ -304,7 +304,15 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
       for it in range(0,nt_sfc):
          nam[nn]['NL_SH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt_sfc*it)),]
          nam[nn]['NL_LH_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt_sfc*it)),]
-      nam["NAMPHYDS"]['NSFORC']=[str(int(2*nt_sfc)),]
+      if attributes['surfaceForcingWind'] == "ustar" :
+         j=j+1
+         nam[nn]["NUS_FORC_DEB"]=[str(int(1+j*nt_sfc)),]
+         nam[nn]["NUS_FORC_NUM"]=[str(nt_sfc),]
+         for it in range(0,nt_sfc):
+            nam[nn]['NL_US_ADV_TIME(   '+str(int(it+1))+" )"]=[str(int(dt_sfc*it)),]
+         nam["NAMPHYDS"]['NSFORC']=[str(int(3*nt_sfc)),]
+      else:
+         nam["NAMPHYDS"]['NSFORC']=[str(int(2*nt_sfc)),]
 
   nam['NAMGFL']['NGFL_FORC'] = [str(int(nt*i)),]
 
