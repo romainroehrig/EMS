@@ -81,6 +81,7 @@ for it in range(0,nt-1):
 tt = cdtime.comptime(2006,7,10,0,0,0)
 data[var][nt-1,0,0] = f('temp_mean', time = tt) + 273.15
 f.close()
+#data[var] = data['hfss']*0. + 320.
 data[var].id = var
 data[var].title = names[var]
 data[var].positive = ''
