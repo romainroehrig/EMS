@@ -30,7 +30,7 @@ if [ ! -d $TMPDIR ] ; then
 fi
 
 cd $TMPDIR
-find $TMPDIR -name '*' -exec rm -rf {} \; || :
+find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
 #rm -rf $TMPDIR/* || : 
 
 ladate=`date`
@@ -164,7 +164,7 @@ set -x
 
 find $OUTPUTDIR/ -name '*' -exec rm -f {} \;
 find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
-find ./ -name 'out*.txt' -exec mv {} $OUTPUTDIR \;
+#find ./ -name 'out*.txt' -exec mv {} $OUTPUTDIR \;
 find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
 find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
 
