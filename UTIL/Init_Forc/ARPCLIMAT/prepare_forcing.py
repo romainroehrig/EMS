@@ -36,7 +36,7 @@ ss2 = int(endDate[12:14])
 tend = cdtime.comptime(yyyy2,mm2,dd2,hh2,mi2,ss2)
 
 attributes = {}
-for att in ['tadvh','qdvh','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v']:
+for att in ['tadvh','qadvh','qvadvh','qvadv','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v']:
   attributes[att] = 0
 
 for att in f.listglobal():
@@ -56,12 +56,18 @@ if attributes['tadv'] == 1:
 if attributes['qadv'] == 1:
   variables3D.append('qadv')
   nt = f['qadv'].shape[0]
+if attributes['qvadv'] == 1:
+  variables3D.append('qvadv')
+  nt = f['qvadv'].shape[0]
 if attributes['tadvh'] == 1:
   variables3D.append('tadvh')
   nt = f['tadvh'].shape[0]
 if attributes['qadvh'] == 1:
   variables3D.append('qadvh')
   nt = f['qadvh'].shape[0]
+if attributes['qvadvh'] == 1:
+  variables3D.append('qvadvh')
+  nt = f['qvadvh'].shape[0]
 if attributes['qtadvh'] == 1:
   variables3D.append('qadvh')
   nt = f['qtadvh'].shape[0]
@@ -75,6 +81,8 @@ if attributes['tadvv'] == 1:
   variables3D.append('tadvv')	
 if attributes['qadvv'] == 1:
   variables3D.append('qadvv')	
+if attributes['qvadvv'] == 1:
+  variables3D.append('qvadvv')	
 if attributes['qtadvv'] == 1:
   variables3D.append('qadvv')
 if attributes['uadvv'] == 1:
@@ -122,14 +130,17 @@ for var in variables3D:
 names['ps'] = 'Ps'
 names['tadvh'] = 'dT'
 names['qadvh'] = 'dq'
+names['qvadvh'] = 'dq'
 names['uadvh'] = 'du'
 names['vadvh'] = 'dv'
 names['tadvv'] = 'dT'
 names['qadvv'] = 'dq'
+names['qvadvv'] = 'dq'
 names['uadvv'] = 'du'
 names['vadvv'] = 'dv'
 names['tadv'] = 'dT'
 names['qadv'] = 'dq'
+names['qvadv'] = 'dq'
 names['uadv'] = 'du'
 names['vadv'] = 'dv'
 names['u'] = 'u'

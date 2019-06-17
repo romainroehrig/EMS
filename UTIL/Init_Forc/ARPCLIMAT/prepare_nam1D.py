@@ -28,6 +28,8 @@ data_in = {}
 
 f = cdms2.open('data_input.nc')
 
+print f.listvariables()
+
 lat = f['temp'].getLatitude()[0]
 lon = f['temp'].getLongitude()[0]
 
@@ -35,7 +37,7 @@ t0 = f['temp'].getAxis(0)[0]
 units0 = f['temp'].getAxis(0).units
 
 attributes = {}
-for att in ['tadvh','qdvh','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v']:
+for att in ['tadvh','qadvh','qvadvh','qvadv','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v']:
   attributes[att] = 0
 
 for att in f.listglobal():
@@ -59,6 +61,9 @@ if attributes['tadv'] == 1:
 if attributes['qadv'] == 1:
   var2read.append('qadv')	
   var2interpol.append('qadv')
+if attributes['qvadv'] == 1:
+  var2read.append('qvadv')	
+  var2interpol.append('qvadv')
 if attributes['tadvh'] == 1:
   var2read.append('tadvh')	
   var2interpol.append('tadvh')
@@ -66,6 +71,9 @@ if attributes['tadvh'] == 1:
 if attributes['qadvh'] == 1:
   var2read.append('qadvh')	
   var2interpol.append('qadvh')
+if attributes['qvadvh'] == 1:
+  var2read.append('qvadvh')	
+  var2interpol.append('qvadvh')
 if attributes['qtadvh'] == 1:
   var2read.append('qtadvh')	
   var2interpol.append('qtadvh')
@@ -80,6 +88,9 @@ if attributes['tadvv'] == 1:
   var2interpol.append('tadvv')
 if attributes['qadvv'] == 1:
   var2read.append('qadvv')	
+  var2interpol.append('qadvv')
+if attributes['qvadvv'] == 1:
+  var2read.append('qvadvv')	
   var2interpol.append('qadvv')
 if attributes['uadvv'] == 1:
   var2read.append('uadvv')	
@@ -464,6 +475,14 @@ if lforc:
         print >>g, data_out['qadvh'][it,ilev]	  
     g.close()
 
+  if attributes['qvadvh'] == 1:
+    g = open(dirout + 'qvadvh_profiles_L' + str(nlev_out),'w')
+    for it in range(0,nt):
+      print >>g, 'Horizontal Specific Humidity Advection', int(dt*it) 
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['qvadvh'][it,ilev]	  
+    g.close()
+
   if attributes['qtadvh'] == 1:
     g = open(dirout + 'qadvh_profiles_L' + str(nlev_out),'w')
     for it in range(0,nt):
@@ -504,6 +523,14 @@ if lforc:
         print >>g, data_out['qadvv'][it,ilev]	  
     g.close()
 
+  if attributes['qvadvv'] == 1:
+    g = open(dirout + 'qvadvv_profiles_L' + str(nlev_out),'w')
+    for it in range(0,nt):
+      print >>g, 'Vertical Specific Humidity Advection', int(dt*it)
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['qvadvv'][it,ilev]	  
+    g.close()
+
   if attributes['tadv'] == 1:
     g = open(dirout + 'tadv_profiles_L' + str(nlev_out),'w')
     for it in range(0,nt):
@@ -518,6 +545,14 @@ if lforc:
       print >>g, 'Total Specific Humidity Advection', int(dt*it)
       for ilev in range(0,nlev_out):
         print >>g, data_out['qadv'][it,ilev]	  
+    g.close()
+
+  if attributes['qvadv'] == 1:
+    g = open(dirout + 'qvadv_profiles_L' + str(nlev_out),'w')
+    for it in range(0,nt):
+      print >>g, 'Total Specific Humidity Advection', int(dt*it)
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['qvadv'][it,ilev]	  
     g.close()
 
   if attributes['uadv'] == 1:
