@@ -45,10 +45,14 @@ data_input[case]['OA_FLUX_USTAR'] = rep0 + '/GABLS4/Olivier/GABLS4_24h_driver_FC
 # AYOTTE Cases
 case = 'AYOTTE'
 cases.append(case)
-subcases[case] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
+subcases[case] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC','24SC_us','24SC_modif','24SC_modif_us']
 data_input[case] = {}
 for cc in subcases[case]:
   data_input[case][cc] = rep0 + '/AYOTTE/AYOTTE_A{0}_driver_FC_RR.nc'.format(cc)
+
+data_input[case]['24SC_us'] = rep0 + '/AYOTTE/AYOTTE_A24SC_driver_FC_RR_us.nc'.format(cc)
+data_input[case]['24SC_modif'] = rep0 + '/AYOTTE/AYOTTE_A24SC_modif_driver_FC_RR.nc'.format(cc)
+data_input[case]['24SC_modif_us'] = rep0 + '/AYOTTE/AYOTTE_A24SC_modif_driver_FC_RR_us.nc'.format(cc)
 
 # IHOP Cases
 case = 'IHOP'
