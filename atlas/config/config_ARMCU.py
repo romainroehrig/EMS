@@ -141,6 +141,38 @@ plotAvgP['hour9-10']['var2plot'] = \
 #        'tnqt'    : {'xmin':   -2.  , 'xmax':   2.               },\
         }
 
+#plotAvgP['hour10-11'] = \
+#        {\
+#        'tmin'    : tmin.add(10,cdtime.Hour)      ,\
+#        'tmax'    : tmin.add(11,cdtime.Hour)     ,\
+#        'ymin'    :    0.                        ,\
+#        'ymax'    :    4.                        ,\
+#        'yname'   : 'altitude (km)'              ,\
+#        'levunits': 'km'                         ,\
+#        'title'   : '10-11 hour'                  ,\
+#        }
+#plotAvgP['hour10-11']['var2plot'] = \
+#        {\
+#        'u'       : {'xmin':    0.  , 'xmax':  12. , 'init':True },\
+#        'v'       : {'xmin':   -3.  , 'xmax':   3. , 'init':True },\
+#        'theta'   : {'xmin':  300.  , 'xmax': 325. , 'init':True },\
+#        'qv'      : {'xmin':    0.  , 'xmax':  18. , 'init':True },\
+#        'ql'      : {'xmin':    0.  , 'xmax': 100.               },\
+##        'qi'      : {'xmin':    0.  , 'xmax':  10.               },\
+#        'qr'      : {'xmin':    0.  , 'xmax':  50.               },\
+##        'qsn'     : {'xmin':    0.  , 'xmax':  50.               },\
+#        'rneb'    : {'xmin':    0.  , 'xmax':  60.               },\
+#        'w_up'    : {'xmin':    0.  , 'xmax':   4.               },\
+#        'alpha_up': {'xmin':    0.  , 'xmax':  25.               },\
+#        'Mf'      : {'xmin':    0.  , 'xmax':   0.3, 'lev':'zh'  },\
+#        'dTv_up'  : {'xmin':   -1.  , 'xmax':   1.               },\
+#        'B_up'    : {'xmin':   -0.02, 'xmax':   0.02             },\
+#        'eps_u'   : {'xmin':   -0.5 , 'xmax':   5.               },\
+#        'det_u'   : {'xmin':   -0.5 , 'xmax':   5.               },\
+##        'tnthl'   : {'xmin':   -2.  , 'xmax':   2.               },\
+##        'tnqt'    : {'xmin':   -2.  , 'xmax':   2.               },\
+#        }        
+
 
 #################
 # Checking initial profiles - global view

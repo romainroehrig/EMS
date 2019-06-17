@@ -68,7 +68,8 @@ g.author = 'R. Roehrig'
 
 g.case = 'CINDY-DYNAMO - NSA3a - flux forcing'
 g.startDate = '20111001000000'
-g.endDate = '20111231210000'
+g.endDate =   '20111231210000'
+#g.endDate =   '20111030000000'
 
 g.qadvh = 1
 g.tadvh = 1

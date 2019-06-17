@@ -139,7 +139,7 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
   fin = cdms2.open(filecase)
 
   attributes = {}
-  for att in ['tadvh','qdvh','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v']:
+  for att in ['tadvh','qadvh','qvadv','qvadvh','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v']:
     attributes[att] = 0
 
   for att in ['p_nudging_t','p_nudging_q','p_nudging_u','p_nudging_v']:
@@ -187,7 +187,7 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
 
   if attributes['tadv'] == 1 or attributes['tadvh'] == 1 or attributes['tadvv'] == 1:
       nam[nn]['LT_ADV_FRC'] = ['.TRUE.',]
-  if attributes['qadv'] == 1 or attributes['qadvh'] == 1 or attributes['qtadvh'] == 1 or attributes['qadvv'] == 1:
+  if attributes['qadv'] == 1 or attributes['qadvh'] == 1 or attributes['qtadvh'] == 1 or attributes['qadvv'] == 1 or attributes['qvadv'] == 1 or attributes['qvadvh'] == 1 or attributes['qvadvv'] == 1 :
       nam[nn]['LQV_ADV_FRC'] = ['.TRUE.',]
   if attributes['uadvh'] == 1 or attributes['uadvh'] == 1 or attributes['uadvv'] == 1 or attributes['vadvv'] == 1:
       nam[nn]['LUV_ADV_FRC'] = ['.TRUE.',]

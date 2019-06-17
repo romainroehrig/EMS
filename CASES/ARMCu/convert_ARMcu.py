@@ -19,7 +19,9 @@ f.close()
 nt,nlev,nlat,nlon = data['thadv'].shape
 time = data['thadv'].getTime()
 lat = data['thadv'].getLatitude()
+lat.units = 'degrees_north'
 lon = data['thadv'].getLongitude()
+lon.units = 'degrees_east'
 
 lev = data['thadv'].getAxis(1)
 lev.designateLevel()
