@@ -80,7 +80,7 @@ lon.designateLongitude()
 lon.id = 'lon'
 lon.units = 'degrees_east'
 
-lev = [0, 16, 51.4, 76, 86.9, 122.6, 124, 158.4, 174, 212.3, 225, 274, 284.7, 325, 357.7, 375, 425, 431.2, 475, 505.2, 525, 574, 579.9, 624, 655.1, 674, 725, 769, 774, 825, 874, 923.1, 925, 974, 1025, 1075, 1079.8, 1125, 1175, 1225, 1239, 1275, 1324, 1374, 1401, 1424, 1474, 1524, 1575, 1586.6, 1625, 1675, 1725, 1774, 1797.2, 1825, 1874, 1924, 1974, 2025, 2075, 2122.2, 2124, 2176, 2225, 2275, 2325, 2375, 2426, 2475, 2524, 2574.1, 2575, 2624, 2675, 2725, 2775, 2824, 2875, 2923, 2974, 3024, 3049.3, 3075, 3125, 3176, 3225, 3275, 3324, 3375, 3424, 3475, 3525, 3574, 3625, 3675, 3723, 3774, 3811.9, 3824, 3873, 3924, 3974, 4025, 4075, 4125, 4175, 4218, 4274.9, 4325.6, 4374.5, 4425.7, 4474.9, 4500, 4525.6, 4574.5, 4625, 4674.5, 4724.8, 4774.9, 4823.4, 4874.5, 4925.3, 4974.5]
+lev = [0, 16, 51.4, 76, 86.9, 122.6, 124, 158.4, 174, 212.3, 225, 274, 284.7, 325, 357.7, 375, 425, 431.2, 475, 505.2, 525, 574, 579.9, 624, 655.1, 674, 725, 769, 774, 825, 874, 923.1, 925, 974, 1025, 1075, 1079.8, 1125, 1175, 1225, 1239, 1275, 1324, 1374, 1401, 1424, 1474, 1524, 1575, 1586.6, 1625, 1675, 1725, 1774, 1797.2, 1825, 1874, 1924, 1974, 2025, 2075, 2122.2, 2124, 2176, 2225, 2275, 2325, 2375, 2426, 2475, 2524, 2574.1, 2575, 2624, 2675, 2725, 2775, 2824, 2875, 2923, 2974, 3024, 3049.3, 3075, 3125, 3176, 3225, 3275, 3324, 3375, 3424, 3475, 3525, 3574, 3625, 3675, 3723, 3774, 3811.9, 3824, 3873, 3924, 3974, 4025, 4075, 4125, 4175, 4218, 4274.9, 4325.6, 4374.5, 4425.7, 4474.9, 4500, 4525.6, 4574.5, 4625, 4674.5, 4724.8, 4774.9, 4823.4, 4874.5, 4925.3, 4974.5, 6000, 10000, 15000]
 nlev = len(lev)
 lev = MV2.array(lev,typecode=MV2.float32)
 lev = cdms2.createAxis(lev)
@@ -91,7 +91,7 @@ lev.positive = 'up'
 
 
 variables0D = [] #['orog']
-variables2D = ['sfc_lat_flx','sfc_sens_flx','ps']
+variables2D = ['sfc_lat_flx','sfc_sens_flx','ps','ts']
 variables3D = ['pressure','th','qv','temp','u','v','thadvh','qadvh','w','ug','vg']
 
 variables = variables3D + variables2D + variables0D
@@ -109,6 +109,7 @@ units['sfc_lat_flx'] = 'W m-2'
 units['sfc_sens_flx'] = 'W m-2'
 units['orog'] = 'm'
 units['ps'] = 'Pa'
+units['ts'] = 'K'
 units['w'] = 'm s-1'
 units['qadvh'] = 'kg kg-1 s-1'
 units['thadvh'] = 'K s-1'
@@ -129,6 +130,7 @@ names['sfc_sens_flx'] = 'Surface sensible heat flux'
 names['ustar'] = 'Surface ustar'
 names['orog'] = 'Surface orography'
 names['ps'] = 'Surface pressure'
+names['ts'] = 'Surface temperature'
 names['w'] = 'Vertical velocity'
 names['qadvh'] = 'Specific Humidity horizontal advection'
 names['thadvh'] = 'Potential temperature horizontal advection'
@@ -197,13 +199,32 @@ for var in variables3D:
 #      for it2 in range(0,6):
 #        datanew[var][it1*6+it2,ilev,0,0] = tmp[it1] + (tmp[it1+1]-tmp[it1])*it2/6. 
     datanew[var][:,ilev,0,0] = tmp[:]
+    if var == 'qv' and not(lflag):
+        datanew[var][:,ilev,0,0] = 0.
 
+
+nt,nlev,x,y = datanew['temp'].shape
+#10000 m
+datanew['pressure'][:,-2,0,0] = datanew['pressure'][:,-2,0,0]*0. + 30000.
+datanew['u'][:,-2,0,0] = datanew['u'][:,-2,0,0]*0.
+datanew['v'][:,-2,0,0] = datanew['v'][:,-2,0,0]*0.
+
+#15000 m
+datanew['pressure'][:,-1,0,0] = datanew['pressure'][:,-1,0,0]*0. + 10000.
+datanew['u'][:,-1,0,0] = datanew['u'][:,-1,0,0]*0.
+datanew['v'][:,-1,0,0] = datanew['v'][:,-1,0,0]*0.
+
+for ilev in range(0,nlev):
+  for it in range(0,nt):
+    datanew['temp'][it,ilev,0,0] = datanew['th'][it,ilev,0,0]*(datanew['pressure'][it,ilev,0,0]/100000.)**(2./7.) 
 
 for var in ['sfc_lat_flx','sfc_sens_flx']:
     time0 = data[var].getAxis(0)
     ff = interpolate.interp1d(np.array(time0[:]),np.array(data[var][:]))
     datanew[var][0:nt,0,0] = ff(np.array(time[:]))
 
+
+datanew['ts'] = datanew['sfc_lat_flx']*0. + 320.
 
 datanew['ps'][:,0,0] = datanew['ps'][:,0,0] + data['ps']
 #datanew['orog'][0,0] = datanew['orog'][0,0] + data['orog']
