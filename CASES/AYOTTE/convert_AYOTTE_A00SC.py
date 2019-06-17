@@ -18,7 +18,7 @@ f.close()
 time = cdms2.createAxis(MV2.array([0.,3600*6],typecode=MV2.float32))
 time.designateTime()
 time.id = 'time'
-time.units = 'seconds since 2009-12-11 00:00:00'
+time.units = 'seconds since 2009-12-11 10:00:00'
 time.calendar = 'gregorian'
 
 lat = MV2.zeros(1,typecode=MV2.float32) + 45

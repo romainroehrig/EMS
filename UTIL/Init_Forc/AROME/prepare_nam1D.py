@@ -35,7 +35,7 @@ t0 = f['temp'].getAxis(0)[0]
 units0 = f['temp'].getAxis(0).units
 
 attributes = {}
-for att in ['tadvh','qdvh','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v','surfaceForcing','z0','ustar']:
+for att in ['tadvh','qdvh','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v','surfaceForcing','surfaceForcingWind']:
   attributes[att] = 0
 
 for att in f.listglobal():
@@ -133,7 +133,11 @@ if attributes['surfaceForcing'] == "surfaceFlux" :
   nt_sfc = time_sfc.shape[0]
   nb_fs=nb_fs+2
 
-if attributes['ustar'] > 0. :
+if attributes['surfaceForcingWind'] == "ustar" :
+  var2read.append('ustar')	
+  time_sfc = f('ustar').getAxis(0)
+  nt_sfc = time_sfc.shape[0]
+  print 'nt_sfc', nt_sfc
   nb_fs=nb_fs+1
 
 if attributes['nudging_u'] > 0.:
@@ -357,10 +361,10 @@ if lnam1D:
     for it in range(0,nt_sfc):
       print >>g, 'FLE'
       print >>g, data_in['sfc_lat_flx'][it]
-  if attributes['ustar'] >0. :
+  if attributes['surfaceForcingWind'] == "ustar" :
     for it in range(0,nt_sfc):
       print >>g, 'USTAR'
-      print >>g, str(float(attributes['ustar']))
+      print >>g, data_in['ustar'][it]
 
   for var in config.variablesAux.keys():
     print >>g, var
@@ -399,7 +403,7 @@ if lnam1D:
     tmp.id = var
     g.write(tmp)
 
-  for var in ['sfc_sens_flx','sfc_lat_flx']:
+  for var in ['sfc_sens_flx','sfc_lat_flx','ustar']:
     tmp = MV2.array(data_in[var][:],typecode=MV2.float32)
     tmp.setAxis(0,ntAxis)
     tmp.id = var
