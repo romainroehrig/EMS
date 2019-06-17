@@ -25,12 +25,13 @@ fi
 
 TMPDIR=$HOME/tmp/EXEMUSC
 
-rm -rf $TMPDIR
-mkdir $TMPDIR
+if [ ! -d $TMPDIR ] ; then
+  mkdir $TMPDIR
+fi
 
 cd $TMPDIR
 
-#find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
+find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
 #rm -rf $TMPDIR/* || : 
 
 ladate=`date`
