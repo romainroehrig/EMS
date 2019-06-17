@@ -96,7 +96,6 @@ data_input[case]['REF'] = rep0 + '/RICO/rico_driver_RR.nc'
 case = 'ARMCU'
 cases.append(case)
 subcases[case] = ['REF','DEPHY']
-#subcases[case] = ['REF']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/ARMCu/ARMCu_driver_RR.nc'
 data_input[case]['DEPHY'] = rep0 + '/ARMCu/ARMCu_driver_RR_new.nc'
