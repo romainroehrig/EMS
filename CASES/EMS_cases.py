@@ -135,9 +135,10 @@ data_input[case]['EUCLIPSE'] = rep0 + '/ASTEX/ASTEX_GASS-EUCLIPSE_driver_RR.nc'
 # SANDU composite cases
 case = 'SANDU'
 cases.append(case)
-subcases[case] = ['REF','FAST','SLOW']
+subcases[case] = ['REF','FAST','SLOW','REF_DEPHY']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/SANDU/Composite_REF_driver_RR.nc'
+data_input[case]['REF_DEPHY'] = rep0 + '/SANDU/Composite_REF_driver_RR_new.nc'
 data_input[case]['FAST'] = rep0 + '/SANDU/Composite_FAST_driver_RR.nc'
 data_input[case]['SLOW'] = rep0 + '/SANDU/Composite_SLOW_driver_RR.nc'
 

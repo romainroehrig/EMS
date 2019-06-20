@@ -18,6 +18,7 @@ chmod u+x tmp.sh
 rm -f tmp.py tmp.sh
 
 cat << EOF > config.py
+import os
 
 #zorog = 0.
 
@@ -27,6 +28,10 @@ dt = $2
 
 lforc = True
 lnam1D = True
+if not(os.getenv('LDEPHY') is None):
+  lDEPHY = True
+else:
+  lDEPHY = False
 
 variablesAux = {}
 variablesAux['SURFAEROS.SEA']=6.2E-3

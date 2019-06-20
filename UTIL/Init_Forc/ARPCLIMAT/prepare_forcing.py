@@ -9,6 +9,8 @@ cdms2.setNetcdfShuffleFlag(0)
 cdms2.setNetcdfDeflateFlag(0)
 cdms2.setNetcdfDeflateLevelFlag(0)
 
+lDEPHY = config.lDEPHY
+
 dt = int(config.dt)
 
 dirout = 'files_L' + str(config.nlev) + '_' + str(int(dt)) + 's/'
@@ -100,18 +102,32 @@ if attributes['forc_geo'] == 1:
   nt = f['ug'].shape[0]
   variables3D.append('vg')	
 
-if attributes['nudging_u'] > 0.:
-  variables3D.append('u')
-  nt = f['u'].shape[0]
-if attributes['nudging_v'] > 0.:
-  variables3D.append('v')
-  nt = f['v'].shape[0]
-if attributes['nudging_t'] > 0.:
-  variables3D.append('temp')
-  nt = f['temp'].shape[0]
-if attributes['nudging_q'] > 0.:
-  variables3D.append('qv')
-  nt = f['qv'].shape[0]
+if lDEPHY:
+  if attributes['nudging_u'] > 0.:
+    variables3D.append('u_nudg')
+    nt = f['u_nudg'].shape[0]
+  if attributes['nudging_v'] > 0.:
+    variables3D.append('v_nudg')
+    nt = f['v_nudg'].shape[0]
+  if attributes['nudging_t'] > 0.:
+    variables3D.append('temp_nudg')
+    nt = f['temp_nudg'].shape[0]
+  if attributes['nudging_qv'] > 0.:
+    variables3D.append('qv_nudg')
+    nt = f['qv_nudg'].shape[0]
+else:
+  if attributes['nudging_u'] > 0.:
+    variables3D.append('u')
+    nt = f['u'].shape[0]
+  if attributes['nudging_v'] > 0.:
+    variables3D.append('v')
+    nt = f['v'].shape[0]
+  if attributes['nudging_t'] > 0.:
+    variables3D.append('temp')
+    nt = f['temp'].shape[0]
+  if attributes['nudging_q'] > 0.:
+    variables3D.append('qv')
+    nt = f['qv'].shape[0]
 
 f.close()
 
@@ -145,12 +161,16 @@ names['uadv'] = 'du'
 names['vadv'] = 'dv'
 names['u'] = 'u'
 names['v'] = 'v'
+names['u_nudg'] = 'u'
+names['v_nudg'] = 'v'
 names['ug'] = 'ug'
 names['vg'] = 'vg'
 names['w'] = 'W'
 names['omega'] = 'Omega'
 names['temp'] = 'T'
 names['qv'] = 'q'
+names['temp_nudg'] = 'T'
+names['qv_nudg'] = 'q'
 
 nlev = config.nlev
 

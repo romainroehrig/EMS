@@ -804,7 +804,8 @@
            DO JLEV=1,IFLEV
              READ(10,*) ZQ
              DO J = 1,IDGL
-               ZOUT(J)=MAX(0.000001,ZQ)
+               !ZOUT(J)=MAX(0.000001,ZQ)
+               ZOUT(J)=ZQ
              ENDDO
              WRITE (6,*)' JLEV TKE',JLEV,ZOUT(1)
              CALL FAIENC (IREP,IUFD,'S',JLEV,'TKE',ZOUT,LLCOSP)
