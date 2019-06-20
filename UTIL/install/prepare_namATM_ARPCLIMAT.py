@@ -1,9 +1,16 @@
 #!/usr/bin/env python
 # -*- coding:UTF-8 -*-
 
+import os
+
 import namelist
 import cdms2
 import math
+
+if not(os.getenv('LDEPHY') is None):
+  lDEPHY = True
+else:
+  lDEPHY = False
 
 
 def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
@@ -139,11 +146,19 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
   fin = cdms2.open(filecase)
 
   attributes = {}
-  for att in ['tadvh','qadvh','qvadv','qvadvh','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v']:
-    attributes[att] = 0
+  if lDEPHY:
+    for att in ['tadvh','qadvh','qvadv','qvadvh','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_qv','nudging_u','nudging_v']:
+      attributes[att] = 0
 
-  for att in ['p_nudging_t','p_nudging_q','p_nudging_u','p_nudging_v']:
-    attributes[att] = 110000.     
+    for att in ['p_nudging_t','p_nudging_qv','p_nudging_u','p_nudging_v']:
+      attributes[att] = 110000.       
+  else:
+    for att in ['tadvh','qadvh','qvadv','qvadvh','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v']:
+      attributes[att] = 0
+
+    for att in ['p_nudging_t','p_nudging_q','p_nudging_u','p_nudging_v']:
+      attributes[att] = 110000.     
+
   for att in fin.listglobal():
     attributes[att] = fin.getglobal(att)
 
@@ -207,10 +222,16 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
       nam[nn]['LT_NUDG'] = ['.TRUE.',]
       nam[nn]['RELAX_TAUT'] = [str(float(attributes['nudging_t'])),]
       nam['NAMTOPH']['ETRELAXT'] = [str(float(attributes['p_nudging_t'])),]
-  if attributes['nudging_q'] > 0.:
-      nam[nn]['LQV_NUDG'] = ['.TRUE.',]
-      nam[nn]['RELAX_TAUQ'] = [str(float(attributes['nudging_q'])),]
-      nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['p_nudging_q'])),]
+  if lDEPHY:
+    if attributes['nudging_qv'] > 0. :
+        nam[nn]['LQV_NUDG'] = ['.TRUE.',]
+        nam[nn]['RELAX_TAUQ'] = [str(float(attributes['nudging_qv'])),]
+        nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['p_nudging_qv'])),]      
+  else:
+    if attributes['nudging_q'] > 0. :
+        nam[nn]['LQV_NUDG'] = ['.TRUE.',]
+        nam[nn]['RELAX_TAUQ'] = [str(float(attributes['nudging_q'])),]
+        nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['p_nudging_q'])),]
 
   if attributes.has_key('RCE') and attributes['RCE'] == 1:
       nam['NAMAQUAMF'] = {}

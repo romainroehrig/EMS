@@ -11,6 +11,7 @@ cdms2.setNetcdfDeflateLevelFlag(0)
 
 lforc = config.lforc
 lnam1D = config.lnam1D
+lDEPHY = config.lDEPHY
 #ASCII2FA=config.ASCII2FA
 
 nlev_out = config.nlev
@@ -119,22 +120,40 @@ if attributes['forc_geo'] == 1:
   var2interpol.append('vg')
   time = f('ug').getTime()
 
-if attributes['nudging_u'] > 0.:
-  var2read.append('u')
-  var2interpol.append('u')
+if lDEPHY:
+  if attributes['nudging_u'] > 0.:
+    var2read.append('u_nudg')
+    var2interpol.append('u_nudg')
 
-if attributes['nudging_v'] > 0.:
-  var2read.append('v')
-  var2interpol.append('v')
+  if attributes['nudging_v'] > 0.:
+    var2read.append('v_nudg')
+    var2interpol.append('v_nudg')
 
-if attributes['nudging_t'] > 0.:
-  var2read.append('temp')
-  var2interpol.append('temp')
-  time = f('temp').getTime()
+  if attributes['nudging_t'] > 0.:
+    var2read.append('temp_nudg')
+    var2interpol.append('temp_nudg')
+    time = f('temp_nudg').getTime()
 
-if attributes['nudging_q'] > 0.:
-  var2read.append('qv')
-  var2interpol.append('qv')
+  if attributes['nudging_qv'] > 0.:
+    var2read.append('qv_nudg')
+    var2interpol.append('qv_nudg')
+else:
+  if attributes['nudging_u'] > 0.:
+    var2read.append('u')
+    var2interpol.append('u')
+
+  if attributes['nudging_v'] > 0.:
+    var2read.append('v')
+    var2interpol.append('v')
+
+  if attributes['nudging_t'] > 0.:
+    var2read.append('temp')
+    var2interpol.append('temp')
+    time = f('temp').getTime()
+
+  if attributes['nudging_q'] > 0.:
+    var2read.append('qv')
+    var2interpol.append('qv')
 
 var2read = set(var2read)
 var2interpol = set(var2interpol)
@@ -397,37 +416,70 @@ if lforc:
   else:  
     dt = time[1]-time[0]	
 
-  if attributes['nudging_t'] > 0.:
-    g = open(dirout + 'temp_profiles_L' + str(nlev_out),'w')
-    for it in range(0,nt):
-      print >>g, 'Temperature', int(dt*it)    	  
-      for ilev in range(0,nlev_out):
-        print >>g, data_out['temp'][it,ilev]	
-    g.close()
+  if lDEPHY:
+    if attributes['nudging_t'] > 0.:
+      g = open(dirout + 'temp_nudg_profiles_L' + str(nlev_out),'w')
+      for it in range(0,nt):
+        print >>g, 'Temperature', int(dt*it)    	  
+        for ilev in range(0,nlev_out):
+          print >>g, data_out['temp_nudg'][it,ilev]	
+      g.close()
 
-  if attributes['nudging_q'] > 0.:
-    g = open(dirout + 'qv_profiles_L' + str(nlev_out),'w')
-    for it in range(0,nt):
-      print >>g, 'Specific Humidity', int(dt*it)    	  
-      for ilev in range(0,nlev_out):
-        print >>g, data_out['qv'][it,ilev]	
-    g.close()
+    if attributes['nudging_qv'] > 0.:
+      g = open(dirout + 'qv_nudg_profiles_L' + str(nlev_out),'w')
+      for it in range(0,nt):
+        print >>g, 'Specific Humidity', int(dt*it)    	  
+        for ilev in range(0,nlev_out):
+          print >>g, data_out['qv_nudg'][it,ilev]	
+      g.close()
 
-  if attributes['nudging_u'] > 0.:
-    g = open(dirout + 'u_profiles_L' + str(nlev_out),'w')
-    for it in range(0,nt):
-      print >>g, 'Zonal Wind', int(dt*it)    	  
-      for ilev in range(0,nlev_out):
-        print >>g, data_out['u'][it,ilev]	
-    g.close()
+    if attributes['nudging_u'] > 0.:
+      g = open(dirout + 'u_nudg_profiles_L' + str(nlev_out),'w')
+      for it in range(0,nt):
+        print >>g, 'Zonal Wind', int(dt*it)    	  
+        for ilev in range(0,nlev_out):
+          print >>g, data_out['u_nudg'][it,ilev]	
+      g.close()
 
-  if attributes['nudging_v'] > 0.:
-    g = open(dirout + 'v_profiles_L' + str(nlev_out),'w')
-    for it in range(0,nt):
-      print >>g, 'Meridional Wind', int(dt*it)    	  
-      for ilev in range(0,nlev_out):
-        print >>g, data_out['v'][it,ilev]	
-    g.close()
+    if attributes['nudging_v'] > 0.:
+      g = open(dirout + 'v_nudg_profiles_L' + str(nlev_out),'w')
+      for it in range(0,nt):
+        print >>g, 'Meridional Wind', int(dt*it)    	  
+        for ilev in range(0,nlev_out):
+          print >>g, data_out['v_nudg'][it,ilev]	
+      g.close()
+  else:
+    if attributes['nudging_t'] > 0.:
+      g = open(dirout + 'temp_profiles_L' + str(nlev_out),'w')
+      for it in range(0,nt):
+        print >>g, 'Temperature', int(dt*it)    	  
+        for ilev in range(0,nlev_out):
+          print >>g, data_out['temp'][it,ilev]	
+      g.close()
+
+    if attributes['nudging_q'] > 0.:
+      g = open(dirout + 'qv_profiles_L' + str(nlev_out),'w')
+      for it in range(0,nt):
+        print >>g, 'Specific Humidity', int(dt*it)    	  
+        for ilev in range(0,nlev_out):
+          print >>g, data_out['qv'][it,ilev]	
+      g.close()
+
+    if attributes['nudging_u'] > 0.:
+      g = open(dirout + 'u_profiles_L' + str(nlev_out),'w')
+      for it in range(0,nt):
+        print >>g, 'Zonal Wind', int(dt*it)    	  
+        for ilev in range(0,nlev_out):
+          print >>g, data_out['u'][it,ilev]	
+      g.close()
+
+    if attributes['nudging_v'] > 0.:
+      g = open(dirout + 'v_profiles_L' + str(nlev_out),'w')
+      for it in range(0,nt):
+        print >>g, 'Meridional Wind', int(dt*it)    	  
+        for ilev in range(0,nlev_out):
+          print >>g, data_out['v'][it,ilev]	
+      g.close()
 
   if attributes['forc_geo'] > 0.:
     g = open(dirout + 'ug_profiles_L' + str(nlev_out),'w')
