@@ -1,0 +1,757 @@
+commit fe12d18c20f0ea9ae0f8eccff72edc29a92f2eb8
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 18:45:21 2019 +0200
+
+    Cleaning
+
+commit 392f486976b9e528c36c079ad1c34f88d7f24bf7
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 18:44:51 2019 +0200
+
+    Update starting date for AYOTTE cases
+
+commit 62acd9d4b48be9fec0cfff76e7303f90d15a1e61
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 18:35:18 2019 +0200
+
+    Convergence with Fleur: extension of AYOTTE/24SC (ustar, instability close to the surface); Forcing of ustar for AROME/ARPPNT
+
+commit 3ec6c4960b64abb735ef02ec2c3a2645196c7128
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 15:24:53 2019 +0200
+
+    Convergence with macRR for un_ARPCLIMAT
+
+commit 910ef0ada778ab665ad82845d3557d809d795c3c
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 15:24:21 2019 +0200
+
+    Convergence with macRR for un_ARPCLIMAT
+
+commit 84cdadc90c7719f6c2eaf5283296ad14b1802e67
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 14:31:44 2019 +0200
+
+    Further convergence with macRR
+
+commit e877b7f7d0d5bbe35f74f6e9048b52b195f0e5a2
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 14:29:43 2019 +0200
+
+    Adding atlas from macRR
+
+commit 9012f08d1b864cf998c76f787d58a01b21a35b6a
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 14:21:56 2019 +0200
+
+    Convergence with macRR
+
+commit fb05ccd2a59548e1b0273216deefb51ef53ff313
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:55:27 2019 +0200
+
+    Convergence with macRR
+
+commit ae3d1aab5f029528ba4640e174ccfcb03db2bec3
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:52:21 2019 +0200
+
+    Convergence towards macRR for new DEPHY format
+
+commit eab5764b8790e68538939a7b50b22d582a850d25
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:46:36 2019 +0200
+
+    Convergence with macRR for IHOP
+
+commit 85f0b7485369cb328f82b0095bdfcce8837c9fbc
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:39:40 2019 +0200
+
+    Some convergence master-macRR
+
+commit a490546c2e51abce89135c63b097afb1b0c37a89
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:32:41 2019 +0200
+
+    Some convergence master-macRR
+
+commit d39126e86707715697b9b0101367b2b52f4bcf5b
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:29:14 2019 +0200
+
+    Small update
+
+commit 77987ef9bf8f782aa27249e406b00c6d994ddaac
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:26:33 2019 +0200
+
+    Update for ARMCU
+
+commit 002b66079f7ca25eb159f52a27dc58b15b6aa647
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:23:47 2019 +0200
+
+    Add COCOA CINDY-DYNAMO cases
+
+commit b36bc266a7e3996f1b541d1d2c30981fe9281bd8
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:08:58 2019 +0200
+
+    Some cleaning
+
+commit 1acbdcc6cea47207861277e0bc3fb912498e2789
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:07:34 2019 +0200
+
+    Some convergence with macRR
+
+commit cd786538eda274d4ad257decd62a0cf00b4c69bf
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:05:31 2019 +0200
+
+    Some convergence with macRR
+
+commit 6080d5bff80f879c3606e8a15f82abfc1d266394
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 17 12:03:20 2019 +0200
+
+    New DEPHY format for ARMCU
+
+commit aeed615642befc64e4f058bae29ee449a8af5e97
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Fri Jun 14 19:36:28 2019 +0200
+
+    Fleur's modifications for AYOTTE/24SC + add 105 oper levels for ARPCLIMAT
+
+commit 5601261c332766f9a9b14e49ac2111267baf2568
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Fri Jun 14 18:17:08 2019 +0200
+
+    Small update for possible new output files -- commented
+
+commit 11048a8a53c82df17d502c9a0af31e0f61ad4bc1
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Wed Apr 3 20:33:43 2019 +0200
+
+    Update Ts for AMMA case
+
+commit 3af4939c00a6040360d27a727f0b6e857f041df7
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 20:25:40 2019 +0100
+
+    Some cleaing
+
+commit 38c4c1fda1c14d8362c16ecbc056c6bfec6cf5ac
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 20:24:54 2019 +0100
+
+    Update ASCII2FA
+
+commit 161595c116df74663f456a3a0da24315feb6aaae
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 20:16:06 2019 +0100
+
+    A few update for TKE.. initial profiles
+
+commit 4a791d9559577647757f7b38298a286356982f1e
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 20:06:28 2019 +0100
+
+    Update for ASCIILFA
+
+commit c16be63846ff11690685da071d1e86b17d103be1
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:59:08 2019 +0100
+
+    Add the possibility to init TKE, ql, qi for ARPCLIMAT
+
+commit 35b8de102a68726909d2fca26a7b5ef64cf8f959
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:52:58 2019 +0100
+
+    Update example with config files for ASTEX and SANDU
+
+commit d8376a119c7375f34f097995d9390b1ddb5fe774
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:46:34 2019 +0100
+
+    Some cleaning in FIRE directory
+
+commit 12b33dfe3577483254096e63b7f8db7b1d6b218a
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:45:09 2019 +0100
+
+    Update for RICO (TKE init profile + 1day run only)
+
+commit 2ef9ca9039a3e18174e20848f93f81312c78d4c6
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:43:38 2019 +0100
+
+    Update for FIRE
+
+commit a1379e2af0ca7e6983e06658e58fe99859e0738c
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:41:48 2019 +0100
+
+    Update of EMS_cases.py for SANDU+ASTEX+FIRE + Update for CINDY-DYNAMO
+
+commit 60dc48c06569e0dd095f246a0011ebbfd05a184a
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:36:16 2019 +0100
+
+    Some cleaning
+
+commit 42d0f0bbde76c35ee16172f4d1b91428ca6e78ee
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:35:25 2019 +0100
+
+    Bugfix for BOMEX (z0->ustar)
+
+commit 2d3190d7b5f32dfcceebb5f3effa49c9fdb048b6
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:33:43 2019 +0100
+
+    comestics for AYOTTE scripts
+
+commit 7f3a1728f395da39c24fa8edaf1a5a9084039b97
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:32:51 2019 +0100
+
+    comestics for AYOTTE scripts
+
+commit 56ed8d264127d7ffafd79cc361feddfab28d11eb
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:30:00 2019 +0100
+
+    slight update for AYOTTE (dates)
+
+commit cf662c60f199e4a2e4dffb22987c8a82eff063cb
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:22:11 2019 +0100
+
+    Bugifx for ARMCU + add ASTEX+SANDU cases
+
+commit 657b001f780763f6b56355d82c1aac57b9c5003c
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:18:53 2019 +0100
+
+    Update for AMMA case (ts)
+
+commit 704683ce8251957a9e266896e4ae7669acb29ffe
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Mon Mar 4 19:11:47 2019 +0100
+
+    Bugfix ?
+
+commit d7216d023eb9b878490f3e63c7c6d39d58e3d2f5
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Mon Feb 11 15:46:39 2019 +0100
+
+    Bugfix for ARPPNT namelist preparation (GEOST)
+
+commit 60cc0f1491dd460739b54c56d38489cec660aef2
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Thu Jan 31 19:12:07 2019 +0100
+
+    Update for cycle 46t1 / AROME (Input from Rachel Honnert + modif Roehrig)
+
+commit 722b4e35be0a2bdcc5ccc1e92c337cc91d7fbc39
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Wed Jan 23 10:50:34 2019 +0100
+
+    Update for ARPEGE-PNT: problem with surface flux in ARPEGE namelist
+
+commit ecc7646b45cfa3cff6a6df067a513b46f783fd46
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Thu Dec 20 11:39:36 2018 +0100
+
+    Some cleaning
+
+commit 34fde8ae94027fe4f0b3452fdc2106e5bf433c3f
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Thu Dec 20 11:38:29 2018 +0100
+
+    Some cleaning
+
+commit 7bf544a8ebd414788df54ac8c6776ac3b4e87ae5
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Thu Dec 20 11:37:39 2018 +0100
+
+    Bugfix for AROME for NAMLSFORC (GEOST and SH/LH)
+
+commit 4c6623380015719aa6afaed26d296061df830a6a
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Thu Dec 20 11:31:01 2018 +0100
+
+    Update for FIRE ??
+
+commit 9b128f28604c7d4a9d9e48aaa5b82407c5fa695e
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Dec 9 19:07:08 2018 +0100
+
+    Update for FIRE-I case
+
+commit 23a21ec84fd0dddf57b506ed2d63b3b008233c4f
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Wed Sep 5 10:05:44 2018 +0200
+
+    Add some test for AMMA case
+
+commit 25180a010a4879f8ee12dac024f6a12bc884f857
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Aug 26 16:11:11 2018 +0200
+
+    Cleaning
+
+commit a55ee1e8a70aa117d6f2706a00dd28bba49ea408
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Aug 26 16:09:39 2018 +0200
+
+    Cleaning
+
+commit 6e5bd8e178de2c9f8e12a60dbb7e58f7f9a0964e
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Aug 26 16:09:01 2018 +0200
+
+    Add ARMCVP + make it work
+
+commit 31c035e3c943d8eb0662d2354531ca7984cbf246
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Fri Aug 17 15:21:03 2018 +0200
+
+    Some cleaning
+
+commit dd31f99ef025f16b9a14371fc374b172d594a572
+Merge: 9124df8 6678442
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Fri Aug 17 15:20:05 2018 +0200
+
+    Merge branch 'master' of https://github.com/romainroehrig/EMS
+
+commit 9124df8fd7baaee6793824399aa0383a1aef540e
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Fri Aug 17 15:19:33 2018 +0200
+
+    LBA
+
+commit 6678442e128a29a3a3c109bf621e38c5f866473d
+Merge: e85f456 0607e7e
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Thu Aug 16 10:41:07 2018 +0200
+
+    Merge branch 'master' of https://github.com/romainroehrig/EMS
+
+commit e85f45630d97aa5573ee3c22bc48b92c43cfc476
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Thu Aug 16 10:40:24 2018 +0200
+
+    Update ??
+
+commit 0607e7e5cead7c53dfcc51a08fb448959304068b
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Fri Aug 10 18:41:46 2018 +0200
+
+    Some Cleaning
+
+commit 4c3d6ef741d8deae6013014ad8aecb2fba95001d
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Fri Aug 10 16:01:12 2018 +0200
+
+    Update for writing ARPEGE namelists (NAMFPC)
+
+commit aa8bd60886764bb0dad0d81d7a6095627c7a5d90
+Author: Romain Roehrig (CNRM) <romain.roehrig@gmail.com>
+Date:   Thu Aug 9 17:59:04 2018 +0200
+
+    Add RCEMIP
+
+commit 99d6b8a853207e3bb1d1c73afd95c3937751114b
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Wed Aug 8 11:43:48 2018 +0200
+
+    Some cleaning
+
+commit 311dd4dde7d5ce71761e6abd444f9371c5e0be77
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Wed Aug 8 11:43:00 2018 +0200
+
+    Update for CINDY-DYNAMO Revelle cases + bugfix for 3hourly average computation
+
+commit b09e4413dde2ec992f2e950761c50e41b93203ac
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Tue Jul 31 22:47:25 2018 +0200
+
+    Update for ARMCU
+
+commit 8ef30fa8f897ad8f7cf0b5e29f988343991aec15
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Tue Jul 31 10:06:18 2018 +0200
+
+    Update for AYOTTE cases
+
+commit d2b367093f564a3bb00991b658b1fd52d99caad1
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Mon Jul 30 14:52:11 2018 +0200
+
+    Some cleaning
+
+commit 90f7be35bc58fcc250fdd59a75eb317a7f8fe9c3
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Mon Jul 30 14:51:26 2018 +0200
+
+    Correction for ARMCU
+
+commit 11fb748ef3a391eee56947b5b53233d775e47111
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Thu Jul 26 16:23:16 2018 +0200
+
+    Add IHOP case
+
+commit da21d7ab750f303e082e8dc93114d67f8b5e36d7
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Thu Jul 26 15:53:26 2018 +0200
+
+    Some cleaning
+
+commit 463370207c89e8d06cd51badff027b304ff304ca
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Thu Jul 26 15:53:07 2018 +0200
+
+    Add LBA case and make it work
+
+commit a3518850fd5e74da696e8e20cb06ec43a9079c76
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Wed Jul 25 18:56:03 2018 +0200
+
+    Some cleaning
+
+commit aaaeed3c65ef6da8993c115b190cd0cd6906c294
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Wed Jul 25 18:55:28 2018 +0200
+
+    update of install_CNRM.sh + Versioning
+
+commit 4d1f79d9066946607871cf3d85a71d6ad7a92a57
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Fri Jul 20 16:10:31 2018 +0200
+
+    Update AROME et ARPPNT to work for AMMA/REF
+
+commit 0ad7c68b7a004d35143162de9cfcc287c8494a68
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Fri Jul 20 14:37:24 2018 +0200
+
+    Some generalization for installation and execution
+
+commit 2f6520411f2dc88d0adddca4be0f249ebcddf24b
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Fri Jul 20 14:36:08 2018 +0200
+
+    Some generalization for installation and execution
+
+commit 03a2031a9a4e265d983b02ba54214cf83dd15b66
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Tue Jul 17 15:16:21 2018 +0200
+
+    versioning
+
+commit ac2409b1a6480753bbf17b5343db3abdc4369083
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Tue Jul 17 15:12:43 2018 +0200
+
+    Small update for installation
+
+commit d95bfe171518f6b45e71bc67c7867f0732949f0f
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Tue Jul 17 12:09:16 2018 +0200
+
+    a few update for installation
+
+commit b81938df7967735fd7641a9d20477d95e5a72f54
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Tue Jul 17 11:52:49 2018 +0200
+
+    some cleaning
+
+commit 3c682532c6db971373f359a71c6e8d59f7f8c4c4
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Tue Jul 17 11:52:14 2018 +0200
+
+    bugfix for post-processing + update for testing when EMS is installed
+
+commit 52572d9d1c041eb850dfbe3acb18407a347dd3b4
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Tue Jul 17 00:07:48 2018 +0200
+
+    Convergence with macRR
+
+commit fc7b16524dbd74d384b0112cb4c45144693ed17b
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jul 16 23:39:56 2018 +0200
+
+    Further convergence between master and macRR
+
+commit 253fdd827181bb34f49a48bbf95dbbc6310952d1
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jul 16 23:37:00 2018 +0200
+
+    Convergence between master and macRR
+
+commit 653fe3787591cad2abdc1eedbedc4c73be9eee22
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jul 16 23:10:49 2018 +0200
+
+    Update for AROME and ARPPNT
+
+commit 77069d7f50f994b919010750b6434c1856af3552
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Thu Jul 12 18:02:34 2018 +0200
+
+    Some cleaning
+
+commit 27da1be27afe32ea60ae138da7589f6a145b340a
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Thu Jul 12 18:01:35 2018 +0200
+
+    Precision adapted for ustar forcing
+
+commit 4c783d049a2011339ef33619ee6c1f5e784fbf2d
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Thu Jul 12 09:44:23 2018 +0200
+
+    To be able to specify case and subcase for ATM and SFX preeparation - Use in install_CNRM.sh
+
+commit dcce0e4a14e0d46106c1c7e09db1810b684b1a39
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Thu Jul 12 09:43:19 2018 +0200
+
+    To be able to specify case and subcase for ATM and SFX preeparation
+
+commit 66e91fae34d11322c0122430e3c6d6d0f7d449f6
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Thu Jul 12 09:33:23 2018 +0200
+
+    Bugfixes to make it work on CNRM machines
+
+commit 2752e3127e161f588503555f0ae43514eb5b2716
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jul 8 12:08:57 2018 +0200
+
+    Bugfix for AYOTTE cases
+
+commit 8e499b8bea7ade24d5c7f89e0a7b6b5de2ba290a
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jul 8 10:29:18 2018 +0200
+
+    Further convergence + some cleaning
+
+commit 1993eabe6933f4dfbbfe48b108cb0f7e18a7cce5
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jul 8 10:24:26 2018 +0200
+
+    Partial merging between macRR and master
+
+commit 438527bd09c9cf5c4c74770a6d6b552b0c927f4f
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Wed Jun 13 11:45:14 2018 +0200
+
+    Some cleaning
+
+commit 6ebcc0679bcfabb155e301d904676e93c70906cc
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Wed Jun 13 11:44:53 2018 +0200
+
+    Some cleaning
+
+commit 3d43e99cd208d62a1f1c75864c73f316d7679279
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Wed Jun 13 11:41:54 2018 +0200
+
+    Add or update AMMAsec, WANGARA, DYCOMS and SCMS
+
+commit 1760f023ca38b06ec6ff9acf0cee416b0782b31a
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Wed Jun 13 09:43:21 2018 +0200
+
+    Convergence of prepare_nam1D.py between master and macRR
+
+commit 4cd528aec87a9af399e59a229231b82b27076763
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Wed Jun 13 09:32:28 2018 +0200
+
+    Some Cleaning
+
+commit 70039339c5b59d4238cf3fe18462c28b6a1617a5
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Tue Jun 12 18:13:50 2018 +0200
+
+    WANGARA case
+
+commit df6fe568b893aea747454c5a0df03269f90227d6
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Tue Jun 12 17:46:29 2018 +0200
+
+    Update config files for postprocessing
+
+commit 88244643c157ac6367be2e08fc729d949a197ed0
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Tue Jun 12 09:45:10 2018 +0200
+
+    Update for AMMAsec
+
+commit dfe60bea6b1d6c87539cce3e858db50175d761c6
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Mon Jun 11 16:39:33 2018 +0200
+
+    Some cleaning
+
+commit 76c3a000723b0a68855afa3c032c340a7d0012fe
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Mon Jun 11 16:37:31 2018 +0200
+
+    Small correction
+
+commit 989f9d1f0fa882810200a9e822c64f98aa9ded9e
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 11 16:33:14 2018 +0200
+
+    Some cleaning
+
+commit 9903e870e88c26022a29640661003cf4f66095f7
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Mon Jun 11 16:32:26 2018 +0200
+
+    Remove macRR specificities in master branch
+
+commit de7977fd6726e36d7aed53cb540b782e7cedf8ce
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Mon Jun 11 16:06:07 2018 +0200
+
+    CNRM specificities
+
+commit 4812cc8b9ebd21a0b1189ce28c80be5ac1d1062f
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Mon Jun 11 15:41:06 2018 +0200
+
+    Cleaning
+
+commit f959407703a57144188ccdd52ff2095b5ab344eb
+Author: Romain Roehrig <romain.roehrig@meteo.fr>
+Date:   Mon Jun 11 15:40:06 2018 +0200
+
+    Test
+
+commit 4ffaadf0b69fae41a2679d00aed36b3b76efcb26
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 18:09:14 2018 +0200
+
+    AMMAsec case
+
+commit e4e47840f5a25f683e9cfd5f5b1ac01039fd6c05
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 15:21:59 2018 +0200
+
+    Bugfix for RICO
+
+commit 3e7fdda807fa2377a20fe63e8a78e46adaf294e7
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 12:35:17 2018 +0200
+
+    Add clean.sh + some cleaning
+
+commit bd26125b87d5a3156c94193e99cd11ce379284c6
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 11:56:49 2018 +0200
+
+    Update install_CNRM.sh
+
+commit d49f55f4339737ae888eaadb6b4768c3ea19b027
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 11:47:44 2018 +0200
+
+    Update
+
+commit b31651ab5b5c85937cf9c4d2e043bc1d470a2f2f
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 11:45:58 2018 +0200
+
+    merging part mactRR in master
+
+commit 9df7428ab9408896c239eca5a0af49da6c9cbacf
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 11:39:06 2018 +0200
+
+    Update
+
+commit 6571c8c7c386d75fa5c2f1655c945b2b0af82866
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 11:36:29 2018 +0200
+
+    Update
+
+commit f8cbdc6cb53106dd6bec9c96349d688dc3466f57
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 11:33:42 2018 +0200
+
+    Update
+
+commit 5fa5439637cbfecadb0944ec4ae0dac9c9236d71
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 11:27:30 2018 +0200
+
+    update
+
+commit 399a19262d1f30432863ccd03ff04d7158034ee8
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 11:03:22 2018 +0200
+
+    CNRM specifities
+
+commit 0d9586c3726909c191ba6079577ad774a9621b23
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sun Jun 10 10:40:08 2018 +0200
+
+    Test
+
+commit ebf4d753159034905eb729e9f73ac14f7312b054
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sat Jun 9 20:31:49 2018 +0200
+
+    Update
+
+commit 5071dbb3756b7e31ab656352002196412942ed29
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sat Jun 9 20:19:58 2018 +0200
+
+    bugfix
+
+commit a12aa2596d7452e89b00de3acfd90f0aa226b0fd
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sat Jun 9 19:45:48 2018 +0200
+
+    macRR installation
+
+commit f6a031f4b66014893f86fbdf94e03c3dd0f055f1
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sat Jun 9 19:05:50 2018 +0200
+
+    Merge different versions
+
+commit 6293ef5c8a576dcc6f57091388cfb7babc083b3f
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sat Jun 9 16:32:57 2018 +0200
+
+    install scripts
+
+commit e631b5de6a4185d345259f763fc654038f6681b2
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sat Jun 9 14:47:05 2018 +0200
+
+    Some cleaning
+
+commit 155db06e78fdc93b4b6c627070a5d48cfa1ef3f1
+Author: Romain Roehrig <romain.roehrig@gmail.com>
+Date:   Sat Jun 9 14:38:14 2018 +0200
+
+    Original
