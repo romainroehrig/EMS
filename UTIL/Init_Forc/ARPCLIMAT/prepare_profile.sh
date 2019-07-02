@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source activate myuvcdat
+#conda activate myuvcdat
 alias cdat='python'
 
 cat << EOF > tmp.py
