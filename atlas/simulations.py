@@ -12,8 +12,8 @@ for case in  cases:
 
 #################
 
-#sim2plot = ['CMIP6',]
-#name_atlas = 'CMIP6'
+sim2plot = ['CMIP6',]
+name_atlas = 'CMIP6'
 
 #sim2plot = ['CONV1_TEST-010','CMIP6',]
 #name_atlas = 'CONV1_TEST-010'
@@ -31,8 +31,8 @@ for case in  cases:
 #sim2plot = ['CMIP6_pcmt_num_jfg','CMIP6',]
 #name_atlas = 'CMIP6_pcmt_num_jfg'
 
-sim2plot = ['CMIP6_N0r','CMIP6',]
-name_atlas = 'CMIP6_N0r'
+#sim2plot = ['CMIP6_N0r','CMIP6',]
+#name_atlas = 'CMIP6_N0r'
 
 
 #sim2plot = ['CMIP6_pcmt_num','CMIP6_pcmt_num_ECMNP04','CMIP6_pcmt_num_ECMNP16','CMIP6_pcmt_num_GCVRE05','CMIP6_pcmt_num_RQLCR4',]
