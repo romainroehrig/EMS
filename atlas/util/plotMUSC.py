@@ -10,7 +10,7 @@ import time as TT
 
 import plotutils
 
-verbose = False
+verbose = True
 lperf = False
 
 missing = 1.e20

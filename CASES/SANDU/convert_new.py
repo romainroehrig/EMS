@@ -24,11 +24,11 @@ lon = datain['temp'].getAxis(3)
 t0 = MV2.array([0,],typecode=MV2.float)
 t0 = cdms2.createAxis(t0)
 t0.id = 't0'
-t0.units = 'seconds since 2007-7-15 18:00:0.0'
+t0.units = 'seconds since 2006-7-15 18:00:0.0'
 t0.calendar = 'gregorian'
 
 time[:] = time[:] - time[0]
-time.units = 'seconds since 2007-7-15 18:00:0.0'
+time.units = 'seconds since 2006-7-15 18:00:0.0'
 
 dataout = {}
 for var in ['u','v','temp','qv','pressure']:
