@@ -17,6 +17,7 @@ f.close()
 nt, nlev, nlat, nlon = datain['temp'].shape
 time = datain['temp'].getAxis(0)
 lev = datain['temp'].getAxis(1)
+lev.id = 'lev'
 lat = datain['temp'].getAxis(2)
 lon = datain['temp'].getAxis(3)
 

@@ -1,6 +1,7 @@
 import cdms2 
 import MV2
 import math
+import os
 
 cdms2.setNetcdfShuffleFlag(0)
 cdms2.setNetcdfDeflateFlag(0)
@@ -23,11 +24,11 @@ lon = datain['temp'].getAxis(3)
 t0 = MV2.array([0,],typecode=MV2.float)
 t0 = cdms2.createAxis(t0)
 t0.id = 't0'
-t0.units = 'seconds since 2007-7-15 00:00:0.0'
+t0.units = 'seconds since 2006-7-15 18:00:0.0'
 t0.calendar = 'gregorian'
 
 time[:] = time[:] - time[0]
-time.units = 'seconds since 2007-7-15 00:00:0.0'
+time.units = 'seconds since 2006-7-15 18:00:0.0'
 
 dataout = {}
 for var in ['u','v','temp','qv','pressure']:
@@ -155,8 +156,8 @@ g.reference = "??"
 g.author = "R. Roehrig" 
 g.modifications = "2019-06-20: R. Roehrig - new DEPHY format" 
 g.case = "SANDU/REF" 
-g.startDate = "20070715000000" 
-g.endDate = "20070718000000" 
+g.startDate = "20060715180000" 
+g.endDate = "20060718180000" 
 g.tadv = 0 
 g.tadvh = 0 
 g.tadvv = 0 
@@ -181,3 +182,5 @@ g.surfaceType = "ocean"
 g.surfaceForcing = "ts" 
 
 g.close()
+
+os.system('nccopy -k classic Composite_REF_driver_RR_new.nc Composite_REF_driver_RR_new3.nc')

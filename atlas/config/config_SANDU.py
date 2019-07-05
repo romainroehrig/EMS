@@ -9,8 +9,8 @@ import matplotlib as plt # for colormaps
 
 var2compute = ['zcb','zct']
 
-tmin = cdtime.comptime(2007,7,15,0)
-tmax = cdtime.comptime(2007,7,18,0)
+tmin = cdtime.comptime(2006,7,15,18)
+tmax = cdtime.comptime(2006,7,18,18)
 
 
 #################
@@ -23,7 +23,7 @@ plot2D = \
         'yname'   : 'altitude k(m)'        ,\
         'levunits': 'km'                   ,\
         'dtlabel' : '6h'                   ,\
-        'xname'   : '15-18 July 2007 (UTC)',\
+        'xname'   : '15-18 July 2006 (UTC)',\
         }
 plot2D['var2plot'] = \
         {\
@@ -49,7 +49,7 @@ plot2D['var2plot'] = \
 plotTS = \
         {\
         'dtlabel': '6h'                   ,\
-        'xname'  : '15-18 July 2007 (UTC)',\
+        'xname'  : '15-18 July 2006 (UTC)',\
         }
 plotTS['var2plot'] = \
         {\

@@ -72,7 +72,7 @@ t0= cdms2.createAxis(t0)
 #t0.designateTime()
 t0.id = 't0'
 t0.calendar = 'gregorian'
-t0.units = "seconds since 2007-7-15 00:00:00"
+t0.units = "seconds since 2006-7-15 18:00:00"
 
 
 tsec = f('tsec')
@@ -80,7 +80,7 @@ tsec = f('tsec')
 time = cdms2.createAxis(tsec)
 time.designateTime()
 time.id = 'time'
-time.units = "seconds since 2007-7-15 00:00:00"
+time.units = "seconds since 2006-7-15 18:00:00"
 time.calendar = 'gregorian'
 
 nt, = time.shape
@@ -140,8 +140,8 @@ g.author = 'R. Roehrig'
 
 
 g.case = 'SANDU/REF'
-g.startDate = '20070715000000'
-g.endDate = '20070718000000'
+g.startDate = '20060715180000'
+g.endDate = '20060718180000'
 
 g.qadvh = 0
 g.tadvh = 0
