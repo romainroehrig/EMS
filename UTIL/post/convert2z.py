@@ -40,7 +40,7 @@ for dim in dimensions:
         dim_tmp[dim] = fout.createDimension(dim,None)
     else:
         dim_tmp[dim] = fout.createDimension(dim,fin.dimensions[dim].size)
-    dims_tmp[dim] = fout.createVariable(dim,type(fin[dim][0]),(dim,))
+    dims_tmp[dim] = fout.createVariable(dim,type(np.array(fin[dim])[0]),(dim,))
     for att in fin[dim].ncattrs():
         dims_tmp[dim].setncattr(att,fin[dim].getncattr(att))
     dims_tmp[dim][:] = fin[dim][:]
