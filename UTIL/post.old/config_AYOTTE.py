@@ -6,20 +6,6 @@ var2save = ['th','ta','hus','ua','va','pres','wap','ql','qi','qr','qsn','cl','pr
 
 var2save = var2save + ['alpha_up','w_up','omega_up','alpha_dn','w_dn','omega_dn','cape','T_up','qv_up','omega_ref','w_up_bud','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp','buoy','Mf','eps_u','eps_u_org','eps_u_tur','entr_u','detr_u','dTv_up','wpqp_pbl','wpthp_pbl','wpqp_conv','wpthp_conv','aipcmt','knnd','knlab','wpup_conv','wpup_pbl','wpvp_conv','wpvp_pbl']
 
-convert2p = False
-convert2z = True
-
-convertkday = False
-convertpday = False
-convertzday = False
-
-convertk1h = False
-convertp1h = False
-convertz1h = False
-
-convertk3h = False 
-convertp3h = False
-convertz3h = False
 
 # Pour convert2p, niveau en hPa
 levout = []

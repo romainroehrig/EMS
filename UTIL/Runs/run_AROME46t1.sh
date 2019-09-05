@@ -205,7 +205,7 @@ then
   echo ''
   set -x
 
-  files2install='convert2z.so convertp_to_daily.py convertk_to_1hourly.py convertz_to_1hourly.py convert2p.py convertk_to_daily.py convertz_to_daily.py convert2p.so     convertLFA2nc.py lfa2nc_part1.py convert2z.py convertp_to_1hourly.py lfa2nc_part2.py convertp_to_3hourly.py'
+  files2install='convertLFA2nc.py lfa2nc.py convert2p.py convert2z.py'
 
   for file in $files2install
   do

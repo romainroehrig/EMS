@@ -69,7 +69,7 @@ ln -s $REP_EMS/main/install_ATM_cases.py install_ATM_cases.py
 ln -s $REP_EMS/main/install_SFX_cases.py install_SFX_cases.py
 ln -s $REP_EMS/main/run_MUSC_cases.py run_MUSC_cases.py
 
-for ff in convertLFA2nc.py convertp_to_1hourly.py convertz_to_1hourly.py lfa2nc_part2.py convert2p.py convert2z.py convertk_to_1hourly.py convertp_to_3hourly.py convertz_to_daily.py convert2p.so convert2z.so convertk_to_daily.py convertp_to_daily.py lfa2nc_part1.py
+for ff in convertLFA2nc.py lfa2nc.py convert2p.py convert2z.py 
 do
 
   ln -s $REP_EMS/UTIL/post_DEPHY/$ff $REP_MUSC/post/$ff
