@@ -5,8 +5,14 @@ set -evx
 #####################################################
 # User specific
 
-REP_EMS=$HOME/Tools/EMS
-REP_MUSC=$HOME/MUSC
+# Directory where EMS is installed
+REP_EMS=$HOME/Tools/EMS_test
+
+# Directory where MUSC will be run
+REP_MUSC=$HOME/MUSC_test
+
+# Environment file to use
+PROFILE=.bash_profile
 
 #####################################################
 
@@ -39,17 +45,17 @@ git clone --single-branch https://github.com/romainroehrig/EMS.git .
 cd ~/
 
 # save bash_profile
-cat .bash_profile > .bash_profile.EMS-saved_$(date +"%Y-%m-%d_at_%H:%M:%S")
+cat $PROFILE > $PROFILE.EMS-saved_$(date +"%Y-%m-%d_at_%H-%M-%S")
 
 # Modify it
-sed -i "/^export REP_EMS=/ s/$/ #commented on $(date)/" .bash_profile
-sed -i "s/^export REP_EMS=/#&/" .bash_profile
-sed -i "/^export REP_MUSC=/ s/$/ #commented on $(date)/" .bash_profile
-sed -i "s/^export REP_MUSC=/#&/" .bash_profile
-sed -i "/^export PYTHONPATH=.:\$REP_EMS/ s/$/ #commented on $(date)/" .bash_profile
-sed -i "s/^export PYTHONPATH=.:\$REP_EMS/#&/" .bash_profile
+sed -i "/^export REP_EMS=/ s/$/ #commented on $(date)/" $PROFILE
+sed -i "s/^export REP_EMS=/#&/" $PROFILE
+sed -i "/^export REP_MUSC=/ s/$/ #commented on $(date)/" $PROFILE
+sed -i "s/^export REP_MUSC=/#&/" $PROFILE
+sed -i "/^export PYTHONPATH=.:\$REP_EMS/ s/$/ #commented on $(date)/" $PROFILE
+sed -i "s/^export PYTHONPATH=.:\$REP_EMS/#&/" $PROFILE
 
-cat << EOF >> .bash_profile
+cat << EOF >> $PROFILE
 
 # Modifications for Environment for MUSC simulations (EMS)
 # included on $(date)
@@ -58,7 +64,7 @@ export REP_MUSC=$REP_MUSC
 export PYTHONPATH=.:\$REP_EMS/CASES:\$REP_EMS/UTIL/python:\$REP_EMS/UTIL/install/:\$PYTHONPATH
 EOF
 
-. ~/.bash_profile
+. ~/$PROFILE
 
 #####################################################
 # Prepare what is needed to run MUSC simulations in REP_MUSC
@@ -72,7 +78,7 @@ ln -s $REP_EMS/main/run_MUSC_cases.py run_MUSC_cases.py
 for ff in convertLFA2nc.py lfa2nc.py convert2p.py convert2z.py 
 do
 
-  ln -s $REP_EMS/UTIL/post_DEPHY/$ff $REP_MUSC/post/$ff
+  ln -s $REP_EMS/UTIL/post/$ff $REP_MUSC/post/$ff
 
 done
 
@@ -97,7 +103,7 @@ fi
 
 install_cy41='n'
 
-if [$install_cy41 == 'y' ]; then
+if [ $install_cy41 == 'y' ]; then
 
   [ -d $HOME/pack ] || mkdir $HOME/pack
   cd $HOME/pack
