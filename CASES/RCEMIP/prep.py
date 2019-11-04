@@ -9,6 +9,7 @@ cdms2.setNetcdfDeflateLevelFlag(value)
 q0 = {}
 q0[295] = 12.00/1000.
 q0[300] = 18.65/1000.
+q0[301.15] = 18.8/1000. # Perso
 q0[305] = 24.00/1000.
 
 ps = 101480
@@ -91,7 +92,7 @@ nt, = time.shape
 var3D = ['qv','temp','pressure','u','v']
 var2D = ['ts','ps']
 
-for SST in [295,300,305]:
+for SST in [295,300,305,301.15]:
   print SST
    
   data = {}
@@ -167,6 +168,7 @@ for SST in [295,300,305]:
   g.zorog = 0.
   g.surfaceType = 'ocean'
   g.surfaceForcing = 'ts'
+  g.minSurfaceWind = 1
   g.z0 = 0.1
 
   g.close()
