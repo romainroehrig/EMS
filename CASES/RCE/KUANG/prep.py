@@ -11,11 +11,11 @@ def trad(p):
     tmp = MV2.zeros(nlev,typecode=MV2.float)
     for ilev in range(0,nlev):
         if p[ilev] >= 20000.:
-            tmp[ilev] = 0.
-        elif p[ilev] <= 10000.:
             tmp[ilev] = -1.5/86400.
+        elif p[ilev] <= 10000.:
+            tmp[ilev] = 0.
         else:
-            tmp[ilev] = (20000.-p[ilev])/(20000.-10000.)*(-1.5/86400.)
+            tmp[ilev] = (p[ilev]-10000.)/(20000.-10000.)*(-1.5/86400.)
 
     return tmp
 
