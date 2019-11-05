@@ -213,10 +213,11 @@ for SST in [295,300,305,301.15]:
 # RCE
 case = "RCE"
 cases.append(case)
-subcases[case] = ['KUANG_SST28',]
+subcases[case] = ['KUANG_SST28','KUANG_SST28_DEPHY']
 data_input[case] = {}
 for SST in [28,]:
   data_input[case]['KUANG_SST{0}'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}.nc'.format(SST)
+  data_input[case]['KUANG_SST{0}_DEPHY'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_DEPHY.nc'.format(SST)
 
 ####################################
 

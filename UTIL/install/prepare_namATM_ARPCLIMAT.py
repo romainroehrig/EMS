@@ -200,7 +200,7 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
   for param in ['NGEOST_U_NUM','NGEOST_V_NUM','NLSOMEGA_NUM','NLSW_NUM','NQV_ADV_NUM','NQV_NUDG','NT_ADV_NUM','NT_NUDG','NU_NUDG','NV_NUDG']:
     nam[nn][param] = ['-1',]
 
-  if attributes['tadv'] == 1 or attributes['tadvh'] == 1 or attributes['tadvv'] == 1:
+  if attributes['tadv'] == 1 or attributes['tadvh'] == 1 or attributes['tadvv'] == 1 or attributes['trad'] == 1:
       nam[nn]['LT_ADV_FRC'] = ['.TRUE.',]
   if attributes['qadv'] == 1 or attributes['qadvh'] == 1 or attributes['qtadvh'] == 1 or attributes['qadvv'] == 1 or attributes['qvadv'] == 1 or attributes['qvadvh'] == 1 or attributes['qvadvv'] == 1 :
       nam[nn]['LQV_ADV_FRC'] = ['.TRUE.',]

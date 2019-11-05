@@ -52,6 +52,9 @@ nt = time0.shape[0]
 
 variables3D = []
 
+if attributes['trad'] == 1:
+  variables3D.append('trad')
+  nt = f['trad'].shape[0]
 if attributes['tadv'] == 1:
   variables3D.append('tadv')
   nt = f['tadv'].shape[0]
@@ -144,6 +147,7 @@ for var in variables3D:
   names[var] = var	
 
 names['ps'] = 'Ps'
+names['trad'] = 'dT'
 names['tadvh'] = 'dT'
 names['qadvh'] = 'dq'
 names['qvadvh'] = 'dq'
