@@ -103,7 +103,7 @@ if attributes['trad'] == 'adv':
   LRAYFM = False  	
 if attributes['trad'] == 1:
   LRAYFM = False	
-  var2read.append('trad')	
+  var2read.append('trad')
   var2interpol.append('trad')
 if attributes['forc_omega'] == 1:
   var2read.append('omega')	
@@ -589,6 +589,14 @@ if lforc:
       print >>g, 'Total Temperature Advection', int(dt*it)    	  
       for ilev in range(0,nlev_out):
         print >>g, data_out['tadv'][it,ilev]	
+    g.close()
+
+  if attributes['trad'] == 1:
+    g = open(dirout + 'trad_profiles_L' + str(nlev_out),'w')
+    for it in range(0,nt):
+      print >>g, 'Temperature Radiative Tendency', int(dt*it)    	  
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['trad'][it,ilev]	
     g.close()
 
   if attributes['qadv'] == 1:

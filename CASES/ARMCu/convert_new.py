@@ -89,8 +89,6 @@ dataout[var].setAxis(3,lon)
 for var in ['ug','vg','sfc_sens_flx','sfc_lat_flx','ts','ps','tadv']:
     dataout[var] = datain[var]
     dataout[var].setAxis(0,time)
-    if var in ['ug','vg','tadv']:
-        dataout[var].setAxis(1,lev)
     try:
       del(dataout[var].positive)
     except:

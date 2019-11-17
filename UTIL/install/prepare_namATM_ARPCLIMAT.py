@@ -200,7 +200,7 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
   for param in ['NGEOST_U_NUM','NGEOST_V_NUM','NLSOMEGA_NUM','NLSW_NUM','NQV_ADV_NUM','NQV_NUDG','NT_ADV_NUM','NT_NUDG','NU_NUDG','NV_NUDG']:
     nam[nn][param] = ['-1',]
 
-  if attributes['tadv'] == 1 or attributes['tadvh'] == 1 or attributes['tadvv'] == 1:
+  if attributes['tadv'] == 1 or attributes['tadvh'] == 1 or attributes['tadvv'] == 1 or attributes['trad'] == 1:
       nam[nn]['LT_ADV_FRC'] = ['.TRUE.',]
   if attributes['qadv'] == 1 or attributes['qadvh'] == 1 or attributes['qtadvh'] == 1 or attributes['qadvv'] == 1 or attributes['qvadv'] == 1 or attributes['qvadvh'] == 1 or attributes['qvadvv'] == 1 :
       nam[nn]['LQV_ADV_FRC'] = ['.TRUE.',]
@@ -236,35 +236,36 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
   if attributes.has_key('RCE') and attributes['RCE'] == 1:
       nam['NAMAQUAMF'] = {}
       nam['NAMCT0']['LRCE'] = ['.TRUE.',]
-      nam['NAMRIP']['RANGLE'] = [str(float(attributes['zangle'])),]
-      nam['NAMSCEN']['RI0'] = [str(float(attributes['I0'])),]
-      nn = 'NAMCLDP'
-      if attributes.has_key('CCN'):
-        tmp = math.log(attributes['CCN']/1.e6)/math.log(10)
-      else:
-        tmp = 2.
-      nam[nn]['RCCNCST'] = [str(tmp),]
-      nam[nn]['RCCNOM'] = ['0.',]
-      nam[nn]['RCCNSS'] = ['0.',]
-      nam[nn]['RCCNSU'] = ['0.',]
-      nn = 'NAERAD'
-      GHG = {}
-      GHG['CO2'] = 348.
-      GHG['CH4'] = 1650.
-      GHG['N2O'] = 306.
-      GHG['CFC11'] = 0.
-      GHG['CFC12'] = 0.
-      coefs = {}
-      coefs['CO2'] = 1.e-6    # ppmv
-      coefs['CH4'] = 1.e-9    # ppbv
-      coefs['N2O'] = 1.e-9    # ppbv
-      coefs['CFC11'] = 1.e-12 # pptv
-      coefs['CFC12'] = 1.e-12 # pptv
-      for g in GHG.keys():
-        if attributes.has_key(g):
-          nam[nn]['RC'+g] = [str(float(attributes[g])*coefs[g]),]
-        else: 
-          nam[nn]['RC'+g] = [str(GHG[g]*coefs[g]),]
+      if not(attributes['trad'] in [1,'adv']):
+        nam['NAMRIP']['RANGLE'] = [str(float(attributes['zangle'])),]
+        nam['NAMSCEN']['RI0'] = [str(float(attributes['I0'])),]
+        nn = 'NAMCLDP'
+        if attributes.has_key('CCN'):
+          tmp = math.log(attributes['CCN']/1.e6)/math.log(10)
+        else:
+          tmp = 2.
+        nam[nn]['RCCNCST'] = [str(tmp),]
+        nam[nn]['RCCNOM'] = ['0.',]
+        nam[nn]['RCCNSS'] = ['0.',]
+        nam[nn]['RCCNSU'] = ['0.',]
+        nn = 'NAERAD'
+        GHG = {}
+        GHG['CO2'] = 348.
+        GHG['CH4'] = 1650.
+        GHG['N2O'] = 306.
+        GHG['CFC11'] = 0.
+        GHG['CFC12'] = 0.
+        coefs = {}
+        coefs['CO2'] = 1.e-6    # ppmv
+        coefs['CH4'] = 1.e-9    # ppbv
+        coefs['N2O'] = 1.e-9    # ppbv
+        coefs['CFC11'] = 1.e-12 # pptv
+        coefs['CFC12'] = 1.e-12 # pptv
+        for g in GHG.keys():
+          if attributes.has_key(g):
+            nam[nn]['RC'+g] = [str(float(attributes[g])*coefs[g]),]
+          else: 
+            nam[nn]['RC'+g] = [str(GHG[g]*coefs[g]),]
 
   # -----------------------------------------------------------
   # Final writing

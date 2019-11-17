@@ -137,7 +137,8 @@ def prep_nam_SFX(case,filecase,namref,namout=None,subcase=None):
     lat = sst.getLatitude()[0]
     lon = sst.getLongitude()[0]
     time = sst.getTime()
-    zz0 = float(fin.z0)
+    if surfaceType == 'land':
+      zz0 = float(fin.z0)
     try:
       alb = float(fin.alb)
       lalb = True
@@ -147,6 +148,12 @@ def prep_nam_SFX(case,filecase,namref,namout=None,subcase=None):
       lrce = (int(fin.RCE) == 1)
     except:
       lrce = False
+    try: # Used only in case lrce
+      lminSfcWind = (float(fin.minSurfaceWind) >= 0.)
+      minSfcWind = float(fin.minSurfaceWind)
+    except:
+      lminSfcWind = False
+      minSfcWind = 1. 
   elif surfaceForcing == 'surfaceFlux':
     surfaceForcingWind = fin.surfaceForcingWind
     hfls = fin('sfc_lat_flx')
@@ -382,7 +389,8 @@ def prep_nam_SFX(case,filecase,namref,namout=None,subcase=None):
         nn = 'NAM_SURF_ATM'
         nam[nn]['LALDTHRES'] = ['.TRUE.',]
         nam[nn]['XCISMIN'] = ['0.',]
-        nam[nn]['XVMODMIN'] = ['1.',]
+        if lminSfcWind:
+          nam[nn]['XVMODMIN'] = [str(minSfcWind),]
         
     elif surfaceType == 'land':
       nn = 'NAM_DATA_TSZ0'

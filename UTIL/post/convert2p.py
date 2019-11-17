@@ -1,78 +1,84 @@
-import cdms2
-import MV2
-import sys
-import convert2p
+#!/usr/bin/env python
+# -*- coding:UTF-8 -*-
+
+import netCDF4 as nc
+
+import numpy as np
+from scipy import interpolate
+
 import config
 
-cdms2.setNetcdfShuffleFlag(0)
-cdms2.setNetcdfDeflateFlag(0)
-cdms2.setNetcdfDeflateLevelFlag(0)
-
-varall = config.saveall
-
-var2save = config.var2save
-
 levout = config.levout
-levout = MV2.array(levout,typecode=MV2.float32)
+levout = np.array(levout,dtype=np.double)
 nlevout = levout.shape[0]
-
-levout = cdms2.createAxis(levout)
-levout.id = 'lev'
-levout.designateLevel()
-levout.units = 'hPa'
-levout.long_name = 'pressure_level'
 
 missing_value = 1.e20
 
+fin = nc.Dataset('netcdf/Out_klevel.nc')
 
-if varall:
-  f =cdms2.open('netcdf/Out_klevel.nc')
-  var2save = f.listvariables()
-  f.close
-else:
-  f =cdms2.open('netcdf/Out_klevel.nc')
-  var2save0 = f.listvariables()
-  f.close 
-  var2save = set(var2save).intersection(set(var2save0))
+dimensions = fin.dimensions.keys()
+variables = fin.variables.keys() 
 
-f = cdms2.open('netcdf/Out_klevel.nc')
-pres = f('presH')/100.
-presf = f('pres')/100.
+pres = fin['ph'][:]/100.
+presf = fin['pf'][:]/100.
+nt,nlev = presf.shape
+nt,nlev1 = pres.shape
 
-time = pres.getTime()
+time = fin['time'][:]
 
-nlev = presf.shape[1]
-nlev1 = pres.shape[1]
+fulltime = np.transpose(np.tile(time,(nlev,1)))
+fulltime1 = np.transpose(np.tile(time,(nlev1,1)))
+fulltimep = np.transpose(np.tile(time,(nlevout,1)))
 
-g = cdms2.open('netcdf/Out_plevel.nc','w')
+full_levout = np.tile(levout,(nt,1))
 
-for var in var2save:
-  if config.verbose >= 1:	
-    print var	
-  data0 = f(var)
-  if (len(data0.shape) == 2 and data0.shape[1] >= nlev) and var not in ['clcalipso','lidarBetaMol532','clcalipsoice','clcalipsoliq','clcalipsoun','clcalipsotmp','clcalipsotmpice','clcalipsotmpliq','clcalipsotmpun','fracout','atb532','cfadLidarsr532','dbze94','cfadDbze94','clisccp','clmodis','clMISR','parasolRefl','clcalipso2','boxtauisccp','boxptopisccp','VETAF']:
-    if data0.shape[1] == nlev:
-      data,missing = convert2p.convert2p(presf,levout,data0)
-    elif data0.shape[1] == nlev1:
-      data,missing = convert2p.convert2p(pres,levout,data0)
+fout = nc.Dataset('netcdf/Out_plevel.nc','w',format='NETCDF3_CLASSIC')
+dim_tmp = {}
+dims_tmp = {}
+for dim in dimensions:
+    if fin.dimensions[dim].isunlimited():
+        dim_tmp[dim] = fout.createDimension(dim,None)
     else:
-      print 'vertical dimension unexpected for ' + var + ': ' + str(f[var].shape[1])
-      sys.exit()
+        dim_tmp[dim] = fout.createDimension(dim,fin.dimensions[dim].size)
+    dims_tmp[dim] = fout.createVariable(dim,type(np.array(fin[dim])[0]),(dim,))
+    for att in fin[dim].ncattrs():
+        dims_tmp[dim].setncattr(att,fin[dim].getncattr(att))
+    dims_tmp[dim][:] = fin[dim][:]
 
-    data = MV2.array(data,typecode=MV2.float)
-    data = MV2.where(missing == 1, missing_value,data)
-    data = MV2.masked_values(data,missing_value)
-    data.missing_value = missing_value
-    data.setAxis(0,time)
-    data.setAxis(1,levout)
-    data.id = var
-    for att in data0.listattributes():
-      data.setattribute(att,data0.getattribute(att))
+dim = 'levp'
+dim_tmp[dim] = fout.createDimension(dim,nlevout)
+dims_tmp[dim] = fout.createVariable(dim,'f8',(dim,))
+dims_tmp[dim].setncattr('units','hPa')
+dims_tmp[dim].setncattr('long_name','pressure_level')
+dims_tmp[dim].setncattr('axis','Z')
+dims_tmp[dim][:] = levout[:]
 
-    g.write(data)
-  else:
-    g.write(data0)	  
+var_tmp = {}
+for var in variables:
+    if var not in dimensions:
+        print var
+        if len(fin[var].dimensions) == 2 and fin[var].dimensions[1] == 'levf':
 
+            var_tmp[var] = fout.createVariable(var,'f4',('time','levp'),fill_value=missing_value)
+            for it in range(0,nt):
+                finterp = interpolate.interp1d(presf[it,:],fin[var][it,:],bounds_error=False,fill_value=missing_value)
+                var_tmp[var][it,:] = finterp(levout)
 
-f.close()
-g.close()
+        elif len(fin[var].dimensions) == 2 and fin[var].dimensions[1] == 'levh':
+
+            var_tmp[var] = fout.createVariable(var,'f4',('time','levp'),fill_value=missing_value)
+            for it in range(0,nt):
+                finterp = interpolate.interp1d(pres[it,:],fin[var][it,:],bounds_error=False,fill_value=missing_value)
+                var_tmp[var][it,:] = finterp(levout)
+
+        else:
+
+            var_tmp[var] = fout.createVariable(var,'f4',fin[var].dimensions,fill_value=missing_value)
+            var_tmp[var][:] = fin[var][:]
+
+        for att in fin[var].ncattrs():
+            var_tmp[var].setncattr(att,fin[var].getncattr(att))
+
+fout.close()
+
+fin.close()
