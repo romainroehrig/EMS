@@ -117,7 +117,8 @@ def plot_timeseries(filein,varname,coef=None,units='',tmin=None,tmax=None,dtlabe
             else:
               t0 = cdtime.comptime(t0.year,t0.month+1,1,0)
         else:
-            print 't0 unexpected',t0
+            t0 = t0.add(10,cdtime.Day)
+            #print 't0 unexpected',t0
     else:
       print 'dtlabel={} not coded yet'.format(dtlabel)
       sys.exit()
@@ -582,7 +583,9 @@ def plot2D(filein,varname,coef=None,units='',lev=None,levunits=None,tmin=None,tm
               else:
                 t0 = cdtime.comptime(t0.year,t0.month+1,1,0)
             else:
-              print 't0 unexpected',t0
+              t0 = t0.add(10,cdtime.Day)
+              #print 't0 unexpected',t0
+              #sys.exit()
             
         else:
           print 'dtlabel={} not coded yet'.format(dtlabel)

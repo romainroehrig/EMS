@@ -3,12 +3,12 @@ import cdtime
 cases = ['AYOTTE','IHOP','ARMCU','FIRE','BOMEX','RICO','AMMA','SANDU','ASTEX','CINDY-DYNAMO']
 subcases = {}
 for case in cases:
-    subcases[case] = ['REF',] 
+    subcases[case] = ['REF','DEPHY'] 
 
 subcases['AYOTTE'] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
 subcases['SANDU'] =  ['REF','FAST','SLOW']
 subcases['ASTEX'] = ['EUCLIPSE',]
-subcases['CINDY-DYNAMO'] = ['NSA3aflux',]
+subcases['CINDY-DYNAMO'] = ['NSA3aflux','NSA3aflux-MJO1']
 
 tmin = {}
 tmax = {}
@@ -69,4 +69,8 @@ for subcase in subcases[case]:
 case = 'CINDY-DYNAMO'
 for subcase in subcases[case]:
   tmin[case][subcase] = cdtime.comptime(2011,10,1)
-  tmax[case][subcase] = cdtime.comptime(2011,12,31)   
+  tmax[case][subcase] = cdtime.comptime(2011,12,31)  
+
+subcase = 'NSA3aflux-MJO1'
+tmin[case][subcase] = cdtime.comptime(2011,10,15)
+tmax[case][subcase] = cdtime.comptime(2011,11,5) 

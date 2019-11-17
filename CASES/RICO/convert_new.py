@@ -1,6 +1,7 @@
 import cdms2 
 import MV2
 import math
+import os
 
 cdms2.setNetcdfShuffleFlag(0)
 cdms2.setNetcdfDeflateFlag(0)
@@ -8,51 +9,54 @@ cdms2.setNetcdfDeflateLevelFlag(0)
 
 datain = {}
 
-f = cdms2.open('ARMCu_driver_RR.nc')
-for var in ['u','v','temp','qv','ug','vg','sfc_sens_flx','sfc_lat_flx','ts','ps','tadv','qadv','pressure']:
+f = cdms2.open('rico_driver_RR.nc')
+for var in ['u','v','temp','tke','qv','height','ug','vg','ts','ps','tadvh','qadvh','pressure','omega']:
   datain[var] = f(var)
+  try:
+    del(datain[var].positive)
+  except:
+    pass
+
 
 f.close()
 
-nt, nlev, nlat, nlon = datain['temp'].shape
-time = datain['temp'].getAxis(0)
-lev = datain['temp'].getAxis(1)
+nt, nlev, nlat, nlon = datain['ug'].shape
+time = datain['ug'].getAxis(0)
+lev = datain['ug'].getAxis(1)
 lev.id = 'lev'
-lat = datain['temp'].getAxis(2)
-lon = datain['temp'].getAxis(3)
+lat = datain['ug'].getAxis(2)
+lon = datain['ug'].getAxis(3)
 
 t0 = MV2.array([0,],typecode=MV2.float)
 t0 = cdms2.createAxis(t0)
 t0.id = 't0'
-t0.units = 'seconds since 1997-06-21 11:30:0.0'
+t0.units = 'seconds since 2004-12-16 00:00:0.0'
 t0.calendar = 'gregorian'
 
 time[:] = time[:] - time[0]
-time.units = 'seconds since 1997-06-21 11:30:0.0'
-del(time.realtopology)
+time.units = 'seconds since 2004-12-16 00:00:0.0'
+#del(time.realtopology)
+
+title = {}
+title['u'] = 'Zonal wind'
+title['v'] = 'Meridional wind'
+title['temp'] = 'Temperature'
+title['qv'] = 'Specific humidity'
+title['tke'] = 'Turbulent kinetic energy'
+title['pressure'] = 'Pressure'
+title['height'] = 'Height above the surface'
 
 dataout = {}
-for var in ['u','v','temp','qv','pressure']:
+for var in ['u','v','temp','qv','tke','pressure','height']:
   dataout[var] = MV2.zeros((1,nlev,nlat,nlon),typecode=MV2.float)
   dataout[var][0,:,0,0] = datain[var][0,:,0,0]
   dataout[var].id = var
-  dataout[var].title = datain[var].title
+  dataout[var].title = title[var] #datain[var].title
   dataout[var].units = datain[var].units
   dataout[var].setAxis(0,t0)
   dataout[var].setAxis(1,lev)
   dataout[var].setAxis(2,lat)
   dataout[var].setAxis(3,lon)
-
-var = 'height'
-dataout[var] = MV2.zeros((1,nlev,nlat,nlon),typecode=MV2.float)
-dataout[var][0,:,0,0] = lev[:]
-dataout[var].id = var
-dataout[var].title = 'Height above the surface'
-dataout[var].units = 'm'
-dataout[var].setAxis(0,t0)
-dataout[var].setAxis(1,lev)
-dataout[var].setAxis(2,lat)
-dataout[var].setAxis(3,lon)
 
 var = 'ql'
 dataout[var] = MV2.zeros((1,nlev,nlat,nlon),typecode=MV2.float)
@@ -84,22 +88,24 @@ dataout[var].setAxis(1,lev)
 dataout[var].setAxis(2,lat)
 dataout[var].setAxis(3,lon)
 
+title['tadvh'] = 'Horizontal advection of temperature'
 
-
-for var in ['ug','vg','sfc_sens_flx','sfc_lat_flx','ts','ps','tadv']:
+for var in ['ug','vg','ts','ps','tadvh','omega']:
     dataout[var] = datain[var]
     dataout[var].setAxis(0,time)
-    if var in ['ug','vg','tadv']:
+    if title.has_key(var):
+        dataout[var].title = title[var]
+    if var in ['ug','vg','tadvh']:
         dataout[var].setAxis(1,lev)
     try:
       del(dataout[var].positive)
     except:
       pass
 
-var = 'qvadv'
-dataout[var] = datain['qadv']*1.
+var = 'qvadvh'
+dataout[var] = datain['qadvh']*1.
 dataout[var].id = var
-dataout[var].title = 'Specific humidity advection'
+dataout[var].title = 'Horizontal advection of specific humidity advection'
 dataout[var].units = 'kg kg-1 s-1'
 dataout[var].setAxis(0,time)
 dataout[var].setAxis(1,lev)
@@ -107,9 +113,11 @@ dataout[var].setAxis(2,lat)
 dataout[var].setAxis(3,lon)
  
 var = 'pressure_forc'
-dataout[var] = datain['pressure']*1.
+dataout[var] =  MV2.zeros((nt,nlev,nlat,nlon),typecode=MV2.float)
+for it in range(0,nt):
+    dataout[var][it,:,0,0] = datain['pressure'][0,:,0,0]
 dataout[var].id = var
-dataout[var].title = 'Pressure'
+dataout[var].title = 'Forcing pressure'
 dataout[var].units = 'Pa'
 dataout[var].setAxis(0,time)
 dataout[var].setAxis(1,lev)
@@ -117,27 +125,26 @@ dataout[var].setAxis(2,lat)
 dataout[var].setAxis(3,lon)
 
 
-g = cdms2.open('ARMCu_driver_RR_new.nc','w')
+g = cdms2.open('rico_driver_RR_new.nc','w')
 
-for var in dataout.keys():
+for var in ['pressure','height','u','v','temp','qv','ql','qi','tke','pressure_forc','ug','vg','tadvh','qvadvh','omega','ts','ps']: #dataout.keys():
     g.write(dataout[var])
 
-g.comment = "Forcing and initial conditions for ARMCu case" 
-g.reference = "http://projects.knmi.nl/eurocs/ARM/case_ARM_html" 
-g.author = "M.-P. Lefebvre, R. Roehrig" 
-g.modifications = "2017-04-28: R. Roehrig - compute tadv + add ps + update forcing information\n\
-        2019-03-21: R. Roehrig - new DEPHY format" 
-g.case = "ARMCU/REF" 
-g.startDate = "19970621113000" 
-g.endDate = "19970622023000" 
-g.tadv = 1 
-g.tadvh = 0 
+g.comment = "Forcing and initial conditions for RICO case" 
+g.reference = "http://projects.knmi.nl/rico/setup1d_composite.html" 
+g.author = "R. Roehrig" 
+g.modifications = "2019-10-01: R. Roehrig - new DEPHY format" 
+g.case = "RICO/REF" 
+g.startDate = "20041216000000"
+g.endDate = "20041219000000"
+g.tadv = 0 
+g.tadvh = 1 
 g.tadvv = 0 
 g.trad = "adv"
-g.qvadv = 1 
-g.qvadvh = 0 
+g.qvadv = 0 
+g.qvadvh = 1 
 g.qvadvv = 0 
-g.forc_omega = 0 
+g.forc_omega = 1
 g.forc_w = 0 
 g.forc_geo = 1 
 g.nudging_u = 0 
@@ -145,9 +152,11 @@ g.nudging_v = 0
 g.nudging_t = 0 
 g.nudging_q = 0 
 g.zorog = 0. 
-g.z0 = 0.035 
-g.surfaceType = "land" 
-g.surfaceForcing = "surfaceFlux" 
+g.z0 = 0.1 
+g.surfaceType = "ocean" 
+g.surfaceForcing = "ts" 
 g.surfaceForcingWind = "z0" 
 
 g.close()
+
+os.system('nc4tonc3 -o {0} {1}'.format('rico_driver_RR_new.nc','rico_driver_RR_new3.nc'))

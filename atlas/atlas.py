@@ -20,7 +20,7 @@ import variables_info
 lplot2D = True
 lplot2Dbias = True
 lplotTS = True
-lplotInit = True #False
+lplotInit = False #True #False
 lplotAvgP = True
 
 try:

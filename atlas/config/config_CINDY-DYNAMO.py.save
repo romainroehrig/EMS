@@ -9,8 +9,8 @@ import matplotlib as plt # for colormaps
 
 var2compute = ['Qr_int','TOA_cre_sw','TOA_cre_lw','Qr_int_cre']
 
-tmin = cdtime.comptime(2011,10,15)
-tmax = cdtime.comptime(2011,11,5)
+tmin = cdtime.comptime(2011,10,1)
+tmax = cdtime.comptime(2011,12,31)
 
 
 #################
@@ -23,7 +23,7 @@ plot2D = \
         'yname'   : 'Pressure (hPa)'        ,\
         'levunits': 'hPa'                   ,\
         'dtlabel' : '10d'                   ,\
-        'xname'   : 'October-November 2011' ,\
+        'xname'   : 'October-December 2011' ,\
         'lgrid'   : True                    ,\
         'figsize' : (20,5) ,\
         }
@@ -60,7 +60,7 @@ plot2Dbias = \
         'yname'   : 'Pressure (hPa)'        ,\
         'levunits': 'hPa'                   ,\
         'dtlabel' : '10d'                   ,\
-        'xname'   : 'October-November 2011' ,\
+        'xname'   : 'October-December 2011' ,\
         'lgrid'   : True                    ,\
         'figsize' : (20,5) ,\
         }
@@ -170,12 +170,164 @@ plotAvgP['avg_bias']['var2plot'] = \
         'u'       : {'xmin':   -2.  , 'xmax':   2. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
         'v'       : {'xmin':   -2.  , 'xmax':   2. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
         'theta'   : {'xmin':   -4.  , 'xmax':   4. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
-        'qv'      : {'xmin':   -4.  , 'xmax':   4. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
+        'qv'      : {'xmin':   -3.  , 'xmax':   3. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
         'hur'     : {'xmin':  -40.  , 'xmax':  40. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
 #        'Q1'      : {'xmin':   -2.  , 'xmax':   5. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
 #        'Q2'      : {'xmin':   -2.  , 'xmax':   5. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
         }
 
+# 1st MJO event
+
+plotAvgP['MJO1'] = \
+        {\
+        'tmin'    : cdtime.comptime(2011,10,20,0),\
+        'tmax'    : cdtime.comptime(2011,11,1,0) ,\
+        'ymin'    : 1000.                        ,\
+        'ymax'    :   50.                        ,\
+        'yname'   : 'Pressure (hPa)'             ,\
+        'levunits': 'hPa'                        ,\
+        'title'   : 'MJO1 (10/20-11/01)'         ,\
+        'lgrid'   : True                         ,\
+        }
+plotAvgP['MJO1']['var2plot'] = \
+        {\
+        'hur'     : {'xmin':    0.  , 'xmax':  100. , 'lev':'pf'},\
+        'rneb'    : {'xmin':    0.  , 'xmax':  100. , 'lev':'pf'},\
+        'Q1'      : {'xmin':   -2.  , 'xmax':   12.  , 'lev':'pf'},\
+        'Q2'      : {'xmin':   -2.  , 'xmax':   12.  ,'lev':'pf'},\
+        }
+
+plotAvgP['MJO1_bias'] = \
+        {\
+        'tmin'    : cdtime.comptime(2011,10,20,0),\
+        'tmax'    : cdtime.comptime(2011,11,1,0) ,\
+        'ymin'    : 1000.                        ,\
+        'ymax'    :   50.                        ,\
+        'yname'   : 'Pressure (hPa)'             ,\
+        'levunits': 'hPa'                        ,\
+        'title'   : 'MJO1 (10/20-11/01) - Bias'  ,\
+        'lgrid'   : True                         ,\
+        }
+plotAvgP['MJO1_bias']['var2plot'] = \
+        {\
+        'theta'   : {'xmin':   -5.  , 'xmax':   5. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
+        'qv'      : {'xmin':   -3.  , 'xmax':   3. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
+        }
+
+# 2nd suppressed phase
+
+plotAvgP['SUPP2'] = \
+        {\
+        'tmin'    : cdtime.comptime(2011,11,5,0) ,\
+        'tmax'    : cdtime.comptime(2011,11,15,0),\
+        'ymin'    : 1000.                        ,\
+        'ymax'    :   50.                        ,\
+        'yname'   : 'Pressure (hPa)'             ,\
+        'levunits': 'hPa'                        ,\
+        'title'   : 'SUPP2 (11/05-11/15)'        ,\
+        'lgrid'   : True                         ,\
+        }
+plotAvgP['SUPP2']['var2plot'] = \
+        {\
+        'hur'     : {'xmin':    0.  , 'xmax':  100. , 'lev':'pf'},\
+        'rneb'    : {'xmin':    0.  , 'xmax':  100. , 'lev':'pf'},\
+        'Q1'      : {'xmin':   -2.  , 'xmax':    5. , 'lev':'pf'},\
+        'Q2'      : {'xmin':   -2.  , 'xmax':    5. ,'lev':'pf'},\
+        }
+
+plotAvgP['SUPP2_bias'] = \
+        {\
+        'tmin'    : cdtime.comptime(2011,11,5,0) ,\
+        'tmax'    : cdtime.comptime(2011,11,15,0),\
+        'ymin'    : 1000.                        ,\
+        'ymax'    :   50.                        ,\
+        'yname'   : 'Pressure (hPa)'             ,\
+        'levunits': 'hPa'                        ,\
+        'title'   : 'SUPP2 (11/05-11/15) - Bias' ,\
+        'lgrid'   : True                         ,\
+        }
+plotAvgP['SUPP2_bias']['var2plot'] = \
+        {\
+        'theta'   : {'xmin':   -5.  , 'xmax':   5. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
+        'qv'      : {'xmin':   -3.  , 'xmax':   3. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
+        }
+
+# 2nd MJO event
+
+plotAvgP['MJO2'] = \
+        {\
+        'tmin'    : cdtime.comptime(2011,11,20,0),\
+        'tmax'    : cdtime.comptime(2011,12,1,0) ,\
+        'ymin'    : 1000.                        ,\
+        'ymax'    :   50.                        ,\
+        'yname'   : 'Pressure (hPa)'             ,\
+        'levunits': 'hPa'                        ,\
+        'title'   : 'MJO2 (11/20-12/01)'         ,\
+        'lgrid'   : True                         ,\
+        }
+plotAvgP['MJO2']['var2plot'] = \
+        {\
+        'hur'     : {'xmin':    0.  , 'xmax':  100. , 'lev':'pf'},\
+        'rneb'    : {'xmin':    0.  , 'xmax':  100. , 'lev':'pf'},\
+        'Q1'      : {'xmin':   -2.  , 'xmax':   12.  , 'lev':'pf'},\
+        'Q2'      : {'xmin':   -2.  , 'xmax':   12.  ,'lev':'pf'},\
+        }
+
+plotAvgP['MJO2_bias'] = \
+        {\
+        'tmin'    : cdtime.comptime(2011,11,20,0),\
+        'tmax'    : cdtime.comptime(2011,12,1,0) ,\
+        'ymin'    : 1000.                        ,\
+        'ymax'    :   50.                        ,\
+        'yname'   : 'Pressure (hPa)'             ,\
+        'levunits': 'hPa'                        ,\
+        'title'   : 'MJO2 (11/20-12/01) - Bias'  ,\
+        'lgrid'   : True                         ,\
+        }
+plotAvgP['MJO2_bias']['var2plot'] = \
+        {\
+        'theta'   : {'xmin':   -5.  , 'xmax':   5. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
+        'qv'      : {'xmin':   -3.  , 'xmax':   3. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
+        }        
+
+# 3rd suppressed phase
+
+plotAvgP['SUPP3'] = \
+        {\
+        'tmin'    : cdtime.comptime(2011,12,1,0) ,\
+        'tmax'    : cdtime.comptime(2011,12,10,0),\
+        'ymin'    : 1000.                        ,\
+        'ymax'    :   50.                        ,\
+        'yname'   : 'Pressure (hPa)'             ,\
+        'levunits': 'hPa'                        ,\
+        'title'   : 'SUPP3 (12/01-12/10)'        ,\
+        'lgrid'   : True                         ,\
+        }
+plotAvgP['SUPP3']['var2plot'] = \
+        {\
+        'hur'     : {'xmin':    0.  , 'xmax':  100. , 'lev':'pf'},\
+        'rneb'    : {'xmin':    0.  , 'xmax':  100. , 'lev':'pf'},\
+        'Q1'      : {'xmin':   -2.  , 'xmax':    5. , 'lev':'pf'},\
+        'Q2'      : {'xmin':   -2.  , 'xmax':    5. ,'lev':'pf'},\
+        }
+
+plotAvgP['SUPP3_bias'] = \
+        {\
+        'tmin'    : cdtime.comptime(2011,12,1,0) ,\
+        'tmax'    : cdtime.comptime(2011,12,10,0),\
+        'ymin'    : 1000.                        ,\
+        'ymax'    :   50.                        ,\
+        'yname'   : 'Pressure (hPa)'             ,\
+        'levunits': 'hPa'                        ,\
+        'title'   : 'SUPP3 (12/01-12/10) - Bias' ,\
+        'lgrid'   : True                         ,\
+        }
+plotAvgP['SUPP3_bias']['var2plot'] = \
+        {\
+        'theta'   : {'xmin':   -5.  , 'xmax':   5. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
+        'qv'      : {'xmin':   -3.  , 'xmax':   3. , 'lev':'pf', 'lbias':True, 'refdataset':'CSU'},\
+        }        
+        
 #################
 # Checking initial profiles - global view
 
