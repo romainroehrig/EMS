@@ -173,6 +173,26 @@ varnames[case][subcase][sim] = {}
 coefs[case][subcase][sim] = {}
 lines[case][subcase][sim] = 'k.'
 
+subcase = 'DEPHY'
+
+sim = 'LES'
+files[case][subcase][sim] = '/Users/romainroehrig/data/LES/RICO/RICO_LES_MESONH_RR.nc'
+varnames[case][subcase][sim] = {}
+coefs[case][subcase][sim] = {}
+lines[case][subcase][sim] = 'k'
+
+sim = 'LES_core'
+files[case][subcase][sim] = '/Users/romainroehrig/data/LES/RICO/RICO_LES_MESONH_RR_core.nc'
+varnames[case][subcase][sim] = {}
+coefs[case][subcase][sim] = {}
+lines[case][subcase][sim] = 'g.'
+
+sim = 'LES_csam'
+files[case][subcase][sim] = '/Users/romainroehrig/data/LES/RICO/RICO_LES_MESONH_RR_csam.nc'
+varnames[case][subcase][sim] = {}
+coefs[case][subcase][sim] = {}
+lines[case][subcase][sim] = 'k.'
+
 #################
 # AMMA
 case = 'AMMA'
@@ -222,6 +242,44 @@ lines[case][subcase][sim] = 'k--'
 
 sim = 'CERESv2'
 files[case][subcase][sim] = '/Users/romainroehrig/data/CindyDynamo/NSA3a/CINDY-DYNAMO_NSA3a_CERES2_RR.nc'
+varnames[case][subcase][sim] = {}
+coefs[case][subcase][sim] = {}
+lines[case][subcase][sim] = 'b--'
+
+subcase = 'NSA3aflux-MJO1'
+
+sim = 'CSU'
+files[case][subcase][sim] = '/Users/romainroehrig/data/CindyDynamo/NSA3a/CINDY-DYNAMO_NSA3a_RR_daily-MJO1.nc'
+varnames[case][subcase][sim] = {}
+coefs[case][subcase][sim] = {}
+lines[case][subcase][sim] = 'k'
+
+sim = 'TRMM'
+files[case][subcase][sim] = '/Users/romainroehrig/data/CindyDynamo/NSA3a/CINDY-DYNAMO_NSA3a_TRMM_RR_daily-MJO1.nc'
+varnames[case][subcase][sim] = {}
+coefs[case][subcase][sim] = {}
+lines[case][subcase][sim] = 'k'
+
+sim = 'Q1-derived'
+files[case][subcase][sim] = '/Users/romainroehrig/data/CindyDynamo/NSA3a/CINDY-DYNAMO_NSA3a_Q1-derived_RR_daily-MJO1.nc'
+varnames[case][subcase][sim] = {}
+coefs[case][subcase][sim] = {}
+lines[case][subcase][sim] = 'r--'
+
+sim = 'Q2-derived'
+files[case][subcase][sim] = '/Users/romainroehrig/data/CindyDynamo/NSA3a/CINDY-DYNAMO_NSA3a_Q2-derived_RR_daily-MJO1.nc'
+varnames[case][subcase][sim] = {}
+coefs[case][subcase][sim] = {}
+lines[case][subcase][sim] = 'b--'
+
+sim = 'CERES'
+files[case][subcase][sim] = '/Users/romainroehrig/data/CindyDynamo/NSA3a/CINDY-DYNAMO_NSA3a_CERES_RR_daily-MJO1.nc'
+varnames[case][subcase][sim] = {}
+coefs[case][subcase][sim] = {}
+lines[case][subcase][sim] = 'k--'
+
+sim = 'CERESv2'
+files[case][subcase][sim] = '/Users/romainroehrig/data/CindyDynamo/NSA3a/CINDY-DYNAMO_NSA3a_CERES2_RR-MJO1.nc'
 varnames[case][subcase][sim] = {}
 coefs[case][subcase][sim] = {}
 lines[case][subcase][sim] = 'b--'
