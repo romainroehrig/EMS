@@ -44,5 +44,5 @@ for cc in cases:
     sys.exit()
 
 lsurfex = True
-if model in ['AROME','ARPPNT']:
+if model in ['AROME','AROME46t1','ARPPNT']:
     lsurfex = False
