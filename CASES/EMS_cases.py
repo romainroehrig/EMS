@@ -213,11 +213,16 @@ for SST in [295,300,305,301.15]:
 # RCE
 case = "RCE"
 cases.append(case)
-subcases[case] = ['KUANG_SST28','KUANG_SST28_DEPHY']
+#subcases[case] = ['KUANG_SST28','KUANG_SST28_DEPHY']
+subcases[case] = []
 data_input[case] = {}
 for SST in [28,]:
-  data_input[case]['KUANG_SST{0}'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}.nc'.format(SST)
-  data_input[case]['KUANG_SST{0}_DEPHY'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_DEPHY.nc'.format(SST)
+#  subcases[case] = subcases[case] + ['KUANG_SST{0}_DEPHY'.format(SST),] + ['KUANG_SST{0}_perturb{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-2)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_perturb{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-2)]
+#  data_input[case]['KUANG_SST{0}'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}.nc'.format(SST)
+#  data_input[case]['KUANG_SST{0}_DEPHY'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_DEPHY.nc'.format(SST)
+  for lev in range(90,39,-2):
+      data_input[case]['KUANG_SST{0}_perturb{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_perturb{1:0>2}_DEPHY.nc'.format(SST,lev)
 
 ####################################
 
