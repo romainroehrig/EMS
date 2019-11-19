@@ -9,7 +9,7 @@ coefs = {}
 #---------------------------------------------------------------------------------------------------
 
 # 1. Variables dynamiques et thermodynamiques
-#      pf(pres), ph (presH), zf(zg), zh(zgH), rho, temp(ta), qv(hus), hur, ql, qi, qr, qsn, tke, theta(th), thv, thl, thlv, qsat,
+#      pf(pres), ph (presH), zf(zg), zh(zgH), rho, temp(ta), qv(hus), hur, qlrad, qirad, ql, qi, qr, qsn, tke, theta(th), thv, thl, thlv, qsat,
 #      u(ua), v(va), wa, wap
 #      qlc, qic, qrc, qsnc, qlshc, qishc, qrshc, qsnshc
 # 2. Variables nuageuses
@@ -142,8 +142,10 @@ varnames['rho']   = 'RHO'
 varnames['temp']    = 'PT'
 varnames['qv']   = 'PQ'
 varnames['hur']   = 'PRH'
-varnames['ql']    = 'PQLI'
-varnames['qi']    = 'PQICE'
+varnames['ql']    = 'PQL'
+varnames['qi']    = 'PQI'
+varnames['qlrad']    = 'PQLI'
+varnames['qirad']    = 'PQICE'
 varnames['qr']    = 'PQR'
 varnames['qsn']   = 'PQSN'
 
@@ -160,11 +162,13 @@ varnames['qsnshc']= 'PQSSHCONV'
 varnames['tke']   = 'PECT'
 
 varnames['theta']    = 'THETA'
+varnames['thetae']    = 'thetae'
 varnames['thv']   = 'THETAV'
 varnames['thl']   = 'THETAL'
 varnames['thlv']  = 'THETAVL'
 
 varnames['qsat']  = 'PQSAT'
+varnames['qsat0']  = 'qsat0'
 
 varnames['u']    = 'PU'
 varnames['v']    = 'PV'
@@ -192,7 +196,7 @@ varnames['snowc'] = 'PFPLCN'
 
 varnames['rain']    = 'PRECS_TOT'
 varnames['prls']  = 'PRECS_LS'
-varnames['prc']   = 'PRECS_CONV'
+varnames['prc']   = 'PRECS_C'
 varnames['ppr']   = 'PREC_TOT'
 varnames['pprls'] = 'PREC_LS'
 varnames['pprc']  = 'PREC_C'
@@ -282,6 +286,8 @@ varnames['qsurf'] = 'PQS'
 # 6. Variables integrees sur la colonne
 
 varnames['prw']   = 'WVP'
+varnames['sprw']   = 'sprw'
+varnames['prw_v2']   = 'prw_v2'
 varnames['lwp']   = 'LWP'
 varnames['iwp']   = 'IWP'
 varnames['cwp']   = 'CWP'
@@ -447,6 +453,12 @@ varnames['RMSE0'] = 'RMSE0'
 varnames['RMSE1'] = 'RMSE1'
 varnames['RDMSE'] = 'RDMSE'
 varnames['msefluxSfc'] = 'MSEFLUXSFC'
+varnames['fmse0'] = 'fmse0'
+varnames['intfmse0'] = 'intfmse0'
+varnames['tnfmseadvw'] = 'tnfmseadvw'
+varnames['inttnfmseadvw'] = 'inttnfmseadvw'
+varnames['lhl0'] = 'lhl0'
+varnames['lhi1'] = 'lhi0'
 varnames['iQadv'] = 'TOTFORCQADV'
 varnames['iQnud'] = 'TOTFORCQNUD'
 varnames['iTadv'] = 'TOTFORCTADV'
@@ -628,6 +640,8 @@ names['qv']   = 'Specific Humidity'
 names['hur']   = 'Relative Humidity'
 names['ql']    = 'Specific Mass of Cloud Liquid Water'
 names['qi']    = 'Specific Mass of Cloud Ice Water'
+names['qlrad']    = 'Radiative Specific Mass of Cloud Liquid Water'
+names['qirad']    = 'Radiative Specific Mass of Cloud Ice Water'
 names['qr']    = 'Specific Mass of Rain'
 names['qsn']   = 'Specific Mass of Snow'
 
@@ -644,6 +658,7 @@ names['qsnshc']= 'Specific Mass of Shallow Convection Snow'
 names['tke']   = 'Turbulent Kinetic Energy'
 
 names['theta']    = 'Potential Temperature'
+names['thetae']    = 'Equivalent Potential Temperature'
 names['thv']    = 'Virtual Potential Temperature'
 names['thl']    = 'Liquid Potential Temperature'
 names['thlv']    = 'Virtual Potential Temperature'
@@ -766,6 +781,8 @@ names['qsurf'] = 'Surface saturated specific humidity (qsat(SST))'
 # 6. Variables integrees sur la colonne
 
 names['prw']   = 'Precipitable Water'
+names['prw_v2']   = 'Precipitable Water Version 2'
+names['sprw']   = 'Saturated Precipitable Water'
 names['lwp']   = 'Liquid Water Path'
 names['iwp']   = 'Ice Water Path'
 names['cwp']   = 'Cloud Water Path'
@@ -930,6 +947,12 @@ names['RMSE0'] = 'RMSE0'
 names['RMSE1'] = 'RMSE1'
 names['RDMSE'] = 'RDMSE'
 names['msefluxSfc'] = 'Net Moist Static Energy Flux at Surface'
+names['fmse0'] = 'fmse0'
+names['intfmse0'] = 'intfmse0'
+names['tnfmseadvw'] = 'tnfmseadvw'
+names['inttnfmseadvw'] = 'inttnfmseadvw'
+names['lhl0'] = 'lhl0'
+names['lhi1'] = 'lhi0'
 names['iQadv'] = 'Horizontal Advection of moisture integrated over the atmospheric column'
 names['iQnud'] = 'Moisture Tendency due to nudging integrated over the atmospheric column'
 names['iTadv'] = 'Horizontal Advection of temperature integrated over the atmospheric column'
@@ -1112,6 +1135,8 @@ units['qv']   = 'kg/kg'
 units['hur']   = '-'
 units['ql']    = 'kg/kg'
 units['qi']    = 'kg/kg'
+units['qlrad']    = 'kg/kg'
+units['qirad']    = 'kg/kg'
 units['qr']    = 'kg/kg'
 units['qsn']   = 'kg/kg'
 
@@ -1129,6 +1154,7 @@ units['qsnshc']= 'kg/kg'
 units['tke']   = 'm2/s2'
 
 units['theta']    = 'K'
+units['thetae']    = 'K'
 units['thv']    = 'K'
 units['thl']    = 'K'
 units['thlv']    = 'K'
@@ -1251,6 +1277,8 @@ units['qsurf'] = 'kg/kg'
 # 6. Variables integrees sur la colonne
 
 units['prw']   = 'kg/m2'
+units['prw_v2']   = 'kg/m2'
+units['sprw']   = 'kg/m2'
 units['lwp']   = 'kg/m2'
 units['iwp']   = 'kg/m2'
 units['cwp']   = 'kg/m2'
@@ -1416,6 +1444,12 @@ units['RMSE0'] = '-'
 units['RMSE1'] = '-'
 units['RDMSE'] = '-'
 units['msefluxSfc'] = 'W/m2'
+units['fmse0'] = 'J kg-1'
+units['intfmse0'] = 'J m-2'
+units['tnfmseadvw'] = 'J kg-1 s-1'
+units['inttnfmseadvw'] = 'J m-2 s-1'
+units['lhl0'] = '-'
+units['lhi1'] = '-'
 units['iQadv'] = 'kg/m2/s'
 units['iQnud'] = 'kg/m2/s'
 units['iTadv'] = 'K kg/m2/s'
@@ -1660,6 +1694,8 @@ coefs['qv']   = 1
 coefs['hur']   = 1
 coefs['ql']    = 1
 coefs['qi']    = 1
+coefs['qlrad']    = 1
+coefs['qirad']    = 1
 coefs['qr']    = 1
 coefs['qsn']   = 1
 
@@ -1677,6 +1713,7 @@ coefs['qsnshc']= 1
 coefs['tke']   = 1
 
 coefs['theta']    = 1
+coefs['thetae']    = 1
 coefs['thv']    = 1
 coefs['thl']    = 1
 coefs['thlv']    = 1
@@ -1799,6 +1836,8 @@ coefs['qsurf'] = 1
 # 6. Variables integrees sur la colonne
 
 coefs['prw']   = 1
+coefs['prw_v2']   = 1
+coefs['sprw']   = 1
 coefs['lwp']   = 1
 coefs['iwp']   = 1
 coefs['cwp']   = 1
@@ -1963,6 +2002,12 @@ coefs['RMSE0'] = 1
 coefs['RMSE1'] = 1
 coefs['RDMSE'] = 1
 coefs['msefluxSfc'] = 1
+coefs['fmse0'] = 1
+coefs['intfmse0'] = 1
+coefs['tnfmseadvw'] = 1
+coefs['inttnfmseadvw'] = 1
+coefs['lhl0'] = 1
+coefs['lhi1'] = 1
 coefs['iQadv'] = 1
 coefs['iQnud'] = 1
 coefs['iTadv'] = 1
