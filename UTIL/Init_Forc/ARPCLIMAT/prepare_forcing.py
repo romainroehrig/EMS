@@ -53,8 +53,9 @@ nt = time0.shape[0]
 variables3D = []
 
 if attributes['trad'] == 1:
-  variables3D.append('trad')
-  nt = f['trad'].shape[0]
+  if not(attributes['tadv'] == 1 or attributes['tadvh'] == 1 or attributes['tadvv'] == 1):
+    variables3D.append('trad')
+    nt = f['trad'].shape[0]
 if attributes['tadv'] == 1:
   variables3D.append('tadv')
   nt = f['tadv'].shape[0]
