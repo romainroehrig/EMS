@@ -229,6 +229,7 @@ fi
 
 if [ $runpost = True ]
 then
+  cd $OUTPUTDIR0
   set +x
   echo ''
   echo ' Postprocessing '

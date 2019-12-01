@@ -141,7 +141,7 @@ g.forc_geo = 1
 g.nudging_u = 0 
 g.nudging_v = 0 
 g.nudging_t = 0 
-g.nudging_q = 0 
+g.nudging_qv = 0 
 g.zorog = 0. 
 g.z0 = 0.035 
 g.surfaceType = "land" 
@@ -149,3 +149,5 @@ g.surfaceForcing = "surfaceFlux"
 g.surfaceForcingWind = "z0" 
 
 g.close()
+
+os.system('nc4tonc3 -o ARMCu_driver_RR_new.nc ARMCu_driver_RR_new3.nc')
