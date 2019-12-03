@@ -96,7 +96,8 @@ data_input[case]['DEPHY'] = rep0 + '/RICO/rico_driver_RR_new3.nc'
 # ARMCU Case
 case = 'ARMCU'
 cases.append(case)
-subcases[case] = ['REF','DEPHY']
+#subcases[case] = ['REF','DEPHY']
+subcases[case] = ['REF']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/ARMCu/ARMCu_driver_RR.nc'
 data_input[case]['DEPHY'] = rep0 + '/ARMCu/ARMCu_driver_RR_new.nc'
@@ -175,12 +176,13 @@ case = 'CINDY-DYNAMO'
 cases.append(case)
 #subcases[case] = ['NSA3a','NSA3aflux','SSA3a']
 #subcases[case] = ['NSA3a']
-subcases[case] = ['NSA3aflux']
+#subcases[case] = ['NSA3aflux']
 #subcases[case] = ['Revelle-ARM-CSU-13Nov']
 #subcases[case] = ['Revelle-PE-13Nov']
 #subcases[case] = ['COCOA-13Nov']
 #subcases[case] = ['COCOA-13-22Nov']
 #subcases[case] = ['COCOA']
+subcases[case] = ['COCOA-MJO1']
 data_input[case] = {}
 data_input[case]['NSA3a'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3a_driver_RR.nc'
 data_input[case]['NSA3aflux'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3aflux_driver_RR.nc'
@@ -192,6 +194,7 @@ data_input[case]['Revelle-PE-13Nov'] = rep0 + '/CINDY-DYNAMO/RevellePE/CINDY-DYN
 data_input[case]['COCOA'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU_50km_driver_RR_extended.nc'
 data_input[case]['COCOA-13Nov'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU-13Nov_50km_driver_RR_extended.nc'
 data_input[case]['COCOA-13-22Nov'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU-13-22Nov_50km_driver_RR_extended.nc'
+data_input[case]['COCOA-MJO1'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU-MJO1_50km_driver_RR_extended.nc'
 
 # Derbyshire cases
 case = 'Derbyshire'
