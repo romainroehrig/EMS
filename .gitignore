@@ -1,2 +1,6 @@
 # Compiled Python files
 *.pyc
+# Mac files
+**/.DS_Store
+# swp files
+*.swp
