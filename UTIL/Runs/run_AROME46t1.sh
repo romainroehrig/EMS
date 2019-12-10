@@ -122,6 +122,8 @@ export DR_HOOK_IGNORE_SIGNALS=-1
 
 ulimit -s unlimited
 
+unset LD_LIBRARY_PATH
+
 date
 ./MASTER >lola 2>&1
 date

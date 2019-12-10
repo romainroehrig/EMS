@@ -3,9 +3,6 @@ import os
 rep0 = os.getenv('REP_MUSC')
 
 config = 'ARPPNT_OPER'
-cycle = '41t1_op1.11_MUSC'
-MASTER = '/home/roehrig/pack/' + cycle + '/bin/MASTERODB'
-PGD = '/home/roehrig/pack/' + cycle + '/bin/PGD'
-PREP = '/home/roehrig/pack/' + cycle + '/bin/PREP'
+cycle = '41t1_op1.11.GFORTRAN610.x.EB.MUSC'
+MASTER = '/cnrm/amacs/USERS/roehrig/share/MUSC/41t1_op1.11.GFORTRAN610.x.EB.MUSC/bin/MASTERODB'
 namATMref = rep0 + '/namelist/ARPPNT/namarp_41t1_ARPEGE_OPER'
-#namSFXref = rep0 + '/namelist/SURFEX/nam.sfx.tl127.CMIP6.v631'
