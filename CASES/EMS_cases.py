@@ -177,12 +177,13 @@ case = 'CINDY-DYNAMO'
 cases.append(case)
 #subcases[case] = ['NSA3a','NSA3aflux','SSA3a']
 #subcases[case] = ['NSA3a']
-subcases[case] = ['NSA3aflux']
+#subcases[case] = ['NSA3aflux']
 #subcases[case] = ['Revelle-ARM-CSU-13Nov']
 #subcases[case] = ['Revelle-PE-13Nov']
 #subcases[case] = ['COCOA-13Nov']
 #subcases[case] = ['COCOA-13-22Nov']
 #subcases[case] = ['COCOA']
+subcases[case] = ['COCOA-MJO1']
 data_input[case] = {}
 data_input[case]['NSA3a'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3a_driver_RR.nc'
 data_input[case]['NSA3aflux'] = rep0 + '/CINDY-DYNAMO/NSA3a/cindy-dynamo-NSA3aflux_driver_RR.nc'
@@ -194,6 +195,7 @@ data_input[case]['Revelle-PE-13Nov'] = rep0 + '/CINDY-DYNAMO/RevellePE/CINDY-DYN
 data_input[case]['COCOA'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU_50km_driver_RR_extended.nc'
 data_input[case]['COCOA-13Nov'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU-13Nov_50km_driver_RR_extended.nc'
 data_input[case]['COCOA-13-22Nov'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU-13-22Nov_50km_driver_RR_extended.nc'
+data_input[case]['COCOA-MJO1'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU-MJO1_50km_driver_RR_extended.nc'
 
 # Derbyshire cases
 case = 'Derbyshire'
@@ -216,16 +218,21 @@ for SST in [295,300,305,301.15]:
 # RCE
 case = "RCE"
 cases.append(case)
-#subcases[case] = ['KUANG_SST28','KUANG_SST28_DEPHY']
 subcases[case] = []
 data_input[case] = {}
 for SST in [28,]:
-#  subcases[case] = subcases[case] + ['KUANG_SST{0}_DEPHY'.format(SST),] + ['KUANG_SST{0}_perturb{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-2)]
-  subcases[case] = subcases[case] + ['KUANG_SST{0}_perturb{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-2)]
-#  data_input[case]['KUANG_SST{0}'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}.nc'.format(SST)
-#  data_input[case]['KUANG_SST{0}_DEPHY'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_DEPHY.nc'.format(SST)
-  for lev in range(90,39,-2):
-      data_input[case]['KUANG_SST{0}_perturb{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_perturb{1:0>2}_DEPHY.nc'.format(SST,lev)
+    subcases[case] = subcases[case] + ['KUANG_SST{0}_DEPHY'.format(SST),]
+    data_input[case]['KUANG_SST{0}_DEPHY'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_DEPHY.nc'.format(SST)
+
+    subcases[case] = subcases[case] + ['KUANG_SST{0}_TP05_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-1)]
+    subcases[case] = subcases[case] + ['KUANG_SST{0}_TM05_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-1)]
+    subcases[case] = subcases[case] + ['KUANG_SST{0}_QP02_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-1)]
+    subcases[case] = subcases[case] + ['KUANG_SST{0}_QM02_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-1)]  
+    for lev in range(90,39,-1):
+        data_input[case]['KUANG_SST{0}_TP05_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_TP05_l{1:0>2}_DEPHY.nc'.format(SST,lev)
+        data_input[case]['KUANG_SST{0}_TM05_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_TM05_l{1:0>2}_DEPHY.nc'.format(SST,lev)
+        data_input[case]['KUANG_SST{0}_QP02_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_QP02_l{1:0>2}_DEPHY.nc'.format(SST,lev)
+        data_input[case]['KUANG_SST{0}_QM02_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_QM02_l{1:0>2}_DEPHY.nc'.format(SST,lev)
 
 ####################################
 
