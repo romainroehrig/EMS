@@ -218,7 +218,7 @@ g.p_nudging_qv = 10000.
 g.zorog = 0.
 g.surfaceType = 'ocean'
 g.surfaceForcing = 'ts'
-g.minSurfaceWind = 5.
+g.minSurfaceWind = 4.8
 #g.z0 = 0.1
 
 g.close()

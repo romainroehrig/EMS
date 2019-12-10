@@ -133,7 +133,7 @@ if attributes['surfaceForcing'] == "surfaceFlux" :
   nt_sfc = time_sfc.shape[0]
   nb_fs=nb_fs+2
 
-if attributes['ustar'] > 0. :
+if attributes['ustar'] > 0 :
   nb_fs=nb_fs+1
 
 if attributes['nudging_u'] > 0.:
@@ -357,7 +357,7 @@ if lnam1D:
     for it in range(0,nt_sfc):
       print >>g, 'FLE'
       print >>g, data_in['sfc_lat_flx'][it]
-  if attributes['ustar'] >0. :
+  if attributes['ustar'] > 0 :
     for it in range(0,nt_sfc):
       print >>g, 'USTAR'
       print >>g, str(float(attributes['ustar']))

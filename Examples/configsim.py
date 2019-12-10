@@ -16,25 +16,24 @@ allcases=False
 cases = ['AYOTTE']
 
 if model in ['ARPCLIMAT',]:
-  # Number of vertical level
-  nlev = 91
-  # Model time step in seconds
-  timestep = 300
+    # Number of vertical level
+    nlev = 91
+     # Model time step in seconds
+    timestep = 300
 elif model in ['AROME','AROME46t1',]:
-  # Number of vertical level
-  nlev= 90
-  # Model time step in seconds
-  timestep = 50
+      # Number of vertical level
+    nlev= 90
+    # Model time step in seconds
+    timestep = 50
 elif model in ['ARPPNT',]:
-  # Number of vertical level
-  nlev= 90
-#  nlev= 105
-  # Model time step in seconds
-  timestep = 360
-#  # Number of vertical level
+    # Number of vertical level
+    #nlev= 90
+    nlev= 105
+    # Model time step in seconds
+    timestep = 360
 else:
-  print 'unknown model:', model
-  sys.exit()
+    print 'Model unknown:', model
+    sys.exit()
 
 # Test that asked cases are available
 for cc in cases:
