@@ -149,3 +149,5 @@ g.surfaceForcing = "surfaceFlux"
 g.surfaceForcingWind = "z0" 
 
 g.close()
+
+os.system('nc4tonc3 -o ARMCu_driver_RR_new.nc ARMCu_driver_RR_new3.nc')
