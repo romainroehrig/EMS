@@ -40,7 +40,7 @@ for subcase in ['00SC','00WC','03SC','05SC','05WC','24F','24SC']:
   lines[case][subcase][sim] = 'k.'
 
 #################
-# ARMCU
+# IHOP
 case = 'IHOP'
 subcase = 'REF'
 

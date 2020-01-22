@@ -93,6 +93,7 @@ data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/RICO/rico_driver_RR.nc'
 data_input[case]['DEPHY'] = rep0 + '/RICO/rico_driver_RR_new3.nc'
 data_input[case]['DEPHY2'] = rep0 + '/RICO/RICO_SHORT_SCM_driver.nc'
+data_input[case]['MESONH'] = rep0 + '/RICO/RICO_MESONH_SCM_driver.nc'
 
 # ARMCU Case
 case = 'ARMCU'
@@ -102,6 +103,7 @@ data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/ARMCU/ARMCu_driver_RR.nc'
 data_input[case]['DEPHY'] = rep0 + '/ARMCU/ARMCu_driver_RR_new.nc'
 data_input[case]['DEPHY2'] = rep0 + '/ARMCU/ARMCU_REF_SCM_driver.nc'
+data_input[case]['MESONH'] = rep0 + '/ARMCU/ARMCU_MESONH_SCM_driver.nc'
 
 # BOMEX Case
 case = 'BOMEX'
@@ -142,6 +144,7 @@ subcases[case] = ['REF','FAST','SLOW','REF_DEPHY']
 data_input[case] = {}
 data_input[case]['REF'] = rep0 + '/SANDU/Composite_REF_driver_RR.nc'
 data_input[case]['REF_DEPHY'] = rep0 + '/SANDU/Composite_REF_driver_RR_new.nc'
+data_input[case]['REF_DEPHY2'] = rep0 + '/SANDU/SANDU_REF_SCM_driver.nc'
 data_input[case]['FAST'] = rep0 + '/SANDU/Composite_FAST_driver_RR.nc'
 data_input[case]['SLOW'] = rep0 + '/SANDU/Composite_SLOW_driver_RR.nc'
 
