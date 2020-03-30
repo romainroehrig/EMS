@@ -27,6 +27,8 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
 
   nam = namelist.readarp(namref)
 
+  fin = cdms2.open(filecase)
+
   # -----------------------------------------------------------
   # Some general modification in namref
   # -----------------------------------------------------------
@@ -63,12 +65,9 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
     nam[nn] = {}      
 
   # Update NAMGFL
-  fin = cdms2.open(filecase)
-  time = fin('temp').getTime()
   nn='NAMGFL'
   del(nam[nn])
   nam[nn] = {}
-  nt = time.shape[0]
   for param in nam[nn].keys():
     if param[-6:] == 'NREQIN': nam[nn][param] = ['0',]
     if param[-7:] == 'LREQOUT': nam[nn][param] = ['.FALSE.']
@@ -311,12 +310,9 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
 
   i=0 # compter
   j=0 # compter
+
+  nt=0
   
-  if nt == 1:
-      dt = 0.
-  else:  
-      dt = time[1]-time[0]
-      
   #for param in ['LFIXRAD','LGEOST_UV_FRC','LNOWINDTEND','LQV_ADV_FRC','LQV_NUDG','LSOMEGA_FRC','LSW_FRC','LT_ADV_FRC','LT_NUDG','LUV_ADV_FRC','LUV_NUDG']:
   for param in ['LGEOST_UV_FRC','LQV_ADV_FRC','LT_ADV_FRC']:
     nam[nn][param] = ['.FALSE.',]
@@ -325,6 +321,18 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
     nam[nn][param] = ['-1',]
 
   if attributes['tadv'] == 1 or attributes['tadvh'] == 1 or attributes['tadvv'] == 1:
+      if attributes['tadv'] == 1:
+          time = fin('tadv').getTime()
+      elif attributes['tadvh'] == 1:
+          time = fin('tadvh').getTime()
+      elif attributes['tadvv'] == 1:
+          time = fin('tadvv').getTime()
+      nt = time.shape[0]
+      if nt == 1:
+          dt = 0.
+      else:  
+          dt = time[1]-time[0]
+
       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
       nam[nn]['LT_ADV_FRC'] = ['.TRUE.',]
       nam[nn]['NT_ADV_DEB'] = [str(1+i*nt),]
@@ -332,7 +340,22 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
       i=i+1
       for it in range(0,nt):
            nam[nn]['NL_T_ADV_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]
+
   if attributes['qadv'] == 1 or attributes['qadvh'] == 1 or attributes['qtadvh'] == 1 or attributes['qadvv'] == 1:
+      if attributes['qadv'] == 1:
+          time = fin('qadv').getTime()
+      elif attributes['qadvh'] == 1:
+          time = fin('qadvh').getTime()
+      elif attributes['qadvv'] == 1:
+          time = fin('qadvv').getTime()
+      elif attributes['qtadvh'] == 1:
+          time = fin('qtadvh').getTime()
+      nt = time.shape[0]
+      if nt == 1:
+          dt = 0.
+      else:  
+          dt = time[1]-time[0]
+
       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
       nam[nn]['LQV_ADV_FRC'] = ['.TRUE.',]
       nam[nn]['NQV_ADV_DEB'] = [str(1+i*nt),]
@@ -340,13 +363,54 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
       i=i+1
       for it in range(0,nt):
            nam[nn]['NL_QV_ADV_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]
-  if attributes['uadvh'] == 1 or attributes['uadvh'] == 1 or attributes['uadvv'] == 1 or attributes['vadvv'] == 1:
+
+  if attributes['uadvh'] == 1 or attributes['vadvh'] == 1 or attributes['uadvv'] == 1 or attributes['vadvv'] == 1:
+      if attributes['uadvh'] == 1:
+          time = fin('uadvh').getTime()
+      elif attributes['uadvv'] == 1:
+          time = fin('uadvv').getTime()
+      elif attributes['vadvh'] == 1:
+          time = fin('vadvh').getTime()
+      elif attributes['vadvv'] == 1:
+          time = fin('vadvv').getTime()
+      nt = time.shape[0]
+      if nt == 1:
+          dt = 0.
+      else:  
+          dt = time[1]-time[0]
+      
       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
       nam[nn]['LUV_ADV_FRC'] = ['.TRUE.',]
+      nam[nn]['NUV_ADV_DEB'] = [str(1+i*nt),]
+      nam[nn]['NUV_ADV_NUM'] = [str(nt),]
+      i=i+1
+      for it in range(0,nt):
+           nam[nn]['NL_UV_ADV_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]
+
   if attributes['forc_omega'] == 1:
+      time = fin('omega').getTime()
+      nt = time.shape[0]
+      if nt == 1:
+          dt = 0.
+      else:  
+          dt = time[1]-time[0]
+      
       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
       nam[nn]['LSOMEGA_FRC'] = ['.TRUE.',]
+      nam[nn]['NLSOMEGA_DEB'] = [str(1+i*nt),]
+      nam[nn]['NLSOMEGA_NUM'] = [str(nt),]
+      i=i+1
+      for it in range(0,nt):
+        nam[nn]['NL_LSOMEGA_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]  
+
   if attributes['forc_geo'] == 1:
+      time = fin('ug').getTime()
+      nt = time.shape[0]
+      if nt == 1:
+          dt = 0.
+      else:  
+          dt = time[1]-time[0]
+
       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
       nam[nn]['LGEOST_UV_FRC'] = ['.TRUE.',]
       W=7.2921e-5
@@ -359,14 +423,23 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
       i=i+1
       for it in range(0,nt):
         nam[nn]['NL_GEOST_UV_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]
+
   if attributes['forc_w'] == 1:
+      time = fin('w').getTime()
+      nt = time.shape[0]
+      if nt == 1:
+          dt = 0.
+      else:  
+          dt = time[1]-time[0]
+
       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
       nam[nn]['LSW_FRC'] = ['TRUE',]  
       nam[nn]['NLSW_DEB'] = [str(1+i*nt),]
       nam[nn]['NLSW_NUM'] = [str(nt),]
       i=i+1
       for it in range(0,nt):
-        nam[nn]['NL_LSW_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]      
+        nam[nn]['NL_LSW_TIME(   '+str(int(it+1))+' )']=[str(int(dt*it)),]     
+        
   if attributes['nudging_u'] > 0. or attributes['nudging_v'] > 0.:
       nam["NAMCT0"]['LSFORC']=['.TRUE.',]
       nam[nn]['LUV_NUDG'] = ['.TRUE.',]
@@ -382,6 +455,7 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
       nam[nn]['LQV_NUDG'] = ['.TRUE.',]
       nam[nn]['RELAX_TAUQ'] = [str(float(attributes['nudging_q'])),]
       nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['p_nudging_q'])),]
+
   if attributes['surfaceForcing'] == "surfaceFlux" :
       nam["NAMCT0"]['LSFORCS']=['.TRUE.',]
       if attributes['z0'] > 0.:
