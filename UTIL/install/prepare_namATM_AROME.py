@@ -262,7 +262,7 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None,ls
   # -----------------------------------------------------------
 
   attributes = {}
-  for att in ['tadvh','qdvh','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v','surfaceForcing','surfaceForcingWind']:
+  for att in ['tadvh','qdvh','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v','surfaceForcing','surfaceForcingWind','z0']:
     attributes[att] = 0
 
   for att in ['p_nudging_t','p_nudging_q','p_nudging_u','p_nudging_v']:
