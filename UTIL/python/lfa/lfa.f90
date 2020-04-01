@@ -3219,30 +3219,30 @@ if(cdtypo(1:iltypo) == 'R') then
 	! READ.
 	! Le fichier existe-t-il?
 	!
-	inquire(file=cdnomf,exist=llex)
-	if(.not.llex) then
-		if(cllang() == 'FRA') then
-			print*,'LFAOUV/ERREUR: fichier d''entree inexistant!...'
-		else
-			print*,'LFAOUV/ERROR: input file not found!...'
-		endif
-		print*,cdnomf(1:ilnomf)
-		stop 'call abort'
-	endif
+!	inquire(file=cdnomf,exist=llex)
+!	if(.not.llex) then
+!		if(cllang() == 'FRA') then
+!			print*,'LFAOUV/ERREUR: fichier d''entree inexistant!...'
+!		else
+!			print*,'LFAOUV/ERROR: input file not found!...'
+!		endif
+!		print*,cdnomf(1:ilnomf)
+!		stop 'call abort'
+!	endif
 	!
 	! Le fichier est-il bien LFA?
 	!
         !print*, kul
-	call lfatest(kul,cdnomf,lllfa)
-	if(.not.lllfa) then
-		if(cllang() == 'FRA') then
-			print*,'LFAOUV/ERREUR: incompatibilite fichier/logiciel.'
-		else
-			print*,'LFAOUV/ERROR: file/software inconsistency!...'
-		endif
-		print*,cdnomf(1:ilnomf)
-		stop 'call abort'
-	endif
+!	call lfatest(kul,cdnomf,lllfa)
+!	if(.not.lllfa) then
+!		if(cllang() == 'FRA') then
+!			print*,'LFAOUV/ERREUR: incompatibilite fichier/logiciel.'
+!		else
+!			print*,'LFAOUV/ERROR: file/software inconsistency!...'
+!		endif
+!		print*,cdnomf(1:ilnomf)
+!		stop 'call abort'
+!	endif
 	!
 	! Le fichier existe et est bien LFA.
 	! On l'ouvre.

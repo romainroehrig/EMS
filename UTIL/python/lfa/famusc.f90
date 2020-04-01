@@ -1,23 +1,165 @@
-! Compilation
-! ATTENTION : probleme avec big-endian... Ai rajoute l'option
-! convert='BIG-ENDIAN' pour tous les open dans lfa.f90
-!      
-!/opt/cdat/bin/f2py -m lfa -h famusc.pyf famusc.f90
-!gfortran -fconvert=big-endian -cpp  -c -fPIC lfa.f90
-!gfortran -fconvert=big-endian -cpp  -c -fPIC famusc.f90
-!/opt/cdat/bin/f2py -lm -lgfortran --f77flags='-fPIC -fconvert=big-endian -cpp' --f90flags='-fPIC -fconvert=big-endian -cpp' --fcompiler=gnu95 -c famusc.pyf famusc.o lfa.o  
 
-!new test
-! Ce n'est pas le f2py compatible avec cdat...      
-! ATTENTION : probleme avec big-endian... Ai rajoute l'option
-! convert='BIG-ENDIAN' pour tous les open dans lfa.f90      
-!f2py -m lfa -h famusc.pyf famusc.f90 (comment lfaread* subroutines)
-!gfortran -I./ -fconvert=big-endian -cpp  -c -fPIC cllang.f90
-!gfortran -I./ -fconvert=big-endian -cpp  -c -fPIC caracteres_lfa.f90
-!gfortran -I./ -fconvert=big-endian -cpp  -c -fPIC lfa.f90
-!ar r liblfa.a *.o
-!gfortran -L./ -llfa -I./ -fconvert=big-endian -cpp  -c -fPIC -o famusc.o famusc.f90
-!f2py -L./ -llfa -lm -lgfortran --f77flags='-L./ -llfa -I./ -fPIC -fconvert=big-endian -cpp' --f90flags='-L./ -llfa -I./ -fPIC -fconvert=big-endian -cpp' --fcompiler=gnu95 -c famusc.pyf famusc.o      
+      subroutine itreadr(varname,zdim,tstep,nstep,zchp)
+! --------------------------------------------------------------------------
+! **** 
+! ****
+! --------------------------------------------------------------------------
+! Sujet:
+! ------
+! Arguments explicites:
+! ---------------------
+! Arguments implicites:
+! ---------------------
+! Methode:
+! --------
+! Externes:
+! ---------
+! Auteur:   2020-03: R. Roehrig
+! -------
+! Modifications:
+! --------------------------------------------------------------------------
+      implicit none
+      character(100),  intent(in)  :: varname     
+      integer(kind=4), intent(in)  :: zdim
+      real(kind=4),    intent(in)  :: tstep
+      integer(kind=4), intent(in)  :: nstep
+      real(kind=4),    intent(out) :: zchp(nstep,zdim)
+      integer(kind=4) :: iul,ilong,ierr, jc, it
+      character*100   :: filename
+      character*2     :: cltype
+      character*12    :: timestamp
+      real(kind=8)    :: timestep
+      real(kind=8)    :: time1, time2
+      real(kind=4)    :: tmp(zdim)
+!
+! Quelques initialisations
+!
+      iul=7
+!
+! Boucle sur les fichiers
+!
+      do it=1,nstep 
+!
+! Ouverture du fichier.
+!
+
+        WRITE(timestamp,FMT='(F12.4)') (it-1)*tstep/3600.
+        DO jc=1,12
+          IF(timestamp(JC:JC) == ' ') timestamp(JC:JC)='0'
+        ENDDO
+        WRITE(filename,FMT='(9A)')'LFA/Out.',timestamp,'.lfa'
+
+!        print*, filename
+
+        call lfaouv(iul,trim(filename),'R')
+!
+! Recherche de l'article souhaite.
+!
+        call lfacas(iul,varname,cltype,ilong,ierr)
+
+        if(ierr == 0) then
+!
+! L'article existe dans le fichier.
+!
+          if(cltype(1:1) == 'R') then
+!
+! Article de type reel 8.
+!
+            call lfareadr(ilong,iul,varname,zchp(it,:))
+          else
+            print*,'readr: ERREUR interne: type de champ non prevu!...'
+            stop
+          endif
+        endif
+!
+! Fermeture du fichier.
+!
+        call lfafer(iul)
+
+      enddo
+
+      end
+
+      subroutine itreadi(varname,zdim,tstep,nstep,zchp)
+! --------------------------------------------------------------------------
+! **** 
+! **** 
+! --------------------------------------------------------------------------
+! Sujet:
+! ------
+! Arguments explicites:
+! ---------------------
+! Arguments implicites:
+! ---------------------
+! Methode:
+! --------
+! Externes:
+! ---------
+! Auteur:  2020-03: R. Roehrig
+! -------
+! Modifications:
+! --------------------------------------------------------------------------
+      implicit none
+      character(100),  intent(in)  :: varname     
+      integer(kind=4), intent(in)  :: zdim
+      real(kind=4),    intent(in)  :: tstep
+      integer(kind=4), intent(in)  :: nstep
+      integer(kind=4), intent(out) :: zchp(nstep,zdim)
+      integer(kind=4) :: iul,ilong,ierr, jc, it
+      character*100   :: filename
+      character*2     :: cltype
+      character*12    :: timestamp
+      real(kind=8)    :: timestep
+      real(kind=8)    :: time1, time2
+      real(kind=4)    :: tmp(zdim)
+!
+! Quelques initialisations
+!
+      iul=7
+!
+! Boucle sur les fichiers
+!
+      do it=1,nstep 
+!
+! Ouverture du fichier.
+!
+
+        WRITE(timestamp,FMT='(F12.4)') (it-1)*tstep/3600.
+        DO jc=1,12
+          IF(timestamp(JC:JC) == ' ') timestamp(JC:JC)='0'
+        ENDDO
+        WRITE(filename,FMT='(9A)')'LFA/Out.',timestamp,'.lfa'
+
+!        print*, filename
+
+        call lfaouv(iul,trim(filename),'R')
+!
+! Recherche de l'article souhaite.
+!
+        call lfacas(iul,varname,cltype,ilong,ierr)
+
+        if(ierr == 0) then
+!
+! L'article existe dans le fichier.
+!
+          if(cltype(1:1) == 'I') then
+!
+! Article de type reel 8.
+!
+            call lfareadi(ilong,iul,varname,zchp(it,:))
+          else
+            print*,'readr: ERREUR interne: type de champ non prevu!...'
+            stop
+          endif
+        endif
+!
+! Fermeture du fichier.
+!
+        call lfafer(iul)
+
+      enddo
+
+      end
 
       subroutine readr(filename,varname,zdim,zchp)
 ! --------------------------------------------------------------------------
@@ -39,27 +181,28 @@
 ! Modifications:
 ! --------------------------------------------------------------------------
       implicit none
-      character*(*) filename,varname     
-      integer(kind=4) zdim
-      real(kind=4) zchp(zdim)
-      integer(kind=4) iul,iuls,ilong,ierr,ilnomf
+      character(100),  intent(in) :: filename
+      character(100),  intent(in) :: varname     
+      integer(kind=4), intent(in) :: zdim
+      real(kind=4),    intent(out) :: zchp(zdim)
+      integer(kind=4) iul,ilong,ierr
       character*2 cltype
-!f2py intent(in) filename, varname, zdim
-!f2py intent(out) zchp      
+      real(kind=8) time1, time2
 !
 ! Saisie de la ligne de commande.
 !
 !
 ! Ouverture du fichier.
 !
-      ilnomf=200
       iul=7
-      iuls=17
+
       call lfaouv(iul,filename,'R')
 !
 ! Recherche de l'article souhaite.
 !
+
       call lfacas(iul,varname,cltype,ilong,ierr)
+
       if(ierr == 0) then
 !
 ! L'article existe dans le fichier.
@@ -73,12 +216,12 @@
           print*,'readr: ERREUR interne: type de champ non prevu!...'
           stop
         endif
-        close(iuls)
       endif
 !
 ! Fermeture du fichier.
 !
       call lfafer(iul)
+
       end
 
       subroutine readi(filename,varname,zdim,zchp)
@@ -101,22 +244,19 @@
 ! Modifications:
 ! --------------------------------------------------------------------------
       implicit none
-      character*(*) filename,varname     
-      integer(kind=4) zdim
-      integer(kind=4) zchp(zdim)
-      integer(kind=4) iul,iuls,ilong,ierr,ilnomf
+      character(100),  intent(in)  :: filename
+      character(100),  intent(in)  :: varname
+      integer(kind=4), intent(in)  :: zdim
+      integer(kind=4), intent(out) :: zchp(zdim)
+      integer(kind=4) iul,ilong,ierr
       character*2 cltype
-!f2py intent(in) filename, varname, zdim
-!f2py intent(out) zchp       
 !
 ! Saisie de la ligne de commande.
 !
 !
 ! Ouverture du fichier.
 !
-      ilnomf=200
       iul=7
-      iuls=17
       call lfaouv(iul,filename,'R')
 !
 ! Recherche de l'article souhaite.
@@ -135,7 +275,6 @@
           print*,'readr: ERREUR interne: type de champ non prevu!...'
           stop
         endif
-        close(iuls)
       endif
 !
 ! Fermeture du fichier.
@@ -166,19 +305,15 @@
       character*(*) filename,varname     
       integer(kind=4) zdim
       character*400 zchp(zdim)
-      integer(kind=4) iul,iuls,ilong,ierr,ilnomf
+      integer(kind=4) iul,ilong,ierr
       character*2 cltype
-!f2py intent(in) filename, varname, zdim
-!f2py intent(out) zchp       
 !
 ! Saisie de la ligne de commande.
 !
 !
 ! Ouverture du fichier.
 !
-      ilnomf=200
       iul=7
-      iuls=17
       call lfaouv(iul,filename,'R')
 !
 ! Recherche de l'article souhaite.
@@ -197,7 +332,6 @@
           print*,'readr: ERREUR interne: type de champ non prevu!...'
           stop
         endif
-        close(iuls)
       endif
 !
 ! Fermeture du fichier.
@@ -225,8 +359,6 @@
       integer(kind=4) klbouc,kul,ilong,ierr
       character*(*) cdna
       real(kind=4) zreel(klbouc)
-!f2py intent(in) klbouc,kul,cdna
-!f2py intent(out) zreel       
       call lfalecr(kul,cdna,klbouc,zreel,ilong,ierr)
       end
 
@@ -249,8 +381,6 @@
       integer(kind=4) klbouc,kul,ilong,ierr
       character*(*) cdna
       integer(kind=4) zint(klbouc)
-!f2py intent(in) klbouc,kul,cdna
-!f2py intent(out) zint      
       call lfaleci(kul,cdna,klbouc,zint,ilong,ierr)
       end
 
@@ -273,8 +403,6 @@
       integer(kind=4) klbouc,kul,ilong,ierr
       character*(*) cdna
       character*400 zcha(klbouc)
-!f2py intent(in) klbouc,kul,cdna
-!f2py intent(out) zcha      
       call lfalecc(kul,cdna,klbouc,zcha,ilong,ierr)
       end
       
