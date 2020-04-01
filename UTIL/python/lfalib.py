@@ -2,10 +2,12 @@
 
 import sys, os
 
+rep_EMS = os.getenv('REP_EMS')
+
 import numpy as np
 
 import ctypes as ct
-_solib = ct.CDLL("lfa/lfa.so")
+_solib = ct.CDLL(rep_EMS+"/UTIL/python/lfa/lfa.so")
 
 
 def readr(fin,varname,ndim):
