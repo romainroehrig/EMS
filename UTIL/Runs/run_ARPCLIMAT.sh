@@ -5,6 +5,9 @@
 #------------------------------------------------------------
 set -x
 
+export DR_HOOK_IGNORE_SIGNALS=-1
+export DR_HOOK=0
+
 . ./param
 
 EXP=ARPE
