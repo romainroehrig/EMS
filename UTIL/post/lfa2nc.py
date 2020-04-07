@@ -358,11 +358,11 @@ for var in var2save:
             if types[var] == 'I4':
                 datatmp = lfa.iterate_readi(var,sizes[var],tstep,nstep)
                 if sizes[var] == 1:
-                    datatmp = int(datatmp)
+                    datatmp = numpy.squeeze(datatmp)
             if types[var] == 'R4':
                 datatmp = lfa.iterate_readr(var,sizes[var],tstep,nstep)
                 if sizes[var] == 1:
-                    datatmp = float(datatmp)
+                    datatmp = numpy.squeeze(datatmp)
 
             if var in inv_varnames.keys():
                 data[var][:] = datatmp*VV.coefs[inv_varnames[var]]

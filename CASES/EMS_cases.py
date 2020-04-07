@@ -53,6 +53,7 @@ for cc in subcases[case]:
 data_input[case]['24SC_us'] = rep0 + '/AYOTTE/AYOTTE_A24SC_driver_FC_RR_us.nc'.format(cc)
 data_input[case]['24SC_modif'] = rep0 + '/AYOTTE/AYOTTE_A24SC_modif_driver_FC_RR.nc'.format(cc)
 data_input[case]['24SC_modif_us'] = rep0 + '/AYOTTE/AYOTTE_A24SC_modif_driver_FC_RR_us.nc'.format(cc)
+#data_input[case]['24SC_DEPHY'] = rep0 + '/AYOTTE/AYOTTE_24SC_SCM_driver.nc'
 
 # IHOP Cases
 case = 'IHOP'
