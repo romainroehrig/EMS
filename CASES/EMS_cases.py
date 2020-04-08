@@ -201,6 +201,13 @@ data_input[case]['COCOA-13Nov'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revel
 data_input[case]['COCOA-13-22Nov'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU-13-22Nov_50km_driver_RR_extended.nc'
 data_input[case]['COCOA-MJO1'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU-MJO1_50km_driver_RR_extended.nc'
 
+case = 'DYNAMO'
+cases.append(case)
+subcases[case] = ['NSA3a','NSA3a_D1']
+data_input[case] = {}
+data_input[case]['NSA3a'] = rep0 + '/DYNAMO/DYNAMO_NSA3a_SCM_driver.nc'
+data_input[case]['NSA3a_D1'] = rep0 + '/DYNAMO/DYNAMO_NSA3a_D1_SCM_driver.nc'
+
 # Derbyshire cases
 case = 'Derbyshire'
 cases.append(case)
