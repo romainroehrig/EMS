@@ -296,9 +296,9 @@ if lnam1D:
   print >>g, zorog
   print >>g, 'ps (Pa)'
   if data_in['ps'].shape is ():
-    print >>g, data_in['ps']	  
+    print >>g, MV2.log(data_in['ps'])
   else:	  
-    print >>g, data_in['ps'][0]
+    print >>g, MV2.log(data_in['ps'][0])
 
   print >>g, 'U'
   for ilev in range(0,nlev_out):
