@@ -5,6 +5,8 @@
 #------------------------------------------------------------
 set -x
 
+conda deactivate || :
+
 . ./param
 
 EXP=ARPE
@@ -26,11 +28,13 @@ fi
 TMPDIR=$HOME/tmp/EXEMUSC
 
 if [ ! -d $TMPDIR ] ; then
-  mkdir $TMPDIR
+  mkdir -p $TMPDIR
+else
+  find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
 fi
 
 cd $TMPDIR
-rm -rf $TMPDIR/* || : 
+#rm -rf $TMPDIR/* || : 
 
 ladate=`date`
 set +x
@@ -116,13 +120,15 @@ echo ' ALADIN job running '
 echo ''
 set -x
 
+export OMP_NUM_THREADS=1
+
 #export DR_HOOK_NOT_MPI=1
 #export DR_HOOK=0
 export DR_HOOK_IGNORE_SIGNALS=-1
 
-ulimit -s unlimited
+#ulimit -s unlimited
 
-unset LD_LIBRARY_PATH
+#unset LD_LIBRARY_PATH
 
 date
 ./MASTER >lola 2>&1
@@ -224,6 +230,7 @@ fi
 
 if [ $runpost = True ]
 then
+  cd $OUTPUTDIR0
   set +x
   echo ''
   echo ' Postprocessing '

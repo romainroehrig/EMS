@@ -10,7 +10,7 @@ g.close()
 EOF
 
 
-cdat tmp.py
+python tmp.py
 chmod u+x tmp.sh
 . ./tmp.sh
 
@@ -68,7 +68,7 @@ variablesAux['SURFZ0REL.FOIS.G']=0.1
 EOF
 
 
-cdat prepare_nam1D.py
+python prepare_nam1D.py
 
 cp nam1D_L$1 nam1D
 
