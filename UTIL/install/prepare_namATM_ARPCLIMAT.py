@@ -254,7 +254,11 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
   if attributes.has_key('RCE') and attributes['RCE'] == 1:
       nam['NAMAQUAMF'] = {}
       nam['NAMCT0']['LRCE'] = ['.TRUE.',]
-      if not(attributes['trad'] in [1,'adv']):
+      if lDEPHY:
+          trad = 'rad_temp'
+      else:
+          trad = 'trad'
+      if not(attributes[trad] in [1,'adv']):
         nam['NAMRIP']['RANGLE'] = [str(float(attributes['zangle'])),]
         nam['NAMSCEN']['RI0'] = [str(float(attributes['I0'])),]
         nn = 'NAMCLDP'

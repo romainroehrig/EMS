@@ -38,6 +38,7 @@ data_input[case] = {}
 data_input[case]['Stage3'] = rep0 + '/GABLS4/GABLS4_24h_driver_FC_RR_flux_z03.nc'
 data_input[case]['Stage2'] = rep0 + '/GABLS4/stage2/GABLS4_SCM_LES_STAGE2_RR.nc'
 data_input[case]['OA_FLUX_USTAR'] = rep0 + '/GABLS4/Olivier/GABLS4_24h_driver_FC_RR_flux_ustar.nc'
+data_input[case]['OA_MEAN_z0'] = rep0 + '/GABLS4/Olivier/driver_10h_flux_z0_MEAN.nc'
 
 ####################################
 #### Dry convection cases
@@ -221,10 +222,11 @@ data_input[case]['RH90'] = rep0 + '/Derbyshire/Derbyshire_RH90_driver_RR.nc'
 # RCE-MIP
 case = 'RCEMIP'
 cases.append(case)
-subcases[case] = ['SST295','SST300','SST305','SST301.15']
+subcases[case] = ['SST295','SST300','SST305','SST301.15','SST295_DEPHY','SST300_DEPHY','SST305_DEPHY','SST301.15_DEPHY']
 data_input[case] = {}
 for SST in [295,300,305,301.15]:
   data_input[case]['SST{0}'.format(SST)] = rep0 + '/RCEMIP/RCEMIP_SST{0}.nc'.format(SST)
+  data_input[case]['SST{0}_DEPHY'.format(SST)] = rep0 + '/RCEMIP/RCEMIP_SST{0}_DEPHY.nc'.format(SST)
 
 # RCE
 case = "RCE"

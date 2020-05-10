@@ -38,7 +38,7 @@ t0 = f['temp'].getAxis(0)[0]
 units0 = f['temp'].getAxis(0).units
 
 attributes = {}
-for att in ['tadvh','qadvh','qvadvh','qvadv','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v','adv_temp','adv_qv','adv_qt','nudging_temp','rad_temp']:
+for att in ['tadvh','qadvh','qvadvh','qvadv','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_qv','nudging_u','nudging_v','adv_temp','adv_qv','adv_qt','nudging_temp','rad_temp']:
   attributes[att] = 0
 
 for att in f.listglobal():
