@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#ecoclimapdir=ecoclimap
-ecoclimapdir=ecoclimap_cnrm_cm6.02
+ecoclimapdir=ecoclimap
+#ecoclimapdir=ecoclimap_cnrm_cm6.02
 #makelinks="no"
 makelinks="yes"
 

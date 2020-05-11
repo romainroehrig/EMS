@@ -1,5 +1,0 @@
-&MAIN_NML
-  lsst_ost  = .true.,
-  lpsurf    = .true.,
-  psurf     = 100900.,
-/
