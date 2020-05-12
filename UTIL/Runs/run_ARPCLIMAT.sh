@@ -5,6 +5,8 @@
 #------------------------------------------------------------
 set -x
 
+export OMP_NUM_THREADS=1
+
 export DR_HOOK_IGNORE_SIGNALS=-1
 export DR_HOOK=0
 
@@ -35,9 +37,6 @@ else
 fi
 
 cd $TMPDIR
-
-#find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
-#rm -rf $TMPDIR/* || : 
 
 ladate=`date`
 set +x
@@ -123,18 +122,9 @@ echo ' ALADIN job running '
 echo ''
 set -x
 
-export OMP_NUM_THREADS=1
-
-#export DR_HOOK_NOT_MPI=1
-#export DR_HOOK=0
-export DR_HOOK_IGNORE_SIGNALS=-1
-
-#ulimit -s unlimited
-
 date
 ./MASTER -c001 -vmeteo -maladin -e${EXP} -t$TSTEP -f$NSTOP -a$ADVEC  >lola 2>&1
 date
-#rm fort.4
 ls -l
 
 set +x
@@ -174,9 +164,6 @@ find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
 find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
 find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
 
-#rm -f $OUTPUTDIR/*
-#mv Out* NODE* lola $OUTPUTDIR
-
 set +x
 echo ''
 echo ' Present files on the workdir $TMPDIR '
@@ -208,7 +195,7 @@ set -x
 if [ $installpost = True ]
 then
   cd $OUTPUTDIR0
-  rm -f *.py *.sh *.pyc *.so 
+  rm -f *.py *.pyc 
   set +x
   echo ''
   echo ' Install post-processing '
