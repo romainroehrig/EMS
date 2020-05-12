@@ -1,5 +1,4 @@
 import sys
-import EMS_cases as CC
 
 # model : ARPCLIMAT, AROME, AROME46t1, ARPPNT
 #model = 'AROME'
@@ -7,13 +6,6 @@ import EMS_cases as CC
 #model = 'ARPPNT'
 model = 'ARPCLIMAT'
 
-# If True, all available cases (defined in cases.py) are run
-# If False, only the list specified here (in 'cases' list) are run
-#allcases=True
-allcases=False
-
-#cases = ['AMMA','RICO','FIRE','ARMCU','AYOTTE']
-cases = ['AYOTTE']
 
 if model in ['ARPCLIMAT',]:
     # Number of vertical level
@@ -33,13 +25,6 @@ elif model in ['ARPPNT',]:
     timestep = 360
 else:
     print 'Model unknown:', model
-    sys.exit()
-
-# Test that asked cases are available
-for cc in cases:
-  if not(cc in CC.cases):
-    print 'case', cc, 'not available'
-    print 'available cases:', CC.cases
     sys.exit()
 
 lsurfex = True
