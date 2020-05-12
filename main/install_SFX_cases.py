@@ -77,6 +77,7 @@ if not(case in CC.cases):
 if not(subcase in CC.subcases[case]):
     print 'ERROR: subcase {0} is not known for case {1}'.format(subcase,case)
     print 'ERROR: known subcases for case {0}:'.format(case), CC.subcases[case]
+    sys.exit()
 
 install_MUSC.install_SFX(configsim.model,case,subcase,data_input[case][subcase],repout,cycle,PGD,PREP,config,namSFXref,loverwrite=loverwrite,lupdate=lupdate)
 

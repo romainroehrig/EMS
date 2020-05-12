@@ -80,11 +80,11 @@ if ldebug:
 #data_input[case]['REF'] = rep0 + '/SCMS/SCMS_driver_FC_RR.nc'
 
 # RICO Case
-#case = 'RICO'
-#cases.append(case)
-#subcases[case] = ['REF']
-#data_input[case] = {}
-#data_input[case]['REF'] = rep0 + '/RICO/rico_driver_RR.nc'
+case = 'RICO'
+cases.append(case)
+subcases[case] = ['SHORT']
+data_input[case] = {}
+data_input[case]['SHORT'] = rep0 + '/RICO/SHORT/RICO_SHORT_SCM_driver.nc'
 
 # ARMCU Case
 case = 'ARMCU'

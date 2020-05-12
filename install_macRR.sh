@@ -16,8 +16,6 @@ PROFILE=.profile
 
 #####################################################
 
-
-
 DIR0=`pwd`
 
 #####################################################
@@ -40,7 +38,7 @@ fi
 [ -d $REP_EMS ] || mkdir -p $REP_EMS
 cd $REP_EMS
 git clone https://github.com/romainroehrig/EMS.git .
-git checkout macRR
+git checkout macRR_dephy
 
 # Modify your .bash_profile to initialize a few environment variables
 cd ~/
@@ -74,7 +72,7 @@ if [ $compile == "y" ]; then
 
   # lfa python library
   cd $REP_EMS/UTIL/python/lfa
-  ./makelib.sh
+  ./compile.sh
 
   # ascii2lfa binary
   cd $REP_EMS/UTIL/Tools/ASCII2FA/src
@@ -88,17 +86,6 @@ if [ $compile == "y" ]; then
   # LFA tools
   cd $REP_EMS//UTIL/Tools/LFA
   ./install
-
-  # a few python libraries
-  source activate myuvcdat
-
-  cd $REP_EMS/UTIL/Init_Forc/ARPCLIMAT
-  f2py -c interpvertp.F90 -m interpvertp
-  cd $REP_EMS/UTIL/post_DEPHY
-  f2py -c convert2p.F90 -m convert2p
-  f2py -c convert2z.F90 -m convert2z
-
-  source deactivate myuvcdat
 
 fi
 
@@ -120,19 +107,22 @@ done
 
 #####################################################
 # Some Testing
-cd $REP_MUSC
+testing="n"
 
-source activate myuvcdat
+if [ $testing == "y" ]; then
+  cd $REP_MUSC
 
-./install_ATM_cases.py AYOTTE 24SC
-[ -f $REP_MUSC/ATM/ARPCLIMAT/AYOTTE/24SC/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
+  ./install_ATM_cases.py -case ARMCU -subcase REF
+  [ -f $REP_MUSC/ATM/ARPCLIMAT/ARMCU/REF/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
 
-./install_SFX_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
-[ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
-[ -f $REP_MUSC/SURFEX/arp631/CMIP6/AYOTTE/24SC/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
+  ./install_SFX_cases.py -case ARMCU -subcase REF -config config/config_arp631_CMIP6.py
+  [ -f $REP_MUSC/SURFEX/arp631/CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
+  [ -f $REP_MUSC/SURFEX/arp631/CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
 
-./run_MUSC_cases.py config/config_arp631_CMIP6.py AYOTTE 24SC
-[ -f $REP_MUSC/simulations/arp631/CMIP6/L91_300s/AYOTTE/24SC/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
+  ./run_MUSC_cases.py -case ARMCU -subcase REF -config config/config_arp631_CMIP6.py
+  [ -f $REP_MUSC/simulations/arp631/CMIP6/L91_300s/ARMCU/REF/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
+
+fi
 
 #####################################################
 # Back in directory where installation was launched

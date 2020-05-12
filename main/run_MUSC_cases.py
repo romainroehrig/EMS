@@ -75,6 +75,7 @@ if not(case in CC.cases):
 if not(subcase in CC.subcases[case]):
     print 'ERROR: subcase {0} is not known for case {1}'.format(subcase,case)
     print 'ERROR: known subcases for case {0}:'.format(case), CC.subcases[case]
+    sys.exit()
 
 config = {}
 

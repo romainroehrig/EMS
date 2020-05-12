@@ -155,7 +155,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
 
     if surfaceForcing == 'ts':
         sst = case.variables['ts'].data
-        time = sst.time
+        time = case.variables['ts'].time
         if surfaceType == 'land':
             zz0 = attributes['z0']
         try:
@@ -312,7 +312,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
             nn = 'NAM_DATA_SEAFLUX'
             nam[nn] = {}
             nam[nn]['LSST_DATA'] = ['T',]
-            nam[nn]['NTIME_SST'] = [str(nt0),]
+            nam[nn]['NTIME_SST'] = [str(nt),]
 
             for it in range(0,nt):
                 nam[nn]['XUNIF_SST(%(ii)4.i)'%{"ii": it+1}] = ['%(sst)6.2f'%{"sst": sst[it]},]
@@ -320,8 +320,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
             for it in range(0,nt):
                 nam[nn]['CFTYP_SST(%(ii)4.i)'%{"ii": it+1}] = ["'DIRECT'",]
 
-            for it in range(0,nt0):
-                tt = cdtime.reltime(time[it+ii1],time.units)	
+            for it in range(0,nt):
                 nam[nn]['NYEAR_SST(%(ii)4.i)'%{"ii": it+1}] =['%(year)4.4i'%{"year": dates[it].year},]
                 nam[nn]['NMONTH_SST(%(ii)4.i)'%{"ii": it+1}] = ['%(month)2.2i'%{"month": dates[it].month},]
                 nam[nn]['NDAY_SST(%(ii)4.i)'%{"ii": it+1}] = ['%(day)2.2i'%{"day": dates[it].day},]
