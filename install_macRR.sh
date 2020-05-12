@@ -76,10 +76,6 @@ if [ $compile == "y" ]; then
 
   # ascii2lfa binary
   cd $REP_EMS/UTIL/Tools/ASCII2FA/src
-  #cp /Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxrd.local.a libxrd.a
-  #cp /Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a libxla.a
-  #cp /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a libgribex.a
-  #cp /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a libmpidummy.a
   make all
   make clean
 
