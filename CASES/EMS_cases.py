@@ -33,11 +33,12 @@ if ldebug:
 # GABLS4 Case
 case = 'GABLS4'
 cases.append(case)
-subcases[case] = ['OA_FLUX_USTAR']
+subcases[case] = ['OA_FLUX_USTAR','OA_10Z0']
 data_input[case] = {}
 data_input[case]['Stage3'] = rep0 + '/GABLS4/GABLS4_24h_driver_FC_RR_flux_z03.nc'
 data_input[case]['Stage2'] = rep0 + '/GABLS4/stage2/GABLS4_SCM_LES_STAGE2_RR.nc'
 data_input[case]['OA_FLUX_USTAR'] = rep0 + '/GABLS4/Olivier/GABLS4_24h_driver_FC_RR_flux_ustar.nc'
+data_input[case]['OA_10Z0'] = rep0 + '/GABLS4/Olivier/driver_10h_flux_z0_MEAN.nc'
 
 ####################################
 #### Dry convection cases

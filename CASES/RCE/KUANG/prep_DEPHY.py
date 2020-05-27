@@ -28,7 +28,6 @@ t0 = cdtime.comptime(1979,1,1,0,0,0)
 tmin = t0.add(1000-50,cdtime.Day)
 tmax = t0.add(1000,cdtime.Day)
 
-#f = cdms2.open('/home/roehrig/MUSC/simulations//arp631.RCE/CMIP6/L91_900s/RCEMIP/SST300/Output/netcdf/Out_klevel.nc')
 f = cdms2.open('/home/roehrig/MUSC/simulations//arp631.RCE/CMIP6/L91_900s/RCEMIP//SST301.15/Output/netcdf/Out_klevel.nc')
 for var in ['pf','zf','temp','qv','ql','qi','tke']:
     datain[var] = MV2.average(f(var,time = (tmin,tmax)),axis=0)
