@@ -4,20 +4,16 @@
 import os
 import sys
 
-#import time as TT
-
 sys.path = ['./'] + sys.path
 
 import string
 import numpy
 import netCDF4
 
-import lfalib as lfa
+import lfa
 
 import variables as VV
 import config
-
-#TT0 = TT.time()
 
 # Note: COSP output not fully validated...
 
@@ -25,7 +21,7 @@ REP_EMS = os.getenv('REP_EMS')
 
 saveall = config.saveall
 
-# If not present, add some important variables to read
+# If not present, add some variables to read
 
 if not(saveall):
     var2save0 = config.var2save
@@ -53,7 +49,6 @@ f.close()
 os.system('rm var.tmp')
 
 nfiles = len(files)
-nstep = nfiles
 
 # List of variables and their size and type is retrieved
 
@@ -150,11 +145,8 @@ for var in ['clMISR']:
     if var in variables: lmisr = True
 
 
-# Getting number of levels
+# Getting levels number
 klev = int(lfa.readi(files[0].strip(),'KLEV',1))
-
-# Getting time step
-tstep = float(lfa.readr(files[0].strip(),'TSPHY',1))
 
 # Init nectdf file
 f = netCDF4.Dataset('Out_klevel.nc','w',format='NETCDF3_CLASSIC')
@@ -267,40 +259,40 @@ for var in sorted(var2save):
         ii = 1
     if sizes[var] == klev and not(var in ['fracout', 'atb532', 'cfadLidarsr532', 'dbze94', 'cfadDbze94', 'clisccp', 'clmodis', 'clMISR']):
         axis = ('time','levf')
-        shape[var] = (nstep,klev,)
+        shape[var] = (klev,)
     if sizes[var] == klev+1  and not(var in ['fracout', 'atb532', 'cfadLidarsr532', 'dbze94', 'cfadDbze94', 'clisccp', 'clmodis', 'clMISR']):
         axis = ('time','levh')
-        shape[var] = (nstep,klev+1,)
+        shape[var] = (klev+1,)
     if sizes[var] == klev+2:
         axis = ('time','lev2')
-        shape[var] = (nstep,klev+2,)
+        shape[var] = (klev+2,)
     if var in ['clcalipso','clcalipso2','clcalipsoice','clcalipsoliq','clcalipsoun'] and sizes[var] == 40:
         axis = ('time','alt40')
-        shape[var] = (nstep,40,)
+        shape[var] = (40,)
     if var in ['clcalipsotmp','clcalipsotmpice','clcalipsotmpliq','clcalipsotmpun'] and sizes[var] == 40:
         axis = ('time','temp')
-        shape[var] = (nstep,40,)
+        shape[var] = (40,)
     if var in ['parasolRefl'] and sizes[var] == 5:
         axis = ('time','sza5')
-        shape[var] = (nstep,5,)
+        shape[var] = (5,)
     if lcolumn and var in ['boxtauisccp','boxptopisccp'] and sizes[var] == ncol:
         axis = ('time','column')	
-        shape[var] = (nstep,ncol,)
+        shape[var] = (ncol,)
     if var in ['fracout', 'atb532', 'dbze94']:
         axis = ('time','column','levf')
-        shape[var] = (nstep,ncol,klev)
+        shape[var] = (ncol,klev)
     if var in ['cfadDbze94']:
         axis = ('time','dbze','alt40')
-        shape[var] = (nstep,15,40)
+        shape[var] = (15,40)
     if var in ['cfadLidarsr532']:
         axis = ('time','sratio','alt40')
-        shape[var] = (nstep,15,40)
+        shape[var] = (15,40)
     if var in ['clisccp','clmodis']:
         axis = ('time','tau','plev7')
-        shape[var] = (nstep,7,7)
+        shape[var] = (7,7)
     if var in ['clMISR']:
         axis = ('time','tau','cth16')
-        shape[var] = (nstep,7,16)
+        shape[var] = (7,16)
 
 
 
@@ -331,44 +323,50 @@ for var in sorted(var2save):
 
 # Read lfa files and write data in netcdf file
 
-nindat = lfa.readi(files[0].strip(),'NINDAT',1)
+it = -1
+for file in sorted(files):
+    it = it + 1
+    if config.verbose >= 2:
+        print file.strip()
 
-year = int(str(nindat[0])[0:4])
-month = int(str(nindat[0])[4:6])
-day = int(str(nindat[0])[6:8])
-units = 'seconds since %(year)4.4i-%(month)2.2i-%(day)2.2i 0:0:0.0'%{"year": year, "month": month, "day": day}
-times.units = units
+    if it == 0:
+        nindat = lfa.readi(file.strip(),'NINDAT',1)
 
-nsssss = lfa.iterate_readi('NSSSSS',1,tstep,nstep)
-rstati = lfa.iterate_readr('RSTATI',1,tstep,nstep)
+        year = int(str(nindat[0])[0:4])
+        month = int(str(nindat[0])[4:6])
+        day = int(str(nindat[0])[6:8])
+        units = 'seconds since %(year)4.4i-%(month)2.2i-%(day)2.2i 0:0:0.0'%{"year": year, "month": month, "day": day}
+        times.units = units
 
-times[:] = nsssss + rstati
-
-for var in var2save:
-    if types[var] <> 'C':
-        if var in ['fracout', 'atb532', 'cfadLidarsr532', 'dbze94', 'cfadDbze94', 'clisccp', 'clmodis', 'clMISR']:
-
-            datatmp = numpy.zeros(shape[var],dtype=numpy.float)             
-            for i in range(0,shape[var][0]):
-                vv = var + '_%(i)3.3i'%{"i": i+1}
-                datatmp[:,i,:] = lfa.iterate_readr(vv,sizes[var],tstep,nstep)
-
-        else:
+    nsssss = lfa.readi(file.strip(),'NSSSSS',1)
+    rstati = lfa.readr(file.strip(),'RSTATI',1)
         
-            if types[var] == 'I4':
-                datatmp = lfa.iterate_readi(var,sizes[var],tstep,nstep)
-                if sizes[var] == 1:
-                    datatmp = numpy.squeeze(datatmp)
-            if types[var] == 'R4':
-                datatmp = lfa.iterate_readr(var,sizes[var],tstep,nstep)
-                if sizes[var] == 1:
-                    datatmp = numpy.squeeze(datatmp)
+    times[it] = float(nsssss+rstati)
+
+    for var in var2save:
+        if types[var] <> 'C':
+            if var in ['fracout', 'atb532', 'cfadLidarsr532', 'dbze94', 'cfadDbze94', 'clisccp', 'clmodis', 'clMISR']:
+
+                datatmp = numpy.zeros(shape[var],dtype=numpy.float)             
+                for i in range(0,shape[var][0]):
+                    vv = var + '_%(i)3.3i'%{"i": i+1}
+                    datatmp[i,:] = lfa.readr(file.strip(),vv,sizes[var])
+
+            else:
+        
+                if types[var] == 'I4':
+                    datatmp = lfa.readi(file.strip(),var,sizes[var])
+                    if sizes[var] == 1:
+                        datatmp = int(datatmp)
+                if types[var] == 'R4':
+                    datatmp = lfa.readr(file.strip(),var,sizes[var])
+                    if sizes[var] == 1:
+                        datatmp = float(datatmp)
 
             if var in inv_varnames.keys():
-                data[var][:] = datatmp*VV.coefs[inv_varnames[var]]
+                data[var][it] = datatmp*VV.coefs[inv_varnames[var]]
             else:
-                data[var][:] = datatmp
+                data[var][it] = datatmp
 
 f.close()
 
-#print 'Elapsed:', TT.time() - TT0
