@@ -38,7 +38,7 @@ t0 = f['temp'].getAxis(0)[0]
 units0 = f['temp'].getAxis(0).units
 
 attributes = {}
-for att in ['tadvh','qadvh','qvadvh','qvadv','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v']:
+for att in ['tadvh','qadvh','qvadvh','qvadv','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_temp','nudging_qv','nudging_u','nudging_v','rad_temp','adv_temp','adv_qv']:
   attributes[att] = 0
 
 for att in f.listglobal():
@@ -59,12 +59,19 @@ if attributes['tadv'] == 1:
   var2read.append('tadv')	
   var2interpol.append('tadv')
   time = f('tadv').getTime()
+if attributes['adv_temp'] == 1:
+  var2read.append('temp_adv')	
+  var2interpol.append('temp_adv')
+  time = f('temp_adv').getTime()
 if attributes['qadv'] == 1:
   var2read.append('qadv')	
   var2interpol.append('qadv')
 if attributes['qvadv'] == 1:
   var2read.append('qvadv')	
   var2interpol.append('qvadv')
+if attributes['adv_qv'] == 1:
+  var2read.append('qv_adv')	
+  var2interpol.append('qv_adv')  
 if attributes['tadvh'] == 1:
   var2read.append('tadvh')	
   var2interpol.append('tadvh')
@@ -99,12 +106,20 @@ if attributes['uadvv'] == 1:
 if attributes['vadvv'] == 1:
   var2read.append('vadvv')	
   var2interpol.append('vadvv')
-if attributes['trad'] == 'adv':
-  LRAYFM = False  	
-if attributes['trad'] == 1:
-  LRAYFM = False	
-  var2read.append('trad')
-  var2interpol.append('trad')
+if lDEPHY:
+  if attributes['rad_temp'] == 'adv':
+    LRAYFM = False  	
+  if attributes['rad_temp'] == 1:
+    LRAYFM = False	
+    var2read.append('temp_rad')
+    var2interpol.append('temp_rad')    
+else:
+  if attributes['trad'] == 'adv':
+    LRAYFM = False  	
+  if attributes['trad'] == 1:
+    LRAYFM = False	
+    var2read.append('trad')
+    var2interpol.append('trad')
 if attributes['forc_omega'] == 1:
   var2read.append('omega')	
   var2interpol.append('omega')
@@ -122,21 +137,21 @@ if attributes['forc_geo'] == 1:
 
 if lDEPHY:
   if attributes['nudging_u'] > 0.:
-    var2read.append('u_nudg')
-    var2interpol.append('u_nudg')
+    var2read.append('u_nudging')
+    var2interpol.append('u_nudging')
 
   if attributes['nudging_v'] > 0.:
-    var2read.append('v_nudg')
-    var2interpol.append('v_nudg')
+    var2read.append('v_nudging')
+    var2interpol.append('v_nudging')
 
-  if attributes['nudging_t'] > 0.:
-    var2read.append('temp_nudg')
-    var2interpol.append('temp_nudg')
-    time = f('temp_nudg').getTime()
+  if attributes['nudging_temp'] > 0.:
+    var2read.append('temp_nudging')
+    var2interpol.append('temp_nudging')
+    time = f('temp_nudging').getTime()
 
   if attributes['nudging_qv'] > 0.:
-    var2read.append('qv_nudg')
-    var2interpol.append('qv_nudg')
+    var2read.append('qv_nudging')
+    var2interpol.append('qv_nudging')
 else:
   if attributes['nudging_u'] > 0.:
     var2read.append('u')
@@ -203,11 +218,16 @@ except:
 lev_in = data_in['pressure'].getLevel()
 nlev_in = lev_in.shape[0]
 
-if attributes['trad'] == 1:
-  if attributes['tadvh'] == 1:	
-    data_in['tadvh'] = data_in['tadvh'] + data_in['trad']
-  if attributes['tadvv'] == 1:	
-    data_in['tadvv'] = data_in['tadvv'] + data_in['trad']
+if lDEPHY:
+  if attributes['rad_temp'] == 1:
+    if attributes['adv_temp'] == 1:	
+      data_in['temp_adv'] = data_in['temp_adv'] + data_in['temp_rad']
+else:
+  if attributes['trad'] == 1:
+    if attributes['tadvh'] == 1:	
+      data_in['tadvh'] = data_in['tadvh'] + data_in['trad']
+    if attributes['tadvv'] == 1:	
+      data_in['tadvv'] = data_in['tadvv'] + data_in['trad']
 
 pres = data_in['pressure']
 if len(data_in['pressure'].shape) == 1:
@@ -417,36 +437,36 @@ if lforc:
     dt = time[1]-time[0]	
 
   if lDEPHY:
-    if attributes['nudging_t'] > 0.:
-      g = open(dirout + 'temp_nudg_profiles_L' + str(nlev_out),'w')
+    if attributes['nudging_temp'] > 0.:
+      g = open(dirout + 'temp_nudging_profiles_L' + str(nlev_out),'w')
       for it in range(0,nt):
         print >>g, 'Temperature', int(dt*it)    	  
         for ilev in range(0,nlev_out):
-          print >>g, data_out['temp_nudg'][it,ilev]	
+          print >>g, data_out['temp_nudging'][it,ilev]	
       g.close()
 
     if attributes['nudging_qv'] > 0.:
-      g = open(dirout + 'qv_nudg_profiles_L' + str(nlev_out),'w')
+      g = open(dirout + 'qv_nudging_profiles_L' + str(nlev_out),'w')
       for it in range(0,nt):
         print >>g, 'Specific Humidity', int(dt*it)    	  
         for ilev in range(0,nlev_out):
-          print >>g, data_out['qv_nudg'][it,ilev]	
+          print >>g, data_out['qv_nudging'][it,ilev]	
       g.close()
 
     if attributes['nudging_u'] > 0.:
-      g = open(dirout + 'u_nudg_profiles_L' + str(nlev_out),'w')
+      g = open(dirout + 'u_nudging_profiles_L' + str(nlev_out),'w')
       for it in range(0,nt):
         print >>g, 'Zonal Wind', int(dt*it)    	  
         for ilev in range(0,nlev_out):
-          print >>g, data_out['u_nudg'][it,ilev]	
+          print >>g, data_out['u_nudging'][it,ilev]	
       g.close()
 
     if attributes['nudging_v'] > 0.:
-      g = open(dirout + 'v_nudg_profiles_L' + str(nlev_out),'w')
+      g = open(dirout + 'v_nudging_profiles_L' + str(nlev_out),'w')
       for it in range(0,nt):
         print >>g, 'Meridional Wind', int(dt*it)    	  
         for ilev in range(0,nlev_out):
-          print >>g, data_out['v_nudg'][it,ilev]	
+          print >>g, data_out['v_nudging'][it,ilev]	
       g.close()
   else:
     if attributes['nudging_t'] > 0.:
@@ -490,7 +510,7 @@ if lforc:
     g.close()
     g = open(dirout + 'vg_profiles_L' + str(nlev_out),'w')
     for it in range(0,nt):
-      print >>g, 'Geostrophic Meridionall Wind', int(dt*it)    	  
+      print >>g, 'Geostrophic Meridional Wind', int(dt*it)    	  
       for ilev in range(0,nlev_out):
         print >>g, data_out['vg'][it,ilev]	
     g.close()
@@ -597,6 +617,14 @@ if lforc:
       print >>g, 'Temperature Radiative Tendency', int(dt*it)    	  
       for ilev in range(0,nlev_out):
         print >>g, data_out['trad'][it,ilev]	
+    g.close()
+
+  if attributes['rad_temp'] == 1:
+    g = open(dirout + 'temp_rad_profiles_L' + str(nlev_out),'w')
+    for it in range(0,nt):
+      print >>g, 'Temperature Radiative Tendency', int(dt*it)    	  
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['temp_rad'][it,ilev]	
     g.close()
 
   if attributes['qadv'] == 1:

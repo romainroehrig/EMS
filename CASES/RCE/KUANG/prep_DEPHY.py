@@ -28,8 +28,8 @@ t0 = cdtime.comptime(1979,1,1,0,0,0)
 tmin = t0.add(1000-50,cdtime.Day)
 tmax = t0.add(1000,cdtime.Day)
 
-f = cdms2.open('/home/roehrig/MUSC/simulations//arp631.RCE/CMIP6/L91_900s/RCEMIP//SST301.15/Output/netcdf/Out_klevel.nc')
-for var in ['pf','zf','temp','qv','ql','qi','tke']:
+f = cdms2.open('/home/roehrig/MUSC/simulations//arp631.KUANG/CMIP6.IDEAL/L91_900s/RCEMIP/SST301.15/Output/netcdf/Out_klevel.nc')
+for var in ['pf','zf','u','v','temp','qv','ql','qi','tke']:
     datain[var] = MV2.average(f(var,time = (tmin,tmax)),axis=0)
 f.close()
 
@@ -55,7 +55,8 @@ level.units = 'Pa'
 nlev, = level.shape
 
 tmin = cdtime.comptime(1979,1,1,0,0,0)
-tmax = tmin.add(600,cdtime.Day)
+#tmax = tmin.add(600,cdtime.Day)
+tmax = tmin.add(10,cdtime.Day)
 #tmax = cdtime.comptime(1979,1,2,0,0,0)
 units = 'seconds since 1979-01-01 00:00:0.0'
 
@@ -77,7 +78,7 @@ time.calendar = 'gregorian'
 nt, = time.shape
 
 var3Dini = ['qv','temp','pressure','height','u','v','ql','qi','tke']
-var3Dforc = ['pressure_forc','trad','temp_nudg','qv_nudg']
+var3Dforc = ['pressure_forc','temp_rad','u_nudging','v_nudging','temp_nudging','qv_nudging']
 var2D = ['ts','ps']
 
 titles = {}
@@ -92,9 +93,11 @@ titles['ql'] = 'Liquid water content'
 titles['qi'] = 'Ice water content'
 titles['tke'] = 'Turbulent kinetic energy'
 titles['pressure_forc'] = 'Pressure'
-titles['trad'] = 'Temperature radiative tendency'
-titles['temp_nudg'] = 'Nudging temperature'
-titles['qv_nudg'] = 'Nudging specific humidity'
+titles['temp_rad'] = 'Temperature radiative tendency'
+titles['u_nudging'] = 'Nudging zonal wind'
+titles['v_nudging'] = 'Nudging meridional wind'
+titles['temp_nudging'] = 'Nudging temperature'
+titles['qv_nudging'] = 'Nudging specific humidity'
 titles['ts'] = 'Surface temperature'
 titles['ps'] = 'Surface pressure'
 
@@ -109,9 +112,11 @@ units['ql'] = 'kg kg-1'
 units['qi'] = 'kg kg-1'
 units['tke'] = 'm2 s-2'
 units['pressure_forc'] = 'Pa'
-units['trad'] = 'K s-1'
-units['temp_nudg'] = 'K'
-units['qv_nudg'] = 'kg kg-1'
+units['temp_rad'] = 'K s-1'
+units['u_nudging'] = 'm s-1'
+units['v_nudging'] = 'm s-1'
+units['temp_nudging'] = 'K'
+units['qv_nudging'] = 'kg kg-1'
 units['ts'] = 'K'
 units['ps'] = 'Pa'
 
@@ -121,8 +126,10 @@ SST = 28.
 data = {}
 for var in var3Dini:
   data[var] = MV2.zeros((1,nlev,1,1),typecode=MV2.float)
-  if var in ['u','v']:
-      pass
+  if var in ['u']:
+      data[var][0,:,0,0] = datain[var][:]*0. + 4.8
+  elif var in ['v']:
+      data[var][0,:,0,0] = datain[var][:]*0.
   elif var == 'pressure':
       data[var][0,:,0,0] = datain['pf'][:]
   elif var == 'height':
@@ -145,12 +152,17 @@ for var in var3Dforc:
   if var == 'pressure_forc':
       for it in range(0,nt):
           data[var][it,:,0,0] = datain['pf'][:]  
-  elif var == 'trad':
+  elif var == 'temp_rad':
       for it in range(0,nt):
-          data['trad'][it,:,0,0] = trad(datain['pf'])
-  elif var[-5:] == '_nudg':
+          data['temp_rad'][it,:,0,0] = trad(datain['pf'])
+  elif var[-8:] == '_nudging':
       for it in range(0,nt):
-          data[var][it,:,0,0] = datain[var[:-5]][:]
+          data[var][it,:,0,0] = datain[var[:-8]][:]
+      if var[0:1] == 'u':
+          data[var][:,:,0,0] = data[var][:,:,0,0]*0. + 4.8
+      if var[0:1] == 'v':
+          data[var][:,:,0,0] = data[var][:,:,0,0]*0.
+
   else:
       print 'case unexepected for forcing:', var
       sys.exit()
@@ -194,24 +206,24 @@ g.endDate = '{year:4d}{month:02d}{day:02d}000000'.format(year=tmax.year,month=tm
 
 g.RCE = 1
 
-g.tadvh = 0
-g.tadvv = 0
-g.trad = 1 
+g.adv_temp = 0
+g.rad_temp = 1 
 
-g.qvadvh = 0
-g.qvadvv = 0
+g.adv_qv = 0
 
 g.forc_omega = 0
 g.forc_w = 0
 
 g.forc_geo = 0
 
-g.nudging_u = 0
-g.nudging_v = 0
-g.nudging_t = 0.5*86400
-g.nudging_qv = 0.5*86400
+g.nudging_u = 3*3600.
+g.nudging_v = 3*3600.
+g.nudging_temp = 2.*86400.
+g.nudging_qv = 2.*86400.
 
-g.p_nudging_t = 10000.
+g.p_nudging_u = 110000.
+g.p_nudging_v = 110000.
+g.p_nudging_temp = 10000.
 g.p_nudging_qv = 10000.
 
 g.zorog = 0.

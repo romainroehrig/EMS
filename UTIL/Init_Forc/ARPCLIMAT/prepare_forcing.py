@@ -38,7 +38,7 @@ ss2 = int(endDate[12:14])
 tend = cdtime.comptime(yyyy2,mm2,dd2,hh2,mi2,ss2)
 
 attributes = {}
-for att in ['tadvh','qadvh','qvadvh','qvadv','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v']:
+for att in ['tadvh','qadvh','qvadvh','qvadv','qvadvv','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v','rad_temp','nudging_temp','nudging_qv','adv_temp','adv_qv']:
   attributes[att] = 0
 
 for att in f.listglobal():
@@ -56,12 +56,22 @@ if attributes['trad'] == 1:
   if not(attributes['tadv'] == 1 or attributes['tadvh'] == 1 or attributes['tadvv'] == 1):
     variables3D.append('trad')
     nt = f['trad'].shape[0]
+if attributes['rad_temp'] == 1:
+  if not(attributes['adv_temp'] == 1):
+    variables3D.append('temp_rad')
+    nt = f['temp_rad'].shape[0]
 if attributes['tadv'] == 1:
   variables3D.append('tadv')
   nt = f['tadv'].shape[0]
+if attributes['adv_temp'] == 1:
+  variables3D.append('temp_adv')
+  nt = f['temp_adv'].shape[0]
 if attributes['qadv'] == 1:
   variables3D.append('qadv')
   nt = f['qadv'].shape[0]
+if attributes['adv_qv'] == 1:
+  variables3D.append('qv_adv')
+  nt = f['qv_adv'].shape[0]
 if attributes['qvadv'] == 1:
   variables3D.append('qvadv')
   nt = f['qvadv'].shape[0]
@@ -108,17 +118,17 @@ if attributes['forc_geo'] == 1:
 
 if lDEPHY:
   if attributes['nudging_u'] > 0.:
-    variables3D.append('u_nudg')
-    nt = f['u_nudg'].shape[0]
+    variables3D.append('u_nudging')
+    nt = f['u_nudging'].shape[0]
   if attributes['nudging_v'] > 0.:
-    variables3D.append('v_nudg')
-    nt = f['v_nudg'].shape[0]
-  if attributes['nudging_t'] > 0.:
-    variables3D.append('temp_nudg')
-    nt = f['temp_nudg'].shape[0]
+    variables3D.append('v_nudging')
+    nt = f['v_nudging'].shape[0]
+  if attributes['nudging_temp'] > 0.:
+    variables3D.append('temp_nudging')
+    nt = f['temp_nudging'].shape[0]
   if attributes['nudging_qv'] > 0.:
-    variables3D.append('qv_nudg')
-    nt = f['qv_nudg'].shape[0]
+    variables3D.append('qv_nudging')
+    nt = f['qv_nudging'].shape[0]
 else:
   if attributes['nudging_u'] > 0.:
     variables3D.append('u')
@@ -149,6 +159,7 @@ for var in variables3D:
 
 names['ps'] = 'Ps'
 names['trad'] = 'dT'
+names['temp_rad'] = 'dT'
 names['tadvh'] = 'dT'
 names['qadvh'] = 'dq'
 names['qvadvh'] = 'dq'
@@ -160,22 +171,24 @@ names['qvadvv'] = 'dq'
 names['uadvv'] = 'du'
 names['vadvv'] = 'dv'
 names['tadv'] = 'dT'
+names['temp_adv'] = 'dT'
 names['qadv'] = 'dq'
 names['qvadv'] = 'dq'
+names['qv_adv'] = 'dq'
 names['uadv'] = 'du'
 names['vadv'] = 'dv'
 names['u'] = 'u'
 names['v'] = 'v'
-names['u_nudg'] = 'u'
-names['v_nudg'] = 'v'
+names['u_nudging'] = 'u'
+names['v_nudging'] = 'v'
 names['ug'] = 'ug'
 names['vg'] = 'vg'
 names['w'] = 'W'
 names['omega'] = 'Omega'
 names['temp'] = 'T'
 names['qv'] = 'q'
-names['temp_nudg'] = 'T'
-names['qv_nudg'] = 'q'
+names['temp_nudging'] = 'T'
+names['qv_nudging'] = 'q'
 
 nlev = config.nlev
 
