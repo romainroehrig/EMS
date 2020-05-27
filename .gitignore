@@ -3,4 +3,5 @@
 # Mac files
 **/.DS_Store
 # swp files
-*.swp
+*.swp 
+*.swo
