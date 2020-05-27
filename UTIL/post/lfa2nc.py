@@ -34,7 +34,8 @@ if not(saveall):
       if var in VV.varnames.keys():
         var2save.append(VV.varnames[var])	 
       else:
-        print var, 'not in variables.varnames.keys()' 
+        print var, 'not in variables.varnames.keys()'
+        var2save.append(var)
 
     var2save = var2save + ['PAPRS','PAPRSF','PAPHI','PAPHIF']
 
