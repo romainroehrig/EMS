@@ -35,7 +35,7 @@ t0 = f['temp'].getAxis(0)[0]
 units0 = f['temp'].getAxis(0).units
 
 attributes = {}
-for att in ['tadvh','qdvh','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v','surfaceForcing','z0','ustar']:
+for att in ['tadvh','qdvh','qtadvh','uadvh','vadvh','tadvv','qadvv','qtadvv','uadvv','vadvv','tadv','qadv','uadv','vadv','trad','forc_omega','forc_w','forc_geo','nudging_t','nudging_q','nudging_u','nudging_v','surfaceForcing','surfaceForcingWind','z0']:
   attributes[att] = 0
 
 for att in f.listglobal():
@@ -105,9 +105,10 @@ if attributes['trad'] == 'adv':
   LRAYFM = False  	
 if attributes['trad'] == 1:
   LRAYFM = False	
-  var2read.append('trad')	
-  var2interpol.append('trad')
-  nb_f=nb_f+1
+  var2read.append('trad')
+  if not('tadvh' in var2interpol): 
+      var2interpol.append('tadvh')
+  #nb_f=nb_f+1
 if attributes['forc_omega'] == 1:
   var2read.append('omega')	
   var2interpol.append('omega')
@@ -132,9 +133,10 @@ if attributes['surfaceForcing'] == "surfaceFlux" :
   time_sfc = f('sfc_lat_flx').getAxis(0)
   nt_sfc = time_sfc.shape[0]
   nb_fs=nb_fs+2
-
-if attributes['ustar'] > 0 :
-  nb_fs=nb_fs+1
+  if attributes['surfaceForcingWind'] == 'ustar':
+      var2read.append('ustar')
+      nb_fs = nb_fs+1
+    
 
 if attributes['nudging_u'] > 0.:
   var2read.append('u')
@@ -181,6 +183,10 @@ nlev_in = lev_in.shape[0]
 if attributes['trad'] == 1:
   if attributes['tadvh'] == 1:	
     data_in['tadvh'] = data_in['tadvh'] + data_in['trad']
+  else:
+    attributes['tadvh'] = 1
+    nb_f = nb_f+1
+    data_in['tadvh'] = data_in['trad']
 
 pres = data_in['pressure']
 if len(data_in['pressure'].shape) == 1:
@@ -357,10 +363,10 @@ if lnam1D:
     for it in range(0,nt_sfc):
       print >>g, 'FLE'
       print >>g, data_in['sfc_lat_flx'][it]
-  if attributes['ustar'] > 0 :
-    for it in range(0,nt_sfc):
-      print >>g, 'USTAR'
-      print >>g, str(float(attributes['ustar']))
+    if attributes['surfaceForcingWind'] == "ustar" :
+      for it in range(0,nt_sfc):
+        print >>g, 'USTAR'
+        print >>g, data_in['ustar'][it]
 
   for var in config.variablesAux.keys():
     print >>g, var
