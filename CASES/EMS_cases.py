@@ -185,12 +185,13 @@ data_input[case]['REF'] = rep0 + '/ARMCU/REF/ARMCU_REF_SCM_driver.nc'
 #data_input[case]['COCOA-13-22Nov'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU-13-22Nov_50km_driver_RR_extended.nc'
 #data_input[case]['COCOA-MJO1'] = rep0 + '/CINDY-DYNAMO/COCOA/CINDY-DYNAMO_Revelle-ARM-CSU-MJO1_50km_driver_RR_extended.nc'
 
-#case = 'DYNAMO'
-#cases.append(case)
-#subcases[case] = ['NSA3a','NSA3a_D1']
-#data_input[case] = {}
-#data_input[case]['NSA3a'] = rep0 + '/DYNAMO/DYNAMO_NSA3a_SCM_driver.nc'
-#data_input[case]['NSA3a_D1'] = rep0 + '/DYNAMO/DYNAMO_NSA3a_D1_SCM_driver.nc'
+case = 'DYNAMO'
+cases.append(case)
+subcases[case] = ['NSA3A','NSA3A_D1','NSA3A_D30']
+data_input[case] = {}
+data_input[case]['NSA3A'] = rep0 + '/DYNAMO/NSA3A/DYNAMO_NSA3A_SCM_driver.nc'
+data_input[case]['NSA3A_D1'] = rep0 + '/DYNAMO/NSA3A_D1/DYNAMO_NSA3A_D1_SCM_driver.nc'
+data_input[case]['NSA3A_D30'] = rep0 + '/DYNAMO/NSA3A_D30/DYNAMO_NSA3A_D30_SCM_driver.nc'
 
 # Derbyshire cases
 #case = 'Derbyshire'

@@ -355,7 +355,7 @@ if lforc:
         attloc = 'nudging_{0}'.format(var)
         varloc = '{0}_nudging'.format(var)
         if attributes[attloc]:
-            datain[var], dataout[var] = prep_forcing(var)
+            datain[varloc], dataout[varloc] = prep_forcing(varloc)
 
     if lsave_forc:
         fileout = 'forc_L'+ str(nlev_out) + '.nc'
