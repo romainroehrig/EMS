@@ -58,8 +58,8 @@ if attributes['trad'] == 1:
     nt = f['trad'].shape[0]
 if attributes['rad_temp'] == 1:
   if not(attributes['adv_temp'] == 1):
-    variables3D.append('rad_temp')
-    nt = f['rad_temp'].shape[0]    
+    variables3D.append('temp_rad')
+    nt = f['temp_rad'].shape[0]    
 if attributes['tadv'] == 1:
   variables3D.append('tadv')
   nt = f['tadv'].shape[0]

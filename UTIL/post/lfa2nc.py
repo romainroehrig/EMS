@@ -34,7 +34,8 @@ if not(saveall):
       if var in VV.varnames.keys():
         var2save.append(VV.varnames[var])	 
       else:
-        print var, 'not in variables.varnames.keys()' 
+        print var, 'not in variables.varnames.keys()'
+        var2save.append(var)
 
     var2save = var2save + ['PAPRS','PAPRSF','PAPHI','PAPHIF']
 
@@ -345,6 +346,7 @@ rstati = lfa.iterate_readr('RSTATI',1,tstep,nstep)
 times[:] = nsssss + rstati
 
 for var in var2save:
+    print 'reading and writing variable:', var
     if types[var] <> 'C':
         if var in ['fracout', 'atb532', 'cfadLidarsr532', 'dbze94', 'cfadDbze94', 'clisccp', 'clmodis', 'clMISR']:
 
