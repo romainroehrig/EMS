@@ -154,7 +154,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
     seconds = hour*3600.+minute*60.+second
 
     if surfaceForcing == 'ts':
-        sst = case.variables['ts'].data
+        ts = case.variables['ts'].data
         time = case.variables['ts'].time
         if surfaceType == 'land':
             zz0 = attributes['z0']
@@ -258,7 +258,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
         nam[nn]['NDAY'] = [str(int(day)),]
         nam[nn]['XTIME'] = [str(int(seconds)),]
         if surfaceForcing == 'ts':
-            nam[nn]['XSST_UNIF'] = ['%(sst)6.2f'%{"sst":sst[0]},]
+            nam[nn]['XSST_UNIF'] = ['%(ts)6.2f'%{"ts":ts[0]},]
         else:
             nam[nn]['XSST_UNIF'] = ['300.',]
     elif surfaceType == 'land':
@@ -278,7 +278,10 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
             nam[nn]['LECOCLIMAP'] = ['.TRUE.',]
             nn='NAM_COVER'
             del(nam[nn]['XUNIF_COVER(1)'])
-            nam[nn]['XUNIF_COVER(6)'] = ['1.',]
+            if case == 'GABLS4':
+                nam[nn]['XUNIF_COVER(6)'] = ['1.',] # Permanent snow and ice 
+            else:
+                nam[nn]['XUNIF_COVER(4)'] = ['1.',] # Bare land
             nn='NAM_ISBA'
             nam[nn]['XUNIF_CLAY'] = ['1.',]
             nam[nn]['XUNIF_SAND'] = ['0.',]
@@ -293,9 +296,9 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
                 nam[nn]['XHUG_SURF'] = ['0.',]
                 nam[nn]['XHUG_ROOT'] = ['0.',]
                 nam[nn]['XHUG_DEEP'] = ['0.',]
-                nam[nn]['XTG_SURF'] = ['%(ts)6.2f'%{"ts": sst[0]},]
-                nam[nn]['XTG_ROOT'] = ['%(ts)6.2f'%{"ts": sst[0]-0.7},]
-                nam[nn]['XTG_DEEP'] = ['%(ts)6.2f'%{"ts": sst[0]-0.7},]    
+                nam[nn]['XTG_SURF'] = ['%(ts)6.2f'%{"ts": ts[0]},]
+                nam[nn]['XTG_ROOT'] = ['%(ts)6.2f'%{"ts": ts[0]-0.7},]
+                nam[nn]['XTG_DEEP'] = ['%(ts)6.2f'%{"ts": ts[0]-0.7},]    
                 nam[nn]['XHUGI_SURF'] = ['0.',]
                 nam[nn]['XHUGI_ROOT'] = ['0.',]
                 nam[nn]['XHUGI_DEEP'] = ['0.',]
@@ -305,6 +308,21 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
                 nam[nn]['NTIME'] = ['1',]
                 for i in range(1,12+1):      
                     nam[nn]['XUNIF_Z0(1,{0:>2})'.format(i)] = [str(zz0),]
+                nn='NAM_ISBA'
+                nam[nn] = {}
+                nam[nn]['CISBA'] = ["'2-L'",]
+                nam[nn]['CPHOTO'] = ["'NON'",]
+                nam[nn]['NGROUND_LAYER'] = ['2',]
+                nam[nn]['NPATCH'] = ['1',]
+                nam[nn]['XUNIF_CLAY'] = ['1.',]
+                nam[nn]['XUNIF_RUNOFFB'] = ['0.5',]
+                nam[nn]['XUNIF_SAND'] = ['0.',]
+                #nn = 'NAM_ISBAn'
+                #nam[nn] = {}
+                #nam[nn]['LGLACIER'] = ['.TRUE.',]
+                nn = 'NAM_PREP_ISBA_SNOW'
+                nam[nn] = {}
+                nam[nn]['CSNOW'] = ["'D95'",]
      
 
     if surfaceForcing == 'ts':
@@ -315,7 +333,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
             nam[nn]['NTIME_SST'] = [str(nt),]
 
             for it in range(0,nt):
-                nam[nn]['XUNIF_SST(%(ii)4.i)'%{"ii": it+1}] = ['%(sst)6.2f'%{"sst": sst[it]},]
+                nam[nn]['XUNIF_SST(%(ii)4.i)'%{"ii": it+1}] = ['%(ts)6.2f'%{"ts": ts[it]},]
 
             for it in range(0,nt):
                 nam[nn]['CFTYP_SST(%(ii)4.i)'%{"ii": it+1}] = ["'DIRECT'",]
@@ -343,11 +361,13 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
         elif surfaceType == 'land':
             nn = 'NAM_DATA_TSZ0'
             nam[nn] = {}
-            nam[nn]['NTIME'] = [str(nt0-1),]
+            nam[nn]['NTIME'] = [str(nt),]
 
-            for it in range(0,nt0-1):
-                nam[nn]['XUNIF_DTS(%(ii)4.i)'%{"ii": it+1}] = ['%(sst)6.2f'%{"sst": sst[it+1]-sst[it]},]
+            for it in range(0,nt-1):
+                nam[nn]['XUNIF_DTS(%(ii)4.i)'%{"ii": it+1}] = ['%(dts)6.3f'%{"dts": ts[it+1]-ts[it]},]
                 nam[nn]['XUNIF_DHUGRD(%(ii)4.i)'%{"ii": it+1}] = ['0.',]
+            nam[nn]['XUNIF_DTS(%(ii)4.i)'%{"ii": nt}] = ['%(dts)6.3f'%{"dts": ts[nt-1]-ts[nt-2]},]
+            nam[nn]['XUNIF_DHUGRD(%(ii)4.i)'%{"ii": nt}] = ['0.',]
 
 
     if surfaceForcing == 'surfaceFlux':

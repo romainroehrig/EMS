@@ -30,6 +30,14 @@ if ldebug:
 ####################################
 #### Stable boundary-layer cases
 
+# GABLS1 Case
+case = 'GABLS1'
+cases.append(case)
+subcases[case] = ['REF','MESONH']
+data_input[case] = {}
+for subcase in subcases[case]:
+    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+
 # GABLS4 Case
 #case = 'GABLS4'
 #cases.append(case)
@@ -41,12 +49,12 @@ if ldebug:
 #### Dry convection cases
 
 # AYOTTE Cases
-#case = 'AYOTTE'
-#cases.append(case)
-#subcases[case] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
-#data_input[case] = {}
-#for cc in subcases[case]:
-#  data_input[case][cc] = rep0 + '/AYOTTE/AYOTTE_A{0}_driver_FC_RR.nc'.format(cc)
+case = 'AYOTTE'
+cases.append(case)
+subcases[case] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
+data_input[case] = {}
+for subcase in subcases[case]:
+    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 # IHOP Cases
 #case = 'IHOP'
@@ -84,14 +92,16 @@ case = 'RICO'
 cases.append(case)
 subcases[case] = ['SHORT']
 data_input[case] = {}
-data_input[case]['SHORT'] = rep0 + '/RICO/SHORT/RICO_SHORT_SCM_driver.nc'
+for subcase in subcases[case]:
+    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 # ARMCU Case
 case = 'ARMCU'
 cases.append(case)
 subcases[case] = ['REF']
 data_input[case] = {}
-data_input[case]['REF'] = rep0 + '/ARMCU/REF/ARMCU_REF_SCM_driver.nc'
+for subcase in subcases[case]:
+    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 # BOMEX Case
 #case = 'BOMEX'
@@ -189,9 +199,8 @@ case = 'DYNAMO'
 cases.append(case)
 subcases[case] = ['NSA3A','NSA3A_D1','NSA3A_D30']
 data_input[case] = {}
-data_input[case]['NSA3A'] = rep0 + '/DYNAMO/NSA3A/DYNAMO_NSA3A_SCM_driver.nc'
-data_input[case]['NSA3A_D1'] = rep0 + '/DYNAMO/NSA3A_D1/DYNAMO_NSA3A_D1_SCM_driver.nc'
-data_input[case]['NSA3A_D30'] = rep0 + '/DYNAMO/NSA3A_D30/DYNAMO_NSA3A_D30_SCM_driver.nc'
+for subcase in subcases[case]:
+    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 # Derbyshire cases
 #case = 'Derbyshire'

@@ -76,8 +76,9 @@ for var in variables:
             var_tmp[var] = fout.createVariable(var,'f4',fin[var].dimensions,fill_value=missing_value)
             var_tmp[var][:] = fin[var][:]
 
-        for att in fin[var].ncattrs():
-            var_tmp[var].setncattr(att,fin[var].getncattr(att))
+        for att in fin[var].ncattrs() :
+            if not(att in ['_FillValue',]):
+                var_tmp[var].setncattr(att,fin[var].getncattr(att))
 
 fout.close()
 
