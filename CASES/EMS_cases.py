@@ -39,11 +39,12 @@ for subcase in subcases[case]:
     data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 # GABLS4 Case
-#case = 'GABLS4'
-#cases.append(case)
-#subcases[case] = []
-#data_input[case] = {}
-#data_input[case][''] = rep0 + ''
+case = 'GABLS4'
+cases.append(case)
+subcases[case] = ['STAGE3','STAGE3-SHORT']
+data_input[case] = {}
+for subcase in subcases[case]:
+    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 ####################################
 #### Dry convection cases
