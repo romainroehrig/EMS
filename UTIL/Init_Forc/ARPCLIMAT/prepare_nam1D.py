@@ -611,6 +611,14 @@ if lforc:
         print >>g, data_out['tadv'][it,ilev]	
     g.close()
 
+  if attributes['adv_temp'] == 1:
+    g = open(dirout + 'temp_adv_profiles_L' + str(nlev_out),'w')
+    for it in range(0,nt):
+      print >>g, 'Total Temperature Advection', int(dt*it)
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['temp_adv'][it,ilev]
+    g.close()
+
   if attributes['trad'] == 1:
     g = open(dirout + 'trad_profiles_L' + str(nlev_out),'w')
     for it in range(0,nt):
@@ -641,6 +649,14 @@ if lforc:
       print >>g, 'Total Specific Humidity Advection', int(dt*it)
       for ilev in range(0,nlev_out):
         print >>g, data_out['qvadv'][it,ilev]	  
+    g.close()
+
+  if attributes['adv_qv'] == 1:
+    g = open(dirout + 'qv_adv_profiles_L' + str(nlev_out),'w')
+    for it in range(0,nt):
+      print >>g, 'Total Specific Humidity Advection', int(dt*it)
+      for ilev in range(0,nlev_out):
+        print >>g, data_out['qv_adv'][it,ilev]
     g.close()
 
   if attributes['uadv'] == 1:
