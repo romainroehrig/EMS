@@ -346,6 +346,7 @@ rstati = lfa.iterate_readr('RSTATI',1,tstep,nstep)
 times[:] = nsssss + rstati
 
 for var in var2save:
+    print var
     if types[var] <> 'C':
         if var in ['fracout', 'atb532', 'cfadLidarsr532', 'dbze94', 'cfadDbze94', 'clisccp', 'clmodis', 'clMISR']:
 

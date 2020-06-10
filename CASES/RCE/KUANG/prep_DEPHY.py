@@ -55,8 +55,8 @@ level.units = 'Pa'
 nlev, = level.shape
 
 tmin = cdtime.comptime(1979,1,1,0,0,0)
-#tmax = tmin.add(600,cdtime.Day)
-tmax = tmin.add(10,cdtime.Day)
+tmax = tmin.add(600,cdtime.Day)
+#tmax = tmin.add(10,cdtime.Day)
 #tmax = cdtime.comptime(1979,1,2,0,0,0)
 units = 'seconds since 1979-01-01 00:00:0.0'
 

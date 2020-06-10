@@ -227,15 +227,39 @@ for SST in [28,]:
   subcases[case] = subcases[case] + ['KUANG_SST{0}_DEPHY'.format(SST),]
   data_input[case]['KUANG_SST{0}_DEPHY'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_DEPHY.nc'.format(SST)
 
-  subcases[case] = subcases[case] + ['KUANG_SST{0}_TP05_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-1)]
-  subcases[case] = subcases[case] + ['KUANG_SST{0}_TM05_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-1)]
-  subcases[case] = subcases[case] + ['KUANG_SST{0}_QP02_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-1)]
-  subcases[case] = subcases[case] + ['KUANG_SST{0}_QM02_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-1)]  
-  for lev in range(90,39,-1):
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_TP05_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_TP02_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_TM05_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_TM02_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_QP02_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_QP01_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_QM02_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(91,39,-1)]  
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_QM01_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(91,39,-1)] 
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_TP05_l{1:0>2}_DEPHY_1d'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_TP02_l{1:0>2}_DEPHY_1d'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_TM05_l{1:0>2}_DEPHY_1d'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_TM02_l{1:0>2}_DEPHY_1d'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_QP02_l{1:0>2}_DEPHY_1d'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_QP01_l{1:0>2}_DEPHY_1d'.format(SST,lev) for lev in range(91,39,-1)]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_QM02_l{1:0>2}_DEPHY_1d'.format(SST,lev) for lev in range(91,39,-1)]  
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_QM01_l{1:0>2}_DEPHY_1d'.format(SST,lev) for lev in range(91,39,-1)]   
+  for lev in range(91,39,-1):
       data_input[case]['KUANG_SST{0}_TP05_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_TP05_l{1:0>2}_DEPHY.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_TP02_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_TP02_l{1:0>2}_DEPHY.nc'.format(SST,lev)
       data_input[case]['KUANG_SST{0}_TM05_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_TM05_l{1:0>2}_DEPHY.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_TM02_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_TM02_l{1:0>2}_DEPHY.nc'.format(SST,lev)
       data_input[case]['KUANG_SST{0}_QP02_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_QP02_l{1:0>2}_DEPHY.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_QP01_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_QP01_l{1:0>2}_DEPHY.nc'.format(SST,lev)
       data_input[case]['KUANG_SST{0}_QM02_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_QM02_l{1:0>2}_DEPHY.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_QM01_l{1:0>2}_DEPHY'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_QM01_l{1:0>2}_DEPHY.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_TP05_l{1:0>2}_DEPHY_1d'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_TP05_l{1:0>2}_DEPHY_1d.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_TP02_l{1:0>2}_DEPHY_1d'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_TP02_l{1:0>2}_DEPHY_1d.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_TM05_l{1:0>2}_DEPHY_1d'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_TM05_l{1:0>2}_DEPHY_1d.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_TM02_l{1:0>2}_DEPHY_1d'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_TM02_l{1:0>2}_DEPHY_1d.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_QP02_l{1:0>2}_DEPHY_1d'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_QP02_l{1:0>2}_DEPHY_1d.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_QP01_l{1:0>2}_DEPHY_1d'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_QP01_l{1:0>2}_DEPHY_1d.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_QM02_l{1:0>2}_DEPHY_1d'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_QM02_l{1:0>2}_DEPHY_1d.nc'.format(SST,lev)
+      data_input[case]['KUANG_SST{0}_QM01_l{1:0>2}_DEPHY_1d'.format(SST,lev)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_QM01_l{1:0>2}_DEPHY_1d.nc'.format(SST,lev)
 
 ####################################
 
