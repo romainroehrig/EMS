@@ -234,8 +234,9 @@ cases.append(case)
 subcases[case] = []
 data_input[case] = {}
 for SST in [28,]:
-  subcases[case] = subcases[case] + ['KUANG_SST{0}_DEPHY'.format(SST),]
+  subcases[case] = subcases[case] + ['KUANG_SST{0}_DEPHY'.format(SST),'KUANG_SST{0}_DEPHY_30d'.format(SST)]
   data_input[case]['KUANG_SST{0}_DEPHY'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_DEPHY.nc'.format(SST)
+  data_input[case]['KUANG_SST{0}_DEPHY_30d'.format(SST)] = rep0 + '/RCE/KUANG/KUANG_SST{0}_DEPHY_30d.nc'.format(SST)
 
   subcases[case] = subcases[case] + ['KUANG_SST{0}_TP05_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-1)]
   subcases[case] = subcases[case] + ['KUANG_SST{0}_TP02_l{1:0>2}_DEPHY'.format(SST,lev) for lev in range(90,39,-1)]
