@@ -44,7 +44,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
     print 'Reference namelist:', namref
     print 'Output namelist:', namout
 
-    nam2keep = ['NAM_CARTESIAN','NAM_COVER','NAM_DIAG_SURFn','NAM_FRAC','NAM_IO_OFFLINE','NAM_PGD_GRID','NAM_PGD_SCHEMES','NAM_PREP_SURF_ATM','NAM_SURF_ATM','NAM_SURF_CSTS','NAM_ZS']
+    nam2keep = ['NAM_CARTESIAN','NAM_COVER','NAM_DIAG_SURFn','NAM_FRAC','NAM_IO_OFFLINE','NAM_IO_SURF_ARO','NAM_PGD_GRID','NAM_PGD_SCHEMES','NAM_PREP_SURF_ATM','NAM_SURF_ATM','NAM_SURF_CSTS','NAM_ZS']
 
     if lperf:
         TT1 = TT.time()
@@ -95,6 +95,10 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
     nam[nn]['CSURF_FILETYPE'] = ["'LFI'",]
     nam[nn]['CPGDFILE'] = ["'PGD'",]
     nam[nn]['CPREPFILE'] = ["'PREP'",]
+
+    # NAM_IO_SURF_ARO
+    nn = 'NAM_IO_SURF_ARO'
+    nam[nn] = {}
 
     # NAM_DIAG_SURFn
     nn = 'NAM_DIAG_SURFn'
@@ -412,7 +416,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
     for namin in nam.keys():
         if namin in nam2keep:
             namnew[namin] = nam[namin]        
-        namelist.writesurfex(namnew,namout)
+    namelist.writesurfex(namnew,namout)
 
     if lperf:
         TT1 = TT.time()
