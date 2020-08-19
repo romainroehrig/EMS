@@ -55,8 +55,7 @@ level.units = 'Pa'
 nlev, = level.shape
 
 tmin = cdtime.comptime(1979,1,1,0,0,0)
-#tmax = tmin.add(600,cdtime.Day)
-tmax = tmin.add(1000,cdtime.Day)
+tmax = tmin.add(1,cdtime.Day)
 #tmax = tmin.add(100,cdtime.Day)
 #tmax = cdtime.comptime(1979,1,2,0,0,0)
 units = 'seconds since 1979-01-01 00:00:0.0'
@@ -191,7 +190,7 @@ for var in var2D:
   data[var].units = units[var]
 
 
-g = cdms2.open('KUANG_SST{0}_DEPHY.nc'.format(int(SST)),'w')
+g = cdms2.open('KUANG_SST{0}_DEPHY_1d.nc'.format(int(SST)),'w')
 
 for var in var3Dini + var3Dforc + var2D:
     g.write(data[var])
