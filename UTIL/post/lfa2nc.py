@@ -326,7 +326,7 @@ for var in sorted(var2save):
             data[var].units = '-'
             data[var].original_name = var
 
-        data[var].missing_value = 1.e20
+        data[var].missing_value = numpy.float32(1.e20)
 
   
 
