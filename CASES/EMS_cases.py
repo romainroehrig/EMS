@@ -105,11 +105,21 @@ for subcase in subcases[case]:
     data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 # BOMEX Case
-#case = 'BOMEX'
-#cases.append(case)
-#subcases[case] = ['REF']
-#data_input[case] = {}
-#data_input[case]['REF'] = rep0 + '/BOMEX/BOMEX_driver_MPL_RR.nc'
+case = 'BOMEX'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+for subcase in subcases[case]:
+    data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+
+# MPACE Case
+case = 'MPACE'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+for subcase in subcases[case]:
+    data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+
 
 ####################################
 #### Stratocumulus cases
