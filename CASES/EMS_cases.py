@@ -58,11 +58,12 @@ for subcase in subcases[case]:
     data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 # IHOP Cases
-#case = 'IHOP'
-#cases.append(case)
-#subcases[case] = ['REF']
-#data_input[case] = {}
-#data_input[case]['REF'] = rep0 + '/IHOP/IHOP_driver_FC_RR.nc'
+case = 'IHOP'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+for subcase in subcases[case]:
+    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 # AMMAsec Cases
 #case = 'AMMAsec'
@@ -82,11 +83,12 @@ for subcase in subcases[case]:
 #### Shallow convection cases
 
 # SCMS Cases
-#case = 'SCMS'
-#cases.append(case)
-#subcases[case] = ['REF']
-#data_input[case] = {}
-#data_input[case]['REF'] = rep0 + '/SCMS/SCMS_driver_FC_RR.nc'
+case = 'SCMS'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+for subcase in subcases[case]:
+    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 # RICO Case
 case = 'RICO'
