@@ -9,7 +9,7 @@ coefs = {}
 #---------------------------------------------------------------------------------------------------
 
 # 1. Variables dynamiques et thermodynamiques
-#      pf(pres), ph (presH), zf(zg), zh(zgH), rho, temp(ta), qv(hus), hur, qlrad, qirad, ql, qi, qr, qsn, tke, theta(th), thv, thl, thlv, qsat,
+#      pf(pres), ph (presH), zf(zg), zh(zgH), rho, temp(ta), qv(hus), hur, ql, qi, qr, qsn, tke, theta(th), thv, thl, thlv, qsat,
 #      u(ua), v(va), wa, wap
 #      qlc, qic, qrc, qsnc, qlshc, qishc, qrshc, qsnshc
 # 2. Variables nuageuses
@@ -56,7 +56,7 @@ for var in ['PUSTAR','PCD','PCH','PCE','ZUSR','ZTSR','ZQSR','PZ0SEA','PZ0HSEA','
 #      wpqp_pbl, wpthp_pbl, wpqp_conv, wpthp_conv, wpqtp_pbl, wpthlp_pbl, wpqtp_conv, wpthlp_conv
 #      wpup_pbl, wpvp_pbl, wpup_conv, wpvp_conv
 # 9. Tendances liees au forcages
-#      tntadv, tntnudg, tnqadv, tnqnudg, tnugeo, tnvgeo
+#      tntadv, tntnudg, tnqadv, tnqvnudg, tnunudg, tnvnudg, tnugeo, tnvgeo
 # 10. Divers
 #      Cp, Lv
 # 11. Bilan eau et energie
@@ -66,20 +66,25 @@ for var in ['PUSTAR','PCD','PCH','PCE','ZUSR','ZTSR','ZQSR','PZ0SEA','PZ0HSEA','
 #      efluxSfcRad, efluxSfcTurb, efluxSfcConv, efluxSfcAdj, efluxSfcPrSen, efluxSfcPrLat
 #      iMSEadv, iMSEnud, iQw, iEw
 # 12. Especes Gazeuses
-#      rCO2, rCH4, rN2O, rNO2, rCFC11, rCFC12, rCFC22, rCCL4, rO3, O3
+#      rCO2, rCH4, rN2O, rNO2, rCFC11, rCFC12, rCFC22, rCCL4, rO3
 # 13. Variables du schema de convection Bougeault 1985
 #      alpha, Mf, Tu, Thu, qvu, qcu
 # 14. Variables du schema PCMT
 #      alpha_up, w_up, omega_up, alpha_dn, w_dn, omega_dn, cape, T_up, qv_up, omega_ref
-#      w_up_bud, dw_buoy, dw_fric, dw_Kd, dw_entr, dw_transp, buoy, Mf, eps_u, eps_u_org, eps_u_tur, entr_u, detr_u, dTv_up
+#      w_up_bud, dw_buoy, dw_fric, dw_Kd, dw_entr, dw_transp, buoy, Mf, eps_u, eps_u_org, eps_u_tur, entr_u, detr_u, dTv_up, B_up
 #      aipcmt, knnd, knlab, ZS15, ZS16, ZTAU,ZWMAX,ZZMAX,ZKMAX,ZINTEGMAX,ZMMAX
-for var in ['ZWMAX','ZZMAX','ZKMAX','ZINTEGMAX','ZMMAX','ZINTEGA']:
+for var in ['ZWMAX','ZZMAX','ZKMAX','ZINTEGMAX','ZMMAX','ZINTEGA','ZMOD','ZRE']:
   varnames[var] = var
   names[var] = var
   units[var] = '-'
   coefs[var] = 1
 # Variables du schema TKE
 for var in ['LMECT','TKEDIF','TKEDISS','TKEPRDY','TKEPRTH','TKETEND','PECTCLS','PKCLS','PKUROV','PUSLE','PPRODTH']:
+  varnames[var] = var
+  names[var] = var
+  units[var] = '-'
+  coefs[var] = 1
+for var in ['ECT0','ECT1','TNECT_DYN','TNECT_BUO','TNECT_DIS','TNECT_DIF','KU']:
   varnames[var] = var
   names[var] = var
   units[var] = '-'
@@ -142,10 +147,8 @@ varnames['rho']   = 'RHO'
 varnames['temp']    = 'PT'
 varnames['qv']   = 'PQ'
 varnames['hur']   = 'PRH'
-varnames['ql']    = 'PQL'
-varnames['qi']    = 'PQI'
-varnames['qlrad']    = 'PQLI'
-varnames['qirad']    = 'PQICE'
+varnames['ql']    = 'PQLI'
+varnames['qi']    = 'PQICE'
 varnames['qr']    = 'PQR'
 varnames['qsn']   = 'PQSN'
 
@@ -162,13 +165,11 @@ varnames['qsnshc']= 'PQSSHCONV'
 varnames['tke']   = 'PECT'
 
 varnames['theta']    = 'THETA'
-varnames['thetae']    = 'thetae'
 varnames['thv']   = 'THETAV'
 varnames['thl']   = 'THETAL'
 varnames['thlv']  = 'THETAVL'
 
 varnames['qsat']  = 'PQSAT'
-varnames['qsat0']  = 'qsat0'
 
 varnames['u']    = 'PU'
 varnames['v']    = 'PV'
@@ -196,7 +197,7 @@ varnames['snowc'] = 'PFPLCN'
 
 varnames['rain']    = 'PRECS_TOT'
 varnames['prls']  = 'PRECS_LS'
-varnames['prc']   = 'PRECS_C'
+varnames['prc']   = 'PRECS_CONV'
 varnames['ppr']   = 'PREC_TOT'
 varnames['pprls'] = 'PREC_LS'
 varnames['pprc']  = 'PREC_C'
@@ -263,7 +264,6 @@ varnames['evapn'] = 'PFEVN'
 varnames['tauu']  = 'PSFU'
 varnames['tauv']  = 'PSFV'
 varnames['ustar']  = 'ZUSTAR'
-varnames['ustarsfx']  = 'ZUSTAR_SFX'
 
 varnames['Cd'] = 'ZCD'
 varnames['Ch'] = 'ZCH'
@@ -286,8 +286,6 @@ varnames['qsurf'] = 'PQS'
 # 6. Variables integrees sur la colonne
 
 varnames['prw']   = 'WVP'
-varnames['sprw']   = 'sprw'
-varnames['prw_v2']   = 'prw_v2'
 varnames['lwp']   = 'LWP'
 varnames['iwp']   = 'IWP'
 varnames['cwp']   = 'CWP'
@@ -427,8 +425,10 @@ varnames['wpthlp_conv'] = 'WTHL_dee'
 
 varnames['tntadv'] = 'ZFT_ADV'
 varnames['tntnudg'] = 'ZFT_NUDG'
-varnames['tnqadv'] = 'ZFQ_ADV'
-varnames['tnqnudg'] = 'ZFQ_NUDG'
+varnames['tnqvadv'] = 'ZFQ_ADV'
+varnames['tnqvnudg'] = 'ZFQ_NUDG'
+varnames['tnunudg'] = 'ZFU_NUDG'
+varnames['tnvnudg'] = 'ZFV_NUDG'
 varnames['tnugeo'] = 'ZFUGEO'
 varnames['tnvgeo'] = 'ZFVGEO'
 
@@ -453,12 +453,6 @@ varnames['RMSE0'] = 'RMSE0'
 varnames['RMSE1'] = 'RMSE1'
 varnames['RDMSE'] = 'RDMSE'
 varnames['msefluxSfc'] = 'MSEFLUXSFC'
-varnames['fmse0'] = 'fmse0'
-varnames['intfmse0'] = 'intfmse0'
-varnames['tnfmseadvw'] = 'tnfmseadvw'
-varnames['inttnfmseadvw'] = 'inttnfmseadvw'
-varnames['lhl0'] = 'lhl0'
-varnames['lhi1'] = 'lhi0'
 varnames['iQadv'] = 'TOTFORCQADV'
 varnames['iQnud'] = 'TOTFORCQNUD'
 varnames['iTadv'] = 'TOTFORCTADV'
@@ -493,7 +487,6 @@ varnames['rCFC12'] = 'ZC12'
 varnames['rCFC22'] = 'ZC22'
 varnames['rCCL4'] = 'ZCL4'
 varnames['rO3'] = 'ZOZN'
-varnames['O3'] = 'O3'
 
 ##########################################
 # 13. Variables du schema de convection Bougeault 1985
@@ -527,12 +520,15 @@ varnames['dw_transp'] = 'BILOM+TTRANSP'
 varnames['buoy'] = 'ZBUO_W'
 varnames['Mf'] = 'MF'
 varnames['eps_u'] = 'ZEPSILON_U'
-varnames['del_u'] = 'ZDELTA_U'
+varnames['det_u'] = 'ZDELTA_U'
 varnames['eps_u_org'] = 'ZEPS_ORG'
 varnames['eps_u_tur'] = 'ZEPS_TUR'
+varnames['det_u_org'] = 'ZDEL_ORG'
+varnames['det_u_tur'] = 'ZDEL_TUR'
 varnames['entr_u'] = 'ZENTR_U'
 varnames['detr_u'] = 'ZDETR_U'
 varnames['dTv_up'] = 'TVUD-TVENV'
+varnames['B_up'] = 'B_UP'
 varnames['aipcmt'] = 'AIPCMT'
 varnames['knnd'] = 'KNND'
 varnames['knlab'] = 'KNLAB'
@@ -640,8 +636,6 @@ names['qv']   = 'Specific Humidity'
 names['hur']   = 'Relative Humidity'
 names['ql']    = 'Specific Mass of Cloud Liquid Water'
 names['qi']    = 'Specific Mass of Cloud Ice Water'
-names['qlrad']    = 'Radiative Specific Mass of Cloud Liquid Water'
-names['qirad']    = 'Radiative Specific Mass of Cloud Ice Water'
 names['qr']    = 'Specific Mass of Rain'
 names['qsn']   = 'Specific Mass of Snow'
 
@@ -658,7 +652,6 @@ names['qsnshc']= 'Specific Mass of Shallow Convection Snow'
 names['tke']   = 'Turbulent Kinetic Energy'
 
 names['theta']    = 'Potential Temperature'
-names['thetae']    = 'Equivalent Potential Temperature'
 names['thv']    = 'Virtual Potential Temperature'
 names['thl']    = 'Liquid Potential Temperature'
 names['thlv']    = 'Virtual Potential Temperature'
@@ -758,7 +751,6 @@ names['evapn'] = 'Evaporation over snow (or ice) and frozen soil'
 names['tauu']  = 'Surface zonal stress'
 names['tauv']  = 'Surface meridional stress'
 names['ustar']  = 'ustar'
-names['ustarsfx']  = 'ustarsfx'
 
 names['Cd'] = 'Surface Exchange Coefficient for Wind'
 names['Ch'] = 'Surface Exchange Coefficient for Heat'
@@ -781,8 +773,6 @@ names['qsurf'] = 'Surface saturated specific humidity (qsat(SST))'
 # 6. Variables integrees sur la colonne
 
 names['prw']   = 'Precipitable Water'
-names['prw_v2']   = 'Precipitable Water Version 2'
-names['sprw']   = 'Saturated Precipitable Water'
 names['lwp']   = 'Liquid Water Path'
 names['iwp']   = 'Ice Water Path'
 names['cwp']   = 'Cloud Water Path'
@@ -921,7 +911,9 @@ names['wpthlp_conv'] = 'Liquid Potential Temperature Flux due to Convection'
 names['tntadv'] = 'Temperature Tendency due to Horizontal Advection'
 names['tntnudg'] = 'Temperature Tendency due to Nudging'
 names['tnqadv'] = 'Specific Humidity Tendency due to Horizontal Advection'
-names['tnqnudg'] = 'Specific Humidity Tendency due to Nudging'
+names['tnqvnudg'] = 'Specific Humidity Tendency due to Nudging'
+names['tnunudg'] = 'Zonal wind Tendency due to Nudging'
+names['tnvnudg'] = 'Meridional wind Tendency due to Nudging'
 names['tnugeo'] = 'Zonal Wind Tendency due to Geostrophic Adjustment'
 names['tnvgeo'] = 'Meridional Wind Tendency due to Geostrophic Adjustment'
 
@@ -947,12 +939,6 @@ names['RMSE0'] = 'RMSE0'
 names['RMSE1'] = 'RMSE1'
 names['RDMSE'] = 'RDMSE'
 names['msefluxSfc'] = 'Net Moist Static Energy Flux at Surface'
-names['fmse0'] = 'fmse0'
-names['intfmse0'] = 'intfmse0'
-names['tnfmseadvw'] = 'tnfmseadvw'
-names['inttnfmseadvw'] = 'inttnfmseadvw'
-names['lhl0'] = 'lhl0'
-names['lhi1'] = 'lhi0'
 names['iQadv'] = 'Horizontal Advection of moisture integrated over the atmospheric column'
 names['iQnud'] = 'Moisture Tendency due to nudging integrated over the atmospheric column'
 names['iTadv'] = 'Horizontal Advection of temperature integrated over the atmospheric column'
@@ -988,7 +974,6 @@ names['rCFC12'] = 'CFC12 Mixing Ratio'
 names['rCFC22'] = 'CFC22 Mixing Ratio'
 names['rCCL4'] = 'CCL4 Mixing Ratio'
 names['rO3'] = 'O3 Mixing Ratio'
-names['O3'] = 'O3 Mixing Ratio'
 
 ##########################################
 # 13. Variables du schema de convection Bougeault 1985
@@ -1022,12 +1007,15 @@ names['dw_transp'] = 'Updraft Vertical Velocity Tendency due to Vertical Transpo
 names['buoy'] = 'Convection Buoyancy used in Updraft Vertical Velocity Budget'
 names['Mf'] = 'Convective Mass Flux'
 names['eps_u'] = 'Fractional Convective Updraft Entrainment'
-names['del_u'] = 'Fractional Convective Updraft Detrainment'
+names['det_u'] = 'Fractional Convective Updraft Detrainment'
 names['eps_u_org'] = 'Fractional Organised Convective Updraft Entrainment'
 names['eps_u_tur'] = 'Fractional Turbulent Convective Updraft Entrainment'
+names['det_u_org'] = 'Fractional Organised Convective Updraft Detrainment'
+names['det_u_tur'] = 'Fractional Turbulent Convective Updraft Detrainment'
 names['entr_u'] = 'Convective Updraft Entrainment'
 names['detr_u'] = 'Convective Updraft Detrainment'
 names['dTv_up'] = 'Tv_updraft-Tv_env'
+names['B_up'] = 'Updraft_Buoyancy'
 names['aipcmt'] = 'Activity index of PCMT'
 names['knnd'] = 'KNND'
 names['knlab'] = 'KNLAB'
@@ -1135,8 +1123,6 @@ units['qv']   = 'kg/kg'
 units['hur']   = '-'
 units['ql']    = 'kg/kg'
 units['qi']    = 'kg/kg'
-units['qlrad']    = 'kg/kg'
-units['qirad']    = 'kg/kg'
 units['qr']    = 'kg/kg'
 units['qsn']   = 'kg/kg'
 
@@ -1154,7 +1140,6 @@ units['qsnshc']= 'kg/kg'
 units['tke']   = 'm2/s2'
 
 units['theta']    = 'K'
-units['thetae']    = 'K'
 units['thv']    = 'K'
 units['thl']    = 'K'
 units['thlv']    = 'K'
@@ -1254,7 +1239,6 @@ units['evapn'] = 'kg/m2/s'
 units['tauu']  = 'kg m-1 s-2'
 units['tauv']  = 'kg m-1 s-2'
 units['ustar']  = 'm/s'
-units['ustarsfx']  = 'm/s'
 
 units['Cd'] = '-'
 units['Ch'] = '-'
@@ -1277,8 +1261,6 @@ units['qsurf'] = 'kg/kg'
 # 6. Variables integrees sur la colonne
 
 units['prw']   = 'kg/m2'
-units['prw_v2']   = 'kg/m2'
-units['sprw']   = 'kg/m2'
 units['lwp']   = 'kg/m2'
 units['iwp']   = 'kg/m2'
 units['cwp']   = 'kg/m2'
@@ -1418,7 +1400,9 @@ units['wpthlp_conv'] = 'K m s-1'
 units['tntadv'] = 'K/s'
 units['tntnudg'] = 'K/s'
 units['tnqadv'] = 'kg/kg/s'
-units['tnqnudg'] = 'kg/kg/s'
+units['tnqvnudg'] = 'kg/kg/s'
+units['tnunudg'] = 'm/s2'
+units['tnvnudg'] = 'm/s2'
 units['tnugeo'] = 'm/s2'
 units['tnvgeo'] = 'm/s2'
 
@@ -1444,12 +1428,6 @@ units['RMSE0'] = '-'
 units['RMSE1'] = '-'
 units['RDMSE'] = '-'
 units['msefluxSfc'] = 'W/m2'
-units['fmse0'] = 'J kg-1'
-units['intfmse0'] = 'J m-2'
-units['tnfmseadvw'] = 'J kg-1 s-1'
-units['inttnfmseadvw'] = 'J m-2 s-1'
-units['lhl0'] = '-'
-units['lhi1'] = '-'
 units['iQadv'] = 'kg/m2/s'
 units['iQnud'] = 'kg/m2/s'
 units['iTadv'] = 'K kg/m2/s'
@@ -1486,7 +1464,6 @@ units['rCFC12'] = 'kg/kg'
 units['rCFC22'] = 'kg/kg'
 units['rCCL4'] = 'kg/kg'
 units['rO3'] = 'kg/kg'
-units['O3'] = 'ppmv'
 
 ##########################################
 # 13. Variables du schema de convection Bougeault 1985
@@ -1520,12 +1497,15 @@ units['dw_transp'] = 'Pa s-2'
 units['buoy'] = 'm s-2'
 units['Mf'] = 'kg m-2 s-1'
 units['eps_u'] = 'm-1'
-units['del_u'] = 'm-1'
-units['eps_u_org'] = 'Pa-1'
-units['eps_u_tur'] = 'Pa-1'
+units['det_u'] = 'm-1'
+units['eps_u_org'] = 'm-1'
+units['eps_u_tur'] = 'm-1'
+units['det_u_org'] = 'm-1'
+units['det_u_tur'] = 'm-1'
 units['entr_u'] = 's-1'
 units['detr_u'] = 's-1'
 units['dTv_up'] = 'K'
+units['B_up'] = 'm s-2'
 units['aipcmt'] = '-'
 units['knnd'] = '-'
 units['knlab'] = '-'
@@ -1694,8 +1674,6 @@ coefs['qv']   = 1
 coefs['hur']   = 1
 coefs['ql']    = 1
 coefs['qi']    = 1
-coefs['qlrad']    = 1
-coefs['qirad']    = 1
 coefs['qr']    = 1
 coefs['qsn']   = 1
 
@@ -1713,7 +1691,6 @@ coefs['qsnshc']= 1
 coefs['tke']   = 1
 
 coefs['theta']    = 1
-coefs['thetae']    = 1
 coefs['thv']    = 1
 coefs['thl']    = 1
 coefs['thlv']    = 1
@@ -1813,7 +1790,6 @@ coefs['evapn'] = 1
 coefs['tauu']  = 1
 coefs['tauv']  = 1
 coefs['ustar']  = 1
-coefs['ustarsfx']  = 1
 
 coefs['Cd'] = 1
 coefs['Ch'] = 1
@@ -1836,8 +1812,6 @@ coefs['qsurf'] = 1
 # 6. Variables integrees sur la colonne
 
 coefs['prw']   = 1
-coefs['prw_v2']   = 1
-coefs['sprw']   = 1
 coefs['lwp']   = 1
 coefs['iwp']   = 1
 coefs['cwp']   = 1
@@ -1976,7 +1950,9 @@ coefs['wpthlp_conv'] = 1
 coefs['tntadv'] = 1
 coefs['tntnudg'] = 1
 coefs['tnqadv'] = 1
-coefs['tnqnudg'] = 1
+coefs['tnqvnudg'] = 1
+coefs['tnunudg'] = 1
+coefs['tnvnudg'] = 1
 coefs['tnugeo'] = 1
 coefs['tnvgeo'] = 1
 
@@ -2002,12 +1978,6 @@ coefs['RMSE0'] = 1
 coefs['RMSE1'] = 1
 coefs['RDMSE'] = 1
 coefs['msefluxSfc'] = 1
-coefs['fmse0'] = 1
-coefs['intfmse0'] = 1
-coefs['tnfmseadvw'] = 1
-coefs['inttnfmseadvw'] = 1
-coefs['lhl0'] = 1
-coefs['lhi1'] = 1
 coefs['iQadv'] = 1
 coefs['iQnud'] = 1
 coefs['iTadv'] = 1
@@ -2044,7 +2014,6 @@ coefs['rCFC12'] = 1
 coefs['rCFC22'] = 1
 coefs['rCCL4'] = 1
 coefs['rO3'] = 1
-coefs['O3'] = 1.e6 * 28.9644/47.9942 #From mass mixing ratio (kg kg-1) to ppmv
 
 ##########################################
 # 13. Variables du schema de convection Bougeault 1985
@@ -2078,12 +2047,15 @@ coefs['dw_transp'] = 1
 coefs['buoy'] = 1
 coefs['Mf'] = 1
 coefs['eps_u'] = 1
-coefs['del_u'] = 1
+coefs['det_u'] = 1
 coefs['eps_u_org'] = 1
 coefs['eps_u_tur'] = 1
+coefs['det_u_org'] = 1
+coefs['det_u_tur'] = 1
 coefs['entr_u'] = 1
 coefs['detr_u'] = 1
 coefs['dTv_up'] = 1
+coefs['B_up'] = 1
 coefs['aipcmt'] = 1
 coefs['knnd'] = 1
 coefs['knlab'] = 1

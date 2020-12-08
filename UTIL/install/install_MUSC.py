@@ -29,7 +29,7 @@ def install_ATM(model,case,subcase,filecase,repout,nlev,timestep=None,loverwrite
 
     rep = os.path.join(repout,case,subcase)
 
-    print '-'*40
+    print '#'*40
     print 'Prepare Atmospheric files'
     print 'Case:', case, 'subcase:',subcase
     print 'nlev:', nlev
@@ -69,7 +69,12 @@ def install_ATM(model,case,subcase,filecase,repout,nlev,timestep=None,loverwrite
         print 'Directory already exists:', rep
         if lupdate:
             os.chdir(rep)
-            os.symlink(repUTIL + 'L' + str(nlev) + '.dta','L' + str(nlev) + '.dta')
+            try:
+                os.symlink(repUTIL + 'L' + str(nlev) + '.dta','L' + str(nlev) + '.dta')
+            except OSError:
+                pass
+            except:
+                raise
             if timestep is None:
                 os.system('./prepare_init_forc.sh {0} {1} {2}'.format(case,subcase,nlev))
             else:
@@ -82,7 +87,7 @@ def install_ATM(model,case,subcase,filecase,repout,nlev,timestep=None,loverwrite
     print '-'*40
       
 
-def install_SFX(model,case,subcase,filecase,repout,cycle,PGD,PREP,config,namref,loverwrite=False,lupdate=False,ecoclimap=repEMS + '/UTIL/ecoclimap_cnrm_cm6.02'):
+def install_SFX(model,case,subcase,filecase,repout,PGD,PREP,namref,loverwrite=False,lupdate=False,ecoclimap=repEMS + '/UTIL/ecoclimap_cnrm_cm6.02'):
 
     """ Prepare files of atmospheric initial conditions and forcing needed to run MUSC """
 
@@ -94,15 +99,13 @@ def install_SFX(model,case,subcase,filecase,repout,cycle,PGD,PREP,config,namref,
         t0 = time.time()
         t00 = time.time()
 
-    rep = os.path.join(repout,cycle,config,case,subcase)
+    rep = os.path.join(repout,case,subcase)
 
-    print '-'*40
+    print '#'*40
     print 'Prepare SFX files'
     print 'Case:', case, 'subcase:',subcase
-    print 'Cycle:', cycle
     print 'PGD:', PGD
     print 'PREP:', PREP
-    print 'config:', config
     print 'namref:', namref
     print 'Installation in', rep
 
@@ -199,12 +202,11 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
     sys.path.append('{0}/DEPHY-SCM/utils/'.format(repEMS))
     from Case import Case
 
-    rep = os.path.join(repout,config['cycle'],config['name'],'L' + str(config['levels']) + '_' + str(config['TSTEP']) + 's',case,subcase)
+    rep = os.path.join(repout,case,subcase)
 
-    print '-'*40
+    print '#'*40
     print 'Prepare MUSC simulation'
     print 'Case:', case, 'subcase:',subcase
-    print 'Cycle:', config['cycle']
     print 'MASTER:', config['MASTER']
     print 'Configuration name:', config['name']
     print '{0} reference namelist:'.format(model), config['namATMref']
@@ -249,6 +251,7 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
             t0 = time.time()
 
     if not(flagExist) or lupdate:
+        os.chdir(rep)
 
         # Determination NSTOP
         CASE = Case('{0}/{1}'.format(case,subcase))
@@ -323,7 +326,12 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
                 print 'Prepare SURFEX namelist:', t1-t0
                 t0 = time.time()
 
-        os.symlink(repRun_UTIL + 'run_{0}.sh'.format(model),'run.sh')
+        try:
+            os.symlink(repRun_UTIL + 'run_{0}.sh'.format(model),'run.sh')
+        except OSError:
+            pass
+        except:
+            raise
 
         # Preparation fichier config de la simulation
         g = open('param_' + config['name'],'w')
@@ -331,7 +339,6 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         print >> g, '#!/bin/sh'
         print >> g, 'set -x'
         print >> g, '#'
-        print >> g, 'cycle=' + config['cycle']
         print >> g, 'MASTER=' + config['MASTER']
         print >> g, '#'
         print >> g, 'levels=' + str(config['levels'])
@@ -351,7 +358,7 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
             print >> g, 'PREP=' + config['PREPfile']
         print >> g, 'ecoclimap=' + config['ecoclimap']
         print >> g, '#'
-        print >> g, 'dirpost=' + configOut['dirpost'] # '/home/roehrig/MUSC/UTIL/post'
+        print >> g, 'dirpost=' + configOut['dirpost'] 
         print >> g, 'configpost=' + configOut['configpost']
         print >> g, 'variablesDict=' + configOut['variablesDict']
         print >> g, 'installpost=True'
@@ -370,9 +377,9 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         print >> g, 'rm -f param'
         print >> g, 'ln -s param_' + config['name'] + ' param'
         print >> g, '. ./param'
-        print >> g, '. ./run.sh > run_${cycle}_${CONFIG}_L${levels}_${TSTEP}s.log 2>&1'
-        print >> g, 'mv run_${cycle}_${CONFIG}_L${levels}_${TSTEP}s.log logs/'
-        print >> g, 'echo log file: logs/run_${cycle}_${CONFIG}_L${levels}_${TSTEP}s.log'
+        print >> g, '. ./run.sh > run_${CONFIG}.log 2>&1'
+        print >> g, 'mv run_${CONFIG}.log logs/'
+        print >> g, 'echo log file: logs/run_${CONFIG}.log'
         print >> g, 'date'
 
         g.close()
@@ -411,7 +418,7 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
 
     os.chdir(repinit)
 
-    print '-'*40
+    print '#'*40
 
     if lperf:
         t1 = time.time()

@@ -37,7 +37,7 @@ fi
 # Download and install EMS in REP_EMS
 [ -d $REP_EMS ] || mkdir -p $REP_EMS
 cd $REP_EMS
-git clone --depth 1 https://github.com/romainroehrig/EMS.git --branch macRR_dephy --single-branch .
+git clone --depth 1 https://github.com/romainroehrig/EMS.git --branch macRR_dephy2 --single-branch .
 #git checkout macRR_dephy
 
 # Modify your .bash_profile to initialize a few environment variables
@@ -90,9 +90,7 @@ fi
 [ -d $REP_MUSC ] || mkdir -p $REP_MUSC
 cd $REP_MUSC
 cp -r $REP_EMS/Examples/* .
-ln -s $REP_EMS/main/install_ATM_cases.py install_ATM_cases.py
-ln -s $REP_EMS/main/install_SFX_cases.py install_SFX_cases.py
-ln -s $REP_EMS/main/run_MUSC_cases.py run_MUSC_cases.py
+ln -s $REP_EMS/main/MUSC.py
 
 for ff in convertLFA2nc.py lfa2nc.py convert2p.py convert2z.py 
 do
@@ -108,15 +106,13 @@ testing="n"
 if [ $testing == "y" ]; then
   cd $REP_MUSC
 
-  ./install_ATM_cases.py -case ARMCU -subcase REF
+  ./MUSC.py -config config/config_arp631_CMIP6.py -case ARMCU -subcase REF
   [ -f $REP_MUSC/ATM/ARPCLIMAT/ARMCU/REF/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
 
-  ./install_SFX_cases.py -case ARMCU -subcase REF -config config/config_arp631_CMIP6.py
-  [ -f $REP_MUSC/SURFEX/arp631/CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
-  [ -f $REP_MUSC/SURFEX/arp631/CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
+  [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
+  [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
 
-  ./run_MUSC_cases.py -case ARMCU -subcase REF -config config/config_arp631_CMIP6.py
-  [ -f $REP_MUSC/simulations/arp631/CMIP6/L91_300s/ARMCU/REF/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
+  [ -f $REP_MUSC/simulations/V631/arp631_CMIP6/ARMCU/REF/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
 
 fi
 

@@ -4,7 +4,7 @@
 import os
 
 # If ldebug=True, a few information about the cases are printed
-ldebug = True #False
+ldebug = False
 
 ####################################
 #### Some initialization
@@ -93,7 +93,7 @@ for subcase in subcases[case]:
 # RICO Case
 case = 'RICO'
 cases.append(case)
-subcases[case] = ['SHORT']
+subcases[case] = ['SHORT','MESONH']
 data_input[case] = {}
 for subcase in subcases[case]:
     data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
@@ -101,7 +101,7 @@ for subcase in subcases[case]:
 # ARMCU Case
 case = 'ARMCU'
 cases.append(case)
-subcases[case] = ['REF','E3SM']
+subcases[case] = ['REF','E3SM','MESONH']
 data_input[case] = {}
 for subcase in subcases[case]:
     data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
@@ -148,13 +148,12 @@ for subcase in subcases[case]:
 #data_input[case]['EUCLIPSE'] = rep0 + '/ASTEX/ASTEX_GASS-EUCLIPSE_driver_RR.nc'
 
 # SANDU composite cases
-#case = 'SANDU'
-#cases.append(case)
-#subcases[case] = ['REF','FAST','SLOW']
-#data_input[case] = {}
-#data_input[case]['REF'] = rep0 + '/SANDU/Composite_REF_driver_RR.nc'
-#data_input[case]['FAST'] = rep0 + '/SANDU/Composite_FAST_driver_RR.nc'
-#data_input[case]['SLOW'] = rep0 + '/SANDU/Composite_SLOW_driver_RR.nc'
+case = 'SANDU'
+cases.append(case)
+subcases[case] = ['REF'] #['REF','FAST','SLOW']
+data_input[case] = {}
+for subcase in subcases[case]:
+    data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 ####################################
 #### Deep convection cases
@@ -255,8 +254,43 @@ for subcase in subcases[case]:
 
 ####################################
 
+
+def available(case=None):
+    """
+    List available cases/subcases.
+    """
+
+    if case is None:
+        print '-'*30, 'Available cases'
+        for cc in cases:
+            for ss in subcases[cc]:
+                print cc, ss, data_input[cc][ss]
+        print '-'*60
+    else:
+        print '-'*30, 'Available subcase for case =', case
+        for ss in subcases[case]:
+            print case, ss, data_input[case][ss]
+        print '-'*60
+
+
+
+def check(case,subcase):
+    if not(case in cases):
+        print 'ERROR: case {0} is not known'.format(case)
+        print 'ERROR: known cases:', cases
+        available()
+        raise ValueError
+
+    if not(subcase in subcases[case]):
+        print 'ERROR: subcase {0} is not known for case {1}'.format(subcase,case)
+        print 'ERROR: known subcases for case {0}:'.format(case), subcases[case]
+        available(case)
+        raise ValueError
+
+
 if ldebug:
   for cc in cases:
       for ss in subcases[cc]:
           print cc, ss, data_input[cc][ss]
   print '-'*60
+
