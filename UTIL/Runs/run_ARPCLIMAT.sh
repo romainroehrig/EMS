@@ -123,7 +123,7 @@ set -x
 export OMP_NUM_THREADS=1
 
 #export DR_HOOK_NOT_MPI=1
-#export DR_HOOK=0
+export DR_HOOK=0
 export DR_HOOK_IGNORE_SIGNALS=-1
 
 ulimit -s unlimited
@@ -140,7 +140,7 @@ echo ' Listing for the not parallelised part: file lola'
 echo ''
 set -x
 
-cat lola
+#cat lola
 
 if [ -a NODE.001_01 ]
 then
@@ -151,7 +151,7 @@ then
     echo ' Listing for the parallelised part: file' $file
     echo ''
     set -x
-    cat $file
+    #cat $file
   done
 fi
 
@@ -170,6 +170,8 @@ find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
 #find ./ -name 'out*.txt' -exec mv {} $OUTPUTDIR \;
 find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
 find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
+find ./ -name 'output.dat' -exec mv {} $OUTPUTDIR \;
+
 
 #rm -f $OUTPUTDIR/*
 #mv Out* NODE* lola $OUTPUTDIR

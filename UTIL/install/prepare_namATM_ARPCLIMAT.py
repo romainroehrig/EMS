@@ -197,6 +197,7 @@ def prep_nam_ATM(case,filecase,namref,timestep,NSTOP,namout=None,subcase=None):
     nam[nn][param] = ['.FALSE.',]
   for param in ['LMUSCLFA','LSPS_FRC']:
     nam[nn][param] = ['.TRUE.',]
+  #nam[nn]['LMUSCLFA'] = ['.FALSE.',]
   for param in ['NGEOST_U_NUM','NGEOST_V_NUM','NLSOMEGA_NUM','NLSW_NUM','NQV_ADV_NUM','NQV_NUDG','NT_ADV_NUM','NT_NUDG','NU_NUDG','NV_NUDG']:
     nam[nn][param] = ['-1',]
 

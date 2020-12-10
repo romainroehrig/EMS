@@ -21,8 +21,10 @@ def trad(p):
 
     return tmp
 
-ampl = 0.5
-ampl_name = '05'
+#ampl = 0.5
+#ampl_name = '05'
+ampl = 0.2
+ampl_name = '02'
 
 def perturb(p,lev=1):
     nlev, = p.shape
@@ -42,10 +44,14 @@ dt = 900.
 tt = t0.add(200-dt/2./86400,cdtime.Day)
 
 #f = cdms2.open('/home/roehrig/MUSC/simulations//arp631.RCE/CMIP6/L91_900s/RCE//KUANG_SST28/Output/netcdf/Out_klevel.nc')
-f = cdms2.open('/home/roehrig/MUSC/simulations/arp631.KUANG/CMIP6.IDEAL/L91_900s/RCE/KUANG_SST28_DEPHY/Output/netcdf/Out_klevel.nc')
+#f = cdms2.open('/home/roehrig/MUSC/simulations/arp631.KUANG/CMIP6.IDEAL/L91_900s/RCE/KUANG_SST28_DEPHY/Output/netcdf/Out_klevel.nc')
+f = cdms2.open('/home/roehrig/MUSC/simulations/arp641.KUANG/CMIP6.IDEAL/L91_900s/RCE/KUANG_SST28_DEPHY/Output/netcdf/Out_klevel.nc')
 for var in ['pf','zf','u','v','temp','qv','ql','qi','tke']:
-    if var == 'tke':
+    #if var == 'tke':
+    if var in ['v','ql','qi','tke']:
         datain[var] = datain['pf']*0.
+    elif var == 'u':
+        datain[var] = datain['pf']*0.+4.8
     else:
         datain[var] = MV2.average(f(var,time = tt),axis=0)
 f.close()
@@ -73,7 +79,9 @@ nlev, = level.shape
 
 t0 = cdtime.comptime(1979,1,1,0,0,0)
 tmin = t0.add(200,cdtime.Day)
-tmax = tmin.add(400,cdtime.Day)
+#tmax = tmin.add(400,cdtime.Day)
+tmax = tmin.add(1000,cdtime.Day)
+#tmax = tmin.add(2000,cdtime.Day)
 #tmax = tmin.add(1,cdtime.Day)
 #tmax = cdtime.comptime(1979,1,2,0,0,0)
 units = 'seconds since 1979-01-01 00:00:0.0'

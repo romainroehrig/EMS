@@ -28,7 +28,8 @@ t0 = cdtime.comptime(1979,1,1,0,0,0)
 tmin = t0.add(1000-50,cdtime.Day)
 tmax = t0.add(1000,cdtime.Day)
 
-f = cdms2.open('/home/roehrig/MUSC/simulations//arp631.KUANG/CMIP6.IDEAL/L91_900s/RCEMIP/SST301.15/Output/netcdf/Out_klevel.nc')
+#f = cdms2.open('/home/roehrig/MUSC/simulations//arp631.KUANG/CMIP6.IDEAL/L91_900s/RCEMIP/SST301.15/Output/netcdf/Out_klevel.nc')
+f = cdms2.open('/home/roehrig/MUSC/simulations//arp641.KUANG/CMIP6.IDEAL/L91_900s/RCEMIP/SST301.15/Output/netcdf/Out_klevel.nc')
 for var in ['pf','zf','u','v','temp','qv','ql','qi','tke']:
     datain[var] = MV2.average(f(var,time = (tmin,tmax)),axis=0)
 f.close()
@@ -56,7 +57,7 @@ nlev, = level.shape
 
 tmin = cdtime.comptime(1979,1,1,0,0,0)
 #tmax = tmin.add(600,cdtime.Day)
-tmax = tmin.add(1000,cdtime.Day)
+tmax = tmin.add(2000,cdtime.Day)
 #tmax = tmin.add(100,cdtime.Day)
 #tmax = cdtime.comptime(1979,1,2,0,0,0)
 units = 'seconds since 1979-01-01 00:00:0.0'
