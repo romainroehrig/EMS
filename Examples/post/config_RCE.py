@@ -1,14 +1,15 @@
 #saveall = True
 saveall = False
 
-var2save = ['pf','zf','ph','zh','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','lhfn','shf','tsurf','prw','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','omega_up']
+var2save = ['pf','zf','theta','temp','qv','hur','u','v','ql','qi','qr','qsn','rneb','cc','prw','rain','ustar','lhf','shf','tsurf','prw','qlc','qic','qrc','qsnc','tke']
 
-var2save = var2save + ['tntrlw','tntrsw','tntrlwcs','tntrswcs','tntpbl','tntlscp','tntc','tntd','tnupbl','tnuc','tnud','tnvpbl','tnvc','tnvd','tntadv','tntnudg','tnugeo','tnvgeo','tendu','tendv','tendq','tendh']
+var2save = var2save + ['Q1','Q2',\
+                       'tntpbl','tntlscp','tntc','tntd','tntadv','tntnudg',\
+                       'tnqvpbl','tnqvlscp','tnqvc','tnqvd','tnqvnudg',\
+                       'tnupbl','tnuc','tnud','tnunudg','tendu',\
+                       'tnvpbl','tnvc','tnvd','tnvnudg','tendv']
 
-var2save = var2save + ['ZTAU_ECUME','t2m','huss','uas','vas']
-#,'O3','rO3','rCO2','rCH4','rN2O','rsdt','rsut','rlut','rsds','rsus','rsdscs','rsuscs','rlds','rlus','rldscs','rluscs','rsutcs','rlutcs']
-
-#var2save = var2save + ['sprw','fmse0','intfmse0','tnfmseadvw','inttnfmseadvw','lhl0','lhi0','thetae','hur','qlrad','qirad','lwp','iwp','cwp','evap','Mf','prc']
+#var2save = var2save + ['ZT_RELAX','ZQ_RELAX','ZFQ_ADV','ZFT_ADV','O3']
 
 convert2p = False
 convert2z = False

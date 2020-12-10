@@ -77,7 +77,8 @@ for var in variables:
             var_tmp[var][:] = fin[var][:]
 
         for att in fin[var].ncattrs():
-            var_tmp[var].setncattr(att,fin[var].getncattr(att))
+            if not(att in ['_FillValue',]):
+                var_tmp[var].setncattr(att,fin[var].getncattr(att))
 
 fout.close()
 
