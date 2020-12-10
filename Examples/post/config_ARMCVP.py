@@ -8,11 +8,11 @@ var2save = var2save + ['tntrlw','tntrsw','tntpbl','tntlscp','tntc','tntd','tnupb
 
 var2save = var2save + ['delta_t','delta_q','dt_wake','dq_wake','dt_wake2','dq_wake2','omega_up','alpha_up','wake_fip','Cstar','hw','ZMWAKE','ZCWAKE','ZS12','ZCTH','ZMTH','ZALPTH','ZWUP','ZALPHAUP','sigmaw']
 
-var2save = var2save + ['buoy','w_up_bud','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp','dTv_up','ZUDALWAKE','ZBUOWAKE','ZALFW','ZWWMWX','ZVVER','ZDOMEGA','ZWW','ZWX','ZMW','ZMX','ZMTOT','eps_u','eps_u_org','eps_u_tur','aipcmt','knnd','knlab']
+var2save = var2save + ['buoy','w_up_bud','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp','dTv_up','ZUDALWAKE','ZBUOWAKE','ZALFW','ZWWMWX','ZVVER','ZDOMEGA','ZWW','ZWX','ZMW','ZMX','ZMTOT']
 
 
 convert2p = False
-convert2z = True
+convert2z = False
 
 convertkday = False
 convertpday = False

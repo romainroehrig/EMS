@@ -1,9 +1,11 @@
 #saveall = True
 saveall = False
 
-var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','shf','tsurf','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','w_up','Mf','alpha_up','ustar','z0']
+var2save = ['pf','zf','theta','u','v']
+var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','shf','tsurf','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','w_up','Mf','alpha_up','ustar','z0','dTv_up','B_up','eps_u','det_u']
 
 convert2p = False
+#convert2z = True
 convert2z = False
 
 convertkday = False

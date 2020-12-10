@@ -1,5 +1,0 @@
-AYOTTE_A24SC_modif_driver_FC.nc: modification du profil de theta pour ne pas etre en neutre: 
-ncap2 -O -s 'th(0)=301.15;th(1)=301.1;th(2)=301.15;' AYOTTE_A24SC_driver_FC.nc AYOTTE_A24SC_modif_driver_FC.nc
-
-AYOTTE_A24SC_driver_FC_RR_us_modif.nc: modification du global attribute
-ncatted -O -h -a surfaceForcingWind,global,o,c,"ustar" AYOTTE_A24SC_modif_driver_FC_RR_us.nc

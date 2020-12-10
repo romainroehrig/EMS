@@ -2,16 +2,16 @@
 saveall = False
 
 
-var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','shf','tsurf','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','w_up','Mf','alpha_up','ustar','z0']
+var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','shf','tsurf','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','w_up','Mf','alpha_up','ustar','z0','dTv_up','T_up','qv_up','eps_u','det_u','B_up','eps_u_org','eps_u_tur','det_u_org','det_u_tur','lwp','iwp','tnqt','tnthl']
 
-var2save = var2save + ['tntrlw','tntrsw','tntpbl','tntlscp','tntc','tntd','tnupbl','tnuc','tnud','tnvpbl','tnvc','tnvd','tntadv','tntnudg','tnugeo','tnvgeo','tendu','tendv','tendq','tendh']
+#var2save = var2save + ['tntrlw','tntrsw','tntpbl','tntlscp','tntc','tntd','tnupbl','tnuc','tnud','tnvpbl','tnvc','tnvd','tntadv','tntnudg','tnugeo','tnvgeo','tendu','tendv','tendq','tendh']
 
-var2save = var2save + ['delta_t','delta_q','dt_wake','dq_wake','dt_wake2','dq_wake2','omega_up','alpha_up','wake_fip','Cstar','hw','ZMWAKE','ZCWAKE','ZS12','ZCTH','ZMTH','ZALPTH','ZWUP','ZALPHAUP','sigmaw']
+#var2save = var2save + ['delta_t','delta_q','dt_wake','dq_wake','dt_wake2','dq_wake2','omega_up','alpha_up','wake_fip','Cstar','hw','ZMWAKE','ZCWAKE','ZS12','ZCTH','ZMTH','ZALPTH','ZWUP','ZALPHAUP','sigmaw']
 
-var2save = var2save + ['buoy','w_up_bud','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp','dTv_up','ZUDALWAKE','ZBUOWAKE','ZALFW','ZWWMWX','ZVVER','ZDOMEGA','ZWW','ZWX','ZMW','ZMX','ZMTOT']
+#var2save = var2save + ['buoy','w_up_bud','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp','dTv_up','ZUDALWAKE','ZBUOWAKE','ZALFW','ZWWMWX','ZVVER','ZDOMEGA','ZWW','ZWX','ZMW','ZMX','ZMTOT']
 
 
-convert2p = False
+convert2p = True #False
 convert2z = False
 
 convertkday = False
