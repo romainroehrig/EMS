@@ -34,7 +34,7 @@ if not(saveall):
         if var in VV.varnames.keys():
             var2save.append(VV.varnames[var])	 
         else:
-            print var, 'not in variables.varnames.keys()' 
+            print var, 'not in variables.varnames.keys()'
             var2save.append(var)
 
     var2save = var2save + ['PAPRS','PAPRSF','PAPHI','PAPHIF']
@@ -326,7 +326,7 @@ for var in sorted(var2save):
             data[var].units = '-'
             data[var].original_name = var
 
-        data[var].missing_value = 1.e20
+        data[var].missing_value = numpy.float32(1.e20)
 
   
 
@@ -346,6 +346,7 @@ rstati = lfa.iterate_readr('RSTATI',1,tstep,nstep)
 times[:] = nsssss + rstati
 
 for var in var2save:
+    print var
     if types[var] <> 'C':
         if var in ['fracout', 'atb532', 'cfadLidarsr532', 'dbze94', 'cfadDbze94', 'clisccp', 'clmodis', 'clMISR']:
 

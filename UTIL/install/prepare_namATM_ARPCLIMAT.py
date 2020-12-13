@@ -144,7 +144,6 @@ def prep_nam_ATM(case,subcase,filecase,namref,timestep,NSTOP,namout=None):
     nn = 'NAMXFU'
     nam[nn]['NFRRAZ'] = ['1',]
 
-
     # -----------------------------------------------------------
     # Case specific modifications in namref
     # -----------------------------------------------------------
@@ -176,6 +175,7 @@ def prep_nam_ATM(case,subcase,filecase,namref,timestep,NSTOP,namout=None):
     hour = int(startDate[8:10])
     minute = int(startDate[10:12])
     second = int(startDate[12:14])
+
     nam['NAMRIP']['NINDAT'] = [startDate[0:8],]
     nam['NAMRIP']['NSSSSS'] = [str(int(hour*3600+minute*60+second)),]
 
@@ -199,30 +199,38 @@ def prep_nam_ATM(case,subcase,filecase,namref,timestep,NSTOP,namout=None):
 
     if attributes['adv_temp'] == 1 or attributes['rad_temp'] == 1:
         nam[nn]['LT_ADV_FRC'] = ['.TRUE.',]
+
     if attributes['adv_qv'] == 1:
         nam[nn]['LQV_ADV_FRC'] = ['.TRUE.',]
+
     if attributes['adv_u'] == 1 or attributes['adv_v'] == 1:
-        nam[nn]['LUV_ADV_FRC'] = ['.TRUE.',]      
+        nam[nn]['LUV_ADV_FRC'] = ['.TRUE.',]
+
     if attributes['forc_omega'] == 1:
         nam[nn]['LSOMEGA_FRC'] = ['.TRUE.',]
+
     if attributes['forc_w'] == 1:
         nam[nn]['LSW_FRC'] = ['TRUE',]
+
     if attributes['forc_geo'] == 1:
         nam[nn]['LGEOST_UV_FRC'] = ['.TRUE.',]
         W=7.2921e-5
         nam['NAMLSFORC']['RCORIO_FORC'] = [str(2.*W*math.sin(lat*math.pi/180)),]
+
     if attributes['nudging_u'] > 0. or attributes['nudging_v'] > 0.:
         nam[nn]['LUV_NUDG'] = ['.TRUE.',]
         nam[nn]['RELAX_TAUU'] = [str(float(attributes['nudging_u'])),]
         nam['NAMTOPH']['ETRELAXU'] = [str(float(attributes['p_nudging_u'])),]
+
     if attributes['nudging_temp'] > 0.:
         nam[nn]['LT_NUDG'] = ['.TRUE.',]
         nam[nn]['RELAX_TAUT'] = [str(float(attributes['nudging_temp'])),]
-        nam['NAMTOPH']['ETRELAXT'] = [str(float(attributes['p_nudging_temp'])),]      
+        nam['NAMTOPH']['ETRELAXT'] = [str(float(attributes['p_nudging_temp'])),]
+
     if attributes['nudging_qv'] > 0. :
         nam[nn]['LQV_NUDG'] = ['.TRUE.',]
         nam[nn]['RELAX_TAUQ'] = [str(float(attributes['nudging_qv'])),]
-        nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['p_nudging_qv'])),]      
+        nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['p_nudging_qv'])),]    
 
     if attributes.has_key('RCE') and attributes['RCE'] == 1:
         nam['NAMAQUAMF'] = {}
