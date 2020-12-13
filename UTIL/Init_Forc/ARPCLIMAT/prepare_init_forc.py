@@ -72,7 +72,7 @@ nt,nlat,nlon = case.variables['ps_forc'].data.shape
 
 f = open('{0}.dta'.format(vert_grid))
 lines = f.readlines()
-nlev_out = length(lines)-1
+nlev_out = len(lines)-1
 
 vah = np.zeros((nlev_out+1),dtype=np.float)
 vbh = np.zeros((nlev_out+1),dtype=np.float)

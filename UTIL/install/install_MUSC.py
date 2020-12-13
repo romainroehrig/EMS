@@ -223,7 +223,7 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         print 'PGD file:', config['PGDfile']
         print 'PREP file:', config['PREPfile']
     print 'Timestep:', config['TSTEP']
-    print 'Levels:', config['levels']
+    print 'Vertical grid:', config['vert_grid']
 
     print 'Postprocessing:'
     print 'dirpost:', configOut['dirpost']
@@ -344,7 +344,7 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         print >> g, '#'
         print >> g, 'MASTER=' + config['MASTER']
         print >> g, '#'
-        print >> g, 'levels=' + str(config['levels'])
+        print >> g, 'vert_grid=' + os.path.basename(config['vert_grid'])
         print >> g, 'TSTEP=' + str(config['TSTEP'])
         print >> g, 'NSTOP=' + NSTOP
         print >> g, '#'
