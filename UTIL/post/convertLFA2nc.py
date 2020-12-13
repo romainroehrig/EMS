@@ -4,7 +4,17 @@ import os, sys
 
 import netCDF4 as nc
 
+import argparse
+
 import config
+
+# Definition of arguments
+parser = argparse.ArgumentParser()
+parser.add_argument("-format", help="format of LFA files", type=int, required=True)
+
+# Getting arguments
+args = parser.parse_args()
+lfaformat = args.format
 
 if not(os.path.exists('netcdf')):
     os.makedirs('netcdf')
@@ -12,7 +22,7 @@ else:
     os.system('rm -f netcdf/*')
 
 # From lfa to netcdf
-os.system('python lfa2nc.py')
+os.system('python lfa2nc.py -format {0}'.format(lfaformat))
 os.system('mv Out_klevel.nc netcdf/')
 
 fin = 'netcdf/Out_klevel.nc'
