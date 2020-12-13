@@ -38,7 +38,6 @@ fi
 [ -d $REP_EMS ] || mkdir -p $REP_EMS
 cd $REP_EMS
 git clone --depth 1 https://github.com/romainroehrig/EMS.git --branch macRR_dephy2 --single-branch .
-#git checkout macRR_dephy
 
 # Modify your .bash_profile to initialize a few environment variables
 cd ~/
@@ -103,16 +102,26 @@ done
 # Some Testing
 testing="n"
 
+install_arp631="n"
+install_cy41="n"
+
+test_arp631="n"
+
 if [ $testing == "y" ]; then
-  cd $REP_MUSC
 
-  ./MUSC.py -config config/config_arp631_CMIP6.py -case ARMCU -subcase REF
-  [ -f $REP_MUSC/ATM/ARPCLIMAT/ARMCU/REF/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
+  # Testing ARPEGE-Climat 6.3.1
+  if [ $test_arp631 == 'y']; then
+    cd $REP_MUSC
 
-  [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
-  [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
+    ./MUSC.py -config config/config_arp631_CMIP6.py -case ARMCU -subcase REF
+    [ -f $REP_MUSC/ATM/ARPCLIMAT/ARMCU/REF/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
 
-  [ -f $REP_MUSC/simulations/V631/arp631_CMIP6/ARMCU/REF/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
+    [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
+    [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
+
+    [ -f $REP_MUSC/simulations/V631/arp631_CMIP6/ARMCU/REF/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
+
+  fi
 
 fi
 
