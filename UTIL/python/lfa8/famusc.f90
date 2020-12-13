@@ -27,7 +27,7 @@
       integer(kind=4) :: iul,ilong,ierr, jc, it
       character*100   :: filename
       character*2     :: cltype
-      character*12    :: timestamp
+      character*8    :: timestamp
       real(kind=8)    :: timestep
       real(kind=8)    :: time1, time2
       real(kind=4)    :: tmp(zdim)
@@ -43,8 +43,8 @@
 ! Ouverture du fichier.
 !
 
-        WRITE(timestamp,FMT='(F12.4)') REAL(it-1,KIND=8)*REAL(tstep,KIND=8)/REAL(3600.,KIND=8)
-        DO jc=1,12
+        WRITE(timestamp,FMT='(F8.4)') REAL(it-1,KIND=8)*REAL(tstep,KIND=8)/REAL(3600.,KIND=8)
+        DO jc=1,8
           IF(timestamp(JC:JC) == ' ') timestamp(JC:JC)='0'
         ENDDO
         WRITE(filename,FMT='(9A)')'LFA/Out.',timestamp,'.lfa'
@@ -108,7 +108,7 @@
       integer(kind=4) :: iul,ilong,ierr, jc, it
       character*100   :: filename
       character*2     :: cltype
-      character*12    :: timestamp
+      character*8    :: timestamp
       real(kind=8)    :: timestep
       real(kind=8)    :: time1, time2
       real(kind=4)    :: tmp(zdim)
@@ -124,8 +124,8 @@
 ! Ouverture du fichier.
 !
 
-        WRITE(timestamp,FMT='(F12.4)') REAL(it-1,KIND=8)*REAL(tstep,KIND=8)/REAL(3600.,KIND=8)
-        DO jc=1,12
+        WRITE(timestamp,FMT='(F8.4)') REAL(it-1,KIND=8)*REAL(tstep,KIND=8)/REAL(3600.,KIND=8)
+        DO jc=1,8
           IF(timestamp(JC:JC) == ' ') timestamp(JC:JC)='0'
         ENDDO
         WRITE(filename,FMT='(9A)')'LFA/Out.',timestamp,'.lfa'

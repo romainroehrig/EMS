@@ -30,6 +30,7 @@ dirpost = os.path.join(REP_MUSC,'post')
 variablesDict = 'variables.py'
 defaultConfigPost = 'config_default.py'
 caseDependent = True
+lfaformat = 12
 
 # EMS configuration
 model = 'ARPCLIMAT'

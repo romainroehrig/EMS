@@ -12,7 +12,23 @@ import string
 import numpy
 import netCDF4
 
-import lfalib as lfa
+import argparse
+
+# Definition of arguments
+parser = argparse.ArgumentParser()
+parser.add_argument("-format", help="format of LFA files", type=int, required=True)
+
+# Getting arguments
+args = parser.parse_args()
+lfaformat = args.format
+
+if lfaformat == 8:
+    import lfa8lib as lfa
+elif lfaformat == 12:
+    import lfa12lib as lfa
+else:
+    print 'ERROR : lfaformat unexepcted:', lfaformat
+    raise ValueError
 
 import variables as VV
 import config
