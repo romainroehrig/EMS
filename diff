@@ -1,0 +1,438 @@
+diff --git a/Examples/config/config_arp631_CMIP6.py b/Examples/config/config_arp631_CMIP6.py
+index 490ce62..9078ecc 100644
+--- a/Examples/config/config_arp631_CMIP6.py
++++ b/Examples/config/config_arp631_CMIP6.py
+@@ -13,9 +13,9 @@ GROUP = 'V631'
+ EXPID = __name__[7:]
+ 
+ # Binaries
+-MASTER = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin//MASTERODB'
+-PGD = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PGD'
+-PREP = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PREP'
++MASTER = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/MASTER'
++PGD = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PGD'
++PREP = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PREP'
+ 
+ # Namelists
+ ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631')
+diff --git a/UTIL/Init_Forc/AROME46t1/prepare_init_forc.py b/UTIL/Init_Forc/AROME46t1/prepare_init_forc.py
+index f904f57..07b0e57 100644
+--- a/UTIL/Init_Forc/AROME46t1/prepare_init_forc.py
++++ b/UTIL/Init_Forc/AROME46t1/prepare_init_forc.py
+@@ -37,7 +37,7 @@ lnam1D = True #config.lnam1D
+ lsave_init = True
+ lsave_forc = True
+ 
+-nlev_out = config.nlev
++vert_grid = config.vert_grid
+ 
+ #---------------------------------------------------------------
+ # Reading case information
+@@ -70,13 +70,15 @@ nt,nlat,nlon = case.variables['ps_forc'].data.shape
+ # Half-level pressure
+ #---------------------------------------------------------------
+ 
++f = open('{0}.dta'.format(vert_grid))
++lines = f.readlines()
++nlev_out = len(lines)-1
++
+ vah = np.zeros((nlev_out+1),dtype=np.float)
+ vbh = np.zeros((nlev_out+1),dtype=np.float)
+ 
+-f = open('L' + str(nlev_out) + '.dta')
+-
+ for ilev in range(0,nlev_out+1):
+-    line = f.readline().split()
++    line = lines[ilev].split()
+     vah[ilev] = float(line[0])
+     vbh[ilev] = float(line[1])
+ 
+@@ -234,7 +236,7 @@ if lnam1D:
+     else:  
+         dt = timein.data[1]-timein.data[0]
+ 
+-    g = open('nam1D_L' + str(nlev_out),'w')
++    g = open('nam1D_{0}'.format(vert_grid),'w')
+ 
+     print >>g, '&NAM1D'
+     print >>g, '  LMAP    = .FALSE.,'
+@@ -355,7 +357,7 @@ if lnam1D:
+ #---------------------------------------------------------------
+ 
+ if lsave_init:
+-    fileout = 'init_L'+ str(nlev_out) + '.nc'
++    fileout = 'init_{0}.nc'.format(vert_grid)
+     g = nc.Dataset(fileout,'w',format='NETCDF3_CLASSIC')
+     for var in dataout.keys():
+         dataout[var].write(g)
+@@ -363,7 +365,7 @@ if lsave_init:
+     g.close()
+ 
+ if lsave_forc:
+-    fileout = 'forc_L'+ str(nlev_out) + '.nc'
++    fileout = 'forc_{0}.nc'.format(vert_grid)
+     g = nc.Dataset(fileout,'w',format='NETCDF3_CLASSIC')
+     for var in dataout.keys():
+         dataout[var].write(g)
+diff --git a/UTIL/Init_Forc/AROME46t1/prepare_init_forc.sh b/UTIL/Init_Forc/AROME46t1/prepare_init_forc.sh
+index 22789ed..4154ad3 100755
+--- a/UTIL/Init_Forc/AROME46t1/prepare_init_forc.sh
++++ b/UTIL/Init_Forc/AROME46t1/prepare_init_forc.sh
+@@ -25,7 +25,7 @@ subcase = '$2'
+ 
+ #zorog = 0.
+ 
+-nlev = $3
++vert_grid = '$3'
+ 
+ dt = $4
+ 
+@@ -73,15 +73,15 @@ variablesAux['SURFZ0REL.FOIS.G']=0.1
+ 
+ EOF
+ 
+-rm -rf files_L${3}_${4}s
+-mkdir files_L${3}_${4}s
++rm -rf files_${3}_${4}s
++mkdir files_${3}_${4}s
+ 
+ python prepare_init_forc.py
+ 
+-cp nam1D_L$3 nam1D
++cp nam1D_$3 nam1D
+ 
+ $ASCII2FA > ascii2fa_$3.log 2>&1
+ 
+ rm -f nam1D
+ 
+-mv 1D.file initfile_L$3
++mv 1D.file initfile_$3
+diff --git a/UTIL/Runs/run_AROME46t1.sh b/UTIL/Runs/run_AROME46t1.sh
+index 6b417c0..2989cd5 100755
+--- a/UTIL/Runs/run_AROME46t1.sh
++++ b/UTIL/Runs/run_AROME46t1.sh
+@@ -5,6 +5,11 @@
+ #------------------------------------------------------------
+ set -x
+ 
++export OMP_NUM_THREADS=1
++
++export DR_HOOK_IGNORE_SIGNALS=-1
++export DR_HOOK=0
++
+ . ./param
+ 
+ EXP=ARPE
+@@ -26,7 +31,9 @@ fi
+ TMPDIR=$HOME/tmp/EXEMUSC
+ 
+ if [ ! -d $TMPDIR ] ; then
+-  mkdir $TMPDIR
++  mkdir -p $TMPDIR
++else
++  find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
+ fi
+ 
+ cd $TMPDIR
+@@ -116,10 +123,6 @@ echo ' ALADIN job running '
+ echo ''
+ set -x
+ 
+-#export DR_HOOK_NOT_MPI=1
+-#export DR_HOOK=0
+-export DR_HOOK_IGNORE_SIGNALS=-1
+-
+ ulimit -s unlimited
+ 
+ unset LD_LIBRARY_PATH
+@@ -127,7 +130,6 @@ unset LD_LIBRARY_PATH
+ date
+ ./MASTER >lola 2>&1
+ date
+-#rm fort.4
+ ls -l
+ 
+ set +x
+@@ -163,12 +165,10 @@ set -x
+ 
+ find $OUTPUTDIR/ -name '*' -exec rm -f {} \;
+ find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
++#find ./ -name 'out*.txt' -exec mv {} $OUTPUTDIR \;
+ find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
+ find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
+ 
+-#rm -f $OUTPUTDIR/*
+-#mv Out* NODE* lola $OUTPUTDIR
+-
+ set +x
+ echo ''
+ echo ' Present files on the workdir $TMPDIR '
+@@ -200,7 +200,7 @@ set -x
+ if [ $installpost = True ]
+ then
+   cd $OUTPUTDIR0
+-  rm -f *.py *.sh *.pyc *.so 
++  rm -f *.py *.pyc 
+   set +x
+   echo ''
+   echo ' Install post-processing '
+@@ -224,6 +224,7 @@ fi
+ 
+ if [ $runpost = True ]
+ then
++  cd $OUTPUTDIR0
+   set +x
+   echo ''
+   echo ' Postprocessing '
+diff --git a/UTIL/Runs/run_ARPCLIMAT.sh b/UTIL/Runs/run_ARPCLIMAT.sh
+index 9289154..c5c28a9 100755
+--- a/UTIL/Runs/run_ARPCLIMAT.sh
++++ b/UTIL/Runs/run_ARPCLIMAT.sh
+@@ -37,6 +37,7 @@ else
+ fi
+ 
+ cd $TMPDIR
++rm -rf $TMPDIR/* || : 
+ 
+ ladate=`date`
+ set +x
+@@ -122,6 +123,8 @@ echo ' ALADIN job running '
+ echo ''
+ set -x
+ 
++ulimit -s unlimited
++
+ date
+ ./MASTER -c001 -vmeteo -maladin -e${EXP} -t$TSTEP -f$NSTOP -a$ADVEC  >lola 2>&1
+ date
+diff --git a/UTIL/Tools/ASCII2FA/bin/ascii2fa b/UTIL/Tools/ASCII2FA/bin/ascii2fa
+index dc9aeb3..8fe8647 100755
+Binary files a/UTIL/Tools/ASCII2FA/bin/ascii2fa and b/UTIL/Tools/ASCII2FA/bin/ascii2fa differ
+diff --git a/UTIL/Tools/ASCII2FA/src/Makefile b/UTIL/Tools/ASCII2FA/src/Makefile
+index ed5e0cf..5c1b937 100755
+--- a/UTIL/Tools/ASCII2FA/src/Makefile
++++ b/UTIL/Tools/ASCII2FA/src/Makefile
+@@ -2,7 +2,7 @@
+ 
+ FC	 =	gfortran
+ FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
+-F90FLAGS =      -fconvert=swap -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -DDARWIN -DADDRESS64 -fdefault-real-8 -fdefault-double-8 -g -O2
++F90FLAGS =      -fconvert=big-endian -frecord-marker=4 $(M32) -ffree-form -fdefault-real-8 -DADDRESS64 -DHIGHRES
+ EXEC	 =	acadfa_exe
+ 
+ OBJS	 =	acadfa1D_main.o \
+@@ -10,11 +10,10 @@ OBJS	 =	acadfa1D_main.o \
+ 		real2spec.o \
+ 		empty.o 
+ 
+-XRD	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxrd.local.a 
+-XLA	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a 
+-GRIBEX   =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a 
+-MPIDUMMY =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a
+-LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY) 
++XRD	 =	libxrd.a 
++GRIBEX   =      /home/common/sync/gfortran/auxlibs/lib/libgribex.a 
++MPIDUMMY =      /home/common/sync/gfortran/auxlibs/lib/libmpidummy.a
++LIBS	 =	$(XRD) $(GRIBEX) $(MPIDUMMY)
+ 
+ %.o:%.F90
+ 	$(FC) $(F90FLAGS) -c $<
+diff --git a/UTIL/Tools/ASCII2FA/src/libxrd.a b/UTIL/Tools/ASCII2FA/src/libxrd.a
+new file mode 100644
+index 0000000..4e4a59c
+Binary files /dev/null and b/UTIL/Tools/ASCII2FA/src/libxrd.a differ
+diff --git a/UTIL/Tools/ASCII2FA_GMAP/bin/ascii2fa b/UTIL/Tools/ASCII2FA_GMAP/bin/ascii2fa
+new file mode 100755
+index 0000000..9827c2f
+Binary files /dev/null and b/UTIL/Tools/ASCII2FA_GMAP/bin/ascii2fa differ
+diff --git a/UTIL/Tools/LFA/bin/cllangu b/UTIL/Tools/LFA/bin/cllangu
+index fb1e1b6..9f95061 100755
+Binary files a/UTIL/Tools/LFA/bin/cllangu and b/UTIL/Tools/LFA/bin/cllangu differ
+diff --git a/UTIL/Tools/LFA/bin/lfa2lfa b/UTIL/Tools/LFA/bin/lfa2lfa
+index 9ea0865..f902433 100755
+Binary files a/UTIL/Tools/LFA/bin/lfa2lfa and b/UTIL/Tools/LFA/bin/lfa2lfa differ
+diff --git a/UTIL/Tools/LFA/bin/lfa2lfp b/UTIL/Tools/LFA/bin/lfa2lfp
+index afc92d1..d2129e6 100755
+Binary files a/UTIL/Tools/LFA/bin/lfa2lfp and b/UTIL/Tools/LFA/bin/lfa2lfp differ
+diff --git a/UTIL/Tools/LFA/bin/lfa_autodocumentation b/UTIL/Tools/LFA/bin/lfa_autodocumentation
+index 81a8c39..fa079a0 100755
+Binary files a/UTIL/Tools/LFA/bin/lfa_autodocumentation and b/UTIL/Tools/LFA/bin/lfa_autodocumentation differ
+diff --git a/UTIL/Tools/LFA/bin/lfa_demo b/UTIL/Tools/LFA/bin/lfa_demo
+index 512a742..64e0248 100755
+Binary files a/UTIL/Tools/LFA/bin/lfa_demo and b/UTIL/Tools/LFA/bin/lfa_demo differ
+diff --git a/UTIL/Tools/LFA/bin/lfac b/UTIL/Tools/LFA/bin/lfac
+index da679d3..cfd4db8 100755
+Binary files a/UTIL/Tools/LFA/bin/lfac and b/UTIL/Tools/LFA/bin/lfac differ
+diff --git a/UTIL/Tools/LFA/bin/lfacre b/UTIL/Tools/LFA/bin/lfacre
+index 49371c4..5a4c669 100755
+Binary files a/UTIL/Tools/LFA/bin/lfacre and b/UTIL/Tools/LFA/bin/lfacre differ
+diff --git a/UTIL/Tools/LFA/bin/lfadiff b/UTIL/Tools/LFA/bin/lfadiff
+index 1098916..ea9c582 100755
+Binary files a/UTIL/Tools/LFA/bin/lfadiff and b/UTIL/Tools/LFA/bin/lfadiff differ
+diff --git a/UTIL/Tools/LFA/bin/lfadiffart b/UTIL/Tools/LFA/bin/lfadiffart
+index db4bfd8..44ba560 100755
+Binary files a/UTIL/Tools/LFA/bin/lfadiffart and b/UTIL/Tools/LFA/bin/lfadiffart differ
+diff --git a/UTIL/Tools/LFA/bin/lfadiffrel b/UTIL/Tools/LFA/bin/lfadiffrel
+index f6fb680..e345de1 100755
+Binary files a/UTIL/Tools/LFA/bin/lfadiffrel and b/UTIL/Tools/LFA/bin/lfadiffrel differ
+diff --git a/UTIL/Tools/LFA/bin/lfafreq b/UTIL/Tools/LFA/bin/lfafreq
+index db12761..f02ec67 100755
+Binary files a/UTIL/Tools/LFA/bin/lfafreq and b/UTIL/Tools/LFA/bin/lfafreq differ
+diff --git a/UTIL/Tools/LFA/bin/lfalaf b/UTIL/Tools/LFA/bin/lfalaf
+index d688e21..c6430df 100755
+Binary files a/UTIL/Tools/LFA/bin/lfalaf and b/UTIL/Tools/LFA/bin/lfalaf differ
+diff --git a/UTIL/Tools/LFA/bin/lfaminm b/UTIL/Tools/LFA/bin/lfaminm
+index b54e404..57bff37 100755
+Binary files a/UTIL/Tools/LFA/bin/lfaminm and b/UTIL/Tools/LFA/bin/lfaminm differ
+diff --git a/UTIL/Tools/LFA/bin/lfamoy b/UTIL/Tools/LFA/bin/lfamoy
+index 24e2039..3dc0bda 100755
+Binary files a/UTIL/Tools/LFA/bin/lfamoy and b/UTIL/Tools/LFA/bin/lfamoy differ
+diff --git a/UTIL/Tools/LFA/bin/lfareu b/UTIL/Tools/LFA/bin/lfareu
+index b9ee641..dfe3cf7 100755
+Binary files a/UTIL/Tools/LFA/bin/lfareu and b/UTIL/Tools/LFA/bin/lfareu differ
+diff --git a/UTIL/Tools/LFA/bin/lfatest b/UTIL/Tools/LFA/bin/lfatest
+index 81268f2..cde8c03 100755
+Binary files a/UTIL/Tools/LFA/bin/lfatest and b/UTIL/Tools/LFA/bin/lfatest differ
+diff --git a/UTIL/Tools/LFA/bin/lfp2lfa b/UTIL/Tools/LFA/bin/lfp2lfa
+index b47a98e..bc737bb 100755
+Binary files a/UTIL/Tools/LFA/bin/lfp2lfa and b/UTIL/Tools/LFA/bin/lfp2lfa differ
+diff --git a/UTIL/python/lfa12/lfa.so b/UTIL/python/lfa12/lfa.so
+index 0a994b1..f2fa667 100755
+Binary files a/UTIL/python/lfa12/lfa.so and b/UTIL/python/lfa12/lfa.so differ
+diff --git a/UTIL/python/lfa12/liblfa.a b/UTIL/python/lfa12/liblfa.a
+index a766d4e..6ce82e2 100644
+Binary files a/UTIL/python/lfa12/liblfa.a and b/UTIL/python/lfa12/liblfa.a differ
+diff --git a/UTIL/python/lfa8/lfa.so b/UTIL/python/lfa8/lfa.so
+index d371533..f2fa667 100755
+Binary files a/UTIL/python/lfa8/lfa.so and b/UTIL/python/lfa8/lfa.so differ
+diff --git a/UTIL/python/lfa8/liblfa.a b/UTIL/python/lfa8/liblfa.a
+index bfddbf2..6ce82e2 100644
+Binary files a/UTIL/python/lfa8/liblfa.a and b/UTIL/python/lfa8/liblfa.a differ
+diff --git a/install_macRR.sh b/install_CNRM.sh
+similarity index 62%
+rename from install_macRR.sh
+rename to install_CNRM.sh
+index fab054d..753b6fc 100755
+--- a/install_macRR.sh
++++ b/install_CNRM.sh
+@@ -12,7 +12,7 @@ REP_EMS=$HOME/Tools/EMS/V1
+ REP_MUSC=$HOME/MUSC/V1
+ 
+ # Environment file to use
+-PROFILE=.profile
++PROFILE=.bash_profile
+ 
+ #####################################################
+ 
+@@ -23,13 +23,13 @@ DIR0=`pwd`
+ 
+ if [ -d $REP_EMS ]; then
+   echo "REP_EMS="$REP_EMS
+-  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install_macRR.sh"
++  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install_CNRM.sh"
+   exit
+ fi
+ 
+ if [ -d $REP_MUSC ]; then
+   echo "REP_MUSC="$REP_MUSC
+-  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install_macRR.sh"
++  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install_CNRM.sh"
+   exit
+ fi
+ 
+@@ -37,7 +37,7 @@ fi
+ # Download and install EMS in REP_EMS
+ [ -d $REP_EMS ] || mkdir -p $REP_EMS
+ cd $REP_EMS
+-git clone --depth 1 https://github.com/romainroehrig/EMS.git --branch macRR_dephy2 --single-branch .
++git clone --depth 1 https://github.com/romainroehrig/EMS.git --branch dev --single-branch .
+ 
+ # Modify your .bash_profile to initialize a few environment variables
+ cd ~/
+@@ -46,12 +46,12 @@ cd ~/
+ cat $PROFILE > $PROFILE.EMS-saved_$(date +"%Y-%m-%d_at_%H-%M-%S")
+ 
+ # Modify it
+-sed -i '' "/^export REP_EMS=/ s/$/ #commented on $(date)/" $PROFILE
+-sed -i '' "s/^export REP_EMS=/#&/" $PROFILE
+-sed -i '' "/^export REP_MUSC=/ s/$/ #commented on $(date)/" $PROFILE
+-sed -i '' "s/^export REP_MUSC=/#&/" $PROFILE
+-sed -i '' "/^export PYTHONPATH=.:\$REP_EMS/ s/$/ #commented on $(date)/" $PROFILE
+-sed -i '' "s/^export PYTHONPATH=.:\$REP_EMS/#&/" $PROFILE
++sed -i "/^export REP_EMS=/ s/$/ #commented on $(date)/" $PROFILE
++sed -i "s/^export REP_EMS=/#&/" $PROFILE
++sed -i "/^export REP_MUSC=/ s/$/ #commented on $(date)/" $PROFILE
++sed -i "s/^export REP_MUSC=/#&/" $PROFILE
++sed -i "/^export PYTHONPATH=.:\$REP_EMS/ s/$/ #commented on $(date)/" $PROFILE
++sed -i "s/^export PYTHONPATH=.:\$REP_EMS/#&/" $PROFILE
+ 
+ cat << EOF >> $PROFILE
+ 
+@@ -64,26 +64,6 @@ EOF
+ 
+ . ~/$PROFILE
+ 
+-# Some compilation if you want
+-compile="n"
+-
+-if [ $compile == "y" ]; then
+-
+-  # lfa python library
+-  cd $REP_EMS/UTIL/python/lfa
+-  ./compile.sh
+-
+-  # ascii2lfa binary
+-  cd $REP_EMS/UTIL/Tools/ASCII2FA/src
+-  make all
+-  make clean
+-
+-  # LFA tools
+-  cd $REP_EMS//UTIL/Tools/LFA
+-  ./install
+-
+-fi
+-
+ #####################################################
+ # Prepare what is needed to run MUSC simulations in REP_MUSC
+ [ -d $REP_MUSC ] || mkdir -p $REP_MUSC
+@@ -109,6 +89,40 @@ test_arp631="n"
+ 
+ if [ $testing == "y" ]; then
+ 
++  # ARPEGE-Climat 6.3.1
++  if [ $install_arp631 == 'y' ]; then
++
++    [ -d /home/common/pack ] || mkdir -p /home/common/pack
++    cd /home/common/pack
++
++    if [ -d arp603_export.01.GFORTRAN610.cx ]; then
++      echo "pack arp603_export.01.GFORTRAN610.cx already installed in /home/common/pack"
++    else
++      echo "pack arp603_export.01.GFORTRAN610.cx is installed in /home/common/pack"
++      cp /cnrm/mosca/DATA/rootpack/arp603_export.01.GFORTRAN610.cx-29032018.tgz .
++      tar zxvf arp603_export.01.GFORTRAN610.cx-29032018.tgz
++      rm -f arp603_export.01.GFORTRAN610.cx-29032018.tgz
++    fi
++
++  fi
++
++  # ARPEGE Cycle 41t1_op1.11_MUSC
++  if [ $install_cy41 == 'y' ]; then
++
++    [ -d $HOME/pack ] || mkdir $HOME/pack
++    cd $HOME/pack
++
++    if [ -d 41t1_op1.11_MUSC ]; then
++      echo "pack 41t1_op1.11_MUSC already installed in /home/common/pack"
++    else
++      echo "pack 41t1_op1.11_MUSC is installed in $HOME/pack"
++      cp /cnrm/amacs/USERS/roehrig/share/MUSC/pack/41t1_op1.11_MUSC.tar.gz
++      tar zxvf 41t1_op1.11_MUSC.tar.gz
++      rm -f 41t1_op1.11_MUSC.tar.gz
++    fi
++
++  fi
++
+   # Testing ARPEGE-Climat 6.3.1
+   if [ $test_arp631 == 'y']; then
+     cd $REP_MUSC

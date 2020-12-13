@@ -5,6 +5,11 @@
 #------------------------------------------------------------
 set -x
 
+export OMP_NUM_THREADS=1
+
+export DR_HOOK_IGNORE_SIGNALS=-1
+export DR_HOOK=0
+
 . ./param
 
 EXP=ARPE
@@ -26,7 +31,9 @@ fi
 TMPDIR=$HOME/tmp/EXEMUSC
 
 if [ ! -d $TMPDIR ] ; then
-  mkdir $TMPDIR
+  mkdir -p $TMPDIR
+else
+  find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
 fi
 
 cd $TMPDIR
@@ -116,10 +123,6 @@ echo ' ALADIN job running '
 echo ''
 set -x
 
-#export DR_HOOK_NOT_MPI=1
-#export DR_HOOK=0
-export DR_HOOK_IGNORE_SIGNALS=-1
-
 ulimit -s unlimited
 
 unset LD_LIBRARY_PATH
@@ -127,7 +130,6 @@ unset LD_LIBRARY_PATH
 date
 ./MASTER >lola 2>&1
 date
-#rm fort.4
 ls -l
 
 set +x
@@ -163,11 +165,9 @@ set -x
 
 find $OUTPUTDIR/ -name '*' -exec rm -f {} \;
 find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
+#find ./ -name 'out*.txt' -exec mv {} $OUTPUTDIR \;
 find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
 find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
-
-#rm -f $OUTPUTDIR/*
-#mv Out* NODE* lola $OUTPUTDIR
 
 set +x
 echo ''
@@ -200,7 +200,7 @@ set -x
 if [ $installpost = True ]
 then
   cd $OUTPUTDIR0
-  rm -f *.py *.sh *.pyc *.so 
+  rm -f *.py *.pyc 
   set +x
   echo ''
   echo ' Install post-processing '
@@ -224,6 +224,7 @@ fi
 
 if [ $runpost = True ]
 then
+  cd $OUTPUTDIR0
   set +x
   echo ''
   echo ' Postprocessing '
