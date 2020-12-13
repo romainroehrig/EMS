@@ -230,7 +230,7 @@ def prep_nam_ATM(case,subcase,filecase,namref,timestep,NSTOP,namout=None):
     if attributes['nudging_qv'] > 0. :
         nam[nn]['LQV_NUDG'] = ['.TRUE.',]
         nam[nn]['RELAX_TAUQ'] = [str(float(attributes['nudging_qv'])),]
-        nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['p_nudging_qv'])),]    
+        nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['p_nudging_qv'])),]
 
     if attributes.has_key('RCE') and attributes['RCE'] == 1:
         nam['NAMAQUAMF'] = {}
