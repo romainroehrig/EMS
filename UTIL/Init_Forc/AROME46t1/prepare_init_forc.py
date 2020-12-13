@@ -37,7 +37,7 @@ lnam1D = True #config.lnam1D
 lsave_init = True
 lsave_forc = True
 
-nlev_out = config.nlev
+vert_grid = config.vert_grid
 
 #---------------------------------------------------------------
 # Reading case information
@@ -70,13 +70,15 @@ nt,nlat,nlon = case.variables['ps_forc'].data.shape
 # Half-level pressure
 #---------------------------------------------------------------
 
+f = open('{0}.dta'.format(vert_grid))
+lines = f.readlines()
+nlev_out = len(lines)-1
+
 vah = np.zeros((nlev_out+1),dtype=np.float)
 vbh = np.zeros((nlev_out+1),dtype=np.float)
 
-f = open('L' + str(nlev_out) + '.dta')
-
 for ilev in range(0,nlev_out+1):
-    line = f.readline().split()
+    line = lines[ilev].split()
     vah[ilev] = float(line[0])
     vbh[ilev] = float(line[1])
 
@@ -234,7 +236,7 @@ if lnam1D:
     else:  
         dt = timein.data[1]-timein.data[0]
 
-    g = open('nam1D_L' + str(nlev_out),'w')
+    g = open('nam1D_{0}'.format(vert_grid),'w')
 
     print >>g, '&NAM1D'
     print >>g, '  LMAP    = .FALSE.,'
@@ -355,7 +357,7 @@ if lnam1D:
 #---------------------------------------------------------------
 
 if lsave_init:
-    fileout = 'init_L'+ str(nlev_out) + '.nc'
+    fileout = 'init_{0}.nc'.format(vert_grid)
     g = nc.Dataset(fileout,'w',format='NETCDF3_CLASSIC')
     for var in dataout.keys():
         dataout[var].write(g)
@@ -363,7 +365,7 @@ if lsave_init:
     g.close()
 
 if lsave_forc:
-    fileout = 'forc_L'+ str(nlev_out) + '.nc'
+    fileout = 'forc_{0}.nc'.format(vert_grid)
     g = nc.Dataset(fileout,'w',format='NETCDF3_CLASSIC')
     for var in dataout.keys():
         dataout[var].write(g)
