@@ -37,7 +37,7 @@ else
 fi
 
 cd $TMPDIR
-rm -rf $TMPDIR/* || : 
+rm -rf $TMPDIR/* || :
 
 ladate=`date`
 set +x
