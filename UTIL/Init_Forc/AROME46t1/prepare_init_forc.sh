@@ -25,7 +25,7 @@ subcase = '$2'
 
 #zorog = 0.
 
-nlev = $3
+vert_grid = '$3'
 
 dt = $4
 
@@ -73,15 +73,15 @@ variablesAux['SURFZ0REL.FOIS.G']=0.1
 
 EOF
 
-rm -rf files_L${3}_${4}s
-mkdir files_L${3}_${4}s
+rm -rf files_${3}_${4}s
+mkdir files_${3}_${4}s
 
 python prepare_init_forc.py
 
-cp nam1D_L$3 nam1D
+cp nam1D_$3 nam1D
 
 $ASCII2FA > ascii2fa_$3.log 2>&1
 
 rm -f nam1D
 
-mv 1D.file initfile_L$3
+mv 1D.file initfile_$3
