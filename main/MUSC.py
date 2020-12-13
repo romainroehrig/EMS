@@ -181,13 +181,13 @@ if __name__ == '__main__':
     config['name'] = EXPID
     config['MASTER'] = MASTER
     config['ecoclimap'] = ecoclimap
-    config['levels'] = vert_grid
+    config['vert_grid'] = vert_grid
     config['TSTEP'] = timestep
     config['lsurfex'] = lsurfex
     config['namATMref'] = ATMNAM
-    config['initfile'] = os.path.join(repATM, case, subcase, 'initfile_{0}'.format(vert_grid))
+    config['initfile'] = os.path.join(repATM, case, subcase, 'initfile_{0}'.format(vert_grid_name))
     if model == 'ARPCLIMAT':
-        config['forcingfiles'] = os.path.join(repATM, case, subcase, 'files_{0}_{1}s'.format(vert_grid,timestep))
+        config['forcingfiles'] = os.path.join(repATM, case, subcase, 'files_{0}_{1}s'.format(vert_grid_name,timestep))
     if lsurfex:
         config['namSFXref'] = SFXNAM
         config['PGDfile'] = os.path.join(repSFX, case, subcase, 'PGD.lfi')
