@@ -6,10 +6,10 @@ set -evx
 # User specific
 
 # Directory where EMS is installed
-REP_EMS=$HOME/Tools/EMS_test
+REP_EMS=$HOME/Tools/EMS/V1
 
 # Directory where MUSC will be run
-REP_MUSC=$HOME/MUSC_test
+REP_MUSC=$HOME/MUSC/V1
 
 # Environment file to use
 PROFILE=.bash_profile
