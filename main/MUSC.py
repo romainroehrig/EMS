@@ -20,6 +20,7 @@ default = {
         'variablesDict': 'variable.py',
         'defaultConfigPost': 'config_default.py',
         'caseDependent': True,
+        'lfaformat': 12,
         #
         # EMS configuration
         'model': 'ARPCLIMAT',
@@ -69,7 +70,7 @@ if __name__ == '__main__':
     # Get configuration:
     atts = {}
     # First loop over attributes which have a default (see above)
-    for att in ['GROUP','model','lsurfex','dirpost','variablesDict','defaultConfigPost','caseDependent','ecoclimap','loverwrite','lupdate_ATM','lupdate_SFX','lupdate_RUN']: 
+    for att in ['GROUP','model','lsurfex','dirpost','variablesDict','defaultConfigPost','caseDependent','lfaformat','ecoclimap','loverwrite','lupdate_ATM','lupdate_SFX','lupdate_RUN']: 
         try:
             atts[att] = CM.__dict__[att]
         except KeyError:
@@ -114,6 +115,7 @@ if __name__ == '__main__':
     variablesDict = atts['variablesDict']
     defaultConfigPost = atts['defaultConfigPost']
     caseDependent = atts['caseDependent']
+    lfaformat = atts['lfaformat']
 
     loverwrite = atts['loverwrite']
     lupdate_ATM = atts['lupdate_ATM']
@@ -197,6 +199,7 @@ if __name__ == '__main__':
     configOut = {}
     configOut['dirpost'] = dirpost
     configOut['variablesDict'] = variablesDict
+    configOut['lfaformat'] = lfaformat
 
     if caseDependent:
         tmp = os.path.join(dirpost,'config_{0}.py'.format(case))

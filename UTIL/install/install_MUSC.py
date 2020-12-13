@@ -364,6 +364,7 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         print >> g, 'dirpost=' + configOut['dirpost'] 
         print >> g, 'configpost=' + configOut['configpost']
         print >> g, 'variablesDict=' + configOut['variablesDict']
+        print >> g, 'lfaformat=' + str(configOut['lfaformat'])
         print >> g, 'installpost=True'
         print >> g, 'runpost=True'
 
