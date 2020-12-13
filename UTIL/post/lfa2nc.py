@@ -31,10 +31,11 @@ if not(saveall):
     var2save0 = config.var2save
     var2save = []
     for var in var2save0:
-      if var in VV.varnames.keys():
-        var2save.append(VV.varnames[var])	 
-      else:
-        print var, 'not in variables.varnames.keys()' 
+        if var in VV.varnames.keys():
+            var2save.append(VV.varnames[var])	 
+        else:
+            print var, 'not in variables.varnames.keys()' 
+            var2save.append(var)
 
     var2save = var2save + ['PAPRS','PAPRSF','PAPHI','PAPHIF']
 

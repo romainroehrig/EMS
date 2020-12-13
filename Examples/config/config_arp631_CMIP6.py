@@ -22,12 +22,12 @@ ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631
 SFXNAM = os.path.join(REP_MUSC, 'namelist/SURFEX/nam.sfx.tl127.CMIP6.v631')
 
 # Model configuration
-nlev = 91
+vert_grid = os.path.join(REP_MUSC, 'grid/L91.dta')
 timestep = 900
 
 # Postprocessing
 dirpost = os.path.join(REP_MUSC,'post')
-variablesDict = 'variable.py'
+variablesDict = 'variables.py'
 defaultConfigPost = 'config_default.py'
 caseDependent = True
 

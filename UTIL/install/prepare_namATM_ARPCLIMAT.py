@@ -101,17 +101,19 @@ def prep_nam_ATM(case,subcase,filecase,namref,timestep,NSTOP,namout=None):
     nam[nn]['VMAX2'] = ['120.',]
 
     # Update NAMDIM
+    nn = 'NAMDIM'
     try:
-        del(nam['NAMDIM'])
+        del(nam[nn])
     except KeyError:
         pass      
-    nam['NAMDIM'] = {}
-    nam['NAMDIM']['NPROMA'] = ['-4',]
+    nam[nn] = {}
+    nam[nn]['NPROMA'] = ['-4',]
 
     # Update NAMCT1
-    del(nam['NAMCT1'])
-    nam['NAMCT1'] = {}
-    nam['NAMCT1']['LRFILAF'] = ['.FALSE.',]
+    nn = 'NAMCT1'
+    del(nam[nn])
+    nam[nn] = {}
+    nam[nn]['LRFILAF'] = ['.FALSE.',]
 
     # Update NAMCT0
     nn = 'NAMCT0'
@@ -139,7 +141,8 @@ def prep_nam_ATM(case,subcase,filecase,namref,timestep,NSTOP,namout=None):
     nam[nn]['NPRINTLEV'] = ['2',]
 
     # Update NAMXFU
-    nam['NAMXFU']['NFRRAZ'] = ['1',]
+    nn = 'NAMXFU'
+    nam[nn]['NFRRAZ'] = ['1',]
 
 
     # -----------------------------------------------------------
@@ -185,6 +188,8 @@ def prep_nam_ATM(case,subcase,filecase,namref,timestep,NSTOP,namout=None):
 
     # MUSC Forcing
     nn = 'NAMLSFORC'
+    del(nam[nn])
+    nam[nn] = {}
     for param in ['LFIXRAD','LGEOST_UV_FRC','LNOWINDTEND','LQV_ADV_FRC','LQV_NUDG','LSOMEGA_FRC','LSW_FRC','LT_ADV_FRC','LT_NUDG','LUV_ADV_FRC','LUV_NUDG']:
         nam[nn][param] = ['.FALSE.',]
     for param in ['LMUSCLFA','LSPS_FRC']:

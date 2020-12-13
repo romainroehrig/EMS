@@ -196,7 +196,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
         time = case.variables['sfc_lat_flx'].time
 
     nt, = time.data.shape
-    dates = nc.num2date(time.data,time.units,calendar='gregorian',only_use_python_datetimes=True)
+    dates = nc.num2date(time.data,time.units,calendar='gregorian')#,only_use_python_datetimes=True)
 
     # Setting latitude and longitude
     nam['NAM_CARTESIAN']['XLAT0'] = [str(float(lat)),]

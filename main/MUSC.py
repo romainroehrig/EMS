@@ -80,7 +80,7 @@ if __name__ == '__main__':
             raise
 
     # Then loop over attributes that must be given
-    attlist = ['EXPID','MASTER','ATMNAM','nlev','timestep']
+    attlist = ['EXPID','MASTER','ATMNAM','vert_grid','timestep']
     if atts['lsurfex']:
         attlist += ['SFXNAM','PGD','PREP']
     for att in attlist:
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     MASTER = atts['MASTER']
     ATMNAM = atts['ATMNAM']
-    nlev = atts['nlev']
+    vert_grid = atts['vert_grid']
     timestep = atts['timestep']
 
     lsurfex = atts['lsurfex']
@@ -108,7 +108,7 @@ if __name__ == '__main__':
         SFXNAM = atts['SFXNAM']
         PGD = atts['PGD']
         PREP = atts['PREP']
-        ecoclimap = atts['ecoclimap']
+    ecoclimap = atts['ecoclimap']
 
     dirpost = atts['dirpost']
     variablesDict = atts['variablesDict']
@@ -138,19 +138,19 @@ if __name__ == '__main__':
     repATM = os.path.join(REP_MUSC, 'ATM', model)
 
     # To check whether installation has already been done
-    install_file = os.path.join(repATM, case, subcase, 'installed_L{0}_{1}s'.format(nlev, timestep))
+    vert_grid_name = os.path.basename(vert_grid).split('.')[0]
+    install_file = os.path.join(repATM, case, subcase, 'installed_{0}_{1}s'.format(vert_grid_name, timestep))
     installed = os.path.isfile(install_file)
 
     if not(installed) or loverwrite or lupdate_ATM:
         # Installing
         install_MUSC.install_ATM(model, case, subcase, data_input, 
-                repATM, nlev, timestep, 
+                repATM, vert_grid, timestep, 
                 loverwrite=loverwrite, lupdate=lupdate_ATM)
 
         os.system('touch {0}'.format(install_file))
     else:
         print 'ATM data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_ATM)
-
 
     ########## Prepare Surfex input data
     if lsurfex:
@@ -181,13 +181,13 @@ if __name__ == '__main__':
     config['name'] = EXPID
     config['MASTER'] = MASTER
     config['ecoclimap'] = ecoclimap
-    config['levels'] = nlev
+    config['levels'] = vert_grid
     config['TSTEP'] = timestep
     config['lsurfex'] = lsurfex
     config['namATMref'] = ATMNAM
-    config['initfile'] = os.path.join(repATM, case, subcase, 'initfile_L{0}'.format(nlev))
+    config['initfile'] = os.path.join(repATM, case, subcase, 'initfile_{0}'.format(vert_grid))
     if model == 'ARPCLIMAT':
-        config['forcingfiles'] = os.path.join(repATM, case, subcase, 'files_L{0}_{1}s'.format(nlev,timestep))
+        config['forcingfiles'] = os.path.join(repATM, case, subcase, 'files_{0}_{1}s'.format(vert_grid,timestep))
     if lsurfex:
         config['namSFXref'] = SFXNAM
         config['PGDfile'] = os.path.join(repSFX, case, subcase, 'PGD.lfi')

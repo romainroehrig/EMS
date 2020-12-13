@@ -43,7 +43,7 @@
 ! Ouverture du fichier.
 !
 
-        WRITE(timestamp,FMT='(F12.4)') (it-1)*tstep/3600.
+        WRITE(timestamp,FMT='(F12.4)') REAL(it-1,KIND=8)*REAL(tstep,KIND=8)/REAL(3600.,KIND=8)
         DO jc=1,12
           IF(timestamp(JC:JC) == ' ') timestamp(JC:JC)='0'
         ENDDO
@@ -124,7 +124,7 @@
 ! Ouverture du fichier.
 !
 
-        WRITE(timestamp,FMT='(F12.4)') (it-1)*tstep/3600.
+        WRITE(timestamp,FMT='(F12.4)') REAL(it-1,KIND=8)*REAL(tstep,KIND=8)/REAL(3600.,KIND=8)
         DO jc=1,12
           IF(timestamp(JC:JC) == ' ') timestamp(JC:JC)='0'
         ENDDO

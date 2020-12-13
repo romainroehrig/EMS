@@ -970,7 +970,7 @@ class Case:
 
         for var in f.variables:
             if not(var in f.dimensions) and not(var[0:6] == 'bounds') :
-                print 'Reading', var
+                #print 'Reading', var
                 tmp = readvar(var,f)
                 if tmp.level is None:
                     self.add_variable(var,tmp.data,time=tmp.time.data)

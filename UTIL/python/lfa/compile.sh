@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -ex
+#set -ex
 
 solib='lfa'
 routines='caracteres_lfa cllang lfa'

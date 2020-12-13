@@ -23,7 +23,7 @@ repSFX_UTIL = repEMS + '/UTIL/Init_Forc/SURFEX/'
 repRun_UTIL = repEMS + '/UTIL/Runs/'
 repAtlas_UTIL = repEMS + '/UTIL/atlas/'
 
-def install_ATM(model,case,subcase,filecase,repout,nlev,timestep=None,loverwrite=False,lupdate=False):
+def install_ATM(model,case,subcase,filecase,repout,vert_grid,timestep=None,loverwrite=False,lupdate=False):
 
     """ Prepare files of atmospheric initial conditions and forcing needed to run MUSC """
 
@@ -32,9 +32,12 @@ def install_ATM(model,case,subcase,filecase,repout,nlev,timestep=None,loverwrite
     print '#'*40
     print 'Prepare Atmospheric files'
     print 'Case:', case, 'subcase:',subcase
-    print 'nlev:', nlev
+    print 'Vertical grid:', vert_grid
     print 'timestep:', timestep
     print 'Installation in', rep
+
+    vert_grid_file = os.path.basename(vert_grid)
+    vert_grid_name = vert_grid_file.split('.')[0]
 
     if model == 'ARPCLIMAT':
         repUTIL = repARPC_UTIL
@@ -60,25 +63,25 @@ def install_ATM(model,case,subcase,filecase,repout,nlev,timestep=None,loverwrite
         os.symlink(filecase,'data_input.nc')
         os.symlink(repUTIL + 'prepare_init_forc.py','prepare_init_forc.py')
         os.symlink(repUTIL + 'prepare_init_forc.sh','prepare_init_forc.sh')
-        os.symlink(repUTIL + 'L' + str(nlev) + '.dta','L' + str(nlev) + '.dta')
+        os.symlink(vert_grid,vert_grid_file)
         if timestep is None:
-            os.system('./prepare_init_forc.sh {0} {1} {2}'.format(case,subcase,nlev))
+            os.system('./prepare_init_forc.sh {0} {1} {2}'.format(case,subcase,vert_grid_name))
         else:
-            os.system('./prepare_init_forc.sh {0} {1} {2} {3}'.format(case,subcase,nlev,int(timestep)))
+            os.system('./prepare_init_forc.sh {0} {1} {2} {3}'.format(case,subcase,vert_grid_name,int(timestep)))
     else: 
         print 'Directory already exists:', rep
         if lupdate:
             os.chdir(rep)
             try:
-                os.symlink(repUTIL + 'L' + str(nlev) + '.dta','L' + str(nlev) + '.dta')
+                os.symlink(vert_grid,vert_grid_file)
             except OSError:
                 pass
             except:
                 raise
             if timestep is None:
-                os.system('./prepare_init_forc.sh {0} {1} {2}'.format(case,subcase,nlev))
+                os.system('./prepare_init_forc.sh {0} {1} {2}'.format(case,subcase,vert_grid_name))
             else:
-                os.system('./prepare_init_forc.sh {0} {1} {2} {3}'.format(case,subcase,nlev,int(timestep)))
+                os.system('./prepare_init_forc.sh {0} {1} {2} {3}'.format(case,subcase,vert_grid_name,int(timestep)))
         else:
             print 'Nothing is done'
 
