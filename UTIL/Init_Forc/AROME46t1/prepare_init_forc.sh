@@ -73,8 +73,8 @@ variablesAux['SURFZ0REL.FOIS.G']=0.1
 
 EOF
 
-rm -rf files_${3}_${4}s
-mkdir files_${3}_${4}s
+#rm -rf files_${3}_${4}s
+#mkdir files_${3}_${4}s
 
 python prepare_init_forc.py
 
