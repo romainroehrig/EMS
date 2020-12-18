@@ -43,12 +43,19 @@ if __name__ == '__main__':
     parser.add_argument("-config", help="config file", type=str, required=True)
     parser.add_argument("-case", help="case", type=str, required=True)
     parser.add_argument("-subcase", help="subcase (default: REF)", type=str, default="REF")
+    parser.add_argument("--atm-only", help="Only install ATM files", action="store_true")
+    parser.add_argument("--sfx-only", help="Only install SURFEX files", action="store_true")
+    parser.add_argument("--run-only", help="Only run the simulation", action="store_true")
 
     # Getting arguments
     args = parser.parse_args()
     case = args.case
     subcase = args.subcase
     config_file = args.config
+
+    latm = not(args.atm_only)
+    lsfx = not(args.sfx_only)
+    lrun = not(args.run_only)
 
     # check existence of config_file and then import it
     if not(os.path.isfile(config_file)):
@@ -136,26 +143,29 @@ if __name__ == '__main__':
 
     ########## Prepare Atmospheric input data
 
-    # Where to prepare atmospheric input data
-    repATM = os.path.join(REP_MUSC, 'ATM', model)
+    if latm:
 
-    # To check whether installation has already been done
-    vert_grid_name = os.path.basename(vert_grid).split('.')[0]
-    install_file = os.path.join(repATM, case, subcase, 'installed_{0}_{1}s'.format(vert_grid_name, timestep))
-    installed = os.path.isfile(install_file)
+        # Where to prepare atmospheric input data
+        repATM = os.path.join(REP_MUSC, 'ATM', model)
 
-    if not(installed) or loverwrite or lupdate_ATM:
-        # Installing
-        install_MUSC.install_ATM(model, case, subcase, data_input, 
-                repATM, vert_grid, timestep, 
-                loverwrite=loverwrite, lupdate=lupdate_ATM)
+        # To check whether installation has already been done
+        vert_grid_name = os.path.basename(vert_grid).split('.')[0]
+        install_file = os.path.join(repATM, case, subcase, 'installed_{0}_{1}s'.format(vert_grid_name, timestep))
+        installed = os.path.isfile(install_file)
 
-        os.system('touch {0}'.format(install_file))
-    else:
-        print 'ATM data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_ATM)
+        if not(installed) or loverwrite or lupdate_ATM:
+            # Installing
+            install_MUSC.install_ATM(model, case, subcase, data_input, 
+                    repATM, vert_grid, timestep, 
+                    loverwrite=loverwrite, lupdate=lupdate_ATM)
+
+            os.system('touch {0}'.format(install_file))
+        else:
+            print 'ATM data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_ATM)
 
     ########## Prepare Surfex input data
-    if lsurfex:
+
+    if lsurfex and lsfx:
         # Where to prepare surfex input data
         repSFX = os.path.join(REP_MUSC, 'SURFEX', GROUP, EXPID)
 
@@ -175,55 +185,57 @@ if __name__ == '__main__':
 
     ########## Run
 
-    # Where to install run data
-    repRUN = os.path.join(REP_MUSC, 'simulations', GROUP, EXPID)
+    if lrun:
 
-    # Preparing run configuration
-    config = {}
-    config['name'] = EXPID
-    config['MASTER'] = MASTER
-    config['ecoclimap'] = ecoclimap
-    config['vert_grid'] = vert_grid
-    config['TSTEP'] = timestep
-    config['lsurfex'] = lsurfex
-    config['namATMref'] = ATMNAM
-    config['initfile'] = os.path.join(repATM, case, subcase, 'initfile_{0}'.format(vert_grid_name))
-    if model == 'ARPCLIMAT':
-        config['forcingfiles'] = os.path.join(repATM, case, subcase, 'files_{0}_{1}s'.format(vert_grid_name,timestep))
-    if lsurfex:
-        config['namSFXref'] = SFXNAM
-        config['PGDfile'] = os.path.join(repSFX, case, subcase, 'PGD.lfi')
-        config['PREPfile'] = os.path.join(repSFX, case, subcase, 'PREP.lfi')
+        # Where to install run data
+        repRUN = os.path.join(REP_MUSC, 'simulations', GROUP, EXPID)
 
-    # Preparing post-processing configuration
-    configOut = {}
-    configOut['dirpost'] = dirpost
-    configOut['variablesDict'] = variablesDict
-    configOut['lfaformat'] = lfaformat
+        # Preparing run configuration
+        config = {}
+        config['name'] = EXPID
+        config['MASTER'] = MASTER
+        config['ecoclimap'] = ecoclimap
+        config['vert_grid'] = vert_grid
+        config['TSTEP'] = timestep
+        config['lsurfex'] = lsurfex
+        config['namATMref'] = ATMNAM
+        config['initfile'] = os.path.join(repATM, case, subcase, 'initfile_{0}'.format(vert_grid_name))
+        if model == 'ARPCLIMAT':
+            config['forcingfiles'] = os.path.join(repATM, case, subcase, 'files_{0}_{1}s'.format(vert_grid_name,timestep))
+        if lsurfex:
+            config['namSFXref'] = SFXNAM
+            config['PGDfile'] = os.path.join(repSFX, case, subcase, 'PGD.lfi')
+            config['PREPfile'] = os.path.join(repSFX, case, subcase, 'PREP.lfi')
 
-    if caseDependent:
-        tmp = os.path.join(dirpost,'config_{0}.py'.format(case))
-        if os.path.isfile(tmp):
-            configOut['configpost'] = 'config_{0}.py'.format(case)
+        # Preparing post-processing configuration
+        configOut = {}
+        configOut['dirpost'] = dirpost
+        configOut['variablesDict'] = variablesDict
+        configOut['lfaformat'] = lfaformat
+
+        if caseDependent:
+            tmp = os.path.join(dirpost,'config_{0}.py'.format(case))
+            if os.path.isfile(tmp):
+                configOut['configpost'] = 'config_{0}.py'.format(case)
+            else:
+                print 'WARNING: no postprocessing configuration file for case {0} - using default'.format(case)
+                configOut['configpost'] = defaultConfigPost
         else:
-            print 'WARNING: no postprocessing configuration file for case {0} - using default'.format(case)
             configOut['configpost'] = defaultConfigPost
-    else:
-        configOut['configpost'] = defaultConfigPost
 
-    # To check whether installation has already been done
-    install_file = os.path.join(repRUN, case, subcase, 'installed')
-    installed = os.path.isfile(install_file)
+        # To check whether installation has already been done
+        install_file = os.path.join(repRUN, case, subcase, 'installed')
+        installed = os.path.isfile(install_file)
 
-    # Installing
-    if not(installed) or loverwrite or lupdate_RUN:
-        install_MUSC.install_Run(model,case,subcase,data_input,
-                repRUN,config,configOut,
-                loverwrite=loverwrite,lupdate=lupdate_RUN)
-        os.system('touch {0}'.format(install_file))
-    else:
-        print 'Run data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_RUN)
+        # Installing
+        if not(installed) or loverwrite or lupdate_RUN:
+            install_MUSC.install_Run(model,case,subcase,data_input,
+                    repRUN,config,configOut,
+                    loverwrite=loverwrite,lupdate=lupdate_RUN)
+            os.system('touch {0}'.format(install_file))
+        else:
+            print 'Run data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_RUN)
 
-    os.remove("./{0}".format(configloc))
-    os.remove("./{0}c".format(configloc))
+        os.remove("./{0}".format(configloc))
+        os.remove("./{0}c".format(configloc))
  
