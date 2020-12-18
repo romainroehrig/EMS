@@ -19,7 +19,7 @@ ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPPNT/namarp_41t1_ARPEGE_OPER')
 
 # Model configuration
 vert_grid = os.path.join(REP_MUSC, 'grid/L105.dta')
-timestep = 300
+timestep = 360
 
 # Postprocessing
 dirpost = os.path.join(REP_MUSC,'post')
