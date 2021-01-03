@@ -37,15 +37,15 @@ else
 fi
 
 cd $TMPDIR
-rm -rf $TMPDIR/* || : 
+rm -rf $TMPDIR/* || :
 
 ladate=`date`
 set +x
 echo '------------------------------------------------------------'
 echo 'run execute le ' $ladate
 echo 'cycle =' $cycle 'config = ' $CONFIG
-echo 'Namelist AROME =' $NAMARP
-echo 'Namelist Surfex =' $NAMSFX
+echo 'Atmospheric namelist =' $NAMARP
+echo 'Surfex namelist =' $NAMSFX
 echo 'Executable =' $MASTER
 echo 'Time step =' $TSTEP 'seconds; Run stops at ' $NSTOP
 echo 'Number of levels =' $levels
@@ -60,7 +60,7 @@ set -x
 
 set +x
 echo ''
-echo ' Get the namelist AROME'
+echo ' Get the atmospheric namelist'
 echo ''
 set -x
 

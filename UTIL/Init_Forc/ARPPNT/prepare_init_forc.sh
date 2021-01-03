@@ -5,23 +5,29 @@ import os
 
 g = open('tmp.sh','w')
 print >> g, '#!/bin/sh'
+print >> g, 'export OMP_NUM_THREADS=1'
 print >> g, "export ASCII2FA=" + os.getenv('REP_EMS') + "/UTIL/Tools/ASCII2FA_GMAP/bin/ascii2fa"
 g.close()
 EOF
 
 
-cdat tmp.py
+python tmp.py
 chmod u+x tmp.sh
 . ./tmp.sh
 
 rm -f tmp.py tmp.sh
 
 cat << EOF > config.py
+import os
+
+case = '$1'
+subcase = '$2'
 
 #zorog = 0.
 
-nlev = $1
+vert_grid = '$3'
 
+dt = $4
 
 lforc = True
 lnam1D = True
@@ -67,16 +73,12 @@ variablesAux['SURFZ0REL.FOIS.G']=0.1
 
 EOF
 
+python prepare_init_forc.py
 
-cdat prepare_nam1D.py
+cp nam1D_$3 nam1D
 
-cp nam1D_L$1 nam1D
-
-$ASCII2FA > ascii2fa_$1.log 2>&1
+$ASCII2FA > ascii2fa_$3.log 2>&1
 
 rm -f nam1D
 
-mv 1D.file initfile_L$1
-
-
-
+mv 1D.file initfile_$3

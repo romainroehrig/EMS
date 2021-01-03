@@ -276,7 +276,7 @@ if lnam1D:
     print >>g, 'zorog'
     print >>g, zorog
     print >>g, 'ps (Pa)'
-    print >>g, np.log(case.variables['ps'].data[0,0,0])
+    print >>g, case.variables['ps'].data[0,0,0]
 
     print >>g, 'U'
     for ilev in range(0,nlev_out):

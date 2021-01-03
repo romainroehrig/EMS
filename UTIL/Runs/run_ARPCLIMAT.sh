@@ -44,8 +44,8 @@ set +x
 echo '------------------------------------------------------------'
 echo 'run execute le ' $ladate
 echo 'cycle =' $cycle 'config = ' $CONFIG
-echo 'Namelist Arpege =' $NAMARP
-echo 'Namelist Surfex =' $NAMSFX
+echo 'Atmospheric namelist =' $NAMARP
+echo 'Surfex namelist =' $NAMSFX
 echo 'Executable =' $MASTER
 echo 'Time step =' $TSTEP 'seconds; Run stops at ' $NSTOP
 echo 'Number of levels =' $levels
@@ -60,7 +60,7 @@ set -x
 
 set +x
 echo ''
-echo ' Get the namelist ARPEGE'
+echo ' Get the atmospheric namelist'
 echo ''
 set -x
 
