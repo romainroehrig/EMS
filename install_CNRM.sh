@@ -37,7 +37,7 @@ fi
 # Download and install EMS in REP_EMS
 [ -d $REP_EMS ] || mkdir -p $REP_EMS
 cd $REP_EMS
-git clone --depth 1 https://github.com/romainroehrig/EMS.git --branch dev --single-branch .
+git clone --depth 1 https://github.com/romainroehrig/EMS.git --branch master --single-branch .
 
 # Modify your .bash_profile to initialize a few environment variables
 cd ~/
