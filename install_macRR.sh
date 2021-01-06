@@ -5,11 +5,14 @@ set -evx
 #####################################################
 # User specific
 
+# EMS Version
+EMS_VERSION=1.0.mac
+
 # Directory where EMS is installed
-REP_EMS=$HOME/Tools/EMS/V1
+REP_EMS=$HOME/Tools/EMS
 
 # Directory where MUSC will be run
-REP_MUSC=$HOME/MUSC/V1
+REP_MUSC=$HOME/MUSC
 
 # Environment file to use
 PROFILE=.profile
@@ -21,14 +24,14 @@ DIR0=`pwd`
 #####################################################
 # Some tests to avoid overwriting
 
-if [ -d $REP_EMS ]; then
-  echo "REP_EMS="$REP_EMS
+if [ -d "$REP_EMS/$EMS_VERSION" ]; then
+  echo "REP_EMS="$REP_EMS/$EMS_VERSION
   echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install_macRR.sh"
   exit
 fi
 
-if [ -d $REP_MUSC ]; then
-  echo "REP_MUSC="$REP_MUSC
+if [ -d "$REP_MUSC/$EMS_VERSION" ]; then
+  echo "REP_MUSC="$REP_MUSC/$EMS_VERSION
   echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install_macRR.sh"
   exit
 fi
@@ -37,7 +40,12 @@ fi
 # Download and install EMS in REP_EMS
 [ -d $REP_EMS ] || mkdir -p $REP_EMS
 cd $REP_EMS
-git clone --depth 1 https://github.com/romainroehrig/EMS.git --branch macRR_dephy2 --single-branch .
+#git clone --depth 1 https://github.com/romainroehrig/EMS.git --branch macRR_dephy2 --single-branch .
+
+wget https://github.com/romainroehrig/EMS/archive/v${EMS_VERSION}.tar.gz
+tar zxvf v${EMS_VERSION}.tar.gz
+rm -f v${EMS_VERSION}.tar.gz
+mv EMS-${EMS_VERSION} V${EMS_VERSION}
 
 # Modify your .bash_profile to initialize a few environment variables
 cd ~/
@@ -57,20 +65,22 @@ cat << EOF >> $PROFILE
 
 # Modifications for Environment for MUSC simulations (EMS)
 # included on $(date)
-export REP_EMS=$REP_EMS
-export REP_MUSC=$REP_MUSC
+export REP_EMS=$REP_EMS/V$EMS_VERSION
+export REP_MUSC=$REP_MUSC/V$EMS_VERSION
 export PYTHONPATH=.:\$REP_EMS/CASES:\$REP_EMS/UTIL/python:\$REP_EMS/UTIL/install/:\$PYTHONPATH
 EOF
 
 . ~/$PROFILE
 
 # Some compilation if you want
-compile="n"
+compile="y"
 
 if [ $compile == "y" ]; then
 
   # lfa python library
-  cd $REP_EMS/UTIL/python/lfa
+  cd $REP_EMS/UTIL/python/lfa8
+  ./compile.sh
+  cd $REP_EMS/UTIL/python/lfa12
   ./compile.sh
 
   # ascii2lfa binary
@@ -79,14 +89,14 @@ if [ $compile == "y" ]; then
   make clean
 
   # LFA tools
-  cd $REP_EMS//UTIL/Tools/LFA
+  cd $REP_EMS/UTIL/Tools/LFA
   ./install
 
 fi
 
 #####################################################
 # Prepare what is needed to run MUSC simulations in REP_MUSC
-[ -d $REP_MUSC ] || mkdir -p $REP_MUSC
+[ -d "$REP_MUSC" ] || mkdir -p $REP_MUSC/V$EMS_VERSION
 cd $REP_MUSC
 cp -r $REP_EMS/Examples/* .
 ln -s $REP_EMS/main/MUSC.py
@@ -100,17 +110,14 @@ done
 
 #####################################################
 # Some Testing
-testing="n"
+testing="y"
 
-install_arp631="n"
-install_cy41="n"
-
-test_arp631="n"
+test_arp631="y"
 
 if [ $testing == "y" ]; then
 
   # Testing ARPEGE-Climat 6.3.1
-  if [ $test_arp631 == 'y']; then
+  if [ $test_arp631 == 'y' ]; then
     cd $REP_MUSC
 
     ./MUSC.py -config config/config_arp631_CMIP6.py -case ARMCU -subcase REF
