@@ -96,7 +96,7 @@ fi
 
 #####################################################
 # Prepare what is needed to run MUSC simulations in REP_MUSC
-[ -d "$REP_MUSC" ] || mkdir -p $REP_MUSC/V$EMS_VERSION
+[ -d "$REP_MUSC" ] || mkdir -p $REP_MUSC
 cd $REP_MUSC
 cp -r $REP_EMS/Examples/* .
 ln -s $REP_EMS/main/MUSC.py
