@@ -175,12 +175,12 @@ for subcase in subcases[case]:
 #data_input[case]['NoRad'] = rep0 + '/ARMCVP/ARMCVP_FG_norad.nc'
 #data_input[case]['omg'] = rep0 + '/ARMCVP/ARMCVP_FG_omg.nc'
 
-# AMMA Cases
-#case = 'AMMA'
-#cases.append(case)
-#subcases[case] = ['REF']
-#data_input[case] = {}
-#data_input[case]['REF'] = rep0 + '/AMMA/AMMA_20060710_setupI_driver_RR.nc'
+# AMMA case
+case = 'AMMA'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {}
+data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 # CINDY-DYNAMO cases
 #case = 'CINDY-DYNAMO'
