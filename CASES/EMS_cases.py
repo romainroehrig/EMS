@@ -101,7 +101,7 @@ for subcase in subcases[case]:
 # ARMCU Case
 case = 'ARMCU'
 cases.append(case)
-subcases[case] = ['REF','E3SM','MESONH']
+subcases[case] = ['REF','E3SM','MESONH','E3SM']
 data_input[case] = {}
 for subcase in subcases[case]:
     data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
@@ -150,10 +150,10 @@ for subcase in subcases[case]:
 # SANDU composite cases
 case = 'SANDU'
 cases.append(case)
-subcases[case] = ['REF'] #['REF','FAST','SLOW']
+subcases[case] = ['REF','FAST','SLOW']
 data_input[case] = {}
 for subcase in subcases[case]:
-    data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 ####################################
 #### Deep convection cases
