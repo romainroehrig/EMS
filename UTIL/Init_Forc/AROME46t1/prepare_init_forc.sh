@@ -6,7 +6,8 @@ import os
 g = open('tmp.sh','w')
 print >> g, '#!/bin/sh'
 print >> g, 'export OMP_NUM_THREADS=1'
-print >> g, "export ASCII2FA=" + os.getenv('REP_EMS') + "/UTIL/Tools/ASCII2FA_GMAP/bin/ascii2fa"
+#print >> g, "export ASCII2FA=" + os.getenv('REP_EMS') + "/UTIL/Tools/ASCII2FA_GMAP/bin/ascii2fa"
+print >> g, "export ASCII2FA=/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/ASCII2FA"
 g.close()
 EOF
 
