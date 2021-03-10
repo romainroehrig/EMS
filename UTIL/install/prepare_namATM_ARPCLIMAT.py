@@ -157,31 +157,28 @@ def prep_nam_ATM(case,subcase,filecase,namref,timestep,NSTOP,namout=None):
     attributes = case.attributes
 
     # Yet undefined in DEPHY format
-    attributes['adv_u'] = 0
-    attributes['adv_v'] = 0
+    attributes['adv_ua'] = 0
+    attributes['adv_va'] = 0
 
-    lat = float(case.lat)
-    lon = float(case.lon)
+    lat = case.variables['lat'].data[0]
+    lon = case.variables['lon'].data[0]
 
     # Setting latitude and longitude
     nam['NEMGEO']['RLAT_ACAD'] = [str(float(lat)),]
     nam['NEMGEO']['RLON_ACAD'] = [str(float(lon)),]
 
     # Setting starting date
-    startDate = case.startDate
-    year = int(startDate[0:4])
-    month = int(startDate[4:6])
-    day = int(startDate[6:8])
-    hour = int(startDate[8:10])
-    minute = int(startDate[10:12])
-    second = int(startDate[12:14])
+    startDate = case.start_date
+    hour = startDate.hour
+    minute = startDate.minute
+    second = startDate.second
 
-    nam['NAMRIP']['NINDAT'] = [startDate[0:8],]
+    nam['NAMRIP']['NINDAT'] = [startDate.strftime('%Y%m%d'),]
     nam['NAMRIP']['NSSSSS'] = [str(int(hour*3600+minute*60+second)),]
 
 
     # Case with no radiation or radiation included in temperature advection
-    if attributes['rad_temp'] in [1,'adv']:
+    if attributes['radiation'] in ['off','tend']:
         nam['NAMPHY']['LRAYFM'] = ['.FALSE.',]
         nam['NAERAD']['LRRTM'] =  ['.FALSE.',]
         nam['NAERAD']['NSW'] = ['2',]      
@@ -197,19 +194,19 @@ def prep_nam_ATM(case,subcase,filecase,namref,timestep,NSTOP,namout=None):
     for param in ['NGEOST_U_NUM','NGEOST_V_NUM','NLSOMEGA_NUM','NLSW_NUM','NQV_ADV_NUM','NQV_NUDG','NT_ADV_NUM','NT_NUDG','NU_NUDG','NV_NUDG']:
         nam[nn][param] = ['-1',]
 
-    if attributes['adv_temp'] == 1 or attributes['rad_temp'] == 1:
+    if attributes['adv_ta'] == 1 or attributes['radiation'] == 'tend':
         nam[nn]['LT_ADV_FRC'] = ['.TRUE.',]
 
     if attributes['adv_qv'] == 1:
         nam[nn]['LQV_ADV_FRC'] = ['.TRUE.',]
 
-    if attributes['adv_u'] == 1 or attributes['adv_v'] == 1:
+    if attributes['adv_ua'] == 1 or attributes['adv_va'] == 1:
         nam[nn]['LUV_ADV_FRC'] = ['.TRUE.',]
 
-    if attributes['forc_omega'] == 1:
+    if attributes['forc_wap'] == 1:
         nam[nn]['LSOMEGA_FRC'] = ['.TRUE.',]
 
-    if attributes['forc_w'] == 1:
+    if attributes['forc_wa'] == 1:
         nam[nn]['LSW_FRC'] = ['TRUE',]
 
     if attributes['forc_geo'] == 1:
@@ -217,29 +214,29 @@ def prep_nam_ATM(case,subcase,filecase,namref,timestep,NSTOP,namout=None):
         W=7.2921e-5
         nam['NAMLSFORC']['RCORIO_FORC'] = [str(2.*W*math.sin(lat*math.pi/180)),]
 
-    if attributes['nudging_u'] > 0. or attributes['nudging_v'] > 0.:
+    if attributes['nudging_ua'] > 0. or attributes['nudging_va'] > 0.:
         nam[nn]['LUV_NUDG'] = ['.TRUE.',]
-        nam[nn]['RELAX_TAUU'] = [str(float(attributes['nudging_u'])),]
-        nam['NAMTOPH']['ETRELAXU'] = [str(float(attributes['p_nudging_u'])),]
+        nam[nn]['RELAX_TAUU'] = [str(float(attributes['nudging_ua'])),]
+        nam['NAMTOPH']['ETRELAXU'] = [str(float(attributes['pa_nudging_ua'])),]
 
-    if attributes['nudging_temp'] > 0.:
+    if attributes['nudging_ta'] > 0.:
         nam[nn]['LT_NUDG'] = ['.TRUE.',]
-        nam[nn]['RELAX_TAUT'] = [str(float(attributes['nudging_temp'])),]
-        nam['NAMTOPH']['ETRELAXT'] = [str(float(attributes['p_nudging_temp'])),]
+        nam[nn]['RELAX_TAUT'] = [str(float(attributes['nudging_ta'])),]
+        nam['NAMTOPH']['ETRELAXT'] = [str(float(attributes['pa_nudging_ta'])),]
 
     if attributes['nudging_qv'] > 0. :
         nam[nn]['LQV_NUDG'] = ['.TRUE.',]
         nam[nn]['RELAX_TAUQ'] = [str(float(attributes['nudging_qv'])),]
-        nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['p_nudging_qv'])),]
+        nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['pa_nudging_qv'])),]
 
     if attributes.has_key('RCE') and attributes['RCE'] == 1:
         nam['NAMAQUAMF'] = {}
         nam['NAMCT0']['LRCE'] = ['.TRUE.',]
         if lDEPHY:
-            trad = 'rad_temp'
+            trad = 'tnta_rad'
         else:
             trad = 'trad'
-        if not(attributes[trad] in [1,'adv']):
+        if not(attributes['radiation'] in ['off','tend']):
             nam['NAMRIP']['RANGLE'] = [str(float(attributes['zangle'])),]
             nam['NAMSCEN']['RI0'] = [str(float(attributes['I0'])),]
             nn = 'NAMCLDP'

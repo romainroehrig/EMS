@@ -142,28 +142,28 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
 
     attributes = case.attributes
 
-    lat = float(case.lat)
-    lon = float(case.lon)
+    lat = case.variables['lat'].data[0]
+    lon = case.variables['lon'].data[0]
 
-    surfaceForcing = attributes['surfaceForcing']
-    surfaceType = attributes['surfaceType']
-    zorog = attributes['zorog']
-    startDate = case.startDate
-    year = int(startDate[0:4])
-    month = int(startDate[4:6])
-    day = int(startDate[6:8])
-    hour = int(startDate[8:10])
-    minute = int(startDate[10:12])
-    second = int(startDate[12:14])    
+    surfaceForcing = attributes['surface_forcing_temp']
+    surfaceType = attributes['surface_type']
+    zorog = case.variables['orog'].data[0]
+    startDate = case.start_date
+    year = startDate.year
+    month = startDate.month
+    day = startDate.day
+    hour = startDate.hour
+    minute = startDate.minute
+    second = startDate.second
     seconds = hour*3600.+minute*60.+second
 
     if surfaceForcing == 'ts':
         ts = case.variables['ts'].data
         time = case.variables['ts'].time
         if surfaceType == 'land':
-            zz0 = attributes['z0']
+            zz0 = case.variables['z0'].data[0]
         try:
-            alb = attributes['alb']
+            alb = case.variables['alb'].data[0]
             lalb = True
         except:
             lalb = False
@@ -177,23 +177,23 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
         except:
             lminSfcWind = False
             minSfcWind = 1. 
-    elif surfaceForcing == 'surfaceFlux':
-        surfaceForcingWind = attributes['surfaceForcingWind']
-        hfls = case.variables['sfc_lat_flx'].data
-        hfss = case.variables['sfc_sens_flx'].data
+    elif surfaceForcing == 'surface_flux':
+        surfaceForcingWind = attributes['surface_forcing_wind']
+        hfls = case.variables['hfls'].data
+        hfss = case.variables['hfss'].data
         if surfaceForcingWind == 'ustar':
             ustar = case.variables['ustar']
         elif surfaceForcingWind == 'z0':
-            zz0 = attributes['z0']
+            zz0 = case.variables['z0'].data[0]
         else:
             print 'surfaceForcingWind unexpected:', surfaceForcingWind
             sys.exit()
         try:
             ts = case.variables['ts'].data
         except KeyError:
-            ts = hfls*0. + case.variables['temp'].data[0,0,0,0]
+            ts = hfls*0. + case.variables['ta'].data[0,0]
     
-        time = case.variables['sfc_lat_flx'].time
+        time = case.variables['hfls'].time
 
     nt, = time.data.shape
     dates = nc.num2date(time.data,time.units,calendar='gregorian')#,only_use_python_datetimes=True)

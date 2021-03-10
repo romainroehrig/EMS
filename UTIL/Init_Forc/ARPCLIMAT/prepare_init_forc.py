@@ -51,20 +51,20 @@ if lverbose:
 
 attributes = case.attributes
 
-lat = float(case.lat)
-lon = float(case.lon)
+lat = case.variables['lat'].data[0]
+lon = case.variables['lon'].data[0]
 
-zorog = case.attributes['zorog']
+zorog = case.variables['orog'].data[0]
 
-startDate = case.startDate
-year = int(startDate[0:4])
-month = int(startDate[4:6])
-day = int(startDate[6:8])
-hour = int(startDate[8:10])
-minute = int(startDate[10:12])
-second = int(startDate[12:14])
+startDate = case.start_date
+year = startDate.year
+month = startDate.month
+day = startDate.day
+hour = startDate.hour
+minute = startDate.minute
+second = startDate.second
 
-nt,nlat,nlon = case.variables['ps_forc'].data.shape
+nt, = case.variables['ps_forc'].data.shape
 
 #---------------------------------------------------------------
 # Half-level pressure
@@ -87,7 +87,7 @@ f.close()
 pph = np.zeros((nt,nlev_out+1),dtype=np.float)
 
 for ilev in range(0,nlev_out+1):
-    pph[:,ilev] = vah[ilev] + vbh[ilev]*case.variables['ps_forc'].data[:,0,0]	  
+    pph[:,ilev] = vah[ilev] + vbh[ilev]*case.variables['ps_forc'].data[:]	  
 
 #---------------------------------------------------------------
 # Full-level pressure
@@ -108,28 +108,25 @@ ppf = np.exp(ppf)
 # Interpolation verticale vers les niveaux modeles (pph)
 #---------------------------------------------------------------
 
-#case.variables['pressure'].info()
-
-levin = Axis('lev',case.variables['pressure'].data[0,:,0,0],name='pressure',units='Pa')
-levout = Axis('lev',ppf[0,:],name='pressure',units='Pa')
+levin = Axis('lev',case.variables['pa'].data[0,:],name='pa',units='Pa')
+levout = Axis('lev',ppf[0,:],name='pa',units='Pa')
 
 datain = {}
 dataout = {}
-for var in ['u','v','temp','theta','qv','ql','qi','tke']:
+for var in ['ua','va','ta','theta','qv','ql','qi','tke']:
     datain[var] = Variable(var,
             data=case.variables[var].data,
             units=case.variables[var].units,
             name=case.variables[var].name,
             level=levin,
             time=case.variables[var].time,
-            lat=case.variables[var].lat,
-            lon=case.variables[var].lon,
+            pressure=case.variables['pa'].data,
             plotcoef=case.variables[var].plotcoef,
             plotunits=case.variables[var].plotunits)
     if lverbose:
         datain[var].info()
 
-    dataout[var] = interpol(datain[var],levout=levout)
+    dataout[var] = datain[var].interpol_vert(pressure=levout.data)
     if lverbose:
         dataout[var].info()
 
@@ -183,19 +180,19 @@ if lnam1D:
     print >>g, 'zorog'
     print >>g, zorog
     print >>g, 'ps (Pa)'
-    print >>g, case.variables['ps'].data[0,0,0]
+    print >>g, case.variables['ps'].data[0]
 
     print >>g, 'U'
     for ilev in range(0,nlev_out):
-        print >>g, dataout['u'].data[0,ilev,0,0]
+        print >>g, dataout['ua'].data[0,ilev]
 
     print >>g, 'V'
     for ilev in range(0,nlev_out):
-        print >>g, dataout['v'].data[0,ilev,0,0]
+        print >>g, dataout['va'].data[0,ilev]
 
     print >>g, 'T'
     for ilev in range(0,nlev_out):
-        print >>g, dataout['temp'].data[0,ilev,0,0]
+        print >>g, dataout['ta'].data[0,ilev]
 # Pas completement satisfaisant a ce stade...
 #    if pph[0,ilev] >= 10000.:
 #      print >>g, data_out['theta'][0,ilev]*(pph[0,ilev]/100000.)**(2./7.)
@@ -205,19 +202,19 @@ if lnam1D:
 
     print >>g, 'QV'
     for ilev in range(0,nlev_out):
-        print >>g, max(0.,dataout['qv'].data[0,ilev,0,0])
+        print >>g, max(0.,dataout['qv'].data[0,ilev])
 
     print >>g, 'CLOUD_WATER'
     for ilev in range(0,nlev_out):
-        print >>g, max(0.,dataout['ql'].data[0,ilev,0,0])
+        print >>g, max(0.,dataout['ql'].data[0,ilev])
 
     print >>g, 'ICE_CRYSTAL'
     for ilev in range(0,nlev_out):
-        print >>g, max(0.,dataout['qi'].data[0,ilev,0,0])
+        print >>g, max(0.,dataout['qi'].data[0,ilev])
 
     print >>g, 'TKE'
     for ilev in range(0,nlev_out):
-        print >>g, max(0.,dataout['tke'].data[0,ilev,0,0])
+        print >>g, max(0.,dataout['tke'].data[0,ilev])
 
 
     print >>g, 'FORCING'
@@ -258,20 +255,20 @@ if lforc:
     names['ug'] = 'ug'
     names['vg'] = 'vg'
 
-    names['w'] = 'W'
-    names['omega'] = 'Omega'
+    names['wa'] = 'W'
+    names['wap'] = 'Omega'
 
-    names['u_adv'] = 'du'
-    names['v_adv'] = 'dv'
-    names['temp_adv'] = 'dT'
-    names['qv_adv'] = 'dq'
+    names['tnua_adv'] = 'du'
+    names['tnva_adv'] = 'dv'
+    names['tnta_adv'] = 'dT'
+    names['tnqv_adv'] = 'dq'
 
-    names['u_nudging'] = 'u'
-    names['v_nudging'] = 'v'
-    names['temp_nudging'] = 'T'
-    names['qv_nudging'] = 'q'    
+    names['ua_nud'] = 'u'
+    names['va_nud'] = 'v'
+    names['ta_nud'] = 'T'
+    names['qv_nud'] = 'q'    
 
-    timein = case.variables['pressure_forc'].time
+    timein = case.variables['pa_forc'].time
     tmin = timein.data[0]
     tmax = timein.data[-1]
     timeout = np.arange(tmin,tmax+config.dt,config.dt,dtype=np.float64)
@@ -279,10 +276,10 @@ if lforc:
     timeout = Axis('time',timeout,name='time',units=case.tunits)
 
     var = 'ps_forc'
-    dataout[var] = interpol(case.variables[var],timeout=timeout)
+    dataout[var] = case.variables[var].interpol_time(time=timeout)
     for ii in range(0,nt_out):
         g = open('{0}/{1}_forcing_{2:0>5}.txt'.format(dirout,names[var],ii),'w')
-        print >>g,  dataout[var].data[ii,0,0]
+        print >>g,  dataout[var].data[ii]
         g.close()
 
     def prep_forcing(var,lwrite=True):
@@ -292,14 +289,14 @@ if lforc:
                 name=case.variables[var].name,
                 level=levin,
                 time=case.variables[var].time,
-                lat=case.variables[var].lat,
-                lon=case.variables[var].lon,
+                pressure=case.variables['pa_forc'],
                 plotcoef=case.variables[var].plotcoef,
                 plotunits=case.variables[var].plotunits)
         if lverbose:
             din.info()
 
-        dout = interpol(din,levout=levout,timeout=timeout)
+        dout = din.interpol_time(time=timeout)
+        dout = dout.interpol_vert(pressure=levout.data)
         if lverbose:
             dout.info()
 
@@ -313,7 +310,7 @@ if lforc:
             for ii in range(0,nt_out):
                 g = open('{0}/{1}_forcing_{2:0>5}.txt'.format(dirout,names[var],ii),'w')
                 for ilev in range(0,nlev_out):
-                    print >>g,  dout.data[ii,ilev,0,0]
+                    print >>g,  dout.data[ii,ilev]
 
                 g.close()
 
@@ -324,38 +321,38 @@ if lforc:
         for var in ['ug','vg']:
             datain[var], dataout[var] = prep_forcing(var)
 
-    if attributes['forc_omega']:
-        var = 'omega'
+    if attributes['forc_wap']:
+        var = 'wap'
         datain[var], dataout[var] = prep_forcing(var)  
 
-    if attributes['forc_w']:
-        var = 'w'
+    if attributes['forc_wa']:
+        var = 'wa'
         datain[var], dataout[var] = prep_forcing(var)         
 
     for var in ['qv']: #['u','v','qv']:
         attloc = 'adv_{0}'.format(var)
-        varloc = '{0}_adv'.format(var)
+        varloc = 'tn{0}_adv'.format(var)
         if attributes[attloc]:
             datain[varloc], dataout[varloc] = prep_forcing(varloc)
 
-    if attributes['adv_temp'] and (attributes['rad_temp'] == 1): 
-        var1 = 'temp_adv'
+    if attributes['adv_ta'] and (attributes['radiation'] == 'tend'): 
+        var1 = 'tnta_adv'
         datain[var1], dataout[var1] = prep_forcing(var1,lwrite=False)
-        var2 = 'temp_rad'
+        var2 = 'tnta_rad'
         datain[var2], dataout[var2] = prep_forcing(var2,lwrite=False)
         for ii in range(0,nt_out):
             g = open('{0}/{1}_forcing_{2:0>5}.txt'.format(dirout,names[var1],ii),'w')
             for ilev in range(0,nlev_out):
-                print >>g,  dataout[var1].data[ii,ilev,0,0]+dataout[var2].data[ii,ilev,0,0]
+                print >>g,  dataout[var1].data[ii,ilev]+dataout[var2].data[ii,ilev]
 
             g.close()      
-    elif attributes['adv_temp']: #attributes['rad_temp'] in [0,'adv']
-        var = 'temp_adv'
+    elif attributes['adv_ta']: #attributes['rad_temp'] in [0,'adv']
+        var = 'tnta_adv'
         datain[var], dataout[var] = prep_forcing(var)
 
-    for var in ['u','v','temp','qv']:
+    for var in ['ua','va','ta','qv']:
         attloc = 'nudging_{0}'.format(var)
-        varloc = '{0}_nudging'.format(var)
+        varloc = '{0}_nud'.format(var)
         if attributes[attloc]:
             datain[varloc], dataout[varloc] = prep_forcing(varloc)
 

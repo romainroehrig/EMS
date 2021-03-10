@@ -260,25 +260,8 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         CASE = Case('{0}/{1}'.format(case,subcase))
         CASE.read('data_input.nc')
 
-        startDate = CASE.startDate
-        year = int(startDate[0:4])
-        month = int(startDate[4:6])
-        day = int(startDate[6:8])
-        hour = int(startDate[8:10])
-        minute = int(startDate[10:12])
-        second = int(startDate[12:14])
-
-        tstart = datetime(year,month,day,hour,minute,second)
-
-        endDate = CASE.endDate
-        year = int(endDate[0:4])
-        month = int(endDate[4:6])
-        day = int(endDate[6:8])
-        hour = int(endDate[8:10])
-        minute = int(endDate[10:12])
-        second = int(endDate[12:14])
-
-        tend = datetime(year,month,day,hour,minute,second)
+        tstart = CASE.start_date
+        tend = CASE.end_date
 
         tmp = tend-tstart
         tmp = tmp.total_seconds()/3600
