@@ -210,14 +210,14 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
             nam2keep.append('NAM_DATA_SEAFLUX')
             nam2keep.append('NAM_PREP_SEAFLUX')
             nam2keep.append('NAM_SEAFLUXn')
-        elif surfaceForcing == 'surfaceFlux':
+        elif surfaceForcing == 'surface_flux':
             nam[nn]['CSEA'] = ["'FLUX'",]
             nam2keep.append('NAM_IDEAL_FLUX')
         else:
             print 'surfaceForcing unexpected:', surfaceForcing, 'for surfaceType:', surfaceType
             sys.exit()
     elif surfaceType == 'land':
-        if surfaceForcing == 'surfaceFlux':
+        if surfaceForcing == 'surface_flux':
             print 'This configuration does not work:'
             print 'surfaceType =', surfaceType, 'and surfaceForcing =', surfaceForcing
             print 'surfaceType is changed to ocean'
@@ -266,7 +266,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
         else:
             nam[nn]['XSST_UNIF'] = ['300.',]
     elif surfaceType == 'land':
-        if surfaceForcing == 'surfaceFlux':
+        if surfaceForcing == 'surface_flux':
             nn='NAM_FRAC'
             nam[nn]['XUNIF_SEA'] = ['1.',]
             nn = 'NAM_PREP_SEAFLUX'
@@ -374,7 +374,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
             nam[nn]['XUNIF_DHUGRD(%(ii)4.i)'%{"ii": nt}] = ['0.',]
 
 
-    if surfaceForcing == 'surfaceFlux':
+    if surfaceForcing == 'surface_flux':
         nn ='NAM_IDEAL_FLUX'
         nam[nn] = {}
         nam[nn]['NFORCF'] = [str(nt),]
@@ -391,16 +391,16 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
         for it in range(0,nt):
             nam[nn]['XTIMET(%(ii)4.i)'%{"ii": it+1}] = ['%(tt)6.2f'%{"tt":time.data[it]},]
         for it in range(0,nt):
-            nam[nn]['XTSRAD(%(ii)4.i)'%{"ii": it+1}] = ['%(ts)6.6f'%{"ts":ts[it,0,0]},]
+            nam[nn]['XTSRAD(%(ii)4.i)'%{"ii": it+1}] = ['%(ts)6.6f'%{"ts":ts[it]},]
         for it in range(0,nt):
             nam[nn]['XTIMEF(%(ii)4.i)'%{"ii": it+1}] = ['%(tt)6.6f'%{"tt":time.data[it]},]
         for it in range(0,nt):
-            nam[nn]['XSFTH(%(ii)4.i)'%{"ii": it+1}] = ['%(hfss)6.6f'%{"hfss":hfss[it,0,0]},]
+            nam[nn]['XSFTH(%(ii)4.i)'%{"ii": it+1}] = ['%(hfss)6.6f'%{"hfss":hfss[it]},]
         for it in range(0,nt):
-            nam[nn]['XSFTQ(%(ii)4.i)'%{"ii": it+1}] = ['%(hfls)6.6f'%{"hfls":hfls[it,0,0]},]
+            nam[nn]['XSFTQ(%(ii)4.i)'%{"ii": it+1}] = ['%(hfls)6.6f'%{"hfls":hfls[it]},]
         if surfaceForcingWind == 'ustar':
             for it in range(0,nt):
-                nam[nn]['XUSTAR(%(ii)4.i)'%{"ii": it+1}] = ['%(ustar)6.6f'%{"ustar":ustar[it,0,0]},]
+                nam[nn]['XUSTAR(%(ii)4.i)'%{"ii": it+1}] = ['%(ustar)6.6f'%{"ustar":ustar[it]},]
 
 
     if lperf:
