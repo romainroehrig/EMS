@@ -10,11 +10,12 @@ OBJS	 =	acadfa1D_main.o \
 		real2spec.o \
 		empty.o 
 
-XRD	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxrd.local.a 
-XLA	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a 
+XRDLOC	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxrd.local.a 
+XRDMAIN	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxrd.main.a 
+XLA	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxla.main.a 
 GRIBEX   =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a 
 MPIDUMMY =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a
-LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY) 
+LIBS	 =	$(XRDLOC) $(XRDMAIN) $(XLA) $(GRIBEX) $(MPIDUMMY) 
 
 %.o:%.F90
 	$(FC) $(F90FLAGS) -c $<

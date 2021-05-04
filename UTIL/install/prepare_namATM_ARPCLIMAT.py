@@ -185,8 +185,10 @@ def prep_nam_ATM(case,subcase,filecase,namref,timestep,NSTOP,namout=None):
 
     # MUSC Forcing
     nn = 'NAMLSFORC'
-    del(nam[nn])
-    nam[nn] = {}
+    #del(nam[nn])
+    #print nn in nam.keys()
+    if nn not in nam.keys():
+        nam[nn] = {}
     for param in ['LFIXRAD','LGEOST_UV_FRC','LNOWINDTEND','LQV_ADV_FRC','LQV_NUDG','LSOMEGA_FRC','LSW_FRC','LT_ADV_FRC','LT_NUDG','LUV_ADV_FRC','LUV_NUDG']:
         nam[nn][param] = ['.FALSE.',]
     for param in ['LMUSCLFA','LSPS_FRC']:
