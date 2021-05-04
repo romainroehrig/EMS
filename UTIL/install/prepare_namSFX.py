@@ -158,9 +158,10 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
     seconds = hour*3600.+minute*60.+second
 
     if surfaceForcing == 'ts':
-        ts = case.variables['ts'].data
-        time = case.variables['ts'].time
-        if surfaceType == 'land':
+        tsinit = case.variables['ts'].data
+        tsforc = case.variables['ts_forc'].data
+        time = case.variables['ts_forc'].time
+        if surfaceType in ['land','landice']:
             zz0 = case.variables['z0'].data[0]
         try:
             alb = case.variables['alb'].data[0]
@@ -188,10 +189,11 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
         else:
             print 'surfaceForcingWind unexpected:', surfaceForcingWind
             sys.exit()
+
         try:
-            ts = case.variables['ts'].data
+            tsforc = case.variables['ts_forc'].data
         except KeyError:
-            ts = hfls*0. + case.variables['ta'].data[0,0]
+            tsforc = hfls*0. + case.variables['ta'].data[0,0]
     
         time = case.variables['hfls'].time
 
@@ -216,7 +218,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
         else:
             print 'surfaceForcing unexpected:', surfaceForcing, 'for surfaceType:', surfaceType
             sys.exit()
-    elif surfaceType == 'land':
+    elif surfaceType in ['land','landice']:
         if surfaceForcing == 'surface_flux':
             print 'This configuration does not work:'
             print 'surfaceType =', surfaceType, 'and surfaceForcing =', surfaceForcing
@@ -262,10 +264,10 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
         nam[nn]['NDAY'] = [str(int(day)),]
         nam[nn]['XTIME'] = [str(int(seconds)),]
         if surfaceForcing == 'ts':
-            nam[nn]['XSST_UNIF'] = ['%(ts)6.2f'%{"ts":ts[0]},]
+            nam[nn]['XSST_UNIF'] = ['%(ts)6.2f'%{"ts":tsforc[0]},]
         else:
             nam[nn]['XSST_UNIF'] = ['300.',]
-    elif surfaceType == 'land':
+    elif surfaceType in ['land','landice']:
         if surfaceForcing == 'surface_flux':
             nn='NAM_FRAC'
             nam[nn]['XUNIF_SEA'] = ['1.',]
@@ -282,7 +284,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
             nam[nn]['LECOCLIMAP'] = ['.TRUE.',]
             nn='NAM_COVER'
             del(nam[nn]['XUNIF_COVER(1)'])
-            if case == 'GABLS4':
+            if surfaceType == 'landice':
                 nam[nn]['XUNIF_COVER(6)'] = ['1.',] # Permanent snow and ice 
             else:
                 nam[nn]['XUNIF_COVER(4)'] = ['1.',] # Bare land
@@ -300,9 +302,9 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
                 nam[nn]['XHUG_SURF'] = ['0.',]
                 nam[nn]['XHUG_ROOT'] = ['0.',]
                 nam[nn]['XHUG_DEEP'] = ['0.',]
-                nam[nn]['XTG_SURF'] = ['%(ts)6.2f'%{"ts": ts[0]},]
-                nam[nn]['XTG_ROOT'] = ['%(ts)6.2f'%{"ts": ts[0]-0.7},]
-                nam[nn]['XTG_DEEP'] = ['%(ts)6.2f'%{"ts": ts[0]-0.7},]    
+                nam[nn]['XTG_SURF'] = ['%(ts)6.2f'%{"ts": tsforc[0]},]
+                nam[nn]['XTG_ROOT'] = ['%(ts)6.2f'%{"ts": tsforc[0]-0.7},]
+                nam[nn]['XTG_DEEP'] = ['%(ts)6.2f'%{"ts": tsforc[0]-0.7},]    
                 nam[nn]['XHUGI_SURF'] = ['0.',]
                 nam[nn]['XHUGI_ROOT'] = ['0.',]
                 nam[nn]['XHUGI_DEEP'] = ['0.',]
@@ -337,7 +339,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
             nam[nn]['NTIME_SST'] = [str(nt),]
 
             for it in range(0,nt):
-                nam[nn]['XUNIF_SST(%(ii)4.i)'%{"ii": it+1}] = ['%(ts)6.2f'%{"ts": ts[it]},]
+                nam[nn]['XUNIF_SST(%(ii)4.i)'%{"ii": it+1}] = ['%(ts)6.2f'%{"ts": tsforc[it]},]
 
             for it in range(0,nt):
                 nam[nn]['CFTYP_SST(%(ii)4.i)'%{"ii": it+1}] = ["'DIRECT'",]
@@ -362,15 +364,15 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
                 if lminSfcWind:
                     nam[nn]['XVMODMIN'] = [str(minSfcWind),]
         
-        elif surfaceType == 'land':
+        elif surfaceType in ['land','landice']:
             nn = 'NAM_DATA_TSZ0'
             nam[nn] = {}
             nam[nn]['NTIME'] = [str(nt),]
 
             for it in range(0,nt-1):
-                nam[nn]['XUNIF_DTS(%(ii)4.i)'%{"ii": it+1}] = ['%(dts)6.3f'%{"dts": ts[it+1]-ts[it]},]
+                nam[nn]['XUNIF_DTS(%(ii)4.i)'%{"ii": it+1}] = ['%(dts)6.3f'%{"dts": tsforc[it+1]-tsforc[it]},]
                 nam[nn]['XUNIF_DHUGRD(%(ii)4.i)'%{"ii": it+1}] = ['0.',]
-            nam[nn]['XUNIF_DTS(%(ii)4.i)'%{"ii": nt}] = ['%(dts)6.3f'%{"dts": ts[nt-1]-ts[nt-2]},]
+            nam[nn]['XUNIF_DTS(%(ii)4.i)'%{"ii": nt}] = ['%(dts)6.3f'%{"dts": tsforc[nt-1]-tsforc[nt-2]},]
             nam[nn]['XUNIF_DHUGRD(%(ii)4.i)'%{"ii": nt}] = ['0.',]
 
 
@@ -391,7 +393,7 @@ def prep_nam_SFX(case,subcase,filecase,namref,namout=None):
         for it in range(0,nt):
             nam[nn]['XTIMET(%(ii)4.i)'%{"ii": it+1}] = ['%(tt)6.2f'%{"tt":time.data[it]},]
         for it in range(0,nt):
-            nam[nn]['XTSRAD(%(ii)4.i)'%{"ii": it+1}] = ['%(ts)6.6f'%{"ts":ts[it]},]
+            nam[nn]['XTSRAD(%(ii)4.i)'%{"ii": it+1}] = ['%(ts)6.6f'%{"ts":tsforc[it]},]
         for it in range(0,nt):
             nam[nn]['XTIMEF(%(ii)4.i)'%{"ii": it+1}] = ['%(tt)6.6f'%{"tt":time.data[it]},]
         for it in range(0,nt):
