@@ -15,27 +15,25 @@ from ems.namelist import readsurfex, writesurfex
 
 lverbose = logger.getEffectiveLevel() == logging.DEBUG
 
-def prep_nam_sfx(case, subcase, filecase, namref, namout=None):
+def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
     """
     Prepare SURFEX namelist for MUSC simulation, 
     given information in filecase,
-    and from SURFEX namelist namref
+    and from SURFEX namelist namin
     """
-
-    if namout is None:
-        namout = '{0}_{1}_{2}'.format(namref,case,subcase)
 
     logger.info('-'*40)
     logger.info('Prepare SURFEX namelist for MUSC')
-    logger.info('case: ' +  case + ' subcase ' + subcase)
-    logger.info('Reference namelist: ' + namref)
+    logger.info('Case file: ' +  ncfile)
+    logger.info('Reference namelist: ' + namin)
     logger.info('Output namelist: ' + namout)
+    logger.info('Output format for PGD/PREP: ' + sfxfmt)
 
     nam2keep = ['NAM_CARTESIAN', 'NAM_COVER', 'NAM_DIAG_SURFn', 'NAM_FRAC', 'NAM_IO_OFFLINE',
                 'NAM_IO_SURF_ARO', 'NAM_PGD_GRID', 'NAM_PGD_SCHEMES', 'NAM_PREP_SURF_ATM',
                 'NAM_SURF_ATM', 'NAM_SURF_CSTS', 'NAM_ZS']
 
-    nam = readsurfex(namref)
+    nam = readsurfex(namin)
 
     # Remove a few namelists
     for nn in ['NAMDIM', 'NAMGEM', 'NAMRGRI', 'NAMVV1', 'NAMRGRI', 'NAM_IO_SURF_ARO',
@@ -72,7 +70,13 @@ def prep_nam_sfx(case, subcase, filecase, namref, namout=None):
 
     # NAM_IO_OFFLINE
     nn = 'NAM_IO_OFFLINE'
-    nam[nn]['CSURF_FILETYPE'] = ["'LFI'"]
+    if sfxfmt == 'FA':
+        nam[nn]['LFAGMAP'] = ['T']
+        nam[nn]['CSURF_FILETYPE'] = ["'FA   '"]
+    elif sfxfmt == 'LFI':
+        nam[nn]['CSURF_FILETYPE'] = ["'LFI'"]
+    else:
+        raise ValueError('Unexpected value for Surfex PGD/PREP format: ' + sfxfmt)
     nam[nn]['CPGDFILE'] = ["'PGD'"]
     nam[nn]['CPREPFILE'] = ["'PREP'"]
 
@@ -114,10 +118,10 @@ def prep_nam_sfx(case, subcase, filecase, namref, namout=None):
 
 
     # -----------------------------------------------------------
-    # Case specific modifications in namref
+    # Case specific modifications in namin
     # -----------------------------------------------------------
 
-    case = Case('{0}/{1}'.format(case,subcase))
+    case = Case('tmp')
     case.read('data_input.nc')
 
     if lverbose:

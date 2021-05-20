@@ -9,13 +9,10 @@ import shutil
 import logging
 logger = logging.getLogger(__name__)
 
-from datetime import datetime
-
 import ems
 
 # Global variables
 repinit = os.getcwd()
-ASCII2FA = os.path.join(ems._dirEMS, '../aux/ASCII2FA/bin/ascii2fa')
 
 # For performance monitoring
 import time
@@ -29,9 +26,11 @@ def perf(tin, s):
         logger.info('PERF - {0}: {1} '.format(s,t-tin))
     return time.time()
 
-
-def install_ATM(model, case, subcase, filecase,
-                repout, vert_grid, timestep=None, loverwrite=False, lupdate=False):
+# Main functions
+def install_atm(model, case, subcase, filecase,
+                repout, vert_grid, timestep=None, 
+                ASCII2FA=os.path.join(ems._dirEMS, '../aux/ASCII2FA/bin/ascii2fa'),
+                lforc_ascii=True, loverwrite=False, lupdate=False):
 
     """ Prepare files of atmospheric initial conditions and forcing needed to run MUSC """
 
@@ -39,9 +38,10 @@ def install_ATM(model, case, subcase, filecase,
 
     logger.info('#'*40)
     logger.info('Prepare Atmospheric files')
-    logger.info('Case: ' + case + 'subcase: ' + subcase)
+    logger.info('Case: ' + case + ' subcase: ' + subcase)
     logger.info('Vertical grid: ' + vert_grid)
     logger.info('timestep: ' + str(timestep))
+    logger.info('ASCII2FA: ' + ASCII2FA)
     logger.info('Installation in ' + rep)
 
     vert_grid_file = os.path.basename(vert_grid)
@@ -86,12 +86,13 @@ def install_ATM(model, case, subcase, filecase,
 
         # Prepare restart and forcing
         ems.prep_init_forc_atm(
-                case, subcase,
-                timestep,
-                vert_grid_file, #vertical grid description file
-                'nam1D_{0}'.format(vert_grid_name), #output namelist
-                'data_input.nc', #case description
-                dirforc=dirforc, dirdiags=dirdiags)
+                timestep, vert_grid_file, #timestep and vertical grid description file
+                nam1d='nam1D_{0}'.format(vert_grid_name), #output namelist
+                ncfile='data_input.nc', #case description
+                lforc_ascii=lforc_ascii,
+                dirforc=dirforc, dirdiags=dirdiags,
+                save_init=True, file_init='init_{0}.nc'.format(vert_grid_name),
+                save_forc=True, file_forc='forc_{0}.nc'.format(vert_grid_name))
         os.symlink('nam1D_{0}'.format(vert_grid_name), 'nam1D')
         os.environ['OMP_NUM_THREADS'] = '1'
         os.symlink(ASCII2FA, 'ascii2fa')
@@ -108,10 +109,11 @@ def install_ATM(model, case, subcase, filecase,
     logger.info('-'*40)
       
 
-def install_SFX(model, case, subcase, filecase, repout,
+def install_sfx(model, case, subcase, filecase, repout,
                 PGD, PREP, namref, 
                 loverwrite=False, lupdate=False,
-                ecoclimap=os.path.join(ems._dirEMS, '../data/ecoclimap_cnrm_cm6.02')):
+                ecoclimap=os.path.join(ems._dirEMS, '../data/ecoclimap_cnrm_cm6.02'),
+                sfxfmt='LFI'):
 
     """ Prepare files of atmospheric initial conditions and forcing needed to run MUSC """
 
@@ -154,7 +156,7 @@ def install_SFX(model, case, subcase, filecase, repout,
         os.chdir(rep)
 
         # Preparation namelist SURFEX
-        ems.prep_nam_sfx(case, subcase, "data_input.nc", namref, namout="namsurf")
+        ems.prep_nam_sfx("data_input.nc", namref, namout="namsurf", sfxfmt=sfxfmt)
     
         t0 = perf(t0, 'Prepare SURFEX namelist')
 
@@ -180,14 +182,14 @@ def install_SFX(model, case, subcase, filecase, repout,
 
     t0= perf(tinit, 'Total')
 
-def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=False,lupdate=False,lrerun=False):
+def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=False,lupdate=False,lrerun=False):
 
     """ Install a MUSC simulation """
     
     t0 = perf_init()
     tinit = t0
 
-    from ems.dephycf.Case import Case
+    #from ems.dephycf.Case import Case
 
     rep = os.path.join(repout,case,subcase)
 
@@ -200,6 +202,7 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
     if config['lsurfex']:
         logger.info('SURFEX reference namelist: ' + config['namSFXref'])
         logger.info('Ecoclimap directory: ' + config['ecoclimap'])
+        logger.info('SURFEX PGD/PREP format: ' + config['sfxfmt'])
     logger.info('Initial Conditions file: ' + config['initfile'])
     if model == 'ARPCLIMAT':
         logger.info('Atmospheric forcing files: ' + config['forcingfiles'])
@@ -236,30 +239,16 @@ def install_Run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
     if not(flagExist) or lupdate:
         os.chdir(rep)
 
-        # Determination NSTOP
-        CASE = Case('{0}/{1}'.format(case,subcase))
-        CASE.read('data_input.nc')
-
-        tstart = CASE.start_date
-        tend = CASE.end_date
-
-        tmp = tend-tstart
-        tmp = tmp.total_seconds()/3600
-        NSTOP = 'h' + str(int(tmp))
-        logger.debug('NSTOP: ' + NSTOP)
-
-        t0 = perf(t0, 'Compute NSTOP')
-
         # Preparation namelist
-        ems.prep_nam_atm(case, subcase, filecase, 
+        NSTOP = ems.prep_nam_atm('data_input.nc',
                          config['namATMref'], config['TSTEP'],
-                         NSTOP, namout="namarp_{0}".format(config['name']))
+                         namout="namarp_{0}".format(config['name']))
 
         t0 = perf(t0, 'Prepare {0} namelist'.format(model))
 
         # Preparation namelist SURFEX
         if config['lsurfex']:
-            ems.prep_nam_sfx(case, subcase, filecase, config['namSFXref'], namout="namsfx_" + config['name'])
+            ems.prep_nam_sfx(filecase, config['namSFXref'], namout="namsfx_" + config['name'], sfxfmt=config['sfxfmt'])
 
             t0 = perf(t0, 'Prepare SURFEX namelist')
 

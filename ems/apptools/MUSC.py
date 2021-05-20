@@ -21,6 +21,8 @@ import ems.install_MUSC as install_MUSC
 ############# Some default
 
 default = {
+        # Binaries
+        'ASCII2FA': os.path.join(ems._dirEMS, '../aux/ASCII2FA/bin/ascii2fa'),
         # Postprocessing
         'dirpost': os.path.join(dirMUSC,'post'),
         'variablesDict': 'variable.py',
@@ -29,14 +31,16 @@ default = {
         #
         # EMS configuration
         'model': 'ARPCLIMAT',
+        'lforc_ascii': True,
         'lsurfex': True,
         'loverwrite': False,
         'lupdate_ATM': True,
         'lupdate_SFX': True,
         'lupdate_RUN': False,
         #
-        # ecoclimap data
+        # SURFEX
         'ecoclimap': os.path.join(ems._dirEMS, '../data/ecoclimap_cnrm_cm6.02'),
+        'sfxfmt': 'LFI'
         }
 
 ############# End editing
@@ -83,9 +87,9 @@ if __name__ == '__main__':
     # Get configuration:
     atts = {}
     # First loop over attributes which have a default (see above)
-    for att in ['GROUP', 'model', 'lsurfex',
+    for att in ['GROUP', 'model', 'ASCII2FA', 'lforc_ascii', 'lsurfex',
                 'dirpost', 'variablesDict', 'defaultConfigPost', 'caseDependent',
-                'ecoclimap',
+                'sfxfmt', 'ecoclimap',
                 'loverwrite', 'lupdate_ATM', 'lupdate_SFX', 'lupdate_RUN']: 
         try:
             atts[att] = CM.__dict__[att]
@@ -116,16 +120,19 @@ if __name__ == '__main__':
     model = atts['model']
 
     MASTER = atts['MASTER']
+    ASCII2FA = atts['ASCII2FA']
     ATMNAM = atts['ATMNAM']
     vert_grid = atts['vert_grid']
     vert_grid_name = os.path.basename(vert_grid).split('.')[0]
     timestep = atts['timestep']
 
+    lforc_ascii = atts['lforc_ascii']
     lsurfex = atts['lsurfex']
     if lsurfex:
         SFXNAM = atts['SFXNAM']
         PGD = atts['PGD']
         PREP = atts['PREP']
+    sfxfmt = atts['sfxfmt']
     ecoclimap = atts['ecoclimap']
 
     dirpost = atts['dirpost']
@@ -164,8 +171,9 @@ if __name__ == '__main__':
 
         if not(installed) or loverwrite or lupdate_ATM:
             # Installing
-            install_MUSC.install_ATM(model, case, subcase, data_input, 
+            install_MUSC.install_atm(model, case, subcase, data_input, 
                     repATM, vert_grid, timestep, 
+                    ASCII2FA=ASCII2FA, lforc_ascii=lforc_ascii,
                     loverwrite=loverwrite, lupdate=lupdate_ATM)
 
             os.system('touch {0}'.format(install_file))
@@ -181,9 +189,9 @@ if __name__ == '__main__':
 
         if not(installed) or loverwrite or lupdate_SFX:
             # Installing
-            install_MUSC.install_SFX(model, case, subcase, data_input,
+            install_MUSC.install_sfx(model, case, subcase, data_input,
                     repSFX, PGD, PREP, SFXNAM,
-                    loverwrite=loverwrite, lupdate=lupdate_SFX, ecoclimap=ecoclimap)
+                    loverwrite=loverwrite, lupdate=lupdate_SFX, ecoclimap=ecoclimap, sfxfmt=sfxfmt)
 
             os.system('touch {0}'.format(install_file))
         else:
@@ -197,6 +205,7 @@ if __name__ == '__main__':
         config['name'] = EXPID
         config['MASTER'] = MASTER
         config['ecoclimap'] = ecoclimap
+        config['sfxfmt'] = sfxfmt
         config['vert_grid'] = vert_grid
         config['TSTEP'] = timestep
         config['lsurfex'] = lsurfex
@@ -230,7 +239,7 @@ if __name__ == '__main__':
 
         # Installing
         if not(installed) or loverwrite or lupdate_RUN:
-            install_MUSC.install_Run(model,case,subcase,data_input,
+            install_MUSC.install_run(model,case,subcase,data_input,
                     repRUN,config,configOut,
                     loverwrite=loverwrite,lupdate=lupdate_RUN)
             os.system('touch {0}'.format(install_file))

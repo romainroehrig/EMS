@@ -66,7 +66,6 @@ def prep_init_forc_atm(
         timestep, vertical_grid,
         nam1d='nam1d', 
         ncfile='data_input.nc',
-        lforc_ascii=True,
         floatfmt="{:.8}", 
         dirforc=None, dirdiags=None,
         save_init=False, file_init='init.nc',
@@ -76,7 +75,7 @@ def prep_init_forc_atm(
     # A few initialisation
     #---------------------------------------------------------------
 
-    #lforc = dirforc is not None
+    lforc = dirforc is not None
     lplot = dirdiags is not None
     if lplot:
         rep_images = {}
@@ -183,8 +182,103 @@ def prep_init_forc_atm(
                               var2=datain[var], label="MUSC", label2="Orig")
 
     #---------------------------------------------------------------
+    # Preparing forcings
+    #---------------------------------------------------------------
+
+    timein = case.variables['pressure_forc'].time
+    nt_f = timein.length
+    if nt_f <= 1:
+        dt = 0.
+    else:  
+        dt = timein.data[1]-timein.data[0]
+
+    def prep_forcing(var):
+        din = Variable(var,
+            data=case.variables[var].data,
+            units=case.variables[var].units,
+            name=case.variables[var].name,
+            level=levin,
+            time=case.variables[var].time,
+            pressure=case.variables['pa_forc'],
+            plotcoef=case.variables[var].plotcoef,
+            plotunits=case.variables[var].plotunits)
+        if lverbose:
+            din.info()
+        dout = din.interpol_vert(pressure=levout.data)
+        if lverbose:
+            dout.info()
+        if lplot:
+            din.plot(rep_images=rep_images['orig'], timeunits='hours',levunits='hPa')
+            dout.plotcoef = case.variables[var].plotcoef
+            dout.plotunits = case.variables[var].plotunits
+            dout.plot(rep_images=rep_images['MUSC'],timeunits='hours',levunits='hPa')
+        return dout
+
+    dataout_forc = {}
+
+    # Computing number of forcing fields
+    nb_f = 0
+    if case.attributes['adv_ta'] == 1 or case.attributes['radiation'] == 'tend':
+        nb_f += 1
+        if case.attributes['adv_ta'] == 1:
+            dataout_forc['tnta_adv'] = prep_forcing('tnta_adv') 
+        else:
+            dataout_forc['tnta_adv'] = 0
+        if case.attributes['radiation'] == 'tend':
+            dataout_forc['tnta_rad'] = prep_forcing('tnta_rad')
+            dataout_forc['tnta_adv'] += dataout_forc['tnta_rad']
+
+    if case.attributes['adv_qv'] == 1:
+        nb_f += 1
+        dataout_forc['tnqv_adv'] = prep_forcing('tnqv_adv')
+
+#    if case.attributes['adv_ua'] == 1:
+#        nb_f += 1
+#        var = 'tnua_adv'
+#        dataout_forc[var] = prep_forcing(var)          
+#    if case.attributes['adv_va'] == 1:
+#        nb_f += 1
+#        var = 'tnva_adv'
+#        dataout_forc[var] = prep_forcing(var)        
+
+    if case.attributes['forc_wap'] == 1 or case.attributes['forc_wa'] == 1:
+        nb_f += 1
+        if case.attributes['forc_wa'] == 1:
+            dataout_forc['wa'] = prep_forcing('wa')
+        elif case.attributes['forc_wap'] == 1:
+            dataout_forc['wap'] = prep_forcing('wap')
+
+    if case.attributes['forc_geo']:
+        nb_f += 2
+        for var in ['ug','vg']:
+            dataout_forc[var] = prep_forcing(var)        
+
+    # Computing number of surface forcing fields
+    nb_fs = 0
+
+    if case.attributes['surface_forcing_ts'] == 'surface_flux':
+        nb_fs += 2
+        dataout_forc['hfss'] = case.variables['hfss']
+        dataout_forc['hfls'] = case.variables['hfls']
+
+    if case.attributes['surface_forcing_wind'] == 'ustar':
+        nb_fs += 1
+        dataout_forc['ustar'] = case.variables['ustar']
+
+    #---------------------------------------------------------------
     # Writing nam1D
     #---------------------------------------------------------------
+
+    def write_forcing_in_nam1d(f, a, name, wl):
+        for it in range(nt_f): 
+            f.write(' ' + name + '  ' + str(int(it * dt)) + ' s\n')
+            if wl:
+                #vertical profile
+                for ilev in range(nlev_out):
+                    f.write(floatfmt.format(a[it, ilev]) + '\n')
+            else:
+                #surface value
+                f.write(floatfmt.format(a[it]) + '\n')
 
     def write_profile_in_nam1d(f, a, name, wl):
         f.write(name + '\n')
@@ -204,7 +298,8 @@ def prep_init_forc_atm(
         g.write('  LNHDYN  = .FALSE.,\n')
         g.write('  LALAPHYS= .TRUE.,\n')
         g.write('  LREASUR = .TRUE.,\n')
-        g.write('  NFORC   = 0,\n')
+        g.write('  NFORC   = {0},'.format(nb_f * nt_f) + '\n')
+        g.write('  NFORCS  = {0},'.format(nb_fs * nt_f) + '\n')
         g.write('  LQCGRP  = .TRUE.,\n')
         g.write('  LQIGRP  = .TRUE.,\n')
         g.write('  LQRGRP  = .FALSE.,\n')
@@ -239,6 +334,27 @@ def prep_init_forc_atm(
 
         g.write('FORCING\n')
 
+        if case.attributes['adv_ta'] == 1:
+            write_forcing_in_nam1d(g, dataout_forc['tnta_adv'].data, 'T ADV', wl=True)
+
+        if case.attributes['adv_qv'] == 1:
+            write_forcing_in_nam1d(g, dataout_forc['tnqv_adv'].data, 'Qv ADV', wl=True)
+
+        if case.attributes['forc_geo'] == 1:
+            write_forcing_in_nam1d(g, dataout_forc['ug'].data, 'PFUG', wl=True)
+            write_forcing_in_nam1d(g, dataout_forc['vg'].data, 'PFVG', wl=True)
+
+        if case.attributes['forc_wa'] == 1:
+            write_forcing_in_nam1d(g, dataout_forc['wa'].data, 'W', wl=True)
+
+        g.write('SURF.FORC\n')
+        if case.attributes['surface_forcing_ts'] == 'surface_flux':
+            write_forcing_in_nam1d(g, dataout_forc['hfss'].data, 'FCS', wl=False)
+            write_forcing_in_nam1d(g, dataout_forc['hfls'].data, 'FLE', wl=False)
+
+        if case.attributes['surface_forcing_wind'] == 'ustar':
+            write_forcing_in_nam1d(g, dataout_forc['hfls'].data, 'USTAR', wl=False)
+
         for var in variablesAux.keys():
             if var == 'SURFZ0.FOIS.G' and 'z0' in case.variables.keys():
                 write_profile_in_nam1d(g, 9.80665 * case.variables['z0'].data[0], var, False)
@@ -250,7 +366,7 @@ def prep_init_forc_atm(
         g.write('STOP\n')
 
     #---------------------------------------------------------------
-    # Saving initial state in netCDF file
+    # Saving initial state and forcings in netCDF files
     #---------------------------------------------------------------
 
     if save_init:
@@ -258,121 +374,7 @@ def prep_init_forc_atm(
             for var in dataout.keys():
                 dataout[var].write(g)
 
-
-    #---------------------------------------------------------------
-    # Ecriture des forcages ARPEGE-Climat
-    #---------------------------------------------------------------
-
-    if lforc_ascii:
-        timein = case.variables['pa_forc'].time
-        tmin = timein.data[0]
-        tmax = timein.data[-1]
-        timeout = np.arange(tmin, tmax+timestep, timestep, dtype=np.float64)
-        nt_out, = timeout.shape
-        timeout = Axis('time',timeout,name='time',units=case.tunits)
-
-        files_names = {'ps_forc':'Ps',
-                       'ug':'ug',
-                       'vg':'vg',
-                       'wa':'W',
-                       'wap':'Omega',
-                       'tnua_adv':'du',
-                       'tnva_adv':'dv',
-                       'tnta_adv':'dT',
-                       'tnqv_adv':'dq',
-                       'ua_nud':'u',
-                       'va_nud':'v',
-                       'ta_nud':'T',
-                       'qv_nud':'q'
-                       }
-
-        def prep_forcing(var, wl):
-            if wl:
-                din = Variable(var,
-                    data=case.variables[var].data,
-                    units=case.variables[var].units,
-                    name=case.variables[var].name,
-                    level=levin,
-                    time=case.variables[var].time,
-                    pressure=case.variables['pa_forc'],
-                    plotcoef=case.variables[var].plotcoef,
-                    plotunits=case.variables[var].plotunits)
-                if lverbose:
-                    din.info()
-                dout = din.interpol_time(time=timeout)
-                dout = dout.interpol_vert(pressure=levout.data)
-                if lverbose:
-                    dout.info()
-                if lplot:
-                    din.plot(rep_images=rep_images['orig'], timeunits='hours',levunits='hPa')
-                    dout.plotcoef = case.variables[var].plotcoef
-                    dout.plotunits = case.variables[var].plotunits
-                    dout.plot(rep_images=rep_images['MUSC'],timeunits='hours',levunits='hPa')
-                return dout
-            else:
-                return case.variables[var].interpol_time(time=timeout)
-
-        def write_forcing_in_files(a, name, wl):
-            for ii in range(nt_out):
-                with open('{0}/{1}_forcing_{2:0>5}.txt'.format(dirforc, name, ii), 'w') as g: 
-                    if wl:
-                        #vertical profile
-                        for ilev in range(nlev_out):
-                            g.write(floatfmt.format(a[ii, ilev]) + '\n')
-                    else:
-                        #surface value
-                        g.write(floatfmt.format(a[ii]) + '\n')
-
-        dataout_forc = {}
-        
-        var = 'ps_forc'
-        dataout_forc[var] = prep_forcing(var, wl=False)
-        write_forcing_in_files(dataout_forc[var].data, files_names[var], wl=False)
-
-        if attributes['forc_geo']:
-            for var in ['ug','vg']:
-                dataout_forc[var] = prep_forcing(var, wl=True)
-                write_forcing_in_files(dataout_forc[var].data, files_names[var], wl=True)
-
-        if attributes['forc_wap']:
-            var = 'wap'
-            dataout_forc[var] = prep_forcing(var, wl=True)
-            write_forcing_in_files(dataout_forc[var].data, files_names[var], wl=True)
-
-        if attributes['forc_wa']:
-            var = 'wa'
-            dataout_forc[var] = prep_forcing(var, wl=True)
-            write_forcing_in_files(dataout_forc[var].data, files_names[var], wl=True)
-
-        for var in ['qv']: #['u','v','qv']:
-            attloc = 'adv_{0}'.format(var)
-            varloc = 'tn{0}_adv'.format(var)
-            if attributes[attloc]:
-                dataout_forc[varloc] = prep_forcing(varloc, wl=True)
-                write_forcing_in_files(dataout_forc[varloc].data, files_names[varloc], wl=True)
-
-        if attributes['adv_ta'] and (attributes['radiation'] == 'tend'): 
-            var1 = 'tnta_adv'
-            dataout_forc[var1] = prep_forcing(var1, wl=True)
-            var2 = 'tnta_rad'
-            dataout_forc[var2] = prep_forcing(var2, wl=True)
-            write_forcing_in_files(dataout_forc[var1].data + dataout_forc[var2].data,
-                                   files_names[var1], wl=True)
-        elif attributes['adv_ta']:
-            var = 'tnta_adv'
-            dataout_forc[var] = prep_forcing(var, wl=True)
-            write_forcing_in_files(dataout_forc[var].data, files_names[var], wl=True)
-
-        for var in ['ua','va','ta','qv']:
-            attloc = 'nudging_{0}'.format(var)
-            varloc = '{0}_nud'.format(var)
-            if attributes[attloc]:
-                dataout_forc[varloc] = prep_forcing(varloc, wl=True)
-                write_forcing_in_files(dataout_forc[varloc].data, files_names[varloc], wl=True)
-
-        if save_forc:
-            with nc.Dataset(file_forc, 'w', format='NETCDF3_CLASSIC') as g:
-                for var in dataout_forc.keys():
-                    dataout_forc[var].write(g)
-    else:
-        raise NotImplementedError('lforc_ascii=False not yet implemented')
+    if save_forc:
+        with nc.Dataset(file_forc, 'w', format='NETCDF3_CLASSIC') as g:
+            for var in dataout_forc.keys():
+                dataout_forc[var].write(g)

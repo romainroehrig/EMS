@@ -6,7 +6,7 @@ set -evx
 # User specific
 
 # EMS Version
-EMS_VERSION=1.0.mac
+EMS_VERSION=TO BE DEFINED
 
 # Directory where EMS is installed
 REP_EMS=$HOME/Tools/EMS
@@ -67,7 +67,7 @@ cat << EOF >> $PROFILE
 # included on $(date)
 export REP_EMS=$REP_EMS/V$EMS_VERSION
 export REP_MUSC=$REP_MUSC/V$EMS_VERSION
-export PYTHONPATH=.:\$REP_EMS/CASES:\$REP_EMS/UTIL/python:\$REP_EMS/UTIL/install/:\$PYTHONPATH
+export PYTHONPATH=.:\$REP_EMS:\$REP_EMS/aux:\$PYTHONPATH
 EOF
 
 . ~/$PROFILE
@@ -78,19 +78,17 @@ compile="y"
 if [ $compile == "y" ]; then
 
   # lfa python library
-  cd $REP_EMS/UTIL/python/lfa8
-  ./compile.sh
-  cd $REP_EMS/UTIL/python/lfa12
-  ./compile.sh
+  cd $REP_EMS/aux/lfa4py
+  make
 
   # ascii2lfa binary
-  cd $REP_EMS/UTIL/Tools/ASCII2FA/src
+  cd $REP_EMS/aux/ASCII2FA/src
   make all
   make clean
 
   # LFA tools
-  cd $REP_EMS/UTIL/Tools/LFA
-  ./install
+  #cd $REP_EMS/aux/lfatools
+  #./install
 
 fi
 
@@ -99,12 +97,12 @@ fi
 [ -d "$REP_MUSC" ] || mkdir -p $REP_MUSC
 cd $REP_MUSC
 cp -r $REP_EMS/Examples/* .
-ln -s $REP_EMS/main/MUSC.py
+ln -s $REP_EMS/ems/apptools/MUSC.py
 
 for ff in convertLFA2nc.py lfa2nc.py convert2p.py convert2z.py 
 do
 
-  ln -s $REP_EMS/UTIL/post/$ff $REP_MUSC/post/$ff
+  ln -s $REP_EMS/ems/apptools/ems_$ff $REP_MUSC/post/$ff
 
 done
 

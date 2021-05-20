@@ -5,10 +5,11 @@
 # http://www.cecill.info
 
 """
-DEPHY common format for MUSC model
+Environment for MUSC Simulations
 ------------------------------------------------------------------
 
-``dephycf_musc`` is a package designed to deal with the DEPHY common format for the MUSC model
+``dephycf`` is a package designed within the DEPHY framework, 
+which proposes a netCDF SCM/LES input format.
 
 """
 
@@ -27,8 +28,6 @@ __contributors__ = ['Sébastien Riette']
 _dirEMS = os.path.dirname(os.path.abspath(__file__))
 
 # COMPONENTS (modules) #
-#from .musc_namel_run_atm import musc_namel_run_atm
-#from .musc_namel_sfx import musc_namel_sfx
 from .prep_init_forc_atm_ARPCLIMAT import prep_init_forc_atm
 from .prep_nam_atm_ARPCLIMAT import prep_nam_atm
 from .prep_nam_sfx import prep_nam_sfx

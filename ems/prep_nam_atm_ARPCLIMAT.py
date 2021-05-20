@@ -20,26 +20,23 @@ from ems.namelist import readarp, writearp
 
 lverbose = logger.getEffectiveLevel() == logging.DEBUG
 
-def prep_nam_atm(case, subcase, filecase, namref, timestep, NSTOP, namout=None):
+def prep_nam_atm(ncfile, namin, timestep, namout='namarp'):
     """
     Prepare ARPEGE-Climat namelist for MUSC simulation, 
     given information in filecase,
-    and from ARPEGE-Climat namelist namref
+    and from ARPEGE-Climat namelist namin
     """
-
-    if namout is None:
-        namout = '{0}_{1}_{2}'.format(namref,case,subcase)
 
     logger.info('-'*40)
     logger.info('Prepare ARPEGE-Climat namelist for MUSC')
-    logger.info('case:' + case + ' subcase: ' + subcase)
-    logger.info('Reference namelist: ' + namref)
+    logger.info('Case netCDF file:' + ncfile)
+    logger.info('Reference namelist: ' + namin)
     logger.info('Output namelist: ' + namout)
 
-    nam = readarp(namref)
+    nam = readarp(namin)
 
     # -----------------------------------------------------------
-    # Some general modification in namref
+    # Some general modification in namin
     # -----------------------------------------------------------
 
     for namin in nam.keys():
@@ -148,11 +145,11 @@ def prep_nam_atm(case, subcase, filecase, namref, timestep, NSTOP, namout=None):
     nam[nn]['NFRRAZ'] = ['1']
 
     # -----------------------------------------------------------
-    # Case specific modifications in namref
+    # Case specific modifications in namin
     # -----------------------------------------------------------
 
-    case = Case('{0}/{1}'.format(case,subcase))
-    case.read('data_input.nc')
+    case = Case('tmp')
+    case.read(ncfile)
 
     if lverbose:
          case.info()
@@ -175,6 +172,13 @@ def prep_nam_atm(case, subcase, filecase, namref, timestep, NSTOP, namout=None):
     hour = startDate.hour
     minute = startDate.minute
     second = startDate.second
+
+    # Determine NSTOP
+    endDate = case.end_date
+    tmp = endDate-startDate
+    tmp = tmp.total_seconds()/3600
+    NSTOP = 'h' + str(int(tmp))
+    logger.debug('NSTOP: ' + NSTOP)
 
     nam['NAMRIP']['NINDAT'] = [startDate.strftime('%Y%m%d')]
     nam['NAMRIP']['NSSSSS'] = [str(int(hour * 3600 + minute * 60 + second))]
@@ -286,3 +290,5 @@ def prep_nam_atm(case, subcase, filecase, namref, timestep, NSTOP, namout=None):
     writearp(nam,namout)
 
     logger.info('-'*40)
+
+    return NSTOP
