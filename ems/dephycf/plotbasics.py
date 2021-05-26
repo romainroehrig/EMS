@@ -6,6 +6,7 @@ Created on 27 November 2019
 @author: Romain Roehrig
 """
 
+import os
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -26,7 +27,7 @@ def plot(x,y,x2=None,y2=None,xlim=None,ylim=None,xlabel=None,ylabel=None,title=N
     if rep_images is None:
       plt.savefig(name)
     else:
-      plt.savefig(rep_images + name)
+      plt.savefig(os.path.join(rep_images, name))
     plt.close()
 
 def plot2D(x,y,z,xlim=None,ylim=None,xlabel=None,ylabel=None,title=None,rep_images=None,name=None,yunits=None):
@@ -45,5 +46,5 @@ def plot2D(x,y,z,xlim=None,ylim=None,xlabel=None,ylabel=None,title=None,rep_imag
     if rep_images is None:
       plt.savefig(name)
     else:
-      plt.savefig(rep_images + name)
+      plt.savefig(os.path.join(rep_images, name))
     plt.close()

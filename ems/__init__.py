@@ -17,7 +17,7 @@ import os
 
 __all__ = []
 
-__version__ = '0.0.1'
+__version__ = '1.0.0'
 
 __license__ = 'CeCILL-C'
 
@@ -28,8 +28,8 @@ __contributors__ = ['Sébastien Riette']
 _dirEMS = os.path.dirname(os.path.abspath(__file__))
 
 # COMPONENTS (modules) #
-from .prep_init_forc_atm_ARPCLIMAT import prep_init_forc_atm
-from .prep_nam_atm_ARPCLIMAT import prep_nam_atm
+from .prep_init_forc_atm import prep_init_forc_atm
+from .prep_nam_atm import prep_nam_atm
 from .prep_nam_sfx import prep_nam_sfx
 from .lfa import lfareader
 from .lfa2nc import lfa2nc

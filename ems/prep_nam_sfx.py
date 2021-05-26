@@ -122,7 +122,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
     # -----------------------------------------------------------
 
     case = Case('tmp')
-    case.read('data_input.nc')
+    case.read(ncfile)
 
     if lverbose:
          case.info()

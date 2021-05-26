@@ -85,7 +85,7 @@ def install_atm(model, case, subcase, filecase,
         os.mkdir(dirdiags)
 
         # Prepare restart and forcing
-        ems.prep_init_forc_atm(
+        ems.prep_init_forc_atm(model,
                 timestep, vert_grid_file, #timestep and vertical grid description file
                 nam1d='nam1D_{0}'.format(vert_grid_name), #output namelist
                 ncfile='data_input.nc', #case description
@@ -240,7 +240,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         os.chdir(rep)
 
         # Preparation namelist
-        NSTOP = ems.prep_nam_atm('data_input.nc',
+        NSTOP = ems.prep_nam_atm(model, 'data_input.nc',
                          config['namATMref'], config['TSTEP'],
                          namout="namarp_{0}".format(config['name']))
 
