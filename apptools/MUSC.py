@@ -94,7 +94,8 @@ if __name__ == '__main__':
         try:
             atts[att] = CM.__dict__[att]
         except KeyError:
-            logger.warning('{0} was not given. Taking default: {1}'.format(att, default[att]))
+            logger.warning('{0} was not given.'.format(att))
+            logger.warning('=> Taking default: {0}'.format(default[att]))
             atts[att] = default[att]
             pass
         except:
