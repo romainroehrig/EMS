@@ -1,10 +1,17 @@
-# Describe where to find the case driver files
-# All cases have at least one subcase, which is REF if not really relevant
+#!/usr/bin/env python
+# -*- coding:UTF-8 -*-
+# Copyright (c) Météo France (2014-)
+# This software is governed by the CeCILL-C license under French law.
+# http://www.cecill.info
+
+"""
+Describe where to find the case driver files
+All cases have at least one subcase, which is REF if not really relevant
+"""
 
 import os
-
-# If ldebug=True, a few information about the cases are printed
-ldebug = False
+import logging
+logger = logging.getLogger(__name__)
 
 ####################################
 #### Some initialization
@@ -16,12 +23,13 @@ subcases = {}
 data_input = {}
 
 # Get the CASES directory
-rep0 = os.getenv('REP_EMS') + '/data/CASES/'
-#rep0 = '../data/CASES/'
-if ldebug:
-    print '-'*60
-    print '-'*10, 'Some debug information from EMS_cases.py'
-    print "CASES directory:", rep0
+import ems
+rep0 = os.path.join(ems._dirEMS,'../data/CASES') 
+
+# Some debug information
+logger.debug('-'*60)
+logger.debug('-'*10 + ' Some debug information from EMS_cases.py')
+logger.debug("CASES directory: " + rep0)
 
 
 ####################################
@@ -262,36 +270,35 @@ def available(case=None):
     """
 
     if case is None:
-        print '-'*30, 'Available cases'
+        logger.info('-'*30 + ' Available cases')
         for cc in cases:
             for ss in subcases[cc]:
-                print cc, ss, data_input[cc][ss]
-        print '-'*60
+                logger.info('{0} {1} {2}'.format(cc, ss, data_input[cc][ss]))
+        logger.info('-'*60)
     else:
-        print '-'*30, 'Available subcase for case =', case
+        logger.info('-'*30 + ' Available subcase for case = ' + case)
         for ss in subcases[case]:
-            print case, ss, data_input[case][ss]
-        print '-'*60
+            logger.info('{0} {1} {2}'.format(case, ss, data_input[case][ss]))
+        logger.info('-'*60)
 
 
 
 def check(case,subcase):
     if not(case in cases):
-        print 'ERROR: case {0} is not known'.format(case)
-        print 'ERROR: known cases:', cases
+        logger.error('case {0} is not known'.format(case))
+        logger.error('known cases: ' + cases)
         available()
         raise ValueError
 
     if not(subcase in subcases[case]):
-        print 'ERROR: subcase {0} is not known for case {1}'.format(subcase,case)
-        print 'ERROR: known subcases for case {0}:'.format(case), subcases[case]
+        logging.error('subcase {0} is not known for case {1}'.format(subcase,case))
+        logging.error('known subcases for case {0}:'.format(case), subcases[case])
         available(case)
         raise ValueError
 
 
-if ldebug:
-  for cc in cases:
-      for ss in subcases[cc]:
-          print cc, ss, data_input[cc][ss]
-  print '-'*60
+for cc in cases:
+    for ss in subcases[cc]:
+        logger.debug('{0} {1} {2}'.format(cc, ss, data_input[cc][ss]))
+logger.debug('-'*60)
 
