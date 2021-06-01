@@ -75,7 +75,7 @@ def prep_init_forc_atm(
     # A few initialisation
     #---------------------------------------------------------------
 
-    lforc = dirforc is not None
+    #lforc = dirforc is not None
     lplot = dirdiags is not None
     if lplot:
         rep_images = {}
@@ -185,7 +185,7 @@ def prep_init_forc_atm(
     # Preparing forcings
     #---------------------------------------------------------------
 
-    timein = case.variables['pressure_forc'].time
+    timein = case.variables['pa_forc'].time
     nt_f = timein.length
     if nt_f <= 1:
         dt = 0.
@@ -256,14 +256,27 @@ def prep_init_forc_atm(
     # Computing number of surface forcing fields
     nb_fs = 0
 
-    if case.attributes['surface_forcing_ts'] == 'surface_flux':
-        nb_fs += 2
+    if case.attributes['surface_forcing_temp'] == 'surface_flux':
+        nb_fs += 1
         dataout_forc['hfss'] = case.variables['hfss']
+    else:
+        raise NotImplementedError('surface_forcing_temp == {0} not implemented yet'.format(case.attributes['surface_forcing_temp']))
+
+    if case.attributes['surface_forcing_moisture'] == 'surface_flux':
+        nb_fs += 1
         dataout_forc['hfls'] = case.variables['hfls']
+    else:
+        raise NotImplementedError('surface_forcing_moisture == {0} not implemented yet'.format(case.attributes['surface_forcing_moisture']))
 
     if case.attributes['surface_forcing_wind'] == 'ustar':
         nb_fs += 1
         dataout_forc['ustar'] = case.variables['ustar']
+        z0 = None
+    elif case.attributes['surface_forcing_wind'] == 'z0':
+        logger.warning('z0 is supposed to be constant in time')
+        z0 = case.variables['z0'].data[0]
+    else:
+        raise NotImplementedError('surface_forcing_wind == {0} not implemented yet'.format(case.attributes['surface_forcing_wind']))
 
     #---------------------------------------------------------------
     # Writing nam1D
@@ -348,18 +361,19 @@ def prep_init_forc_atm(
             write_forcing_in_nam1d(g, dataout_forc['wa'].data, 'W', wl=True)
 
         g.write('SURF.FORC\n')
-        if case.attributes['surface_forcing_ts'] == 'surface_flux':
+        if case.attributes['surface_forcing_temp'] == 'surface_flux':
             write_forcing_in_nam1d(g, dataout_forc['hfss'].data, 'FCS', wl=False)
+        if case.attributes['surface_forcing_moisture'] == 'surface_flux':
             write_forcing_in_nam1d(g, dataout_forc['hfls'].data, 'FLE', wl=False)
 
         if case.attributes['surface_forcing_wind'] == 'ustar':
             write_forcing_in_nam1d(g, dataout_forc['hfls'].data, 'USTAR', wl=False)
 
         for var in variablesAux.keys():
-            if var == 'SURFZ0.FOIS.G' and 'z0' in case.variables.keys():
-                write_profile_in_nam1d(g, 9.80665 * case.variables['z0'].data[0], var, False)
-            elif var == 'SURFGZ0.THERM'  and 'z0' in case.variables.keys():
-                write_profile_in_nam1d(g, 9.80665 * case.variables['z0'].data[0] / 10., var, False)
+            if var == 'SURFZ0.FOIS.G' and z0 is not None:
+                write_profile_in_nam1d(g, 9.80665 * z0, var, False)
+            elif var == 'SURFGZ0.THERM' and z0 is not None:
+                write_profile_in_nam1d(g, 9.80665 * z0 / 10., var, False)
             else:
                 write_profile_in_nam1d(g, variablesAux[var], var, False)
         
