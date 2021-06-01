@@ -66,6 +66,7 @@ def prep_init_forc_atm(
         timestep, vertical_grid,
         nam1d='nam1d', 
         ncfile='data_input.nc',
+        logps=False,
         floatfmt="{:.8}", 
         dirforc=None, dirdiags=None,
         save_init=False, file_init='init.nc',
@@ -335,7 +336,10 @@ def prep_init_forc_atm(
 
         g.write('ATMOSPHERE\n')
         write_profile_in_nam1d(g, zorog, 'zorog', False)
-        write_profile_in_nam1d(g, case.variables['ps'].data[0], 'ps (Pa)', False)
+        if logps:
+            write_profile_in_nam1d(g, math.log(case.variables['ps'].data[0]), 'ps (Pa)', False)
+        else:
+            write_profile_in_nam1d(g, case.variables['ps'].data[0], 'ps (Pa)', False)
         
         write_profile_in_nam1d(g, dataout['ua'].data[0,:],   'U',           True)
         write_profile_in_nam1d(g, dataout['va'].data[0,:],   'V',           True)

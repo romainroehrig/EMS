@@ -89,6 +89,7 @@ def install_atm(model, case, subcase, filecase,
                 timestep, vert_grid_file, #timestep and vertical grid description file
                 nam1d='nam1D_{0}'.format(vert_grid_name), #output namelist
                 ncfile='data_input.nc', #case description
+                logps=(model == 'AROME46t1'),
                 lforc_ascii=lforc_ascii,
                 dirforc=dirforc, dirdiags=dirdiags,
                 save_init=True, file_init='init_{0}.nc'.format(vert_grid_name),

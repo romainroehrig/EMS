@@ -45,11 +45,11 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
             for i, obj in tmp:  
                 if obj == '.T.': nam[namin][param][i] = '.TRUE.'
                 if obj == '.F.': nam[namin][param][i] = '.FALSE.'
-                if obj == '__MP_TYPE__': namelin[namin][param][i] = '2'
-                if obj == '__NTASKS__': namelin[namin][param][i] = '1'
-                if obj == '__MBX_SIZE__': namelin[namin][param][i] = '2048000000'
-                if obj == '__LOPT_SCALAR__': namelin[namin][param][i] = '.TRUE.'
-                if obj == '__NCOMBFLEN__': namelin[namin][param][i] = '1800000'
+                if obj == '__MP_TYPE__': nam[namin][param][i] = '2'
+                if obj == '__NTASKS__': nam[namin][param][i] = '1'
+                if obj == '__MBX_SIZE__': nam[namin][param][i] = '2048000000'
+                if obj == '__LOPT_SCALAR__': nam[namin][param][i] = '.TRUE.'
+                if obj == '__NCOMBFLEN__': nam[namin][param][i] = '1800000'
 
     # Aerosols and Ozone
     nam['NAMPHY']['LAEROSEA'] = ['.FALSE.']
@@ -118,9 +118,9 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
     del(nam[nn])
     nam[nn] = {}
     nam[nn]['LRFILAF'] = ['.FALSE.']
-    namelin[nn]['N1POS'] = ['0']
-    namelin[nn]['N1RES'] = ['0']
-    namelin[nn]['N1SFXHIS'] = ['0']
+    nam[nn]['N1POS'] = ['0']
+    nam[nn]['N1RES'] = ['0']
+    nam[nn]['N1SFXHIS'] = ['0']
 
     # Update NAMCT0
     nn = 'NAMCT0'
@@ -171,7 +171,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
     logger.debug('NSTOP: ' + NSTOP)
 
     nam['NAMRIP']['TSTEP'] = [str(timestep)]
-    nam['NAMRIP']['CSTOP'] = [NSTOP]
+    nam['NAMRIP']['CSTOP'] = ["'{0}'".format(NSTOP)]
     #nam['NAMRIP']['NINDAT'] = [startDate.strftime('%Y%m%d')]
     #nam['NAMRIP']['NSSSSS'] = [str(int(hour * 3600 + minute * 60 + second))]
 
@@ -193,7 +193,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
     i = 0
     j = 0
 
-    timein = case.variables['pressure_forc'].time
+    timein = case.variables['pa_forc'].time
     nt_f = timein.length
     if nt_f <= 1:
         dt = 0.
@@ -284,10 +284,10 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
     # Do we use SURFEX or not 
     if lsurfex: 
         nam["NAMARPHY"]['LMSE'] = [".TRUE."]
-        namelin["NAMCT0"]['LSFORCS'] = ['.FALSE.']
+        nam["NAMCT0"]['LSFORCS'] = ['.FALSE.']
     else:
         nam["NAMARPHY"]['LMSE'] = [".FALSE."]
-        if attributes['surface_forcing_ts'] == 'surface_flux' :
+        if attributes['surface_forcing_temp'] == 'surface_flux' :
             nam["NAMCT0"]['LSFORCS'] = ['.TRUE.']
             nam[nn]["NSH_FORC_DEB"] = [str(int(1 + j * nt_f))]
             nam[nn]["NSH_FORC_NUM"] = [str(nt_f)]
