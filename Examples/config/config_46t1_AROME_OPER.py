@@ -2,8 +2,7 @@
 # -*- coding:UTF-8 -*-
 
 import os
-REP_EMS = os.getenv('REP_EMS')
-REP_MUSC = os.getenv('REP_MUSC')
+REP_MUSC = '/Users/romainroehrig/MUSC/riette'
 
 ############# Begin editing
 
@@ -13,6 +12,7 @@ EXPID = __name__[7:]
 
 # Binaries
 MASTER = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/MASTERODB'
+ASCII2FA = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/ASCII2FA'
 
 # Namelists
 ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/namarp_46t1_AROME_OPER')
@@ -26,7 +26,6 @@ dirpost = os.path.join(REP_MUSC,'post')
 variablesDict = 'variables.py'
 defaultConfigPost = 'config_default.py'
 caseDependent = True
-lfaformat = 12
 
 # EMS configuration
 model = 'AROME46t1'
@@ -36,6 +35,6 @@ lupdate_ATM = True
 lupdate_RUN = True
 
 # ecoclimap data
-ecoclimap = os.path.join(REP_EMS, 'UTIL', 'ecoclimap_cnrm_cm6.02')
+#ecoclimap
 
 ############# End editing
