@@ -30,7 +30,7 @@ def perf(tin, s):
 def install_atm(model, case, subcase, filecase,
                 repout, vert_grid, timestep=None, 
                 ASCII2FA=os.path.join(ems._dirEMS, '../aux/ASCII2FA/bin/ascii2fa'),
-                lforc_ascii=True, loverwrite=False, lupdate=False):
+                lforc_ascii=True, lsurfex=True, loverwrite=False, lupdate=False):
 
     """ Prepare files of atmospheric initial conditions and forcing needed to run MUSC """
 
@@ -90,7 +90,7 @@ def install_atm(model, case, subcase, filecase,
                 nam1d='nam1D_{0}'.format(vert_grid_name), #output namelist
                 ncfile='data_input.nc', #case description
                 logps=(model == 'AROME46t1'),
-                lforc_ascii=lforc_ascii,
+                lforc_ascii=lforc_ascii, lsurfex=lsurfex,
                 dirforc=dirforc, dirdiags=dirdiags,
                 save_init=True, file_init='init_{0}.nc'.format(vert_grid_name),
                 save_forc=True, file_forc='forc_{0}.nc'.format(vert_grid_name))
@@ -118,7 +118,7 @@ def install_sfx(model, case, subcase, filecase, repout,
 
     """ Prepare files of atmospheric initial conditions and forcing needed to run MUSC """
 
-    if model not in ['ARPCLIMAT']:
+    if model not in ['ARPCLIMAT','AROME46t1']:
         raise NotImplementedError('SURFEX preparation is not coded for model=', model)
 
     t0 = perf_init()

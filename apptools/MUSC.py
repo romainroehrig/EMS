@@ -174,7 +174,7 @@ if __name__ == '__main__':
             # Installing
             install_MUSC.install_atm(model, case, subcase, data_input, 
                     repATM, vert_grid, timestep, 
-                    ASCII2FA=ASCII2FA, lforc_ascii=lforc_ascii,
+                    ASCII2FA=ASCII2FA, lforc_ascii=lforc_ascii, lsurfex=lsurfex,
                     loverwrite=loverwrite, lupdate=lupdate_ATM)
 
             os.system('touch {0}'.format(install_file))

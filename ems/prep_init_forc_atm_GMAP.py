@@ -66,7 +66,7 @@ def prep_init_forc_atm(
         timestep, vertical_grid,
         nam1d='nam1d', 
         ncfile='data_input.nc',
-        logps=False,
+        logps=False, lsurfex=False,
         floatfmt="{:.8}", 
         dirforc=None, dirdiags=None,
         save_init=False, file_init='init.nc',
@@ -252,30 +252,34 @@ def prep_init_forc_atm(
     if case.attributes['forc_geo']:
         nb_f += 2
         for var in ['ug','vg']:
-            dataout_forc[var] = prep_forcing(var)        
+            dataout_forc[var] = prep_forcing(var)
 
     # Computing number of surface forcing fields
     nb_fs = 0
+    if not(lsurfex):
+        if case.attributes['surface_forcing_temp'] == 'surface_flux':
+            nb_fs += 1
+            dataout_forc['hfss'] = case.variables['hfss']
+        else:
+            raise NotImplementedError('surface_forcing_temp == {0} not implemented yet'.format(case.attributes['surface_forcing_temp']))
 
-    if case.attributes['surface_forcing_temp'] == 'surface_flux':
-        nb_fs += 1
-        dataout_forc['hfss'] = case.variables['hfss']
-    else:
-        raise NotImplementedError('surface_forcing_temp == {0} not implemented yet'.format(case.attributes['surface_forcing_temp']))
-
-    if case.attributes['surface_forcing_moisture'] == 'surface_flux':
-        nb_fs += 1
-        dataout_forc['hfls'] = case.variables['hfls']
-    else:
-        raise NotImplementedError('surface_forcing_moisture == {0} not implemented yet'.format(case.attributes['surface_forcing_moisture']))
+        if case.attributes['surface_forcing_moisture'] == 'surface_flux':
+            nb_fs += 1
+            dataout_forc['hfls'] = case.variables['hfls']
+        else:
+            raise NotImplementedError('surface_forcing_moisture == {0} not implemented yet'.format(case.attributes['surface_forcing_moisture']))
 
     if case.attributes['surface_forcing_wind'] == 'ustar':
-        nb_fs += 1
-        dataout_forc['ustar'] = case.variables['ustar']
+        if not(lsurfex):
+            nb_fs += 1
+            dataout_forc['ustar'] = case.variables['ustar']
         z0 = None
     elif case.attributes['surface_forcing_wind'] == 'z0':
         logger.warning('z0 is supposed to be constant in time')
         z0 = case.variables['z0'].data[0]
+    elif case.attributes['surface_forcing_wind'] == 'none':
+        # wind and z0 are computed interactively (ocean)
+        z0 = None
     else:
         raise NotImplementedError('surface_forcing_wind == {0} not implemented yet'.format(case.attributes['surface_forcing_wind']))
 
@@ -364,14 +368,15 @@ def prep_init_forc_atm(
         if case.attributes['forc_wa'] == 1:
             write_forcing_in_nam1d(g, dataout_forc['wa'].data, 'W', wl=True)
 
-        g.write('SURF.FORC\n')
-        if case.attributes['surface_forcing_temp'] == 'surface_flux':
-            write_forcing_in_nam1d(g, dataout_forc['hfss'].data, 'FCS', wl=False)
-        if case.attributes['surface_forcing_moisture'] == 'surface_flux':
-            write_forcing_in_nam1d(g, dataout_forc['hfls'].data, 'FLE', wl=False)
+        g.write('SURF.FORC\n') 
+        if not(lsurfex):
+            if case.attributes['surface_forcing_temp'] == 'surface_flux':
+                write_forcing_in_nam1d(g, dataout_forc['hfss'].data, 'FCS', wl=False)
+            if case.attributes['surface_forcing_moisture'] == 'surface_flux':
+                write_forcing_in_nam1d(g, dataout_forc['hfls'].data, 'FLE', wl=False)
 
-        if case.attributes['surface_forcing_wind'] == 'ustar':
-            write_forcing_in_nam1d(g, dataout_forc['hfls'].data, 'USTAR', wl=False)
+            if case.attributes['surface_forcing_wind'] == 'ustar':
+                write_forcing_in_nam1d(g, dataout_forc['hfls'].data, 'USTAR', wl=False)
 
         for var in variablesAux.keys():
             if var == 'SURFZ0.FOIS.G' and z0 is not None:
