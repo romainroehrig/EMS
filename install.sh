@@ -15,7 +15,7 @@ REP_EMS=$HOME/Tools/EMS
 REP_MUSC=$HOME/MUSC
 
 # Environment file to use
-PROFILE=.profile
+PROFILE=.bash_profile
 
 #####################################################
 
