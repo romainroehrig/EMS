@@ -53,7 +53,8 @@ if not(saveall):
             print var, 'not in variables.varnames.keys()'
             var2save.append(var)
 
-    var2save = var2save + ['PAPRS','PAPRSF','PAPHI','PAPHIF']
+    #var2save = var2save + ['PAPRS','PAPRSF','PAPHI','PAPHIF']
+    var2save = var2save + ['PAPRS','PAPRSF']
 
     var2save = set(var2save)
 
