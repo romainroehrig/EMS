@@ -209,7 +209,7 @@ for subcase in subcases[case]:
 
 case = 'DYNAMO'
 cases.append(case)
-subcases[case] = ['NSA3A','NSA3A_D1','NSA3A_D30']
+subcases[case] = ['NSA3A','NSA3A_D1','NSA3A_D30','NSA3A_MJO1']
 data_input[case] = {}
 for subcase in subcases[case]:
     data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
