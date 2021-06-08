@@ -2,7 +2,7 @@
 # -*- coding:UTF-8 -*-
 
 import os
-REP_MUSC = '/Users/romainroehrig/MUSC/riette'
+REP_MUSC = '/home/roehrig/MUSC/riette'
 
 ############# Begin editing
 
@@ -11,10 +11,10 @@ GROUP = 'V631'
 EXPID = __name__[7:]
 
 # Binaries
-MASTER = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin//MASTERODB'
-PGD = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PGD'
-PREP = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PREP'
-#ASCII2FA
+MASTER = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/MASTER'
+PGD = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PGD'
+PREP = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PREP'
+ASCII2FA = '/home/roehrig/pack/arp603_export.01.GFORTRAN610.cx.ascii2fa/bin/ASCII2FA'
 
 # Namelists
 ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631')

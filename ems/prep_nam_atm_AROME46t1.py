@@ -238,7 +238,8 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
         nam[nn]['LGEOST_UV_FRC'] = ['.TRUE.']
         W = 7.2921e-5
         nam['NAMLSFORC']['RCORIO_FORC'] = [str(2. * W * math.sin(lat * math.pi / 180))]
-        nam[nn]['RZ0_FORC'] = [str(case.variables['z0'].data[0])] # Probably not at the right place...
+        if not(lsurfex):
+            nam[nn]['RZ0_FORC'] = [str(case.variables['z0'].data[0])] # Probably not at the right place...
         nam[nn]['NGEOST_U_DEB'] = [str(1 + nt_f * i)]
         nam[nn]['NGEOST_U_NUM'] = [str(nt_f)]
         i += 1

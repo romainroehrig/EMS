@@ -220,6 +220,9 @@ def prep_init_forc_atm(
     # Computing number of forcing fields
     nb_f = 0
 
+    # Not yet defined in DEPHY format
+    case.attributes['adv_ua'] = 0
+    case.attributes['adv_va'] = 0
     if case.attributes['adv_ua'] == 1 or case.attributes['adv_va'] == 1:
         raise NotImplementedError('U/V advection not yet validated')
         nb_f += 2
