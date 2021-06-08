@@ -219,6 +219,13 @@ def prep_init_forc_atm(
 
     # Computing number of forcing fields
     nb_f = 0
+
+    if case.attributes['adv_ua'] == 1 or case.attributes['adv_va'] == 1:
+        raise NotImplementedError('U/V advection not yet validated')
+        nb_f += 2
+        for var in ['tnua_adv', 'tnva_adv']:
+            dataout_forc[var] = prep_forcing(var)
+
     if case.attributes['adv_ta'] == 1 or case.attributes['radiation'] == 'tend':
         nb_f += 1
         if case.attributes['adv_ta'] == 1:
@@ -233,26 +240,30 @@ def prep_init_forc_atm(
         nb_f += 1
         dataout_forc['tnqv_adv'] = prep_forcing('tnqv_adv')
 
-#    if case.attributes['adv_ua'] == 1:
-#        nb_f += 1
-#        var = 'tnua_adv'
-#        dataout_forc[var] = prep_forcing(var)          
-#    if case.attributes['adv_va'] == 1:
-#        nb_f += 1
-#        var = 'tnva_adv'
-#        dataout_forc[var] = prep_forcing(var)        
+    if case.attributes['forc_geo'] == 1:
+        nb_f += 2
+        for var in ['ug','vg']:
+            dataout_forc[var] = prep_forcing(var)
 
-    if case.attributes['forc_wap'] == 1 or case.attributes['forc_wa'] == 1:
+    if case.attributes['forc_wa'] == 1 or case.attributes['forc_wap'] == 1:
         nb_f += 1
         if case.attributes['forc_wa'] == 1:
             dataout_forc['wa'] = prep_forcing('wa')
         elif case.attributes['forc_wap'] == 1:
             dataout_forc['wap'] = prep_forcing('wap')
 
-    if case.attributes['forc_geo']:
+    if case.attributes['nudging_ua'] > 0. or case.attributes['nudging_va'] > 0.:
         nb_f += 2
-        for var in ['ug','vg']:
+        for var in ['ua_nud','va_nud']:
             dataout_forc[var] = prep_forcing(var)
+
+    if case.attributes['nudging_ta'] > 0.:
+        nb_f += 1
+        dataout_forc['ta_nud'] = prep_forcing('ta_nud')
+
+    if case.attributes['nudging_qv'] > 0.:
+        nb_f += 1
+        dataout_forc['qv_nud'] = prep_forcing('qv_nud')
 
     # Computing number of surface forcing fields
     nb_fs = 0
@@ -355,6 +366,11 @@ def prep_init_forc_atm(
 
         g.write('FORCING\n')
 
+        if case.attributes['adv_ua'] == 1:
+            raise NotImplementedError('U/V advection not yet validated')
+            write_forcing_in_nam1d(g, dataout_forc['tnua_adv'].data, 'U ADV', wl=True)
+            write_forcing_in_nam1d(g, dataout_forc['tnva_adv'].data, 'V ADV', wl=True)
+
         if case.attributes['adv_ta'] == 1:
             write_forcing_in_nam1d(g, dataout_forc['tnta_adv'].data, 'T ADV', wl=True)
 
@@ -367,6 +383,18 @@ def prep_init_forc_atm(
 
         if case.attributes['forc_wa'] == 1:
             write_forcing_in_nam1d(g, dataout_forc['wa'].data, 'W', wl=True)
+        elif case.attributes['forc_wap'] == 1:
+            write_forcing_in_nam1d(g, dataout_forc['wap'].data, 'OMEGA', wl=True)
+
+        if case.attributes['nudging_ua'] > 0.:
+            write_forcing_in_nam1d(g, dataout_forc['ua_nud'].data, 'U NUDGING', wl=True)
+            write_forcing_in_nam1d(g, dataout_forc['va_nud'].data, 'V NUDGING', wl=True)
+
+        if case.attributes['nudging_ta'] > 0.:
+            write_forcing_in_nam1d(g, dataout_forc['ta_nud'].data, 'T NUDGING', wl=True)
+
+        if case.attributes['nudging_qv'] > 0.:
+            write_forcing_in_nam1d(g, dataout_forc['qv_nud'].data, 'Qv NUDGING', wl=True)
 
         g.write('SURF.FORC\n') 
         if not(lsurfex):

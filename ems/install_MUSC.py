@@ -71,11 +71,14 @@ def install_atm(model, case, subcase, filecase,
                 raise
 
         # Directory for forcings
-        dirforc = 'files_{0}_{1}s/'.format(vert_grid_name, int(timestep)) if timestep is not None else None
-        dirforc = os.path.join(rep,dirforc)
-        if os.path.exists(dirforc):
-            shutil.rmtree(dirforc)
-        os.mkdir(dirforc)
+        if lforc_ascii:
+            dirforc = 'files_{0}_{1}s/'.format(vert_grid_name, int(timestep)) if timestep is not None else None
+            dirforc = os.path.join(rep,dirforc)
+            if os.path.exists(dirforc):
+                shutil.rmtree(dirforc)
+            os.mkdir(dirforc)
+        else:
+            dirforc = None
 
         # Directory for diagnostics
         dirdiags = 'images/'
@@ -185,9 +188,10 @@ def install_sfx(model, case, subcase, filecase, repout,
         logger.info('Nothing is done')
 
     os.chdir(repinit)
-    logger.info('-'*40)
 
     t0= perf(tinit, 'Total')
+
+    logger.info('#'*40)
 
 def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=False,lupdate=False,lrerun=False):
 
