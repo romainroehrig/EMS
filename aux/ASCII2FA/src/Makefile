@@ -1,8 +1,7 @@
 # acadfa makefile
 
 FC	 =	gfortran
-FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
-F90FLAGS =      -fopenmp -fconvert=big-endian -frecord-marker=4 $(M32) -ffree-form -fdefault-real-8 -DADDRESS64 -DHIGHRES
+F90FLAGS =      -fopenmp -fconvert=swap -fno-second-underscore -fbacktrace -m64 -fopenmp -gdwarf-3 -ffree-line-length-none -fno-sign-zero -fpic -fno-range-check -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -g -O2 -ftree-vectorize  -DADDRESS64
 EXEC	 =	acadfa_exe
 
 OBJS	 =	acadfa1D_main.o \

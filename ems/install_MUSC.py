@@ -172,7 +172,13 @@ def install_sfx(model, case, subcase, filecase, repout,
         if os.WEXITSTATUS(result) != 0:
             raise RuntimeError("Error during PREP execution")
         for f in ['PGD.des', 'class_cover_data.tex', 'PREP.des']:
-            os.remove(f)
+            try:
+                os.remove(f)
+            except OSError:
+                pass
+            except:
+                raise
+
 
         t0 = perf(t0, 'Prepare PGD/PREP')
     else: 
@@ -229,7 +235,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
     if not(flagExist):
         os.makedirs(rep)
         os.chdir(rep)
-        os.makedirs('./logs/')
+        os.makedirs('./listings/')
         os.symlink(filecase,'data_input.nc')
         os.system('cp ' + config['namATMref'] + ' namATMref')
         if config['lsurfex']:
@@ -243,7 +249,8 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         # Preparation namelist
         NSTOP = ems.prep_nam_atm(model, 'data_input.nc',
                          config['namATMref'], config['TSTEP'],
-                         namout="namarp_{0}".format(config['name']))
+                         namout="namarp_{0}".format(config['name']),
+                         lsurfex=config['lsurfex'])
 
         t0 = perf(t0, 'Prepare {0} namelist'.format(model))
 
@@ -301,7 +308,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
             g.write('ln -s param_' + config['name'] + ' param\n')
             g.write('. ./param\n')
             g.write('. ./run.sh > run_${CONFIG}.log 2>&1\n')
-            g.write('mv run_${CONFIG}.log logs/\n')
+            g.write('mv run_${CONFIG}.log listings/\n')
             g.write('echo log file: logs/run_${CONFIG}.log\n')
             g.write('date')
 

@@ -13,13 +13,17 @@ export DR_HOOK=0
 . ./param
 
 EXP=ARPE
-ADVEC=sli
 
 #       *************************************
 #       * Directories Initialisation        *
 #       *************************************
 
 DIR=`pwd`
+
+LISTINGDIR=$DIR/listings
+if [ ! -d $LISTINGDIR ] ; then
+  mkdir -p $LISTINGDIR
+fi
 
 OUTPUTDIR=$DIR/Output/LFA/
 OUTPUTDIR0=$DIR/Output/
@@ -90,10 +94,9 @@ set -x
 
 
 ln -s $INITFILE ICMSH${EXP}INIT
-ln -s $FORCING_FILES files
 
-ln -s  $PREP TEST.lfi
-ln -s  $PGD PGD.lfi
+ln -s  $PREP ICMSH${EXP}INIT.sfx
+ln -s  $PGD Const.Clim.sfx
 
 
 #       **********************************
@@ -138,7 +141,7 @@ echo ' Listing for the not parallelised part: file lola'
 echo ''
 set -x
 
-cat lola
+#cat lola
 
 if [ -a NODE.001_01 ]
 then
@@ -149,7 +152,7 @@ then
     echo ' Listing for the parallelised part: file' $file
     echo ''
     set -x
-    cat $file
+    #cat $file
   done
 fi
 
@@ -166,8 +169,8 @@ set -x
 find $OUTPUTDIR/ -name '*' -exec rm -f {} \;
 find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
 #find ./ -name 'out*.txt' -exec mv {} $OUTPUTDIR \;
-find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
-find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
+find ./ -name 'NODE*' -exec mv {} $LISTINGDIR \;
+find ./ -name 'lola' -exec mv {} $LISTINGDIR \;
 
 set +x
 echo ''
@@ -233,7 +236,7 @@ then
 
   # seems necessary in some circumstances (deep shells?)
   unset PYTHONHOME
-  ./convertLFA2nc.py -format $lfaformat
+  ./convertLFA2nc.py
 
 fi
 

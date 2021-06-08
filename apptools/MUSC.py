@@ -216,8 +216,8 @@ if __name__ == '__main__':
             config['forcingfiles'] = os.path.join(repATM, case, subcase, 'files_{0}_{1}s'.format(vert_grid_name,timestep))
         if lsurfex:
             config['namSFXref'] = SFXNAM
-            config['PGDfile'] = os.path.join(repSFX, case, subcase, 'PGD.lfi')
-            config['PREPfile'] = os.path.join(repSFX, case, subcase, 'PREP.lfi')
+            config['PGDfile'] = os.path.join(repSFX, case, subcase, 'PGD.{0}'.format(sfxfmt.lower()))
+            config['PREPfile'] = os.path.join(repSFX, case, subcase, 'PREP.{0}'.format(sfxfmt.lower()))
 
         # Preparing post-processing configuration
         configOut = {}
