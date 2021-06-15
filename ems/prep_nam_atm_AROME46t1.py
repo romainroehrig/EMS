@@ -326,6 +326,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
             for it in range(nt_f):
                nam[nn]['NL_SH_ADV_TIME(   ' + str(int(it + 1)) + " )"] = [str(int(dt * it))]
                nam[nn]['NL_LH_ADV_TIME(   ' + str(int(it + 1)) + " )"] = [str(int(dt * it))]
+            nam['NAMPHYDS']['NSFORC'] = [str(int((j + 1) * nt_f))]
 
 
 
