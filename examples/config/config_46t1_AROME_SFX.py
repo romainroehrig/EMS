@@ -11,14 +11,14 @@ GROUP = '46t1'
 EXPID = __name__[7:]
 
 # Binaries
-MASTER = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.test/bin/MASTERODB'
-PGD = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.sfx/bin/PGD'
-PREP = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.sfx/bin/PREP'
-ASCII2FA = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.ascii2fa/bin/ASCII2FA'
+MASTER = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/MASTERODB'
+PGD = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/PGD'
+PREP = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/PREP'
+ASCII2FA = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/ASCII2FA'
 
 # Namelists
 ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/namarp_46t1_AROME_OPER')
-SFXNAM = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.sfx/test/namsurf' #os.path.join(REP_MUSC, 'namelist/SURFEX/namarp_46t1_AROME_OPER')
+SFXNAM = os.path.join(REP_MUSC, 'namelist/SURFEX/nam.sfx.46t1.test')
 
 # Model configuration
 vert_grid = os.path.join(REP_MUSC, 'grid/L60_AROME.dta')

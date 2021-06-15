@@ -11,8 +11,8 @@ GROUP = '46t1'
 EXPID = __name__[7:]
 
 # Binaries
-MASTER = '/home/common/pack/46_t1.01.GFORTRAN610ECCOD.xfftw/bin/MASTERODB'
-ASCII2FA = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.ascii2fa/bin/ASCII2FA'
+MASTER = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/MASTERODB'
+ASCII2FA = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.muxc/bin/ASCII2FA'
 
 # Namelists
 ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/namarp_46t1_AROME_OPER')
