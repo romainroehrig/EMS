@@ -3,7 +3,7 @@
 #------------------------------------------------------------
 # 			INTIALISATION
 #------------------------------------------------------------
-set -x
+set -ex
 
 export OMP_NUM_THREADS=1
 
@@ -34,15 +34,10 @@ if [ ! -d $OUTPUTDIR ] ; then
 fi
 
 TMPDIR=$HOME/tmp/EXEMUSC
-
-if [ ! -d $TMPDIR ] ; then
-  mkdir -p $TMPDIR
-else
-  find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
-fi
+[ -d $TMPDIR ] && rm -rf $TMPDIR
+mkdir -p $TMPDIR
 
 cd $TMPDIR
-rm -rf $TMPDIR/* || :
 
 ladate=`date`
 set +x
@@ -72,15 +67,16 @@ set -x
 ln -s $DIR/$NAMARP fort.4
 cat < fort.4
 
-set +x
-echo ''
-echo ' Get the namelist SURFEX'
-echo ''
-set -x
+if [ -v NAMSFX ]; then
+  set +x
+  echo ''
+  echo ' Get the namelist SURFEX'
+  echo ''
+  set -x
 
-ln -s $DIR/$NAMSFX EXSEG1.nam
-cat < EXSEG1.nam
-
+  ln -s $DIR/$NAMSFX EXSEG1.nam
+  cat < EXSEG1.nam
+fi
 
 #       **********************************
 #       * Get initial and forcing files  *
@@ -97,8 +93,8 @@ set -x
 ln -s $INITFILE ICMSH${EXP}INIT
 ln -s $FORCING_FILES files
 
-ln -s  $PREP TEST.lfi
-ln -s  $PGD PGD.lfi
+[ -v PREP ] && ln -s  $PREP TEST.lfi
+[ -v PGD ] && ln -s  $PGD PGD.lfi
 
 
 #       **********************************
@@ -194,8 +190,8 @@ echo ''
 set -x
 
 set +x
-#rm -rf $TMPDIR/*
-find $TMPDIR/ -name '*' -exec rm -rf {} \;
+rm -rf $TMPDIR
+#find $TMPDIR/ -name '*' -exec rm -rf {} \;
 set -x
 #       ********************************************
 #       * Copie eventuelle des routines convert2nc *

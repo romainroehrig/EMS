@@ -265,15 +265,15 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
         nam[nn]['NLSOMEGA_NUM'] = [str(nt_f)]
         i += 1
         for it in range(0, nt_f):
-            nam[nn]['NLSOMEGA_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
+            nam[nn]['NL_LSOMEGA_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
 
     if attributes['nudging_ua'] > 0. or attributes['nudging_va'] > 0.:
         nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LUV_NUDG'] = ['.TRUE.']
-        nam[nn]['NLU_NUDG_DEB'] = [str(1 + i * nt_f)]
-        nam[nn]['NLUV_NUDG_NUM'] = [str(nt_f)]
+        nam[nn]['NU_NUDG_DEB'] = [str(1 + i * nt_f)]
+        nam[nn]['NUV_NUDG_NUM'] = [str(nt_f)]
         i += 1
-        nam[nn]['NLV_NUDG_DEB'] = [str(1 + i * nt_f)]
+        nam[nn]['NV_NUDG_DEB'] = [str(1 + i * nt_f)]
         i += 1
         for it in range(nt_f):
             nam[nn]['NL_UV_NUDG_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
