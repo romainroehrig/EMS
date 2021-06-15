@@ -157,7 +157,8 @@ if __name__ == '__main__':
     logger.info('For {0}/{1} case'.format(case,subcase))
 
     # Where to prepare atmospheric input data
-    repATM = os.path.join(dirMUSC, 'ATM', model)
+    #repATM = os.path.join(dirMUSC, 'ATM', model)
+    repATM = os.path.join(dirMUSC, 'ATM', GROUP, EXPID)
     # Where to prepare surfex input data
     repSFX = os.path.join(dirMUSC, 'SURFEX', GROUP, EXPID)
     # Where to install run data
