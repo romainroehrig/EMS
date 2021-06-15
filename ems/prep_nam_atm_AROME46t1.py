@@ -233,13 +233,17 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
         for it in range(0, nt_f):
             nam[nn]['NL_QV_ADV_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
 
+    if attributes['surface_forcing_wind'] == 'z0':
+        if not(lsurfex):
+            nam[nn]['RZ0_FORC'] = [str(case.variables['z0'].data[0])]
+
     if attributes['forc_geo'] == 1:
         nam['NAMCT0']['LSFORC']=['.TRUE.']
         nam[nn]['LGEOST_UV_FRC'] = ['.TRUE.']
         W = 7.2921e-5
         nam['NAMLSFORC']['RCORIO_FORC'] = [str(2. * W * math.sin(lat * math.pi / 180))]
         if not(lsurfex):
-            nam[nn]['RZ0_FORC'] = [str(case.variables['z0'].data[0])] # Probably not at the right place...
+            nam[nn]['RZ0_FORC'] = [str(case.variables['z0'].data[0])] # Useful ?
         nam[nn]['NGEOST_U_DEB'] = [str(1 + nt_f * i)]
         nam[nn]['NGEOST_U_NUM'] = [str(nt_f)]
         i += 1

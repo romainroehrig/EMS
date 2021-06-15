@@ -42,14 +42,14 @@ logger.debug("CASES directory: " + rep0)
 # GABLS1 Case
 case = 'GABLS1'
 cases.append(case)
-subcases[case] = ['REF','MESONH']
+subcases[case] = ['REF', 'MESONH']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
 # GABLS4 Case
 case = 'GABLS4'
 cases.append(case)
-subcases[case] = ['STAGE3','STAGE3-SHORT']
+subcases[case] = ['STAGE3', 'STAGE3-SHORT']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
@@ -59,7 +59,7 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
 # AYOTTE Cases
 case = 'AYOTTE'
 cases.append(case)
-subcases[case] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
+subcases[case] = ['00SC', '00WC', '03SC', '05SC', '05WC', '24F', '24SC']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
@@ -97,14 +97,14 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
 # RICO Case
 case = 'RICO'
 cases.append(case)
-subcases[case] = ['SHORT','MESONH']
+subcases[case] = ['SHORT', 'MESONH']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
 # ARMCU Case
 case = 'ARMCU'
 cases.append(case)
-subcases[case] = ['REF','E3SM','MESONH','E3SM']
+subcases[case] = ['REF', 'MESONH', 'E3SM']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
@@ -150,7 +150,7 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
 # SANDU composite cases
 case = 'SANDU'
 cases.append(case)
-subcases[case] = ['REF','FAST','SLOW']
+subcases[case] = ['REF', 'FAST', 'SLOW']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
@@ -208,7 +208,7 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
 
 case = 'DYNAMO'
 cases.append(case)
-subcases[case] = ['NSA3A','NSA3A_D1','NSA3A_D30']
+subcases[case] = ['NSA3A', 'NSA3A_D1', 'NSA3A_D30', NSA3A_MJO1]
 data_input[case] = {}
 for subcase in subcases[case]:
     data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
@@ -282,7 +282,7 @@ def check(case,subcase):
 
     if not(subcase in subcases[case]):
         logging.error('subcase {0} is not known for case {1}'.format(subcase,case))
-        logging.error('known subcases for case {0}:'.format(case), subcases[case])
+        logging.error('known subcases for case {0}: {1}'.format(case, ' '.join(subcases[case])))
         available(case)
         raise ValueError
 
