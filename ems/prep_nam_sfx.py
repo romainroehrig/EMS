@@ -55,9 +55,13 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
 
     # Surface type
     nn='NAM_PGD_SCHEMES'
+    if not nn in nam:
+        nam[nn] = {}
     for tt in ['CNATURE', 'CSEA', 'CTOWN', 'CWATER']:
         nam[nn][tt] = ["'NONE'"]
     nn='NAM_FRAC'
+    if nn not in nam:
+        nam[nn] = {}
     nam[nn]['LECOCLIMAP'] = ['F']
     for tt in ['NATURE', 'SEA', 'TOWN', 'WATER']:
         nam[nn]['XUNIF_' + tt] = ['0.']
@@ -70,6 +74,8 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
 
     # NAM_IO_OFFLINE
     nn = 'NAM_IO_OFFLINE'
+    if not nn in nam:
+        nam[nn] = {}
     if sfxfmt == 'FA':
         nam[nn]['LFAGMAP'] = ['T']
         nam[nn]['CSURF_FILETYPE'] = ["'FA   '"]

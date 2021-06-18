@@ -215,6 +215,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         logger.info('Ecoclimap directory: ' + config['ecoclimap'])
         logger.info('SURFEX PGD/PREP format: ' + config['sfxfmt'])
     logger.info('Initial Conditions file: ' + config['initfile'])
+    logger.info('rrtm files: {0}'.format(config['rrtm']))
     if model == 'ARPCLIMAT':
         logger.info('Atmospheric forcing files: ' + config['forcingfiles'])
     if config['lsurfex']:
@@ -286,6 +287,8 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
             g.write('NAMARP=namarp_' + config['name'] + '\n')
             if config['lsurfex']:
                 g.write('NAMSFX=namsfx_' + config['name'] + '\n')
+            g.write('#\n')
+            g.write('RRTM=' + config['rrtm'] + '\n')
             g.write('#\n')
             g.write('INITFILE=' + config['initfile'] + '\n')
             if model == 'ARPCLIMAT':

@@ -50,6 +50,42 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
                 if obj == '__MBX_SIZE__': nam[namin][param][i] = '2048000000'
                 if obj == '__LOPT_SCALAR__': nam[namin][param][i] = '.TRUE.'
                 if obj == '__NCOMBFLEN__': nam[namin][param][i] = '1800000'
+    
+    #Replace some strings by suitable values
+    nam['NAMIO_SERV']['NPROC_IO'] = ['0']
+    for k in ('NPRGPEW', 'NPRGPNS', 'NPROC', 'NPRTRV', 'NPRTRW'):
+        nam['NAMPAR0'][k] = ['1']
+    nam['NAMPAR1']['NSTROUT'] = ['1']
+    
+    #Deactivate SLHD and COMAD
+    for k in ('LSLHD_GFL', 'LSLHD_SPD', 'LSLHD_SVD', 'LSLHD_T', 'LSLHD_W',
+              'LCOMADH', 'LCOMADV', 'LCOMAD_GFL', 'LCOMAD_SP', 'LCOMAD_SPD',
+              'LCOMAD_SVD', 'LCOMAD_T', 'LCOMAD_W'):
+        nam['NAMDYNA'][k] = ['.FALSE.']
+    for k in nam['NAMGFL'].keys():
+        if k.endswith('%LSLHD') or k.endswith('%LCOMAD'):
+            nam['NAMGFL'][k] = ['.FALSE.']
+
+    #Deactivate predictor-corrector
+    nam['NAMDYNA']['LPC_CHEAP'] = ['.FALSE.']
+    nam['NAMDYNA']['LPC_FULL'] = ['.FALSE.']
+    nam['NAMDYN']['NSITER'] = ['0']
+
+    #Deactivate NH dyn
+    nam['NAMCT0']['LNHEE'] = ['.FALSE.'] #because required input fields are absent
+    
+    #Deactivate MPI
+    nam['NAMPAR0']['LMPOFF'] = ['.TRUE.']
+    
+    #Deactivate spectral nudging
+    nam['NEMELBC0A']['LESPCPL'] = ['FALSE']
+
+    #Other mod
+    for k in nam['NAMPAR1'].keys():
+        if k.replace(' ', '') == 'NDISTIO(12)':
+            del nam['NAMPAR1'][k] #gfortran does not like this option (info from P. Marguinaud)
+    for k in ('LADVF', 'LIMPF', 'LQMPD', 'LQMT', 'LQMVD'):
+        nam['NAMDYN'][k] = ['.FALSE.']
 
     # Aerosols and Ozone
     nam['NAMPHY']['LAEROSEA'] = ['.FALSE.']

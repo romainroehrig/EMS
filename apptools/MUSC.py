@@ -38,6 +38,9 @@ default = {
         'lupdate_SFX': True,
         'lupdate_RUN': False,
         #
+        # RRTM
+        'rrtm': os.path.join(ems._dirEMS, '../data/rrtm.const.02.tgz'),
+        #
         # SURFEX
         'ecoclimap': os.path.join(ems._dirEMS, '../data/ecoclimap_cnrm_cm6.02'),
         'sfxfmt': 'LFI'
@@ -89,7 +92,7 @@ if __name__ == '__main__':
     # First loop over attributes which have a default (see above)
     for att in ['GROUP', 'model', 'ASCII2FA', 'lforc_ascii', 'lsurfex',
                 'dirpost', 'variablesDict', 'defaultConfigPost', 'caseDependent',
-                'sfxfmt', 'ecoclimap',
+                'sfxfmt', 'ecoclimap', 'rrtm',
                 'loverwrite', 'lupdate_ATM', 'lupdate_SFX', 'lupdate_RUN']: 
         try:
             atts[att] = CM.__dict__[att]
@@ -104,10 +107,13 @@ if __name__ == '__main__':
     # Then loop over attributes that must be given
     attlist = ['EXPID', 'MASTER', 'ATMNAM', 'vert_grid', 'timestep']
     if atts['lsurfex']:
-        attlist += ['SFXNAM', 'PGD', 'PREP']
+        attlist += ['SFXNAM_prep', 'SFXNAM_run', 'PGD', 'PREP']
     for att in attlist:
         try:
-            atts[att] = CM.__dict__[att]
+            if att in ['SFXNAM_prep', 'SFXNAM_run'] and 'SFXNAM' in CM.__dict__.keys():
+                atts[att] = CM.__dict__['SFXNAM']
+            else:
+                atts[att] = CM.__dict__[att]
         except KeyError:
             logger.error('{0} must be given in configuration file'.format(att))
             raise
@@ -130,11 +136,13 @@ if __name__ == '__main__':
     lforc_ascii = atts['lforc_ascii']
     lsurfex = atts['lsurfex']
     if lsurfex:
-        SFXNAM = atts['SFXNAM']
+        SFXNAM_prep = atts['SFXNAM_prep']
+        SFXNAM_run = atts['SFXNAM_run']
         PGD = atts['PGD']
         PREP = atts['PREP']
     sfxfmt = atts['sfxfmt']
     ecoclimap = atts['ecoclimap']
+    rrtm = atts['rrtm']
 
     dirpost = atts['dirpost']
     variablesDict = atts['variablesDict']
@@ -192,7 +200,7 @@ if __name__ == '__main__':
         if not(installed) or loverwrite or lupdate_SFX:
             # Installing
             install_MUSC.install_sfx(model, case, subcase, data_input,
-                    repSFX, PGD, PREP, SFXNAM,
+                    repSFX, PGD, PREP, SFXNAM_prep,
                     loverwrite=loverwrite, lupdate=lupdate_SFX, ecoclimap=ecoclimap, sfxfmt=sfxfmt)
 
             os.system('touch {0}'.format(install_file))
@@ -207,6 +215,7 @@ if __name__ == '__main__':
         config['name'] = EXPID
         config['MASTER'] = MASTER
         config['ecoclimap'] = ecoclimap
+        config['rrtm'] = rrtm
         config['sfxfmt'] = sfxfmt
         config['vert_grid'] = vert_grid
         config['TSTEP'] = timestep
@@ -216,7 +225,7 @@ if __name__ == '__main__':
         if model == 'ARPCLIMAT':
             config['forcingfiles'] = os.path.join(repATM, case, subcase, 'files_{0}_{1}s'.format(vert_grid_name,timestep))
         if lsurfex:
-            config['namSFXref'] = SFXNAM
+            config['namSFXref'] = SFXNAM_run
             config['PGDfile'] = os.path.join(repSFX, case, subcase, 'PGD.{0}'.format(sfxfmt.lower()))
             config['PREPfile'] = os.path.join(repSFX, case, subcase, 'PREP.{0}'.format(sfxfmt.lower()))
 
