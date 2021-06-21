@@ -40,37 +40,11 @@ fi
 # Download and install EMS in REP_EMS
 [ -d $REP_EMS ] || mkdir -p $REP_EMS
 cd $REP_EMS
-#git clone --depth 1 https://github.com/romainroehrig/EMS.git --branch macRR_dephy2 --single-branch .
 
 wget https://github.com/romainroehrig/EMS/archive/v${EMS_VERSION}.tar.gz
 tar zxvf v${EMS_VERSION}.tar.gz
 rm -f v${EMS_VERSION}.tar.gz
 mv EMS-${EMS_VERSION} V${EMS_VERSION}
-
-# Modify your .bash_profile to initialize a few environment variables
-cd ~/
-
-# save bash_profile
-cat $PROFILE > $PROFILE.EMS-saved_$(date +"%Y-%m-%d_at_%H-%M-%S")
-
-# Modify it
-sed -i '' "/^export REP_EMS=/ s/$/ #commented on $(date)/" $PROFILE
-sed -i '' "s/^export REP_EMS=/#&/" $PROFILE
-sed -i '' "/^export REP_MUSC=/ s/$/ #commented on $(date)/" $PROFILE
-sed -i '' "s/^export REP_MUSC=/#&/" $PROFILE
-sed -i '' "/^export PYTHONPATH=.:\$REP_EMS/ s/$/ #commented on $(date)/" $PROFILE
-sed -i '' "s/^export PYTHONPATH=.:\$REP_EMS/#&/" $PROFILE
-
-cat << EOF >> $PROFILE
-
-# Modifications for Environment for MUSC simulations (EMS)
-# included on $(date)
-export REP_EMS=$REP_EMS/V$EMS_VERSION
-export REP_MUSC=$REP_MUSC/V$EMS_VERSION
-export PYTHONPATH=.:\$REP_EMS:\$REP_EMS/aux:\$PYTHONPATH
-EOF
-
-. ~/$PROFILE
 
 # Some compilation if you want
 compile="y"
@@ -85,10 +59,6 @@ if [ $compile == "y" ]; then
   cd $REP_EMS/aux/ASCII2FA/src
   make all
   make clean
-
-  # LFA tools
-  #cd $REP_EMS/aux/lfatools
-  #./install
 
 fi
 
@@ -106,6 +76,18 @@ do
 
 done
 
+sed -i '' "/__REP_MUSC__/ s/${REP_MUSC}/" setenv
+sed -i '' "/__REP_EMS__/ s/${REP_EMS}/" setenv
+
+cd config
+for ff in `ls config_*.py`
+do
+
+  sed -i '' "/__REP_MUSC__/ s/${REP_MUSC}/" $ff
+
+done
+cd ..
+
 #####################################################
 # Some Testing
 testing="y"
@@ -119,12 +101,10 @@ if [ $testing == "y" ]; then
     cd $REP_MUSC
 
     ./MUSC.py -config config/config_arp631_CMIP6.py -case ARMCU -subcase REF
-    [ -f $REP_MUSC/ATM/ARPCLIMAT/ARMCU/REF/initfile_L91 ] || echo "PROBLEM with install_ATM_cases.py"
-
-    [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM with install_SFX_cases.py: PGD"
-    [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM with install_SFX_cases.py: PREP"
-
-    [ -f $REP_MUSC/simulations/V631/arp631_CMIP6/ARMCU/REF/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM with run_MUSC_cases.py"
+    [ -f $REP_MUSC/ATM/V631/arp631_CMIP6/ARMCU/REF/initfile_L91 ] || echo "PROBLEM when preparing atmospheric files"
+    [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM when prepararing PGD"
+    [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM when preparing PREP"
+    [ -f $REP_MUSC/simulations/V631/arp631_CMIP6/ARMCU/REF/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM when running MUSC"
 
   fi
 
