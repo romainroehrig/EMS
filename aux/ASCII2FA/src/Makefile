@@ -7,7 +7,6 @@ EXEC	 =	acadfa_exe
 OBJS	 =	acadfa1D_main.o \
 		acadfa_sueframe.o \
 		real2spec.o \
-		empty.o 
 
 XRD	 =	/home/common/pack/arp603_export.01.GFORTRAN610.cx/lib/libxrd.local.a
 XLA	 =      /home/common/pack/arp603_export.01.GFORTRAN610.cx/lib/libxla.local.a

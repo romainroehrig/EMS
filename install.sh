@@ -9,13 +9,10 @@ set -evx
 EMS_VERSION=TO BE DEFINED
 
 # Directory where EMS is installed
-REP_EMS=$HOME/Tools/EMS
+REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
 
 # Directory where MUSC will be run
-REP_MUSC=$HOME/MUSC
-
-# Environment file to use
-PROFILE=.bash_profile
+REP_MUSC=$HOME/MUSC/V${EMS_VERSION}
 
 #####################################################
 
@@ -24,15 +21,15 @@ DIR0=`pwd`
 #####################################################
 # Some tests to avoid overwriting
 
-if [ -d "$REP_EMS/$EMS_VERSION" ]; then
-  echo "REP_EMS="$REP_EMS/$EMS_VERSION
-  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install_macRR.sh"
+if [ -d "$REP_EMS" ]; then
+  echo "REP_EMS="$REP_EMS
+  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install_ems.sh"
   exit
 fi
 
-if [ -d "$REP_MUSC/$EMS_VERSION" ]; then
-  echo "REP_MUSC="$REP_MUSC/$EMS_VERSION
-  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install_macRR.sh"
+if [ -d "$REP_MUSC" ]; then
+  echo "REP_MUSC="$REP_MUSC
+  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install_ems.sh"
   exit
 fi
 
@@ -41,10 +38,11 @@ fi
 [ -d $REP_EMS ] || mkdir -p $REP_EMS
 cd $REP_EMS
 
-wget https://github.com/romainroehrig/EMS/archive/v${EMS_VERSION}.tar.gz
-tar zxvf v${EMS_VERSION}.tar.gz
-rm -f v${EMS_VERSION}.tar.gz
-mv EMS-${EMS_VERSION} V${EMS_VERSION}
+wget https://github.com/romainroehrig/EMS/archive/V${EMS_VERSION}.tar.gz
+tar zxvf V${EMS_VERSION}.tar.gz
+rm -f V${EMS_VERSION}.tar.gz
+mv EMS-${EMS_VERSION}/* .
+rm -rf EMS-${EMS_VERSION}
 
 # Some compilation if you want
 compile="y"
