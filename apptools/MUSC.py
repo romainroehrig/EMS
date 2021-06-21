@@ -39,7 +39,7 @@ default = {
         'lupdate_RUN': False,
         #
         # RRTM
-        'rrtm': os.path.join(ems._dirEMS, '../data/rrtm.const.02.tgz'),
+        'rrtm': os.path.join(ems._dirEMS, '../data/rrtm/rrtm.const.02.tgz'),
         #
         # SURFEX
         'ecoclimap': os.path.join(ems._dirEMS, '../data/ecoclimap_cnrm_cm6.02'),

@@ -277,6 +277,8 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
             g.write('#!/bin/sh\n')
             g.write('set -x\n')
             g.write('#\n')
+            g.write('model=' + model + '\n')
+            g.write('#\n')
             g.write('MASTER=' + config['MASTER'] + '\n')
             g.write('#\n')
             g.write('vert_grid=' + os.path.basename(config['vert_grid']) + '\n')

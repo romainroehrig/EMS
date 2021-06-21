@@ -1,2 +1,2 @@
-export PATH=/home/roehrig/Tools/EMS/last/apptools:$PATH
-export PYTHONPATH=/home/roehrig/Tools/EMS/last:$PYTHONPATH
+export PATH=$HOME/Tools/EMS/last/apptools:$PATH
+export PYTHONPATH=$HOME/Tools/EMS/last:$PYTHONPATH
