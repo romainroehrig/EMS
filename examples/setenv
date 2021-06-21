@@ -1,0 +1,2 @@
+export PATH=__REP_EMS__/apptools:$PATH
+export PYTHONPATH=__REP_EMS__:$PYTHONPATH
