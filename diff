@@ -1,0 +1,4952 @@
+diff --git a/apptools/MUSC.py b/apptools/MUSC.py
+index afd6921..ee97c4b 100755
+--- a/apptools/MUSC.py
++++ b/apptools/MUSC.py
+@@ -38,6 +38,9 @@ default = {
+         'lupdate_SFX': True,
+         'lupdate_RUN': False,
+         #
++        # RRTM
++        'rrtm': os.path.join(ems._dirEMS, '../data/rrtm.const.02.tgz'),
++        #
+         # SURFEX
+         'ecoclimap': os.path.join(ems._dirEMS, '../data/ecoclimap_cnrm_cm6.02'),
+         'sfxfmt': 'LFI'
+@@ -89,7 +92,7 @@ if __name__ == '__main__':
+     # First loop over attributes which have a default (see above)
+     for att in ['GROUP', 'model', 'ASCII2FA', 'lforc_ascii', 'lsurfex',
+                 'dirpost', 'variablesDict', 'defaultConfigPost', 'caseDependent',
+-                'sfxfmt', 'ecoclimap',
++                'sfxfmt', 'ecoclimap', 'rrtm',
+                 'loverwrite', 'lupdate_ATM', 'lupdate_SFX', 'lupdate_RUN']: 
+         try:
+             atts[att] = CM.__dict__[att]
+@@ -104,10 +107,13 @@ if __name__ == '__main__':
+     # Then loop over attributes that must be given
+     attlist = ['EXPID', 'MASTER', 'ATMNAM', 'vert_grid', 'timestep']
+     if atts['lsurfex']:
+-        attlist += ['SFXNAM', 'PGD', 'PREP']
++        attlist += ['SFXNAM_prep', 'SFXNAM_run', 'PGD', 'PREP']
+     for att in attlist:
+         try:
+-            atts[att] = CM.__dict__[att]
++            if att in ['SFXNAM_prep', 'SFXNAM_run'] and 'SFXNAM' in CM.__dict__.keys():
++                atts[att] = CM.__dict__['SFXNAM']
++            else:
++                atts[att] = CM.__dict__[att]
+         except KeyError:
+             logger.error('{0} must be given in configuration file'.format(att))
+             raise
+@@ -130,11 +136,13 @@ if __name__ == '__main__':
+     lforc_ascii = atts['lforc_ascii']
+     lsurfex = atts['lsurfex']
+     if lsurfex:
+-        SFXNAM = atts['SFXNAM']
++        SFXNAM_prep = atts['SFXNAM_prep']
++        SFXNAM_run = atts['SFXNAM_run']
+         PGD = atts['PGD']
+         PREP = atts['PREP']
+     sfxfmt = atts['sfxfmt']
+     ecoclimap = atts['ecoclimap']
++    rrtm = atts['rrtm']
+ 
+     dirpost = atts['dirpost']
+     variablesDict = atts['variablesDict']
+@@ -157,7 +165,8 @@ if __name__ == '__main__':
+     logger.info('For {0}/{1} case'.format(case,subcase))
+ 
+     # Where to prepare atmospheric input data
+-    repATM = os.path.join(dirMUSC, 'ATM', model)
++    #repATM = os.path.join(dirMUSC, 'ATM', model)
++    repATM = os.path.join(dirMUSC, 'ATM', GROUP, EXPID)
+     # Where to prepare surfex input data
+     repSFX = os.path.join(dirMUSC, 'SURFEX', GROUP, EXPID)
+     # Where to install run data
+@@ -191,7 +200,7 @@ if __name__ == '__main__':
+         if not(installed) or loverwrite or lupdate_SFX:
+             # Installing
+             install_MUSC.install_sfx(model, case, subcase, data_input,
+-                    repSFX, PGD, PREP, SFXNAM,
++                    repSFX, PGD, PREP, SFXNAM_prep,
+                     loverwrite=loverwrite, lupdate=lupdate_SFX, ecoclimap=ecoclimap, sfxfmt=sfxfmt)
+ 
+             os.system('touch {0}'.format(install_file))
+@@ -206,6 +215,7 @@ if __name__ == '__main__':
+         config['name'] = EXPID
+         config['MASTER'] = MASTER
+         config['ecoclimap'] = ecoclimap
++        config['rrtm'] = rrtm
+         config['sfxfmt'] = sfxfmt
+         config['vert_grid'] = vert_grid
+         config['TSTEP'] = timestep
+@@ -215,9 +225,9 @@ if __name__ == '__main__':
+         if model == 'ARPCLIMAT':
+             config['forcingfiles'] = os.path.join(repATM, case, subcase, 'files_{0}_{1}s'.format(vert_grid_name,timestep))
+         if lsurfex:
+-            config['namSFXref'] = SFXNAM
+-            config['PGDfile'] = os.path.join(repSFX, case, subcase, 'PGD.lfi')
+-            config['PREPfile'] = os.path.join(repSFX, case, subcase, 'PREP.lfi')
++            config['namSFXref'] = SFXNAM_run
++            config['PGDfile'] = os.path.join(repSFX, case, subcase, 'PGD.{0}'.format(sfxfmt.lower()))
++            config['PREPfile'] = os.path.join(repSFX, case, subcase, 'PREP.{0}'.format(sfxfmt.lower()))
+ 
+         # Preparing post-processing configuration
+         configOut = {}
+diff --git a/aux/ASCII2FA/bin/ascii2fa b/aux/ASCII2FA/bin/ascii2fa
+index 672b5d7..96a0548 100755
+Binary files a/aux/ASCII2FA/bin/ascii2fa and b/aux/ASCII2FA/bin/ascii2fa differ
+diff --git a/aux/ASCII2FA/src/Makefile b/aux/ASCII2FA/src/Makefile
+index 8ab7679..e095950 100755
+--- a/aux/ASCII2FA/src/Makefile
++++ b/aux/ASCII2FA/src/Makefile
+@@ -1,8 +1,7 @@
+ # acadfa makefile
+ 
+ FC	 =	gfortran
+-FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
+-F90FLAGS =      -fconvert=swap -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -DDARWIN -DADDRESS64 -fdefault-real-8 -fdefault-double-8 -g -O2
++F90FLAGS =      -fopenmp -fconvert=swap -fno-second-underscore -fbacktrace -m64 -fopenmp -gdwarf-3 -ffree-line-length-none -fno-sign-zero -fpic -fno-range-check -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -g -O2 -ftree-vectorize  -DADDRESS64
+ EXEC	 =	acadfa_exe
+ 
+ OBJS	 =	acadfa1D_main.o \
+@@ -10,12 +9,11 @@ OBJS	 =	acadfa1D_main.o \
+ 		real2spec.o \
+ 		empty.o 
+ 
+-XRDLOC	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxrd.local.a 
+-XRDMAIN	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxrd.main.a 
+-XLA	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxla.main.a 
+-GRIBEX   =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a 
+-MPIDUMMY =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a
+-LIBS	 =	$(XRDLOC) $(XRDMAIN) $(XLA) $(GRIBEX) $(MPIDUMMY) 
++XRD	 =	/home/common/pack/arp603_export.01.GFORTRAN610.cx/lib/libxrd.local.a
++XLA	 =      /home/common/pack/arp603_export.01.GFORTRAN610.cx/lib/libxla.local.a
++GRIBEX   =      /home/common/sync/gfortran/auxlibs/lib/libgribex.a 
++MPIDUMMY =      /home/common/sync/gfortran/auxlibs/lib/libmpidummy.a
++LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
+ 
+ %.o:%.F90
+ 	$(FC) $(F90FLAGS) -c $<
+diff --git a/aux/ASCII2FA/src/Makefile.GFORTRAN b/aux/ASCII2FA/src/Makefile.GFORTRAN
+deleted file mode 100644
+index a3df309..0000000
+--- a/aux/ASCII2FA/src/Makefile.GFORTRAN
++++ /dev/null
+@@ -1,27 +0,0 @@
+-# acadfa makefile
+-
+-FC	 =	gfortran
+-FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
+-F90FLAGS =      -fconvert=big-endian -frecord-marker=4 $(M32) -ffree-form -fdefault-real-8 -DADDRESS64 -DHIGHRES
+-EXEC	 =	acadfa_exe
+-
+-OBJS	 =	acadfa1D_main.o \
+-		acadfa_sueframe.o \
+-		real2spec.o \
+-		empty.o 
+-
+-XRD	 =	libxrd.a 
+-GRIBEX   =      libgribex.a 
+-MPIDUMMY =      libmpidummy.a
+-LIBS	 =	$(XRD) $(GRIBEX) $(MPIDUMMY)
+-
+-%.o:%.F90
+-	$(FC) $(F90FLAGS) -c $<
+-
+-all:	$(OBJS)
+-	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
+-	/bin/cp -f $(EXEC) ../bin/ascii2fa
+-
+-clean:
+-	/bin/rm -f $(EXEC) $(OBJS)
+-
+diff --git a/aux/ASCII2FA/src/Makefile.g95 b/aux/ASCII2FA/src/Makefile.g95
+deleted file mode 100644
+index 993e206..0000000
+--- a/aux/ASCII2FA/src/Makefile.g95
++++ /dev/null
+@@ -1,27 +0,0 @@
+-# acadfa makefile
+-
+-FC	 =	g95
+-FFLAGS	 =      -r8 -i4  -DLX86P  -fendian=big -fno-second-underscore  -g -O0
+-F90FLAGS =      -r8 -i4  -DLX86P  -fendian=big -fno-second-underscore -g -O0
+-EXEC	 =	acadfa_exe
+-
+-OBJS	 =	acadfa1D_main.o \
+-		acadfa_sueframe.o \
+-		real2spec.o \
+-		empty.o 
+-
+-XRD	 =	libxrd.a 
+-GRIBEX   =      libgribex.a 
+-MPIDUMMY =      libmpidummy.a
+-LIBS	 =	$(XRD) $(GRIBEX) $(MPIDUMMY)
+-
+-%.o:%.F90
+-	$(FC) $(F90FLAGS) -c $<
+-
+-all:	$(OBJS)
+-	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
+-	/bin/cp -f $(EXEC) ../bin/ascii2fa
+-
+-clean:
+-	/bin/rm -f $(EXEC) $(OBJS)
+-
+diff --git a/aux/ASCII2FA/src/Makefile.macRR b/aux/ASCII2FA/src/Makefile.macRR
+deleted file mode 100755
+index ed5e0cf..0000000
+--- a/aux/ASCII2FA/src/Makefile.macRR
++++ /dev/null
+@@ -1,28 +0,0 @@
+-# acadfa makefile
+-
+-FC	 =	gfortran
+-FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
+-F90FLAGS =      -fconvert=swap -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -DDARWIN -DADDRESS64 -fdefault-real-8 -fdefault-double-8 -g -O2
+-EXEC	 =	acadfa_exe
+-
+-OBJS	 =	acadfa1D_main.o \
+-		acadfa_sueframe.o \
+-		real2spec.o \
+-		empty.o 
+-
+-XRD	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxrd.local.a 
+-XLA	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a 
+-GRIBEX   =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a 
+-MPIDUMMY =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a
+-LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY) 
+-
+-%.o:%.F90
+-	$(FC) $(F90FLAGS) -c $<
+-
+-all:	$(OBJS)
+-	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
+-	/bin/cp -f $(EXEC) ../bin/ascii2fa
+-
+-clean:
+-	/bin/rm -f $(EXEC) $(OBJS)
+-
+diff --git a/aux/ASCII2FA/src/Makefile.save b/aux/ASCII2FA/src/Makefile.save
+deleted file mode 100755
+index ed5e0cf..0000000
+--- a/aux/ASCII2FA/src/Makefile.save
++++ /dev/null
+@@ -1,28 +0,0 @@
+-# acadfa makefile
+-
+-FC	 =	gfortran
+-FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
+-F90FLAGS =      -fconvert=swap -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -DDARWIN -DADDRESS64 -fdefault-real-8 -fdefault-double-8 -g -O2
+-EXEC	 =	acadfa_exe
+-
+-OBJS	 =	acadfa1D_main.o \
+-		acadfa_sueframe.o \
+-		real2spec.o \
+-		empty.o 
+-
+-XRD	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxrd.local.a 
+-XLA	 =	/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/lib/libxla.local.a 
+-GRIBEX   =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a 
+-MPIDUMMY =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a
+-LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY) 
+-
+-%.o:%.F90
+-	$(FC) $(F90FLAGS) -c $<
+-
+-all:	$(OBJS)
+-	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
+-	/bin/cp -f $(EXEC) ../bin/ascii2fa
+-
+-clean:
+-	/bin/rm -f $(EXEC) $(OBJS)
+-
+diff --git a/aux/ASCII2FA/src/Makefile.test b/aux/ASCII2FA/src/Makefile.test
+deleted file mode 100755
+index 30ed5f6..0000000
+--- a/aux/ASCII2FA/src/Makefile.test
++++ /dev/null
+@@ -1,28 +0,0 @@
+-# acadfa makefile
+-
+-FC	 =	gfortran
+-FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
+-F90FLAGS =      -fconvert=swap -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -DDARWIN -DADDRESS64 -fdefault-real-8 -fdefault-double-8 -g -O2
+-EXEC	 =	acadfa_exe
+-
+-OBJS	 =	acadfa1D_main.o \
+-		acadfa_sueframe.o \
+-		real2spec.o \
+-		empty.o 
+-
+-XRD	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxrd.local.a 
+-XLA	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxla.main.a 
+-GRIBEX   =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a 
+-MPIDUMMY =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a
+-LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY) 
+-
+-%.o:%.F90
+-	$(FC) $(F90FLAGS) -c $<
+-
+-all:	$(OBJS)
+-	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
+-	/bin/cp -f $(EXEC) ../bin/ascii2fa
+-
+-clean:
+-	/bin/rm -f $(EXEC) $(OBJS)
+-
+diff --git a/aux/ASCII2FA/src/acadfa1D_main.o b/aux/ASCII2FA/src/acadfa1D_main.o
+deleted file mode 100644
+index e73d8d1..0000000
+Binary files a/aux/ASCII2FA/src/acadfa1D_main.o and /dev/null differ
+diff --git a/aux/ASCII2FA/src/acadfa_exe b/aux/ASCII2FA/src/acadfa_exe
+deleted file mode 100755
+index 672b5d7..0000000
+Binary files a/aux/ASCII2FA/src/acadfa_exe and /dev/null differ
+diff --git a/aux/ASCII2FA/src/acadfa_sueframe.o b/aux/ASCII2FA/src/acadfa_sueframe.o
+deleted file mode 100644
+index c8aedbc..0000000
+Binary files a/aux/ASCII2FA/src/acadfa_sueframe.o and /dev/null differ
+diff --git a/aux/ASCII2FA/src/acadtr.F90 b/aux/ASCII2FA/src/acadtr.F90
+deleted file mode 100644
+index 06d5d9d..0000000
+--- a/aux/ASCII2FA/src/acadtr.F90
++++ /dev/null
+@@ -1,91 +0,0 @@
+-      SUBROUTINE ACADTR(IDGL, IDLON,  &
+-                      INSMAX, NESN0, NCPL4N, NSEFRE, &
+-                      ZFFT, ZOUT, ZWORK, &
+-                      TRIGS,IFAX)
+-!
+-!**** *ACADTR*  
+-!
+-!     PURPOSE.
+-!     --------
+-!        TO REAL-> SPECTRAL TRANSFORMS FOR ACADFA (Meridional)
+-!
+-!**   INTERFACE.
+-!     ----------
+-!       *SUBROUTINE ACADTR*
+-!
+-!     METHOD.
+-!     -------
+-!        SEE DOCUMENTATION
+-!        The input array is ZFFT (containing real data)
+-!        The output array is the spectral ZOUT(NSEFRE)
+-!        with coefficients ordered readily for Aladin file
+-!
+-!     EXTERNALS.
+-!     ----------
+-!         FFT package
+-!         
+-!     REFERENCE.
+-!     ----------
+-!        METEO-FRANCE CNRM/GMAP
+-!
+-!     AUTHOR.
+-!     -------
+-!        Pierre Benard
+-!
+-!     MODIFICATIONS.
+-!     --------------
+-!        ORIGINAL : 98-10-98
+-!     ------------------------------------------------------------------
+-! (in)  IDGL    = Number of latitudes
+-! (in)  IDLON   = Number of longitudes (1 or 4?)
+-! (in)  IFAX    = Prime factors list of the Fourier vectors length
+-! (in)  INSMAX  = Meridional Truncation
+-! (in)  NESN0   = Index of first coefficient of JN in spectral array
+-! (in)  INSMAX  = Number of spectral coefs. of JN in spectral array
+-! (in)  TRIGS   = Tabulated sin and cos for FFTs
+-! (in)  ZFFT    = Real to be transformed
+-! (in)  ZWORK   = FFT work array
+-!     ------------------------------------------------------------------
+-! (out) ZOUT    = spectral and ordered array
+-!     ------------------------------------------------------------------
+-
+-      IMPLICIT LOGICAL (L)
+-      
+-      INTEGER ISIGN, IINC, INDFFT
+-      INTEGER IDGL, IDLON, INSMAX
+-      INTEGER IFAX(20)
+-      INTEGER NESN0(0:INSMAX)
+-      INTEGER NCPL4N(0:INSMAX)
+-      
+-      REAL TRIGS(IDGL)            
+-      REAL ZOUT(NSEFRE),ZFFT(IDLON*IDGL)
+-      REAL ZWORK((IDGL+1)*IDLON)
+-      
+-! 1.  PREPARATION
+-!    
+-      ISIGN = -1
+-      IINC  = 1 
+-  
+-! 2.  FOURIER TRANSFORM
+-!     
+-      CALL FFT991(ZFFT,ZWORK,TRIGS,IFAX ,  &
+-                  IINC,IDGL,IDGL,IDLON,ISIGN)
+-
+-! 3. REORDERING ACCORDING TO ALADIN FILES AND FILLING WITH
+-!    ZEROS THE IRRELEVANT COEFFICIENTS FOR A 2D FIELD
+-!
+-      INDFFT=1
+-      DO JN=0, INSMAX
+-        DO JROF=NESN0(JN),NESN0(JN)+1
+-          ZOUT(JROF)=ZFFT(INDFFT)
+-          INDFFT=INDFFT+1
+-        ENDDO
+-        DO JROF=NESN0(JN)+2,NESN0(JN)+NCPL4N(JN)-1
+-          ZOUT(JROF)=0.
+-        ENDDO
+-      ENDDO
+-
+-     
+-      RETURN
+-      END
+-      
+diff --git a/aux/ASCII2FA/src/empty.F90 b/aux/ASCII2FA/src/empty.F90
+deleted file mode 100644
+index 1ef6d33..0000000
+--- a/aux/ASCII2FA/src/empty.F90
++++ /dev/null
+@@ -1,11 +0,0 @@
+-      subroutine remark2()
+-      write(*,*) "Meaningless remark2 ... Bye"
+-      call exit
+-      return
+-      end
+-
+-      subroutine lockon()
+-      write(*,*) "Meaningless remark2 ... Bye"
+-      call exit
+-      return
+-      end
+diff --git a/aux/ASCII2FA/src/empty.o b/aux/ASCII2FA/src/empty.o
+deleted file mode 100644
+index abe555b..0000000
+Binary files a/aux/ASCII2FA/src/empty.o and /dev/null differ
+diff --git a/aux/ASCII2FA/src/real2spec.o b/aux/ASCII2FA/src/real2spec.o
+deleted file mode 100644
+index 73432ed..0000000
+Binary files a/aux/ASCII2FA/src/real2spec.o and /dev/null differ
+diff --git a/aux/lfa4py/Makefile b/aux/lfa4py/Makefile
+index 6d340e8..1a548e6 100644
+--- a/aux/lfa4py/Makefile
++++ b/aux/lfa4py/Makefile
+@@ -21,7 +21,7 @@ liblfa.a: cllang.o caracteres_lfa.o lfa.o init_gfortran.o
+ 	ar r liblfa.a cllang.o caracteres_lfa.o lfa.o init_gfortran.o *.mod
+ 
+ lfa4py.so: lfa4py.o liblfa.a
+-	gfortran $(FFLAGS) -shared -L. -l lfa lfa4py.o -o lfa4py.so
++	gfortran $(FFLAGS) -shared lfa4py.o -L. -l lfa -o lfa4py.so
+ 	rm -f *.o *.a *.mod
+ 
+ clean: 
+diff --git a/aux/lfa4py/lfa4py.so b/aux/lfa4py/lfa4py.so
+index 1d78781..0b67b8a 100755
+Binary files a/aux/lfa4py/lfa4py.so and b/aux/lfa4py/lfa4py.so differ
+diff --git a/aux/lfatools/bin/cllangu b/aux/lfatools/bin/cllangu
+index fb1e1b6..ddf95e1 100755
+Binary files a/aux/lfatools/bin/cllangu and b/aux/lfatools/bin/cllangu differ
+diff --git a/aux/lfatools/bin/lfa2lfa b/aux/lfatools/bin/lfa2lfa
+index 9ea0865..efbfbf0 100755
+Binary files a/aux/lfatools/bin/lfa2lfa and b/aux/lfatools/bin/lfa2lfa differ
+diff --git a/aux/lfatools/bin/lfa2lfp b/aux/lfatools/bin/lfa2lfp
+index afc92d1..038d8a4 100755
+Binary files a/aux/lfatools/bin/lfa2lfp and b/aux/lfatools/bin/lfa2lfp differ
+diff --git a/aux/lfatools/bin/lfa_autodocumentation b/aux/lfatools/bin/lfa_autodocumentation
+index 81a8c39..4e1454b 100755
+Binary files a/aux/lfatools/bin/lfa_autodocumentation and b/aux/lfatools/bin/lfa_autodocumentation differ
+diff --git a/aux/lfatools/bin/lfa_demo b/aux/lfatools/bin/lfa_demo
+index 512a742..9106519 100755
+Binary files a/aux/lfatools/bin/lfa_demo and b/aux/lfatools/bin/lfa_demo differ
+diff --git a/aux/lfatools/bin/lfac b/aux/lfatools/bin/lfac
+index da679d3..a82087f 100755
+Binary files a/aux/lfatools/bin/lfac and b/aux/lfatools/bin/lfac differ
+diff --git a/aux/lfatools/bin/lfacre b/aux/lfatools/bin/lfacre
+index 49371c4..f6c902d 100755
+Binary files a/aux/lfatools/bin/lfacre and b/aux/lfatools/bin/lfacre differ
+diff --git a/aux/lfatools/bin/lfadiff b/aux/lfatools/bin/lfadiff
+index 1098916..0dc09e3 100755
+Binary files a/aux/lfatools/bin/lfadiff and b/aux/lfatools/bin/lfadiff differ
+diff --git a/aux/lfatools/bin/lfadiffart b/aux/lfatools/bin/lfadiffart
+index db4bfd8..42d49b7 100755
+Binary files a/aux/lfatools/bin/lfadiffart and b/aux/lfatools/bin/lfadiffart differ
+diff --git a/aux/lfatools/bin/lfadiffrel b/aux/lfatools/bin/lfadiffrel
+index f6fb680..c7f2096 100755
+Binary files a/aux/lfatools/bin/lfadiffrel and b/aux/lfatools/bin/lfadiffrel differ
+diff --git a/aux/lfatools/bin/lfafreq b/aux/lfatools/bin/lfafreq
+index db12761..d303cbc 100755
+Binary files a/aux/lfatools/bin/lfafreq and b/aux/lfatools/bin/lfafreq differ
+diff --git a/aux/lfatools/bin/lfalaf b/aux/lfatools/bin/lfalaf
+index d688e21..a79fdc6 100755
+Binary files a/aux/lfatools/bin/lfalaf and b/aux/lfatools/bin/lfalaf differ
+diff --git a/aux/lfatools/bin/lfaminm b/aux/lfatools/bin/lfaminm
+index b54e404..2fdb724 100755
+Binary files a/aux/lfatools/bin/lfaminm and b/aux/lfatools/bin/lfaminm differ
+diff --git a/aux/lfatools/bin/lfamoy b/aux/lfatools/bin/lfamoy
+index 24e2039..4fad90f 100755
+Binary files a/aux/lfatools/bin/lfamoy and b/aux/lfatools/bin/lfamoy differ
+diff --git a/aux/lfatools/bin/lfareu b/aux/lfatools/bin/lfareu
+index b9ee641..9b659cb 100755
+Binary files a/aux/lfatools/bin/lfareu and b/aux/lfatools/bin/lfareu differ
+diff --git a/aux/lfatools/bin/lfatest b/aux/lfatools/bin/lfatest
+index 81268f2..f320148 100755
+Binary files a/aux/lfatools/bin/lfatest and b/aux/lfatools/bin/lfatest differ
+diff --git a/aux/lfatools/bin/lfp2lfa b/aux/lfatools/bin/lfp2lfa
+index b47a98e..adbcc6c 100755
+Binary files a/aux/lfatools/bin/lfp2lfa and b/aux/lfatools/bin/lfp2lfa differ
+diff --git a/data/rrtm/rrtm.const.02.tgz b/data/rrtm/rrtm.const.02.tgz
+new file mode 100644
+index 0000000..0c08097
+Binary files /dev/null and b/data/rrtm/rrtm.const.02.tgz differ
+diff --git a/ems/cases.py b/ems/cases.py
+index 5e0efa6..2e1248b 100644
+--- a/ems/cases.py
++++ b/ems/cases.py
+@@ -42,18 +42,16 @@ logger.debug("CASES directory: " + rep0)
+ # GABLS1 Case
+ case = 'GABLS1'
+ cases.append(case)
+-subcases[case] = ['REF','MESONH']
+-data_input[case] = {}
+-for subcase in subcases[case]:
+-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++subcases[case] = ['REF', 'MESONH']
++data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++                             for subcase in subcases[case]}
+ 
+ # GABLS4 Case
+ case = 'GABLS4'
+ cases.append(case)
+-subcases[case] = ['STAGE3','STAGE3-SHORT']
+-data_input[case] = {}
+-for subcase in subcases[case]:
+-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++subcases[case] = ['STAGE3', 'STAGE3-SHORT']
++data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++                             for subcase in subcases[case]}
+ 
+ ####################################
+ #### Dry convection cases
+@@ -61,18 +59,16 @@ for subcase in subcases[case]:
+ # AYOTTE Cases
+ case = 'AYOTTE'
+ cases.append(case)
+-subcases[case] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
+-data_input[case] = {}
+-for subcase in subcases[case]:
+-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++subcases[case] = ['00SC', '00WC', '03SC', '05SC', '05WC', '24F', '24SC']
++data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++                             for subcase in subcases[case]}
+ 
+ # IHOP Cases
+ case = 'IHOP'
+ cases.append(case)
+ subcases[case] = ['REF']
+-data_input[case] = {}
+-for subcase in subcases[case]:
+-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++                             for subcase in subcases[case]}
+ 
+ # AMMAsec Cases
+ #case = 'AMMAsec'
+@@ -95,41 +91,36 @@ for subcase in subcases[case]:
+ case = 'SCMS'
+ cases.append(case)
+ subcases[case] = ['REF']
+-data_input[case] = {}
+-for subcase in subcases[case]:
+-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++                             for subcase in subcases[case]}
+ 
+ # RICO Case
+ case = 'RICO'
+ cases.append(case)
+-subcases[case] = ['SHORT','MESONH']
+-data_input[case] = {}
+-for subcase in subcases[case]:
+-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++subcases[case] = ['SHORT', 'MESONH']
++data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++                             for subcase in subcases[case]}
+ 
+ # ARMCU Case
+ case = 'ARMCU'
+ cases.append(case)
+-subcases[case] = ['REF','E3SM','MESONH','E3SM']
+-data_input[case] = {}
+-for subcase in subcases[case]:
+-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++subcases[case] = ['REF', 'MESONH', 'E3SM']
++data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++                             for subcase in subcases[case]}
+ 
+ # BOMEX Case
+ case = 'BOMEX'
+ cases.append(case)
+ subcases[case] = ['REF']
+-data_input[case] = {}
+-for subcase in subcases[case]:
+-    data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++                             for subcase in subcases[case]}
+ 
+ # MPACE Case
+ case = 'MPACE'
+ cases.append(case)
+ subcases[case] = ['REF']
+-data_input[case] = {}
+-for subcase in subcases[case]:
+-    data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++                             for subcase in subcases[case]}
+ 
+ 
+ ####################################
+@@ -159,10 +150,9 @@ for subcase in subcases[case]:
+ # SANDU composite cases
+ case = 'SANDU'
+ cases.append(case)
+-subcases[case] = ['REF','FAST','SLOW']
+-data_input[case] = {}
+-for subcase in subcases[case]:
+-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++subcases[case] = ['REF', 'FAST', 'SLOW']
++data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++                             for subcase in subcases[case]}
+ 
+ ####################################
+ #### Deep convection cases
+@@ -188,8 +178,8 @@ for subcase in subcases[case]:
+ case = 'AMMA'
+ cases.append(case)
+ subcases[case] = ['REF']
+-data_input[case] = {}
+-data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
++                             for subcase in subcases[case]}
+ 
+ # CINDY-DYNAMO cases
+ #case = 'CINDY-DYNAMO'
+@@ -218,7 +208,7 @@ data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+ 
+ case = 'DYNAMO'
+ cases.append(case)
+-subcases[case] = ['NSA3A','NSA3A_D1','NSA3A_D30']
++subcases[case] = ['NSA3A', 'NSA3A_D1', 'NSA3A_D30', 'NSA3A_MJO1']
+ data_input[case] = {}
+ for subcase in subcases[case]:
+     data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+@@ -292,7 +282,7 @@ def check(case,subcase):
+ 
+     if not(subcase in subcases[case]):
+         logging.error('subcase {0} is not known for case {1}'.format(subcase,case))
+-        logging.error('known subcases for case {0}:'.format(case), subcases[case])
++        logging.error('known subcases for case {0}: {1}'.format(case, ' '.join(subcases[case])))
+         available(case)
+         raise ValueError
+ 
+diff --git a/ems/install_MUSC.py b/ems/install_MUSC.py
+index af6458a..db6f539 100644
+--- a/ems/install_MUSC.py
++++ b/ems/install_MUSC.py
+@@ -71,11 +71,14 @@ def install_atm(model, case, subcase, filecase,
+                 raise
+ 
+         # Directory for forcings
+-        dirforc = 'files_{0}_{1}s/'.format(vert_grid_name, int(timestep)) if timestep is not None else None
+-        dirforc = os.path.join(rep,dirforc)
+-        if os.path.exists(dirforc):
+-            shutil.rmtree(dirforc)
+-        os.mkdir(dirforc)
++        if lforc_ascii:
++            dirforc = 'files_{0}_{1}s/'.format(vert_grid_name, int(timestep)) if timestep is not None else None
++            dirforc = os.path.join(rep,dirforc)
++            if os.path.exists(dirforc):
++                shutil.rmtree(dirforc)
++            os.mkdir(dirforc)
++        else:
++            dirforc = None
+ 
+         # Directory for diagnostics
+         dirdiags = 'images/'
+@@ -172,17 +175,24 @@ def install_sfx(model, case, subcase, filecase, repout,
+         if os.WEXITSTATUS(result) != 0:
+             raise RuntimeError("Error during PREP execution")
+         for f in ['PGD.des', 'class_cover_data.tex', 'PREP.des']:
+-            os.remove(f)
++            try:
++                os.remove(f)
++            except OSError:
++                pass
++            except:
++                raise
++
+ 
+         t0 = perf(t0, 'Prepare PGD/PREP')
+     else: 
+         logger.info('Nothing is done')
+ 
+     os.chdir(repinit)
+-    logger.info('-'*40)
+ 
+     t0= perf(tinit, 'Total')
+ 
++    logger.info('#'*40)
++
+ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=False,lupdate=False,lrerun=False):
+ 
+     """ Install a MUSC simulation """
+@@ -205,6 +215,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
+         logger.info('Ecoclimap directory: ' + config['ecoclimap'])
+         logger.info('SURFEX PGD/PREP format: ' + config['sfxfmt'])
+     logger.info('Initial Conditions file: ' + config['initfile'])
++    logger.info('rrtm files: {0}'.format(config['rrtm']))
+     if model == 'ARPCLIMAT':
+         logger.info('Atmospheric forcing files: ' + config['forcingfiles'])
+     if config['lsurfex']:
+@@ -229,7 +240,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
+     if not(flagExist):
+         os.makedirs(rep)
+         os.chdir(rep)
+-        os.makedirs('./logs/')
++        os.makedirs('./listings/')
+         os.symlink(filecase,'data_input.nc')
+         os.system('cp ' + config['namATMref'] + ' namATMref')
+         if config['lsurfex']:
+@@ -243,7 +254,8 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
+         # Preparation namelist
+         NSTOP = ems.prep_nam_atm(model, 'data_input.nc',
+                          config['namATMref'], config['TSTEP'],
+-                         namout="namarp_{0}".format(config['name']))
++                         namout="namarp_{0}".format(config['name']),
++                         lsurfex=config['lsurfex'])
+ 
+         t0 = perf(t0, 'Prepare {0} namelist'.format(model))
+ 
+@@ -276,6 +288,8 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
+             if config['lsurfex']:
+                 g.write('NAMSFX=namsfx_' + config['name'] + '\n')
+             g.write('#\n')
++            g.write('RRTM=' + config['rrtm'] + '\n')
++            g.write('#\n')
+             g.write('INITFILE=' + config['initfile'] + '\n')
+             if model == 'ARPCLIMAT':
+                 g.write('FORCING_FILES=' + config['forcingfiles'] + '\n')
+@@ -301,7 +315,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
+             g.write('ln -s param_' + config['name'] + ' param\n')
+             g.write('. ./param\n')
+             g.write('. ./run.sh > run_${CONFIG}.log 2>&1\n')
+-            g.write('mv run_${CONFIG}.log logs/\n')
++            g.write('mv run_${CONFIG}.log listings/\n')
+             g.write('echo log file: logs/run_${CONFIG}.log\n')
+             g.write('date')
+ 
+diff --git a/ems/prep_init_forc_atm_ARPCLIMAT.py b/ems/prep_init_forc_atm_ARPCLIMAT.py
+index c9f1a33..45f11cd 100644
+--- a/ems/prep_init_forc_atm_ARPCLIMAT.py
++++ b/ems/prep_init_forc_atm_ARPCLIMAT.py
+@@ -197,7 +197,7 @@ def prep_init_forc_atm(
+             f.write(floatfmt.format(a) + '\n')
+ 
+     with open(nam1d, 'w') as g:
+-        g.write('&NAM1D')
++        g.write('&NAM1D\n')
+         g.write('  LMAP    = .FALSE.,\n')
+         g.write('  IFLEV   = {0},\n'.format(int(nlev_out)))
+         g.write('  ZDELY   = 250000.,\n')
+diff --git a/ems/prep_init_forc_atm_GMAP.py b/ems/prep_init_forc_atm_GMAP.py
+index a72ffff..b153fd0 100644
+--- a/ems/prep_init_forc_atm_GMAP.py
++++ b/ems/prep_init_forc_atm_GMAP.py
+@@ -219,6 +219,16 @@ def prep_init_forc_atm(
+ 
+     # Computing number of forcing fields
+     nb_f = 0
++
++    # Not yet defined in DEPHY format
++    case.attributes['adv_ua'] = 0
++    case.attributes['adv_va'] = 0
++    if case.attributes['adv_ua'] == 1 or case.attributes['adv_va'] == 1:
++        raise NotImplementedError('U/V advection not yet validated')
++        nb_f += 2
++        for var in ['tnua_adv', 'tnva_adv']:
++            dataout_forc[var] = prep_forcing(var)
++
+     if case.attributes['adv_ta'] == 1 or case.attributes['radiation'] == 'tend':
+         nb_f += 1
+         if case.attributes['adv_ta'] == 1:
+@@ -233,27 +243,31 @@ def prep_init_forc_atm(
+         nb_f += 1
+         dataout_forc['tnqv_adv'] = prep_forcing('tnqv_adv')
+ 
+-#    if case.attributes['adv_ua'] == 1:
+-#        nb_f += 1
+-#        var = 'tnua_adv'
+-#        dataout_forc[var] = prep_forcing(var)          
+-#    if case.attributes['adv_va'] == 1:
+-#        nb_f += 1
+-#        var = 'tnva_adv'
+-#        dataout_forc[var] = prep_forcing(var)        
++    if case.attributes['forc_geo'] == 1:
++        nb_f += 2
++        for var in ['ug','vg']:
++            dataout_forc[var] = prep_forcing(var)
+ 
+-    if case.attributes['forc_wap'] == 1 or case.attributes['forc_wa'] == 1:
++    if case.attributes['forc_wa'] == 1 or case.attributes['forc_wap'] == 1:
+         nb_f += 1
+         if case.attributes['forc_wa'] == 1:
+             dataout_forc['wa'] = prep_forcing('wa')
+         elif case.attributes['forc_wap'] == 1:
+             dataout_forc['wap'] = prep_forcing('wap')
+ 
+-    if case.attributes['forc_geo']:
++    if case.attributes['nudging_ua'] > 0. or case.attributes['nudging_va'] > 0.:
+         nb_f += 2
+-        for var in ['ug','vg']:
++        for var in ['ua_nud','va_nud']:
+             dataout_forc[var] = prep_forcing(var)
+ 
++    if case.attributes['nudging_ta'] > 0.:
++        nb_f += 1
++        dataout_forc['ta_nud'] = prep_forcing('ta_nud')
++
++    if case.attributes['nudging_qv'] > 0.:
++        nb_f += 1
++        dataout_forc['qv_nud'] = prep_forcing('qv_nud')
++
+     # Computing number of surface forcing fields
+     nb_fs = 0
+     if not(lsurfex):
+@@ -355,6 +369,11 @@ def prep_init_forc_atm(
+ 
+         g.write('FORCING\n')
+ 
++        if case.attributes['adv_ua'] == 1:
++            raise NotImplementedError('U/V advection not yet validated')
++            write_forcing_in_nam1d(g, dataout_forc['tnua_adv'].data, 'U ADV', wl=True)
++            write_forcing_in_nam1d(g, dataout_forc['tnva_adv'].data, 'V ADV', wl=True)
++
+         if case.attributes['adv_ta'] == 1:
+             write_forcing_in_nam1d(g, dataout_forc['tnta_adv'].data, 'T ADV', wl=True)
+ 
+@@ -367,6 +386,18 @@ def prep_init_forc_atm(
+ 
+         if case.attributes['forc_wa'] == 1:
+             write_forcing_in_nam1d(g, dataout_forc['wa'].data, 'W', wl=True)
++        elif case.attributes['forc_wap'] == 1:
++            write_forcing_in_nam1d(g, dataout_forc['wap'].data, 'OMEGA', wl=True)
++
++        if case.attributes['nudging_ua'] > 0.:
++            write_forcing_in_nam1d(g, dataout_forc['ua_nud'].data, 'U NUDGING', wl=True)
++            write_forcing_in_nam1d(g, dataout_forc['va_nud'].data, 'V NUDGING', wl=True)
++
++        if case.attributes['nudging_ta'] > 0.:
++            write_forcing_in_nam1d(g, dataout_forc['ta_nud'].data, 'T NUDGING', wl=True)
++
++        if case.attributes['nudging_qv'] > 0.:
++            write_forcing_in_nam1d(g, dataout_forc['qv_nud'].data, 'Qv NUDGING', wl=True)
+ 
+         g.write('SURF.FORC\n') 
+         if not(lsurfex):
+diff --git a/ems/prep_nam_atm_AROME46t1.py b/ems/prep_nam_atm_AROME46t1.py
+index f63887f..be6c4de 100644
+--- a/ems/prep_nam_atm_AROME46t1.py
++++ b/ems/prep_nam_atm_AROME46t1.py
+@@ -50,6 +50,42 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
+                 if obj == '__MBX_SIZE__': nam[namin][param][i] = '2048000000'
+                 if obj == '__LOPT_SCALAR__': nam[namin][param][i] = '.TRUE.'
+                 if obj == '__NCOMBFLEN__': nam[namin][param][i] = '1800000'
++    
++    #Replace some strings by suitable values
++    nam['NAMIO_SERV']['NPROC_IO'] = ['0']
++    for k in ('NPRGPEW', 'NPRGPNS', 'NPROC', 'NPRTRV', 'NPRTRW'):
++        nam['NAMPAR0'][k] = ['1']
++    nam['NAMPAR1']['NSTROUT'] = ['1']
++    
++    #Deactivate SLHD and COMAD
++    for k in ('LSLHD_GFL', 'LSLHD_SPD', 'LSLHD_SVD', 'LSLHD_T', 'LSLHD_W',
++              'LCOMADH', 'LCOMADV', 'LCOMAD_GFL', 'LCOMAD_SP', 'LCOMAD_SPD',
++              'LCOMAD_SVD', 'LCOMAD_T', 'LCOMAD_W'):
++        nam['NAMDYNA'][k] = ['.FALSE.']
++    for k in nam['NAMGFL'].keys():
++        if k.endswith('%LSLHD') or k.endswith('%LCOMAD'):
++            nam['NAMGFL'][k] = ['.FALSE.']
++
++    #Deactivate predictor-corrector
++    nam['NAMDYNA']['LPC_CHEAP'] = ['.FALSE.']
++    nam['NAMDYNA']['LPC_FULL'] = ['.FALSE.']
++    nam['NAMDYN']['NSITER'] = ['0']
++
++    #Deactivate NH dyn
++    nam['NAMCT0']['LNHEE'] = ['.FALSE.'] #because required input fields are absent
++    
++    #Deactivate MPI
++    nam['NAMPAR0']['LMPOFF'] = ['.TRUE.']
++    
++    #Deactivate spectral nudging
++    nam['NEMELBC0A']['LESPCPL'] = ['FALSE']
++
++    #Other mod
++    for k in nam['NAMPAR1'].keys():
++        if k.replace(' ', '') == 'NDISTIO(12)':
++            del nam['NAMPAR1'][k] #gfortran does not like this option (info from P. Marguinaud)
++    for k in ('LADVF', 'LIMPF', 'LQMPD', 'LQMT', 'LQMVD'):
++        nam['NAMDYN'][k] = ['.FALSE.']
+ 
+     # Aerosols and Ozone
+     nam['NAMPHY']['LAEROSEA'] = ['.FALSE.']
+@@ -200,10 +236,21 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
+     else:  
+         dt = timein.data[1]-timein.data[0]
+ 
+-    for param in ['LGEOST_UV_FRC', 'LQV_ADV_FRC', 'LT_ADV_FRC']:
++    for param in ['LGEOST_UV_FRC', 'LQV_ADV_FRC', 'LT_ADV_FRC', 'LUV_ADV_FRC',
++                  'LSW_FRC', 'LSOMEGA_FRC',
++                  'LUV_NUDG', 'LT_NUDG', 'LQV_NUDG']:
+         nam[nn][param] = ['.FALSE.']
+     nam[nn]['LMUSCLFA'] = ['.TRUE.']
+ 
++    # Important: the following must in the same order as in prep_init_forc_atm 
++    # (consistently with nam1D)
++
++    if attributes['adv_ua'] == 1 or attributes['adv_va'] == 1:
++        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
++        nam[nn]['LUV_ADV_FRC'] = ['.TRUE.']
++        logger.error('ERROR: Case not yet coded for adv_ua/adv_va = 1')
++        raise NotImplementedError('U/V advection not yet validated')
++
+     if attributes['adv_ta'] == 1 or attributes['radiation'] == 'tend':
+         nam['NAMCT0']['LSFORC'] = ['.TRUE.']
+         nam[nn]['LT_ADV_FRC'] = ['.TRUE.']
+@@ -222,30 +269,17 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
+         for it in range(0, nt_f):
+             nam[nn]['NL_QV_ADV_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
+ 
+-    if attributes['adv_ua'] == 1 or attributes['adv_va'] == 1:
+-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
+-        nam[nn]['LUV_ADV_FRC'] = ['.TRUE.']
+-        logger.error('ERROR: Case not yet coded for adv_ua/adv_va = 1')
+-        raise ValueError
+-
+-    if attributes['forc_wap'] == 1:
+-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
+-        nam[nn]['LSOMEGA_FRC'] = ['.TRUE.']
+-        logger.error('ERROR: Case not yet coded for forc_wap = 1')
+-        raise ValueError
+-
+-    if attributes['forc_wa'] == 1:
+-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
+-        nam[nn]['LSW_FRC'] = ['TRUE']
+-        logger.error('ERROR: Case not yet coded for forc_wa = 1')
+-        raise ValueError
++    if attributes['surface_forcing_wind'] == 'z0':
++        if not(lsurfex):
++            nam[nn]['RZ0_FORC'] = [str(case.variables['z0'].data[0])]
+ 
+     if attributes['forc_geo'] == 1:
+         nam['NAMCT0']['LSFORC']=['.TRUE.']
+         nam[nn]['LGEOST_UV_FRC'] = ['.TRUE.']
+         W = 7.2921e-5
+         nam['NAMLSFORC']['RCORIO_FORC'] = [str(2. * W * math.sin(lat * math.pi / 180))]
+-        nam[nn]['RZ0_FORC'] = ['0.035']
++        if not(lsurfex):
++            nam[nn]['RZ0_FORC'] = [str(case.variables['z0'].data[0])] # Useful ?
+         nam[nn]['NGEOST_U_DEB'] = [str(1 + nt_f * i)]
+         nam[nn]['NGEOST_U_NUM'] = [str(nt_f)]
+         i += 1
+@@ -255,29 +289,64 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
+         for it in range(nt_f):
+             nam[nn]['NL_GEOST_UV_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
+ 
++    if attributes['forc_wa'] == 1:
++        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
++        nam[nn]['LSW_FRC'] = ['TRUE']
++        nam[nn]['NLSW_DEB'] = [str(1 + i * nt_f)]
++        nam[nn]['NLSW_NUM'] = [str(nt_f)]
++        i += 1
++        for it in range(0, nt_f):
++            nam[nn]['NL_LSW_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
++
++    elif attributes['forc_wap'] == 1:
++        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
++        nam[nn]['LSOMEGA_FRC'] = ['.TRUE.']
++        nam[nn]['NLSOMEGA_DEB'] = [str(1 + i * nt_f)]
++        nam[nn]['NLSOMEGA_NUM'] = [str(nt_f)]
++        i += 1
++        for it in range(0, nt_f):
++            nam[nn]['NL_LSOMEGA_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
++
+     if attributes['nudging_ua'] > 0. or attributes['nudging_va'] > 0.:
+         nam['NAMCT0']['LSFORC'] = ['.TRUE.']
+         nam[nn]['LUV_NUDG'] = ['.TRUE.']
++        nam[nn]['NU_NUDG_DEB'] = [str(1 + i * nt_f)]
++        nam[nn]['NUV_NUDG_NUM'] = [str(nt_f)]
++        i += 1
++        nam[nn]['NV_NUDG_DEB'] = [str(1 + i * nt_f)]
++        i += 1
++        for it in range(nt_f):
++            nam[nn]['NL_UV_NUDG_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
++
+         nam[nn]['RELAX_TAUU'] = [str(float(attributes['nudging_ua']))]
+         nam['NAMTOPH']['ETRELAXU'] = [str(float(attributes['pa_nudging_ua']))]
+-        logger.error('ERROR: Case not yet coded for nudging_ua/va > 0')
+-        raise ValueError
++        logger.warning('Nudging not yet fully validated')
+ 
+     if attributes['nudging_ta'] > 0.:
+         nam['NAMCT0']['LSFORC'] = ['.TRUE.']
+         nam[nn]['LT_NUDG'] = ['.TRUE.']
++        nam[nn]['NT_NUDG_DEB'] = [str(1 + i * nt_f)]
++        nam[nn]['NT_NUDG_NUM'] = [str(nt_f)]
++        i += 1
++        for it in range(nt_f):
++            nam[nn]['NL_T_NUDG_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
++
+         nam[nn]['RELAX_TAUT'] = [str(float(attributes['nudging_ta']))]
+         nam['NAMTOPH']['ETRELAXT'] = [str(float(attributes['pa_nudging_ta']))]
+-        logger.error('ERROR: Case not yet coded for nudging_ta > 0')
+-        raise ValueError
++        logger.warning('Nudging not yet fully validated')
+ 
+     if attributes['nudging_qv'] > 0. :
+         nam['NAMCT0']['LSFORC'] = ['.TRUE.']
+         nam[nn]['LQV_NUDG'] = ['.TRUE.']
++        nam[nn]['NQV_NUDG_DEB'] = [str(1 + i * nt_f)]
++        nam[nn]['NQV_NUDG_NUM'] = [str(nt_f)]
++        i += 1
++        for it in range(nt_f):
++            nam[nn]['NL_QV_NUDG_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
++
+         nam[nn]['RELAX_TAUQ'] = [str(float(attributes['nudging_qv']))]
+         nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['pa_nudging_qv']))]
+-        logger.error('ERROR: Case not yet coded for nudging_qv > 0')
+-        raise ValueError
++        logger.warning('Nudging not yet fully validated')
+ 
+     nam['NAMGFL']['NGFL_FORC'] = [str(int(nt_f * i))]
+ 
+@@ -297,6 +366,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
+             for it in range(nt_f):
+                nam[nn]['NL_SH_ADV_TIME(   ' + str(int(it + 1)) + " )"] = [str(int(dt * it))]
+                nam[nn]['NL_LH_ADV_TIME(   ' + str(int(it + 1)) + " )"] = [str(int(dt * it))]
++            nam['NAMPHYDS']['NSFORC'] = [str(int((j + 1) * nt_f))]
+ 
+ 
+ 
+diff --git a/ems/prep_nam_sfx.py b/ems/prep_nam_sfx.py
+index 126785a..e38b472 100644
+--- a/ems/prep_nam_sfx.py
++++ b/ems/prep_nam_sfx.py
+@@ -55,9 +55,13 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
+ 
+     # Surface type
+     nn='NAM_PGD_SCHEMES'
++    if not nn in nam:
++        nam[nn] = {}
+     for tt in ['CNATURE', 'CSEA', 'CTOWN', 'CWATER']:
+         nam[nn][tt] = ["'NONE'"]
+     nn='NAM_FRAC'
++    if nn not in nam:
++        nam[nn] = {}
+     nam[nn]['LECOCLIMAP'] = ['F']
+     for tt in ['NATURE', 'SEA', 'TOWN', 'WATER']:
+         nam[nn]['XUNIF_' + tt] = ['0.']
+@@ -70,6 +74,8 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
+ 
+     # NAM_IO_OFFLINE
+     nn = 'NAM_IO_OFFLINE'
++    if not nn in nam:
++        nam[nn] = {}
+     if sfxfmt == 'FA':
+         nam[nn]['LFAGMAP'] = ['T']
+         nam[nn]['CSURF_FILETYPE'] = ["'FA   '"]
+diff --git a/ems/scripts/run_AROME46t1.sh b/ems/scripts/run_AROME46t1.sh
+index cc88ffc..81b804a 100755
+--- a/ems/scripts/run_AROME46t1.sh
++++ b/ems/scripts/run_AROME46t1.sh
+@@ -3,7 +3,7 @@
+ #------------------------------------------------------------
+ # 			INTIALISATION
+ #------------------------------------------------------------
+-set -x
++set -ex
+ 
+ export OMP_NUM_THREADS=1
+ 
+@@ -13,7 +13,6 @@ export DR_HOOK=0
+ . ./param
+ 
+ EXP=ARPE
+-ADVEC=sli
+ 
+ #       *************************************
+ #       * Directories Initialisation        *
+@@ -21,6 +20,11 @@ ADVEC=sli
+ 
+ DIR=`pwd`
+ 
++LISTINGDIR=$DIR/listings
++if [ ! -d $LISTINGDIR ] ; then
++  mkdir -p $LISTINGDIR
++fi
++
+ OUTPUTDIR=$DIR/Output/LFA/
+ OUTPUTDIR0=$DIR/Output/
+ 
+@@ -29,15 +33,10 @@ if [ ! -d $OUTPUTDIR ] ; then
+ fi
+ 
+ TMPDIR=$HOME/tmp/EXEMUSC
+-
+-if [ ! -d $TMPDIR ] ; then
+-  mkdir -p $TMPDIR
+-else
+-  find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
+-fi
++[ -d $TMPDIR ] && rm -rf $TMPDIR
++mkdir -p $TMPDIR
+ 
+ cd $TMPDIR
+-rm -rf $TMPDIR/* || :
+ 
+ ladate=`date`
+ set +x
+@@ -67,15 +66,16 @@ set -x
+ ln -s $DIR/$NAMARP fort.4
+ cat < fort.4
+ 
+-set +x
+-echo ''
+-echo ' Get the namelist SURFEX'
+-echo ''
+-set -x
+-
+-ln -s $DIR/$NAMSFX EXSEG1.nam
+-cat < EXSEG1.nam
++if [ -v NAMSFX ]; then
++  set +x
++  echo ''
++  echo ' Get the namelist SURFEX'
++  echo ''
++  set -x
+ 
++  ln -s $DIR/$NAMSFX EXSEG1.nam
++  cat < EXSEG1.nam
++fi
+ 
+ #       **********************************
+ #       * Get initial and forcing files  *
+@@ -90,11 +90,17 @@ set -x
+ 
+ 
+ ln -s $INITFILE ICMSH${EXP}INIT
+-ln -s $FORCING_FILES files
+ 
+-ln -s  $PREP TEST.lfi
+-ln -s  $PGD PGD.lfi
++[ -v PREP ] && ln -s  $PREP ICMSH${EXP}INIT.sfx
++[ -v PGD ] && ln -s  $PGD Const.Clim.sfx
++
++
++#       **********************************
++#       *            For RRTM            *
++#       **********************************
+ 
++ln -s $RRTM rrtm.tgz
++tar xf rrtm.tgz
+ 
+ #       **********************************
+ #       *            For SURFEX          *
+@@ -138,7 +144,7 @@ echo ' Listing for the not parallelised part: file lola'
+ echo ''
+ set -x
+ 
+-cat lola
++#cat lola
+ 
+ if [ -a NODE.001_01 ]
+ then
+@@ -149,7 +155,7 @@ then
+     echo ' Listing for the parallelised part: file' $file
+     echo ''
+     set -x
+-    cat $file
++    #cat $file
+   done
+ fi
+ 
+@@ -166,8 +172,8 @@ set -x
+ find $OUTPUTDIR/ -name '*' -exec rm -f {} \;
+ find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
+ #find ./ -name 'out*.txt' -exec mv {} $OUTPUTDIR \;
+-find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
+-find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
++find ./ -name 'NODE*' -exec mv {} $LISTINGDIR \;
++find ./ -name 'lola' -exec mv {} $LISTINGDIR \;
+ 
+ set +x
+ echo ''
+@@ -189,8 +195,8 @@ echo ''
+ set -x
+ 
+ set +x
+-#rm -rf $TMPDIR/*
+-find $TMPDIR/ -name '*' -exec rm -rf {} \;
++rm -rf $TMPDIR
++#find $TMPDIR/ -name '*' -exec rm -rf {} \;
+ set -x
+ #       ********************************************
+ #       * Copie eventuelle des routines convert2nc *
+@@ -233,7 +239,7 @@ then
+ 
+   # seems necessary in some circumstances (deep shells?)
+   unset PYTHONHOME
+-  ./convertLFA2nc.py -format $lfaformat
++  ./convertLFA2nc.py
+ 
+ fi
+ 
+diff --git a/ems/scripts/run_ARPCLIMAT.sh b/ems/scripts/run_ARPCLIMAT.sh
+index 9f77945..82b374d 100755
+--- a/ems/scripts/run_ARPCLIMAT.sh
++++ b/ems/scripts/run_ARPCLIMAT.sh
+@@ -3,7 +3,7 @@
+ #------------------------------------------------------------
+ # 			INTIALISATION
+ #------------------------------------------------------------
+-set -x
++set -ex
+ 
+ export OMP_NUM_THREADS=1
+ 
+@@ -21,6 +21,11 @@ ADVEC=sli
+ 
+ DIR=`pwd`
+ 
++LISTINGDIR=$DIR/listings
++if [ ! -d $LISTINGDIR ] ; then
++  mkdir -p $LISTINGDIR
++fi
++
+ OUTPUTDIR=$DIR/Output/LFA/
+ OUTPUTDIR0=$DIR/Output/
+ 
+@@ -29,15 +34,10 @@ if [ ! -d $OUTPUTDIR ] ; then
+ fi
+ 
+ TMPDIR=$HOME/tmp/EXEMUSC
+-
+-if [ ! -d $TMPDIR ] ; then
+-  mkdir -p $TMPDIR
+-else
+-  find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
+-fi
++[ -d $TMPDIR ] && rm -rf $TMPDIR
++mkdir -p $TMPDIR
+ 
+ cd $TMPDIR
+-rm -rf $TMPDIR/* || :
+ 
+ ladate=`date`
+ set +x
+@@ -67,15 +67,16 @@ set -x
+ ln -s $DIR/$NAMARP fort.4
+ cat < fort.4
+ 
+-set +x
+-echo ''
+-echo ' Get the namelist SURFEX'
+-echo ''
+-set -x
+-
+-ln -s $DIR/$NAMSFX EXSEG1.nam
+-cat < EXSEG1.nam
++if [ -v NAMSFX ]; then
++  set +x
++  echo ''
++  echo ' Get the namelist SURFEX'
++  echo ''
++  set -x
+ 
++  ln -s $DIR/$NAMSFX EXSEG1.nam
++  cat < EXSEG1.nam
++fi
+ 
+ #       **********************************
+ #       * Get initial and forcing files  *
+@@ -92,8 +93,8 @@ set -x
+ ln -s $INITFILE ICMSH${EXP}INIT
+ ln -s $FORCING_FILES files
+ 
+-ln -s  $PREP TEST.lfi
+-ln -s  $PGD PGD.lfi
++[ -v PREP ] && ln -s  $PREP TEST.lfi
++[ -v PGD ] && ln -s  $PGD PGD.lfi
+ 
+ 
+ #       **********************************
+@@ -123,6 +124,10 @@ echo ' ALADIN job running '
+ echo ''
+ set -x
+ 
++ulimit -s unlimited
++
++unset LD_LIBRARY_PATH
++
+ date
+ ./MASTER -c001 -vmeteo -maladin -e${EXP} -t$TSTEP -f$NSTOP -a$ADVEC  >lola 2>&1
+ date
+@@ -134,7 +139,7 @@ echo ' Listing for the not parallelised part: file lola'
+ echo ''
+ set -x
+ 
+-cat lola
++#cat lola
+ 
+ if [ -a NODE.001_01 ]
+ then
+@@ -145,7 +150,7 @@ then
+     echo ' Listing for the parallelised part: file' $file
+     echo ''
+     set -x
+-    cat $file
++    #cat $file
+   done
+ fi
+ 
+@@ -162,8 +167,8 @@ set -x
+ find $OUTPUTDIR/ -name '*' -exec rm -f {} \;
+ find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
+ #find ./ -name 'out*.txt' -exec mv {} $OUTPUTDIR \;
+-find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
+-find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
++find ./ -name 'NODE*' -exec mv {} $LISTINGDIR \;
++find ./ -name 'lola' -exec mv {} $LISTINGDIR \;
+ 
+ set +x
+ echo ''
+@@ -185,8 +190,8 @@ echo ''
+ set -x
+ 
+ set +x
+-#rm -rf $TMPDIR/*
+-find $TMPDIR/ -name '*' -exec rm -rf {} \;
++rm -rf $TMPDIR
++#find $TMPDIR/ -name '*' -exec rm -rf {} \;
+ set -x
+ #       ********************************************
+ #       * Copie eventuelle des routines convert2nc *
+@@ -229,7 +234,7 @@ then
+ 
+   # seems necessary in some circumstances (deep shells?)
+   unset PYTHONHOME
+-  ./convertLFA2nc.py 
++  ./convertLFA2nc.py
+ 
+ fi
+ 
+diff --git a/Examples/config/config_46t1_AROME_OPER.py b/examples/config/config_46t1_AROME_OPER.py
+similarity index 77%
+rename from Examples/config/config_46t1_AROME_OPER.py
+rename to examples/config/config_46t1_AROME_OPER.py
+index dbae4af..1c43398 100644
+--- a/Examples/config/config_46t1_AROME_OPER.py
++++ b/examples/config/config_46t1_AROME_OPER.py
+@@ -2,7 +2,7 @@
+ # -*- coding:UTF-8 -*-
+ 
+ import os
+-REP_MUSC = '/Users/romainroehrig/MUSC/riette'
++REP_MUSC = '/home/roehrig/MUSC/riette'
+ 
+ ############# Begin editing
+ 
+@@ -11,8 +11,8 @@ GROUP = '46t1'
+ EXPID = __name__[7:]
+ 
+ # Binaries
+-MASTER = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/MASTERODB'
+-ASCII2FA = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/ASCII2FA'
++MASTER = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/MASTERODB'
++ASCII2FA = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.muxc/bin/ASCII2FA'
+ 
+ # Namelists
+ ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/namarp_46t1_AROME_OPER')
+@@ -29,6 +29,7 @@ caseDependent = True
+ 
+ # EMS configuration
+ model = 'AROME46t1'
++lforc_ascii = False
+ lsurfex = False
+ loverwrite = True
+ lupdate_ATM = True 
+diff --git a/examples/config/config_46t1_AROME_SFX.py b/examples/config/config_46t1_AROME_SFX.py
+new file mode 100644
+index 0000000..47e4bf8
+--- /dev/null
++++ b/examples/config/config_46t1_AROME_SFX.py
+@@ -0,0 +1,45 @@
++#!/usr/bin/env python
++# -*- coding:UTF-8 -*-
++
++import os
++REP_MUSC = '/home/roehrig/MUSC/riette'
++
++############# Begin editing
++
++GROUP = '46t1'
++# EXPID will be taken from this file name following the convention config_EXPID.py (__name__ = config_EXPID) 
++EXPID = __name__[7:]
++
++# Binaries
++MASTER = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/MASTERODB'
++PGD = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/PGD'
++PREP = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/PREP'
++ASCII2FA = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/ASCII2FA'
++
++# Namelists
++ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/namarp_46t1_AROME_OPER')
++SFXNAM = os.path.join(REP_MUSC, 'namelist/SURFEX/nam.sfx.46t1.test')
++
++# Model configuration
++vert_grid = os.path.join(REP_MUSC, 'grid/L60_AROME.dta')
++timestep = 50
++
++# Postprocessing
++dirpost = os.path.join(REP_MUSC,'post')
++variablesDict = 'variables.py'
++defaultConfigPost = 'config_default.py'
++caseDependent = True
++
++# EMS configuration
++model = 'AROME46t1'
++lforc_ascii = False
++lsurfex = True
++sfxfmt = 'FA'
++loverwrite = True
++lupdate_ATM = True 
++lupdate_RUN = True
++
++# ecoclimap data
++#ecoclimap
++
++############# End editing
+diff --git a/examples/config/config_46t1op1_AROME_OPER.py b/examples/config/config_46t1op1_AROME_OPER.py
+new file mode 100644
+index 0000000..6fc7f6c
+--- /dev/null
++++ b/examples/config/config_46t1op1_AROME_OPER.py
+@@ -0,0 +1,41 @@
++#!/usr/bin/env python
++# -*- coding:UTF-8 -*-
++
++import os
++REP_MUSC = '/home/roehrig/MUSC/riette'
++
++############# Begin editing
++
++GROUP = '46t1_op1.01'
++# EXPID will be taken from this file name following the convention config_EXPID.py (__name__ = config_EXPID) 
++EXPID = __name__[7:]
++
++# Binaries
++MASTER = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin/MASTERODB'
++ASCII2FA = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.muxc/bin/ASCII2FA'
++
++# Namelists
++ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/al46t1_arome-op1.01.nam-namel_previ_dyn_prod')
++
++# Model configuration
++vert_grid = os.path.join(REP_MUSC, 'grid/L90_AROME.dta')
++timestep = 50
++
++# Postprocessing
++dirpost = os.path.join(REP_MUSC,'post')
++variablesDict = 'variables.py'
++defaultConfigPost = 'config_default.py'
++caseDependent = True
++
++# EMS configuration
++model = 'AROME46t1'
++lforc_ascii = False
++lsurfex = False
++loverwrite = True
++lupdate_ATM = True 
++lupdate_RUN = True
++
++# ecoclimap data
++#ecoclimap
++
++############# End editing
+diff --git a/examples/config/config_46t1op1_AROME_SFX.py b/examples/config/config_46t1op1_AROME_SFX.py
+new file mode 100644
+index 0000000..47fd1c8
+--- /dev/null
++++ b/examples/config/config_46t1op1_AROME_SFX.py
+@@ -0,0 +1,46 @@
++#!/usr/bin/env python
++# -*- coding:UTF-8 -*-
++
++import os
++REP_MUSC = '/home/roehrig/MUSC/riette'
++
++############# Begin editing
++
++GROUP = '46t1_op1.01'
++# EXPID will be taken from this file name following the convention config_EXPID.py (__name__ = config_EXPID) 
++EXPID = __name__[7:]
++
++# Binaries
++MASTER = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin/MASTERODB'
++PGD = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin/PGD'
++PREP = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin/PREP'
++ASCII2FA = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin/ASCII2FA'
++
++# Namelists
++ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/al46t1_arome-op1.01.nam-namel_previ_dyn_prod')
++SFXNAM_prep = os.path.join(REP_MUSC, 'namelist/SURFEX/al46t1_arome-op1.01.nam-namel_prep')
++SFXNAM_run = os.path.join(REP_MUSC, 'namelist/SURFEX/al46t1_arome-op1.01.nam-namel_previ_surfex_prod')
++
++# Model configuration
++vert_grid = os.path.join(REP_MUSC, 'grid/L90_AROME.dta')
++timestep = 50
++
++# Postprocessing
++dirpost = os.path.join(REP_MUSC,'post')
++variablesDict = 'variables.py'
++defaultConfigPost = 'config_default.py'
++caseDependent = True
++
++# EMS configuration
++model = 'AROME46t1'
++lforc_ascii = False
++lsurfex = True
++sfxfmt = 'FA'
++loverwrite = True
++lupdate_ATM = True 
++lupdate_RUN = True
++
++# ecoclimap data
++#ecoclimap
++
++############# End editing
+diff --git a/Examples/config/config_arp631_CMIP6.py b/examples/config/config_arp631_CMIP6.py
+similarity index 71%
+rename from Examples/config/config_arp631_CMIP6.py
+rename to examples/config/config_arp631_CMIP6.py
+index 5a92e29..868f69d 100644
+--- a/Examples/config/config_arp631_CMIP6.py
++++ b/examples/config/config_arp631_CMIP6.py
+@@ -2,7 +2,7 @@
+ # -*- coding:UTF-8 -*-
+ 
+ import os
+-REP_MUSC = '/Users/romainroehrig/MUSC/riette'
++REP_MUSC = '/home/roehrig/MUSC/riette'
+ 
+ ############# Begin editing
+ 
+@@ -11,10 +11,10 @@ GROUP = 'V631'
+ EXPID = __name__[7:]
+ 
+ # Binaries
+-MASTER = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin//MASTERODB'
+-PGD = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PGD'
+-PREP = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PREP'
+-#ASCII2FA
++MASTER = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/MASTER'
++PGD = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PGD'
++PREP = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PREP'
++ASCII2FA = '/home/roehrig/pack/arp603_export.01.GFORTRAN610.cx.ascii2fa/bin/ASCII2FA'
+ 
+ # Namelists
+ ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631')
+diff --git a/Examples/grid/L105.dta b/examples/grid/L105.dta
+similarity index 100%
+rename from Examples/grid/L105.dta
+rename to examples/grid/L105.dta
+diff --git a/Examples/grid/L114.dta b/examples/grid/L114.dta
+similarity index 100%
+rename from Examples/grid/L114.dta
+rename to examples/grid/L114.dta
+diff --git a/Examples/grid/L137.dta b/examples/grid/L137.dta
+similarity index 100%
+rename from Examples/grid/L137.dta
+rename to examples/grid/L137.dta
+diff --git a/Examples/grid/L137_CEP.dta b/examples/grid/L137_CEP.dta
+similarity index 100%
+rename from Examples/grid/L137_CEP.dta
+rename to examples/grid/L137_CEP.dta
+diff --git a/Examples/grid/L160.dta b/examples/grid/L160.dta
+similarity index 100%
+rename from Examples/grid/L160.dta
+rename to examples/grid/L160.dta
+diff --git a/Examples/grid/L183.dta b/examples/grid/L183.dta
+similarity index 100%
+rename from Examples/grid/L183.dta
+rename to examples/grid/L183.dta
+diff --git a/Examples/grid/L191.dta b/examples/grid/L191.dta
+similarity index 100%
+rename from Examples/grid/L191.dta
+rename to examples/grid/L191.dta
+diff --git a/Examples/grid/L233.dta b/examples/grid/L233.dta
+similarity index 100%
+rename from Examples/grid/L233.dta
+rename to examples/grid/L233.dta
+diff --git a/Examples/grid/L31.dta b/examples/grid/L31.dta
+similarity index 100%
+rename from Examples/grid/L31.dta
+rename to examples/grid/L31.dta
+diff --git a/Examples/grid/L344.dta b/examples/grid/L344.dta
+similarity index 100%
+rename from Examples/grid/L344.dta
+rename to examples/grid/L344.dta
+diff --git a/Examples/grid/L346.dta b/examples/grid/L346.dta
+similarity index 100%
+rename from Examples/grid/L346.dta
+rename to examples/grid/L346.dta
+diff --git a/Examples/grid/L60_AROME.dta b/examples/grid/L60_AROME.dta
+similarity index 100%
+rename from Examples/grid/L60_AROME.dta
+rename to examples/grid/L60_AROME.dta
+diff --git a/examples/grid/L90_AROME.dta b/examples/grid/L90_AROME.dta
+new file mode 100644
+index 0000000..6a366d9
+--- /dev/null
++++ b/examples/grid/L90_AROME.dta
+@@ -0,0 +1,91 @@
++    0.0000000000  0.0000000000
++ 2718.2818290000  0.0000000000
++ 3747.0892910000  0.0000000000
++ 4915.5871600000  0.0000000000
++ 6184.6294560000  0.0000000000
++ 7511.8265670000  0.0000000000
++ 8869.1013440000  0.0000000000
++10030.3043560000  0.0020808742
++10981.6528560000  0.0063342307
++11785.4413590000  0.0121732181
++12467.1153880000  0.0193986154
++13036.9966000000  0.0278371306
++13504.5349740000  0.0373529653
++13878.6389420000  0.0478429390
++14167.4677320000  0.0592352126
++14378.1647930000  0.0714873482
++14516.6247470000  0.0845746582
++14587.3583450000  0.0983741718
++14595.7553130000  0.1128383503
++14546.6965210000  0.1279315334
++14444.6133140000  0.1436185400
++14293.6730220000  0.1598595007
++14097.9873450000  0.1766044735
++13861.8304060000  0.1937879788
++13589.8532570000  0.2113235966
++13287.2816080000  0.2290987842
++12960.0838710000  0.2469701004
++12612.2517100000  0.2649022016
++12247.2876750000  0.2828675957
++11868.2458400000  0.3008456607
++11477.7789000000  0.3188216081
++11078.1887460000  0.3367854211
++10671.4781830000  0.3547307961
++10259.4019040000  0.3726541060
++ 9843.5153630000  0.3905533994
++ 9425.2204620000  0.4084274461
++ 9005.8073000000  0.4262748343
++ 8586.4913970000  0.4440931265
++ 8168.6955890000  0.4618674416
++ 7753.7606470000  0.4795830255
++ 7342.9546090000  0.4972249800
++ 6937.4805800000  0.5147780123
++ 6538.4830210000  0.5322262004
++ 6147.0524250000  0.5495527773
++ 5764.2283470000  0.5667399335
++ 5391.0007880000  0.5837686388
++ 5028.3099840000  0.6006184839
++ 4677.0446800000  0.6172675404
++ 4338.0390100000  0.6336922407
++ 4012.0682330000  0.6498672716
++ 3699.8432820000  0.6657654933
++ 3402.0047480000  0.6813578657
++ 3119.0076290000  0.6966193450
++ 2851.1412390000  0.7115283190
++ 2598.5376270000  0.7260667007
++ 2361.1821860000  0.7402199922
++ 2138.9260370000  0.7539773233
++ 1931.4997830000  0.7673314668
++ 1738.5282160000  0.7802788340
++ 1559.5456110000  0.7928194542
++ 1394.0112400000  0.8049569410
++ 1241.3248900000  0.8166984434
++ 1100.8419120000  0.8280546004
++  971.8879120000  0.8390394770
++  853.7727000000  0.8496705050
++  746.1065110000  0.8599386316
++  648.4462930000  0.8698369440
++  560.3052390000  0.8793606592
++  481.1622820000  0.8885071083
++  410.4713790000  0.8972757162
++  347.6704450000  0.9056679778
++  292.1898110000  0.9136874321
++  243.4600980000  0.9213396338
++  200.9194210000  0.9286321259
++  164.0198800000  0.9355744104
++  132.2332700000  0.9421779224
++  105.0560500000  0.9484559990
++   82.0134960000  0.9544238611
++   62.7448320000  0.9600729770
++   46.8857140000  0.9653949126
++   34.0715140000  0.9703813221
++   23.9407390000  0.9750239392
++   16.1385370000  0.9793145669
++   10.3203020000  0.9832450676
++    6.1553360000  0.9868073535
++    3.3305760000  0.9899933762
++    1.5543470000  0.9927951169
++    0.5601300000  0.9952045769
++    0.1103280000  0.9972137692
++    0.0000000000  0.9988147073
++    0.0000000000  1.0000000000
+diff --git a/Examples/grid/L91.dta b/examples/grid/L91.dta
+similarity index 100%
+rename from Examples/grid/L91.dta
+rename to examples/grid/L91.dta
+diff --git a/Examples/grid/L98.dta b/examples/grid/L98.dta
+similarity index 100%
+rename from Examples/grid/L98.dta
+rename to examples/grid/L98.dta
+diff --git a/Examples/grid/grille_AYOTTE.txt b/examples/grid/grille_AYOTTE.txt
+similarity index 100%
+rename from Examples/grid/grille_AYOTTE.txt
+rename to examples/grid/grille_AYOTTE.txt
+diff --git a/Examples/grid/nam1D_TOGA1_l137 b/examples/grid/nam1D_TOGA1_l137
+similarity index 100%
+rename from Examples/grid/nam1D_TOGA1_l137
+rename to examples/grid/nam1D_TOGA1_l137
+diff --git a/Examples/grid/prep_L137.py b/examples/grid/prep_L137.py
+similarity index 100%
+rename from Examples/grid/prep_L137.py
+rename to examples/grid/prep_L137.py
+diff --git a/Examples/grid/prep_grille_AYOTTE.py b/examples/grid/prep_grille_AYOTTE.py
+similarity index 100%
+rename from Examples/grid/prep_grille_AYOTTE.py
+rename to examples/grid/prep_grille_AYOTTE.py
+diff --git a/Examples/grid/prep_grille_GABLS4.py b/examples/grid/prep_grille_GABLS4.py
+similarity index 100%
+rename from Examples/grid/prep_grille_GABLS4.py
+rename to examples/grid/prep_grille_GABLS4.py
+diff --git a/Examples/grid/prep_grille_GABLS4_v2.py b/examples/grid/prep_grille_GABLS4_v2.py
+similarity index 100%
+rename from Examples/grid/prep_grille_GABLS4_v2.py
+rename to examples/grid/prep_grille_GABLS4_v2.py
+diff --git a/Examples/grid/prep_grille_GABLS4_v3.py b/examples/grid/prep_grille_GABLS4_v3.py
+similarity index 100%
+rename from Examples/grid/prep_grille_GABLS4_v3.py
+rename to examples/grid/prep_grille_GABLS4_v3.py
+diff --git a/Examples/grid/prep_grille_gen.py b/examples/grid/prep_grille_gen.py
+similarity index 100%
+rename from Examples/grid/prep_grille_gen.py
+rename to examples/grid/prep_grille_gen.py
+diff --git a/Examples/grid/test/L114.dta b/examples/grid/test/L114.dta
+similarity index 100%
+rename from Examples/grid/test/L114.dta
+rename to examples/grid/test/L114.dta
+diff --git a/Examples/grid/test/L137.dta b/examples/grid/test/L137.dta
+similarity index 100%
+rename from Examples/grid/test/L137.dta
+rename to examples/grid/test/L137.dta
+diff --git a/Examples/grid/test/L160.dta b/examples/grid/test/L160.dta
+similarity index 100%
+rename from Examples/grid/test/L160.dta
+rename to examples/grid/test/L160.dta
+diff --git a/Examples/grid/test/L183.dta b/examples/grid/test/L183.dta
+similarity index 100%
+rename from Examples/grid/test/L183.dta
+rename to examples/grid/test/L183.dta
+diff --git a/examples/namelist/AROME/al46t1_arome-op1.01.nam-namel_previ_dyn_prod b/examples/namelist/AROME/al46t1_arome-op1.01.nam-namel_previ_dyn_prod
+new file mode 100644
+index 0000000..32305a5
+--- /dev/null
++++ b/examples/namelist/AROME/al46t1_arome-op1.01.nam-namel_previ_dyn_prod
+@@ -0,0 +1,1110 @@
++ &NACIETEO
++ /
++ &NACOBS
++ /
++ &NACTAN
++ /
++ &NACTEX
++ /
++ &NACVEG
++ /
++ &NADOCK
++ /
++ &NAEAEM7
++ /
++ &NAEAER
++ /
++ &NAECOAPHY
++ /
++ &NAEPHLI
++ /
++ &NAEPHY
++ /
++ &NAERAD
++   LRRTM=.TRUE.,
++   LSRTM=.FALSE.,
++   NAER=1,
++   NICEOPT=3,
++   NLIQOPT=3,
++   NOVLP=6,
++   NOZOCL=2,
++   NRADFR=18,
++   NRADIP=3,
++   NRADLP=2,
++   NSW=6,
++   RLWINHF=1,
++   RRE2DE=0.64952,
++   RSWINHF=1,
++ /
++ &NAERCLI
++ /
++ &NAETLDIAG
++ /
++ &NAEVOL
++ /
++ &NAIMPO
++ /
++ &NALORI
++ /
++ &NAMACV
++ /
++ &NAMAFN
++   GFP_CLSG%CLNAME='SURFACCGRAUPEL',
++   GFP_CLSP%CLNAME='SURFACCPLUIE',
++   GFP_CLSS%CLNAME='SURFACCNEIGE',
++   GFP_SFIS%IBITS=16,
++   GFP_ST%CLNAME='SURFTEMPERATURE',
++   GFP_ST%IANO=0,
++   GFP_ST%IBITS=12,
++   GFP_X10U%CLNAME='CLSVENT.ZONAL',
++   GFP_X10U%IANO=0,
++   GFP_X10U%IBITS=12,
++   GFP_X10V%CLNAME='CLSVENT.MERIDIEN',
++   GFP_X10V%IANO=0,
++   GFP_X10V%IBITS=12,
++   GFP_X2RH%CLNAME='CLSHUMI.RELATIVE',
++   GFP_X2RH%IANO=0,
++   GFP_X2RH%IBITS=12,
++   GFP_X2T%CLNAME='CLSTEMPERATURE',
++   GFP_X2T%IANO=1,
++   GFP_XCCC%IBITS=8,
++   GFP_XHCC%IBITS=8,
++   GFP_XLCC%IBITS=8,
++   GFP_XLSG%CLNAME='SURFINSGRAUPEL',
++   GFP_XLSP%CLNAME='SURFINSPLUIE',
++   GFP_XLSS%CLNAME='SURFINSNEIGE',
++   GFP_XMCC%IBITS=8,
++   GFP_XN2T%IBITS=12,
++   GFP_XTCC%IBITS=8,
++   GFP_XUGST%IANO=0,
++   GFP_XUGST%IBITS=12,
++   GFP_XVGST%IANO=0,
++   GFP_XVGST%IBITS=12,
++   GFP_XX2T%IBITS=12,
++   GFP_XXDIAGH%IBITS=12,
++   TFP_ABS%ZFK=32.,
++   TFP_CLF%IBITS=6,
++   TFP_EDR%CLNAME='EDR',
++   TFP_EDR%IBITS=16,
++   TFP_GR%IBITS=12,
++   TFP_HL%IBITS=12,
++   TFP_HTB%IBITS=16,
++   TFP_HTB%LLGP=.TRUE.,
++   TFP_HU%IBITS=12,
++   TFP_MSAT9C2%IBITS=12,
++   TFP_MSAT9C6%IBITS=12,
++   TFP_MSL%IBITS=12,
++   TFP_MSLNH%IBITS=12,
++   TFP_PV%ZFK=64.,
++   TFP_RCLS%IBITS=12,
++   TFP_RR%IBITS=12,
++   TFP_SN%IBITS=12,
++   TFP_T%IBITS=12,
++   TFP_TCLS%IBITS=12,
++   TFP_TH%IBITS=12,
++   TFP_THPW%IBITS=12,
++   TFP_THV%IBITS=12,
++   TFP_TN%IBITS=12,
++   TFP_TWV%IBITS=12,
++   TFP_TX%IBITS=12,
++   TFP_U%IBITS=12,
++   TFP_V%IBITS=12,
++   TFP_VOR%ZFK=32.,
++   TFP_VV%ZFK=32.,
++ /
++ &NAMARG
++   CNMEXP='CEXP',
++   LECMWF=.FALSE.,
++   LELAM=.TRUE.,
++   LSLAG=.TRUE.,
++   NCONF=1,
++   NSUPERSEDE=1,
++ /
++ &NAMARPHY
++   LKFBCONV=.FALSE.,
++   LKFBD=.FALSE.,
++   LKFBS=.FALSE.,
++   LMFSHAL=.TRUE.,
++   LMICRO=.TRUE.,
++   LMPA=.TRUE.,
++   LMSE=.TRUE.,
++   LTURB=.TRUE.,
++ /
++ &NAMCA
++ /
++ &NAMCAPE
++ /
++ &NAMCFU
++   LCUMFU=.TRUE.,
++   LFPLS=.TRUE.,
++   LFPLSG=.TRUE.,
++   LFR=.TRUE.,
++   LFRRC=.TRUE.,
++   LFSF=.TRUE.,
++   LNEBPAR=.TRUE.,
++   LNEBTT=.TRUE.,
++   LRAYD=.TRUE.,
++   LRAYS=.TRUE.,
++ /
++ &NAMCHEM
++ /
++ &NAMCHET
++ /
++ &NAMCHK
++ /
++ &NAMCLA
++ /
++ &NAMCLDP
++ /
++ &NAMCLI
++ /
++ &NAMCLOP15
++ /
++ &NAMCLTC
++ /
++ &NAMCOK
++ /
++ &NAMCOM
++ /
++ &NAMCOSJO
++ /
++ &NAMCOUPLO4
++ /
++ &NAMCT0
++   CFPNCF='ECHFP',
++   CNPPATH='.',
++   CSCRIPT_LAMRTC='./atcp.alad',
++   LAROME=.TRUE.,
++   LNHEE=.TRUE.,
++   LSCREEN_OPENMP=.FALSE.,
++   LSPRT=.TRUE.,
++   LTWOTL=.TRUE.,
++   NFPOS=1,
++   NFRHIS=1,
++   NFRPOS=1,
++   NFRSDI=10000,
++   NHISTS(0)=-49,
++   NHISTS(1)=0,
++   NHISTS(2)=-1,
++   NHISTS(3)=-2,
++   NHISTS(4)=-3,
++   NHISTS(5)=-4,
++   NHISTS(6)=-5,
++   NHISTS(7)=-6,
++   NHISTS(8)=-7,
++   NHISTS(9)=-8,
++   NHISTS(10)=-9,
++   NHISTS(11)=-10,
++   NHISTS(12)=-11,
++   NHISTS(13)=-12,
++   NHISTS(14)=-13,
++   NHISTS(15)=-14,
++   NHISTS(16)=-15,
++   NHISTS(17)=-16,
++   NHISTS(18)=-17,
++   NHISTS(19)=-18,
++   NHISTS(20)=-19,
++   NHISTS(21)=-20,
++   NHISTS(22)=-21,
++   NHISTS(23)=-22,
++   NHISTS(24)=-23,
++   NHISTS(25)=-24,
++   NHISTS(26)=-25,
++   NHISTS(27)=-26,
++   NHISTS(28)=-27,
++   NHISTS(29)=-28,
++   NHISTS(30)=-29,
++   NHISTS(31)=-30,
++   NHISTS(32)=-31,
++   NHISTS(33)=-32,
++   NHISTS(34)=-33,
++   NHISTS(35)=-34,
++   NHISTS(36)=-35,
++   NHISTS(37)=-36,
++   NHISTS(38)=-37,
++   NHISTS(39)=-38,
++   NHISTS(40)=-39,
++   NHISTS(41)=-40,
++   NHISTS(42)=-41,
++   NHISTS(43)=-42,
++   NHISTS(44)=-43,
++   NHISTS(45)=-44,
++   NHISTS(46)=-45,
++   NHISTS(47)=-46,
++   NHISTS(48)=-47,
++   NHISTS(49)=-48,
++   NPOSTS(0)=-49,
++   NPOSTS(1)=0,
++   NPOSTS(2)=-1,
++   NPOSTS(3)=-2,
++   NPOSTS(4)=-3,
++   NPOSTS(5)=-4,
++   NPOSTS(6)=-5,
++   NPOSTS(7)=-6,
++   NPOSTS(8)=-7,
++   NPOSTS(9)=-8,
++   NPOSTS(10)=-9,
++   NPOSTS(11)=-10,
++   NPOSTS(12)=-11,
++   NPOSTS(13)=-12,
++   NPOSTS(14)=-13,
++   NPOSTS(15)=-14,
++   NPOSTS(16)=-15,
++   NPOSTS(17)=-16,
++   NPOSTS(18)=-17,
++   NPOSTS(19)=-18,
++   NPOSTS(20)=-19,
++   NPOSTS(21)=-20,
++   NPOSTS(22)=-21,
++   NPOSTS(23)=-22,
++   NPOSTS(24)=-23,
++   NPOSTS(25)=-24,
++   NPOSTS(26)=-25,
++   NPOSTS(27)=-26,
++   NPOSTS(28)=-27,
++   NPOSTS(29)=-28,
++   NPOSTS(30)=-29,
++   NPOSTS(31)=-30,
++   NPOSTS(32)=-31,
++   NPOSTS(33)=-32,
++   NPOSTS(34)=-33,
++   NPOSTS(35)=-34,
++   NPOSTS(36)=-35,
++   NPOSTS(37)=-36,
++   NPOSTS(38)=-37,
++   NPOSTS(39)=-38,
++   NPOSTS(40)=-39,
++   NPOSTS(41)=-40,
++   NPOSTS(42)=-41,
++   NPOSTS(43)=-42,
++   NPOSTS(44)=-43,
++   NPOSTS(45)=-44,
++   NPOSTS(46)=-45,
++   NPOSTS(47)=-46,
++   NPOSTS(48)=-47,
++   NPOSTS(49)=-48,
++   NSFXHISTS(0)=-3,
++   NSFXHISTS(1)=-1,
++   NSFXHISTS(2)=-2,
++   NSFXHISTS(3)=-3,
++ /
++ &NAMCT1
++   LRFILAF=.FALSE.,
++   N1HIS=1,
++   N1POS=1,
++   N1RES=0,
++   N1SDI=1,
++   N1SFXHIS=1,
++ /
++ &NAMCUMF
++ /
++ &NAMCUMFS
++ /
++ &NAMCVER
++ /
++ &NAMCVMNH
++ /
++ &NAMDDH
++ /
++ &NAMDFI
++ /
++ &NAMDIM
++   NPROMA=-16,
++ /
++ &NAMDIMO
++ /
++ &NAMDIM_TRAJ
++ /
++ &NAMDPHY
++ /
++ &NAMDPRECIPS
++ /
++ &NAMDVISI
++   HVISI=5.,
++ /
++ &NAMDYN
++   LADVF=.TRUE.,
++   LQMPD=.FALSE.,
++   LQMT=.FALSE.,
++   LQMVD=.FALSE.,
++   LRHDI_LASTITERPC=.TRUE.,
++   NITMP=4,
++   NSITER=1,
++   NSPDLAG=3,
++   NSVDLAG=3,
++   NTLAG=3,
++   NVLAG=3,
++   NWLAG=3,
++   RDAMPDIV=20.,
++   RDAMPPD=20.,
++   RDAMPQ=0.,
++   RDAMPT=0.,
++   RDAMPVD=20.,
++   RDAMPVOR=20.,
++   REPS1=0.,
++   REPS2=0.,
++   REPSM1=0.,
++   REPSM2=0.,
++   REPSP1=0.,
++   SDRED=1.,
++   SIPR=90000.,
++   SITR=350.,
++   SITRA=100.,
++   SLHDA0=0.25,
++   SLHDD00=0.000065,
++   VESL=0.05,
++   XIDT=0.,
++   ZSLHDP1=1.7,
++   ZSLHDP3=0.6,
++ /
++ &NAMDYNA
++   LCOMADH=.TRUE.,
++   LCOMADV=.FALSE.,
++   LCOMAD_GFL=.TRUE.,
++   LCOMAD_SP=.TRUE.,
++   LCOMAD_SPD=.TRUE.,
++   LCOMAD_SVD=.TRUE.,
++   LCOMAD_T=.TRUE.,
++   LCOMAD_W=.TRUE.,
++   LGWADV=.TRUE.,
++   LNESC=.TRUE.,
++   LPC_CHEAP=.TRUE.,
++   LPC_FULL=.TRUE.,
++   LRDBBC=.FALSE.,
++   LSETTLS=.FALSE.,
++   LSETTLST=.TRUE.,
++   LSLHD_GFL=.TRUE.,
++   LSLHD_OLD=.FALSE.,
++   LSLHD_SPD=.FALSE.,
++   LSLHD_SVD=.FALSE.,
++   LSLHD_T=.FALSE.,
++   LSLHD_W=.FALSE.,
++   ND4SYS=2,
++   NDLNPR=1,
++   NPDVAR=2,
++   NVDVAR=4,
++   SLHDEPSH=0.08,
++   SLHDKMAX=6,
++ /
++ &NAMDYNCORE
++ /
++ &NAMEMIS_CONF
++ /
++ &NAMENKF
++ /
++ &NAMENSCOV
++ /
++ &NAMFA
++   CMODEL='OUTPUTID',
++   LEXTERN=.TRUE.,
++   LSUPPDATE=.FALSE.,
++   NBITCS=-1,
++   NBITPG=-1,
++   NSTRON=-1,
++   YFA_MXCLWC%CLNAME='CLD_WX_60M',
++   YFA_VISICLD%CLNAME='CLSVISIN_60',
++   YFA_VISIHYD%CLNAME='CLSVISIHYDN60',
++   YFA_XPTYPE%CLNAME='CLSPTYPE_60M',
++   YFA_XPTYPESEV%CLNAME='CLSPTYPESEV_60M',
++   YFA_XUGST%CLNAME='CLSU.RAF60M.XFU',
++   YFA_XVGST%CLNAME='CLSV.RAF60M.XFU',
++ /
++ &NAMFPC
++   CFP2DF(1)='SURFPRESSION',
++   CFP2DF(2)='MSL_NHPRESSURE',
++   CFP2DF(3)='SURFTOT.WAT.VAPO',
++   CFP2DF(4)='SURFISOTPW0.MALT',
++   CFP2DF(5)='SURFCAPE.POS.F00',
++   CFP2DF(6)='C002_METEOSAT_09_SEVIRI.POS',
++   CFP2DF(7)='C006_METEOSAT_09_SEVIRI.POS',
++   CFP2DF(8)='SURFREFLECT.MAX',
++   CFP2DF(9)='SURFISOTPW1.MALT',
++   CFP2DF(10)='SURFISOTPW2.MALT',
++   CFP2DF(11)='REFLECT_DBZ.MAX',
++   CFP2DF(12)='ECHOTOP',
++   CFP3DF(1)='GEOPOTENTIEL',
++   CFP3DF(2)='TEMPERATURE',
++   CFP3DF(3)='VENT_ZONAL',
++   CFP3DF(4)='VENT_MERIDIEN',
++   CFP3DF(5)='HUMI_RELATIVE',
++   CFP3DF(6)='THETA_PRIM_W',
++   CFP3DF(7)='PRESSURE',
++   CFP3DF(8)='ABS_VORTICITY',
++   CFP3DF(9)='VITESSE_VERTICALE',
++   CFP3DF(10)='TEMPE_POTENT',
++   CFP3DF(11)='POT_VORTICIT',
++   CFP3DF(12)='SIM_REFLECTI',
++   CFP3DF(13)='RAIN',
++   CFP3DF(14)='SNOW',
++   CFP3DF(15)='GRAUPEL',
++   CFP3DF(16)='ICE_CRYSTAL',
++   CFP3DF(17)='CLOUD_WATER',
++   CFP3DF(18)='VERT.VELOCIT',
++   CFP3DF(19)='DIVERGENCE',
++   CFP3DF(20)='THETA_VIRTUA',
++   CFP3DF(21)='TKE',
++   CFP3DF(22)='CLOUD_FRACTI',
++   CFP3DF(23)='ISOT_ALTIT',
++   CFP3DF(24)='EDR',
++   CFP3DF(25)='REFLEC_DBZ',
++   CFP3DF(26)='TPRIM_W',
++   CFPCFU(1)='SURFTENS.TOTA.ZO',
++   CFPCFU(2)='SURFTENS.TOTA.ME',
++   CFPCFU(3)='SURFACCPLUIE',
++   CFPCFU(4)='SURFACCNEIGE',
++   CFPCFU(5)='SURFACCGRAUPEL',
++   CFPCFU(6)='SOMMFLU.RAY.SOLA',
++   CFPCFU(7)='SURFFLU.RAY.SOLA',
++   CFPCFU(8)='SOMMFLU.RAY.THER',
++   CFPCFU(9)='SURFFLU.RAY.THER',
++   CFPCFU(10)='SURFFLU.LAT.MTOT',
++   CFPCFU(11)='SURFFLU.MTOTA.NE',
++   CFPCFU(12)='SURFFLU.CHA.SENS',
++   CFPCFU(13)='SURFRAYT SOLA DE',
++   CFPCFU(14)='SURFRAYT THER DE',
++   CFPCFU(15)='SURFRAYT SOL CL',
++   CFPCFU(16)='SURFRAYT THER CL',
++   CFPCFU(17)='SURFRAYT DIR SUR',
++   CFPDOM(1)='EURW1S40',
++   CFPDOM(2)='EURW1S100',
++   CFPFMT='LALON',
++   CFPPHY(1)='SURFTEMPERATURE',
++   CFPPHY(2)='INTSURFGEOPOTENT',
++   CFPPHY(3)='SURFRESERV.NEIGE',
++   CFPXFU(1)='CLSTEMPERATURE',
++   CFPXFU(2)='CLSHUMI.RELATIVE',
++   CFPXFU(3)='CLSVENT.ZONAL',
++   CFPXFU(4)='CLSVENT.MERIDIEN',
++   CFPXFU(5)='SURFNEBUL.TOTALE',
++   CFPXFU(6)='SURFNEBUL.HAUTE',
++   CFPXFU(7)='SURFNEBUL.MOYENN',
++   CFPXFU(8)='SURFNEBUL.BASSE',
++   CFPXFU(9)='CLSU.RAF60M.XFU',
++   CFPXFU(10)='CLSV.RAF60M.XFU',
++   CFPXFU(11)='CLSMAXI.TEMPERAT',
++   CFPXFU(12)='CLSMINI.TEMPERAT',
++   CFPXFU(13)='CLPMHAUT.MOD.XFU',
++   CFPXFU(14)='SURFDIAGHAIL',
++   CFPXFU(15)='SURFACCGRELE',
++   CFPXFU(16)='CLSVISIN_60',
++   CFPXFU(17)='CLSVISIHYDN60',
++   CFPXFU(18)='CLD_WX_60M',
++   CFPXFU(19)='CLSPTYPE_60M',
++   CFPXFU(20)='CLSPTYPESEV_60M',
++   CFPXFU(21)='CLSTPRIM_W',
++   LCRITSNOWTEMP=.FALSE.,
++   LFPCAPEX=.TRUE.,
++   LFPMOIS=.TRUE.,
++   LFPPACKING=.FALSE.,
++   LWIDER_DOM=.TRUE.,
++   L_READ_MODEL_DATE=.TRUE.,
++   NFITI=1,
++   NFITV=1,
++   NFPCAPE=5,
++   NFPCLI=1,
++   NFPGRIB=141,
++   NFPINPHY=4,
++   NITERPV=8,
++   RENTRA=0.0001,
++   RFP3H(1)=10.,
++   RFP3H(2)=20.,
++   RFP3H(3)=35.,
++   RFP3H(4)=50.,
++   RFP3H(5)=75.,
++   RFP3H(6)=100.,
++   RFP3H(7)=150.,
++   RFP3H(8)=200.,
++   RFP3H(9)=250.,
++   RFP3H(10)=375.,
++   RFP3H(11)=500.,
++   RFP3H(12)=625.,
++   RFP3H(13)=750.,
++   RFP3H(14)=875.,
++   RFP3H(15)=1000.,
++   RFP3H(16)=1125.,
++   RFP3H(17)=1250.,
++   RFP3H(18)=1375.,
++   RFP3H(19)=1500.,
++   RFP3H(20)=1750.,
++   RFP3H(21)=2000.,
++   RFP3H(22)=2250.,
++   RFP3H(23)=2500.,
++   RFP3H(24)=2750.,
++   RFP3H(25)=3000.,
++   RFP3I(1)=-273.15,
++   RFP3I(2)=-263.15,
++   RFP3I(3)=-261.15,
++   RFP3I(4)=-253.15,
++   RFP3P(1)=10000.,
++   RFP3P(2)=12500.,
++   RFP3P(3)=15000.,
++   RFP3P(4)=17500.,
++   RFP3P(5)=20000.,
++   RFP3P(6)=22500.,
++   RFP3P(7)=25000.,
++   RFP3P(8)=27500.,
++   RFP3P(9)=30000.,
++   RFP3P(10)=35000.,
++   RFP3P(11)=40000.,
++   RFP3P(12)=45000.,
++   RFP3P(13)=50000.,
++   RFP3P(14)=55000.,
++   RFP3P(15)=60000.,
++   RFP3P(16)=65000.,
++   RFP3P(17)=70000.,
++   RFP3P(18)=75000.,
++   RFP3P(19)=80000.,
++   RFP3P(20)=85000.,
++   RFP3P(21)=90000.,
++   RFP3P(22)=92500.,
++   RFP3P(23)=95000.,
++   RFP3P(24)=100000.,
++   RFP3PV(1)=0.0000015,
++   RFP3PV(2)=0.000002,
++   RFPCD2=5.,
++   RFPCSAB=50.,
++   RFPVCAP=7000.,
++ /
++ &NAMFPD
++   NFPRLX=1,
++   NFPRLY=3,
++   NFPRUX=2,
++   NFPRUY=2,
++   NLAT(1)=717,
++   NLAT(2)=1791,
++   NLON(1)=1121,
++   NLON(2)=2801,
++   RDELX(1)=0.025,
++   RDELX(2)=0.01,
++   RDELY(1)=0.025,
++   RDELY(2)=0.01,
++   RLATC(1)=46.45,
++   RLATC(2)=46.45,
++   RLONC(1)=2.,
++   RLONC(2)=2.,
++ /
++ &NAMFPDY2
++ /
++ &NAMFPDYF
++ /
++ &NAMFPDYH
++ /
++ &NAMFPDYI
++ /
++ &NAMFPDYP
++ /
++ &NAMFPDYS
++ /
++ &NAMFPDYT
++ /
++ &NAMFPDYV
++ /
++ &NAMFPF
++   NFMAX(1)=60,
++   NFMAX(2)=80,
++ /
++ &NAMFPG
++   NFPDISTRIB=1,
++ /
++ &NAMFPIOS
++ /
++ &NAMFPMOVE
++ /
++ &NAMFPOBJ
++ /
++ &NAMFPPHY
++ /
++ &NAMFPSC2
++   NFPROMA=50,
++ /
++ &NAMFPSC2_DEP
++   NFPROMA_DEP=50,
++ /
++ &NAMGEM
++ /
++ &NAMGFL
++   NGFL_EZDIAG=4,
++   YEZDIAG_NL(1)%CNAME='EZDIAG01',
++   YEZDIAG_NL(1)%LREQOUT=.FALSE.,
++   YEZDIAG_NL(2)%CNAME='EZDIAG02',
++   YEZDIAG_NL(2)%LREQOUT=.FALSE.,
++   YEZDIAG_NL(3)%CNAME='EZDIAG03',
++   YEZDIAG_NL(3)%LREQOUT=.FALSE.,
++   YEZDIAG_NL(4)%CNAME='INPRRTOT3D',
++   YEZDIAG_NL(4)%LREQOUT=.TRUE.,
++   YG_NL%LQM=.TRUE.,
++   YG_NL%LSLHD=.TRUE.,
++   YG_NL%NCOUPLING=-1,
++   YG_NL%NREQIN=0,
++   YG_NL%REFVALC=0.,
++   YIRAD_NL%LGP=.TRUE.,
++   YI_NL%LQM=.TRUE.,
++   YI_NL%LSLHD=.TRUE.,
++   YI_NL%NCOUPLING=-1,
++   YI_NL%NREQIN=0,
++   YI_NL%REFVALC=0.,
++   YLRAD_NL%LGP=.TRUE.,
++   YL_NL%LQM=.TRUE.,
++   YL_NL%LSLHD=.TRUE.,
++   YL_NL%NCOUPLING=-1,
++   YL_NL%NREQIN=0,
++   YL_NL%REFVALC=0.,
++   YQ_NL%LCOMAD=.TRUE.,
++   YQ_NL%LQM=.TRUE.,
++   YQ_NL%LSLHD=.FALSE.,
++   YQ_NL%NREQIN=0,
++   YR_NL%LQM=.TRUE.,
++   YR_NL%LSLHD=.TRUE.,
++   YR_NL%NCOUPLING=-1,
++   YR_NL%NREQIN=0,
++   YR_NL%REFVALC=0.,
++   YS_NL%LQM=.TRUE.,
++   YS_NL%LSLHD=.TRUE.,
++   YS_NL%NCOUPLING=-1,
++   YS_NL%NREQIN=0,
++   YS_NL%REFVALC=0.,
++   YTKE_NL%NCOUPLING=0,
++   YTKE_NL%NREQIN=-1,
++ /
++ &NAMGRIB
++ /
++ &NAMGWD
++ /
++ &NAMGWDIAG
++ /
++ &NAMGWWMS
++ /
++ &NAMIAU
++ /
++ &NAMICE
++ /
++ &NAMINI
++   LDFI=.FALSE.,
++ /
++ &NAMINTFLEX
++ /
++ &NAMIOMI
++ /
++ &NAMIOS
++ /
++ &NAMIO_SERV
++   NIO_SERV_BUF_MAXSIZE=20,
++   NIO_SERV_METHOD=2,
++   NMSG_LEVEL_CLIENT=0,
++   NMSG_LEVEL_SERVER=0,
++   NPROCESS_LEVEL=5,
++   NPROC_IO=NBPROC_IO,
++ /
++ &NAMJBCODES
++ /
++ &NAMJG
++ /
++ &NAMLCZ
++ /
++ &NAMLIMA
++ /
++ &NAMLSFORC
++ /
++ &NAMMARS
++ /
++ &NAMMCC
++ /
++ &NAMMCUF
++ /
++ &NAMMETHOX
++ /
++ &NAMMKODB
++ /
++ &NAMMODERR
++ /
++ &NAMMTS
++ /
++ &NAMMWAVE
++ /
++ &NAMNORGWD
++ /
++ &NAMNPROF
++ /
++ &NAMNUD
++ /
++ &NAMOBS
++ /
++ &NAMONEDVAR
++ /
++ &NAMOOPS
++ /
++ &NAMOPH
++   CFNHWF='ECHIS',
++   LINC=.TRUE.,
++   NTIMEFMT=1,
++ /
++ &NAMOPTCMEM
++ /
++ &NAMPAR0
++   LMPOFF=.FALSE.,
++   MBX_SIZE=2048000000,
++   MP_TYPE=2,
++   NOUTPUT=1,
++   NPRGPEW=NDPROC,
++   NPRGPNS=NCPROC,
++   NPROC=NBPROC,
++   NPRTRV=NDPROC,
++   NPRTRW=NCPROC,
++ /
++ &NAMPAR1
++   LEQ_REGIONS=.FALSE.,
++   LSLONDEM=.TRUE.,
++   LSPLIT=.TRUE.,
++   LSYNC_SLCOM=.FALSE.,
++   LSYNC_TRANS=.FALSE.,
++   L_GATHERV_WRGP=.FALSE.,
++   NCOMBFLEN=1800000,
++   NDISTIO(12)=1,
++   NSTRIN=100,
++   NSTROUT=NBPROC,
++ /
++ &NAMPARAR
++   CFRAC_ICE_ADJUST='S',
++   CFRAC_ICE_SHALLOW_MF='S',
++   CMICRO='ICE3',
++   CSEDIM='STAT',
++   CSNOWRIMING='M90',
++   LCONVHG=.TRUE.,
++   LCRFLIMIT=.TRUE.,
++   LCRIAUTI=.TRUE.,
++   LEVLIMIT=.TRUE.,
++   LFEEDBACKT=.TRUE.,
++   LFPREC3D=.TRUE.,
++   LNULLWETG=.TRUE.,
++   LNULLWETH=.TRUE.,
++   LOLSMC=.TRUE.,
++   LOSEDIC=.TRUE.,
++   LOSIGMAS=.TRUE.,
++   LOSUBG_COND=.TRUE.,
++   LSEDIM_AFTER=.FALSE.,
++   LWETGPOST=.TRUE.,
++   LWETHPOST=.TRUE.,
++   NMAXITER_MICRO=1,
++   NPRINTFR=10000,
++   NPTP=1,
++   RCRIAUTC=0.001,
++   RCRIAUTI=0.0002,
++   RT0CRIAUTI=-5.,
++   VSIGQSAT=0.02,
++   XFRACM90=0.1,
++   XMRSTEP=0.00005,
++   XSPLIT_MAXCFL=0.8,
++   XTSTEP_TS=0.,
++ /
++ &NAMPHMSE
++   LPGDFWR=.FALSE.,
++ /
++ &NAMPHY
++   LAERODES=.TRUE.,
++   LAEROLAN=.TRUE.,
++   LAEROSEA=.TRUE.,
++   LAEROSOO=.TRUE.,
++   LDPRECIPS=.TRUE.,
++   LEDR=.TRUE.,
++   LMPHYS=.TRUE.,
++   LO3ABC=.TRUE.,
++   LRAYFM=.TRUE.,
++ /
++ &NAMPHY0
++   ALMAV=300.,
++   BEDIFV=0.05,
++   ECMNP=3000.,
++   GCCSV=0.,
++   GCVADS=0.8,
++   GCVALFA=0.000045,
++   GCVBETA=0.2,
++   GCVMLT=0.00016,
++   GCVNU=0.000025,
++   GCVPSI=1.,
++   GCVPSIE=1.,
++   GDDEVA=0.25,
++   GDDSDE=0.5,
++   GWDCD=6.,
++   HUCOE=0.5,
++   HUTIL=1.8,
++   QSSC=400.,
++   QSSUSC=0.75,
++   QSSUSS=0.4,
++   QSSUSV=250.,
++   QSUSXC=0.0002,
++   QSUSXS=0.0003,
++   QXRAL=130.,
++   QXRDEL=0.49,
++   QXRHX=0.99,
++   QXRR=0.25,
++   RCVEVAP=0.25,
++   REFLKUO=5000.,
++   REVGSL=15.,
++   SCO=-20.,
++   TDDGP=0.8,
++   TENTR=0.0000025,
++   TENTRX=0.00008,
++   TUDGP=0.8,
++   UHDIFV=0.0008,
++   USURIC=0.175,
++   USURICE=0.5,
++   USURICL=1.,
++   USURID=0.1,
++   USURIDE=0.25,
++   VZ0CM=0.00015,
++   XMAXLM=5000.,
++   XMINLM=10.,
++ /
++ &NAMPHY1
++   ALBMIN=0.65,
++   ALCRIN=0.75,
++   GCGEL=0.00003,
++   GCGELS=0.00005,
++   GNEIMX=1.8,
++   GNEIMXS=1.8,
++   RCTVEG(3)=0.000012,
++   RCTVEG(4)=0.00001,
++ /
++ &NAMPHY2
++   FACRAF=3.8,
++   HTKERAF=20.,
++   LMULAF=.TRUE.,
++   LRAFTKE=.TRUE.,
++   LRAFTUR=.TRUE.,
++   XDAMP=1.,
++   XMULAF=-1.85,
++ /
++ &NAMPHY3
++ /
++ &NAMPHYDS
++ /
++ &NAMPONG
++ /
++ &NAMPPC
++ /
++ &NAMPPVI
++ /
++ &NAMPRE
++ /
++ &NAMRAD15
++ /
++ &NAMRADCMEM
++ /
++ &NAMRCF
++ /
++ &NAMRCOEF
++ /
++ &NAMRES
++ /
++ &NAMRGRI
++ /
++ &NAMRINC
++ /
++ &NAMRIP
++   CSTOP='FCSTOP',
++   TSTEP='TIMESTEP',
++ /
++ &NAMRIP0
++ /
++ &NAMRLX
++ /
++ &NAMSATS
++   LPARTIAL_COEF_FILES=.TRUE.,
++ /
++ &NAMSCC
++ /
++ &NAMSCEN
++ /
++ &NAMSCM
++ /
++ &NAMSEKF
++ /
++ &NAMSENS
++ /
++ &NAMSFXCMP
++   CFLDNAME(1)='????????????????',
++   NBBITS(1)=24,
++ /
++ &NAMSIMPHL
++ /
++ &NAMSPNG
++ /
++ &NAMSPP
++ /
++ &NAMSPSDT
++ /
++ &NAMSTA
++ /
++ &NAMSTOPH
++ /
++ &NAMSWE
++ /
++ &NAMTESTVAR
++ /
++ &NAMTHLIM
++ /
++ &NAMTOPH
++   ETCVIM=5000.,
++   ETNEBU=5000.,
++   ETPLUI=5000.,
++   XDRMTK=6.0D-7,
++   XDRMTP=800.,
++   XDRMUK=3.0D-7,
++   XDRMUP=800.,
++ /
++ &NAMTRAJP
++ /
++ &NAMTRANS
++   LFFTW=.TRUE.,
++ /
++ &NAMTRANS0
++ /
++ &NAMVAR
++ /
++ &NAMVARBC
++ /
++ &NAMVARBC_AIREP
++ /
++ &NAMVARBC_ALLSKY
++ /
++ &NAMVARBC_GBRAD
++ /
++ &NAMVARBC_RAD
++ /
++ &NAMVARBC_SFCOBS
++ /
++ &NAMVARBC_TCWV
++ /
++ &NAMVARBC_TO3
++ /
++ &NAMVAREPS
++ /
++ &NAMVDF
++ /
++ &NAMVDOZ
++ /
++ &NAMVOLCANO
++ /
++ &NAMVRTL
++ /
++ &NAMVV0
++ /
++ &NAMVV1
++ /
++ &NAMVWRK
++ /
++ &NAMWAVELETJB
++ /
++ &NAMXFU
++   LXCLP=.TRUE.,
++   LXCLS=.TRUE.,
++   LXFU=.TRUE.,
++   LXNEBPA=.TRUE.,
++   LXNEBTT=.TRUE.,
++   LXNUVCLS=.TRUE.,
++   LXPLS=.TRUE.,
++   LXPLSG=.TRUE.,
++   LXQCLS=.TRUE.,
++   LXR=.TRUE.,
++   LXSOIL=.FALSE.,
++   LXTHW=.TRUE.,
++   LXTRT=.TRUE.,
++   LXTTCLS=.TRUE.,
++   LXVISI=.TRUE.,
++   LXXDIAGH=.TRUE.,
++   LXXGST=.TRUE.,
++   NRAZTS(0)=-49,
++   NRAZTS(1)=0,
++   NRAZTS(2)=-1,
++   NRAZTS(3)=-2,
++   NRAZTS(4)=-3,
++   NRAZTS(5)=-4,
++   NRAZTS(6)=-5,
++   NRAZTS(7)=-6,
++   NRAZTS(8)=-7,
++   NRAZTS(9)=-8,
++   NRAZTS(10)=-9,
++   NRAZTS(11)=-10,
++   NRAZTS(12)=-11,
++   NRAZTS(13)=-12,
++   NRAZTS(14)=-13,
++   NRAZTS(15)=-14,
++   NRAZTS(16)=-15,
++   NRAZTS(17)=-16,
++   NRAZTS(18)=-17,
++   NRAZTS(19)=-18,
++   NRAZTS(20)=-19,
++   NRAZTS(21)=-20,
++   NRAZTS(22)=-21,
++   NRAZTS(23)=-22,
++   NRAZTS(24)=-23,
++   NRAZTS(25)=-24,
++   NRAZTS(26)=-25,
++   NRAZTS(27)=-26,
++   NRAZTS(28)=-27,
++   NRAZTS(29)=-28,
++   NRAZTS(30)=-29,
++   NRAZTS(31)=-30,
++   NRAZTS(32)=-31,
++   NRAZTS(33)=-32,
++   NRAZTS(34)=-33,
++   NRAZTS(35)=-34,
++   NRAZTS(36)=-35,
++   NRAZTS(37)=-36,
++   NRAZTS(38)=-37,
++   NRAZTS(39)=-38,
++   NRAZTS(40)=-39,
++   NRAZTS(41)=-40,
++   NRAZTS(42)=-41,
++   NRAZTS(43)=-42,
++   NRAZTS(44)=-43,
++   NRAZTS(45)=-44,
++   NRAZTS(46)=-45,
++   NRAZTS(47)=-46,
++   NRAZTS(48)=-47,
++   NRAZTS(49)=-48,
++ /
++ &NAM_CANAPE
++ /
++ &NAM_DISTRIBUTED_VECTORS
++ /
++ &NAPHLC
++ /
++ &NEMCT0
++ /
++ &NEMDIM
++ /
++ &NEMDYN
++ /
++ &NEMELBC0A
++   LESPCPL=.TRUE.,
++   NBICNHX=2,
++   NBICOP=2,
++   NBICOT=2,
++   NBICOU=2,
++   NBICPD=2,
++   NBICVD=2,
++   NECRIPL=1,
++ /
++ &NEMELBC0B
++   NEFRSPCPL=1,
++   NEK0=20,
++   NEK1=30,
++   NEN1=4,
++   NEN2=8,
++   SPNUDDIV=0.01,
++   SPNUDQ=0.,
++   SPNUDT=0.01,
++   SPNUDVOR=0.01,
++   TEFRCL=3600.,
++ /
++ &NEMFPEZO
++ /
++ &NEMGEO
++ /
++ &NEMJK
++ /
++ &NEMVAR
++ /
++ &NEMWAVELET
++ /
+diff --git a/Examples/namelist/AROME/namarp_41t1_AROME_HTUNE b/examples/namelist/AROME/namarp_41t1_AROME_HTUNE
+similarity index 100%
+rename from Examples/namelist/AROME/namarp_41t1_AROME_HTUNE
+rename to examples/namelist/AROME/namarp_41t1_AROME_HTUNE
+diff --git a/Examples/namelist/AROME/namarp_41t1_AROME_OPER b/examples/namelist/AROME/namarp_41t1_AROME_OPER
+similarity index 100%
+rename from Examples/namelist/AROME/namarp_41t1_AROME_OPER
+rename to examples/namelist/AROME/namarp_41t1_AROME_OPER
+diff --git a/Examples/namelist/AROME/namarp_46t1_AROME_EMI b/examples/namelist/AROME/namarp_46t1_AROME_EMI
+similarity index 100%
+rename from Examples/namelist/AROME/namarp_46t1_AROME_EMI
+rename to examples/namelist/AROME/namarp_46t1_AROME_EMI
+diff --git a/Examples/namelist/AROME/namarp_46t1_AROME_OPER b/examples/namelist/AROME/namarp_46t1_AROME_OPER
+similarity index 100%
+rename from Examples/namelist/AROME/namarp_46t1_AROME_OPER
+rename to examples/namelist/AROME/namarp_46t1_AROME_OPER
+diff --git a/Examples/namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631 b/examples/namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631
+similarity index 100%
+rename from Examples/namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631
+rename to examples/namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631
+diff --git a/examples/namelist/ARPPNT/cy46t1_op1.01.nam-namelistfcp b/examples/namelist/ARPPNT/cy46t1_op1.01.nam-namelistfcp
+new file mode 100644
+index 0000000..1e36a06
+--- /dev/null
++++ b/examples/namelist/ARPPNT/cy46t1_op1.01.nam-namelistfcp
+@@ -0,0 +1,1393 @@
++ &NACIETEO
++ /
++ &NACOBS
++ /
++ &NACTAN
++ /
++ &NACTEX
++ /
++ &NACVEG
++ /
++ &NADOCK
++ /
++ &NAEAEM7
++ /
++ &NAEAER
++ /
++ &NAECOAPHY
++ /
++ &NAEPHLI
++ /
++ &NAEPHY
++ /
++ &NAERAD
++   LRRTM=.TRUE.,
++   LSRTM=.TRUE.,
++   NMCICA=2,
++   NRADFR=-1,
++   NSW=6,
++   RLWINHF=0.9,
++   NHINCSOL=0,
++   TRBKG=0.03,
++   STBKG=0.045,
++   NLIQOPT=0,
++   NICEOPT=1,
++   NRADIP=2,
++ /
++ &NAERCLI
++ /
++ &NAETLDIAG
++ /
++ &NAEVOL
++ /
++ &NAIMPO
++ /
++ &NALORI
++ /
++ &NAMACV
++ /
++ &NAMAERDET
++ /
++ &NAMAFN
++   GFP_ST%CLNAME='SURFTEMPERATURE',
++   GFP_ST%IANO=0,
++   GFP_ST%IBITS=12,
++   GFP_DST%IBITS=12,
++   GFP_SD%IBITS=16,
++   GFP_X10U%IBITS=12,
++   GFP_X10U%IANO=0,
++   GFP_X10V%IBITS=12,
++   GFP_X10V%IANO=0,
++   GFP_X2RH%IBITS=12,
++   GFP_X2RH%IANO=0,
++   GFP_X2T%IBITS=12,
++   GFP_X2T%IANO=1,
++   GFP_XUGST%IBITS=12,
++   GFP_XUGST%IANO=0,
++   GFP_XVGST%IBITS=12,
++   GFP_XVGST%IANO=0,
++   GFP_XCCC%IBITS=8,
++   GFP_XCLPH%LLMON=.TRUE.,
++   GFP_XHCC%IBITS=8,
++   GFP_XLCC%IBITS=8,
++   GFP_XMCC%IBITS=8,
++   GFP_XTCC%IBITS=8,
++   TFP_HU%IBITS=12,
++   TFP_MSL%IBITS=12,
++   TFP_T%IBITS=12,
++   TFP_TH%IBITS=12,
++   TFP_THPW%IBITS=12,
++   TFP_TWV%IBITS=12,
++   TFP_U%IBITS=12,
++   TFP_V%IBITS=12,
++   TFP_CAPE%CLNAME='SURFCAPE.POS.F00',
++   TFP_CAPE%IBITS=16,
++   TFP_I%LLGP=.TRUE.,
++   TFP_L%LLGP=.TRUE.,
++   TFP_HTB%IBITS=16,
++   TFP_HTB%LLGP=.TRUE.,
++   TFP_TKE%IBITS=16,
++   TFP_EDR%IBITS=16,
++   GFP_DST%IANO=0,
++   GFP_SD%IANO=0,
++   GFP_SSW%IANO=0,
++   GFP_DSW%IANO=0,
++   GFP_FSSW%IANO=0,
++   GFP_FDSW%IANO=0,
++   GFP_XUGST2%IBITS=12,
++   GFP_XUGST2%IANO=0,
++   GFP_XVGST2%IBITS=12,
++   GFP_XVGST2%IANO=0,
++   GFP_SFIS%IBITS=16,
++   GFP_XPTYPE%IBITS=16,
++   GFP_XPTYPESEV%IBITS=16,
++   GFP_XPTYPE2%IBITS=16,
++   GFP_XPTYPESEV2%IBITS=16,
++ /
++ &NAMARG
++   NCONF=1,
++   LECMWF=.FALSE.,
++   CNMEXP='CEXP',
++   LSLAG=.TRUE.,
++   NSUPERSEDE=1,
++ /
++ &NAMARPHY
++   CCOUPLING='I',
++   LMSE=.TRUE.,
++ /
++ &NAMCA
++ /
++ &NAMCAPE
++ /
++ &NAMCFU
++   LCUMFU=.TRUE.,
++   LFDUTP=.TRUE.,
++   LFPLC=.TRUE.,
++   LFPLS=.TRUE.,
++   LFR=.TRUE.,
++   LFRRC=.TRUE.,
++   LFSF=.TRUE.,
++   LFSOIL=.TRUE.,
++   LMOON=.TRUE.,
++   LNEBPAR=.TRUE.,
++   LRAYD=.TRUE.,
++   LSTRD=.TRUE.,
++   LSTRT=.TRUE.,
++ /
++ &NAMCHEM
++ /
++ &NAMCHET
++ /
++ &NAMCHK
++ /
++ &NAMCLA
++ /
++ &NAMCLDP
++ /
++ &NAMCLI
++ /
++ &NAMCLOP15
++ /
++ &NAMCLTC
++ /
++ &NAMCOK
++ /
++ &NAMCOM
++ /
++ &NAMCOMPO
++ /
++ &NAMCOSJO
++ /
++ &NAMCOUPLO4
++ /
++ &NAMCT0
++   LFBDAP=.TRUE.,
++   LFDBOP=.FALSE.,
++   LREGETA=.FALSE.,
++   LTWOTL=.TRUE.,
++   LSPRT=.TRUE.,
++   NDHFDTS(0)=-78,
++   NDHFDTS(1)=-1,
++   NDHFDTS(2)=-2,
++   NDHFDTS(3)=-3,
++   NDHFDTS(4)=-4,
++   NDHFDTS(5)=-5,
++   NDHFDTS(6)=-6,
++   NDHFDTS(7)=-7,
++   NDHFDTS(8)=-8,
++   NDHFDTS(9)=-9,
++   NDHFDTS(10)=-10,
++   NDHFDTS(11)=-11,
++   NDHFDTS(12)=-12,
++   NDHFDTS(13)=-13,
++   NDHFDTS(14)=-14,
++   NDHFDTS(15)=-15,
++   NDHFDTS(16)=-16,
++   NDHFDTS(17)=-17,
++   NDHFDTS(18)=-18,
++   NDHFDTS(19)=-19,
++   NDHFDTS(20)=-20,
++   NDHFDTS(21)=-21,
++   NDHFDTS(22)=-22,
++   NDHFDTS(23)=-23,
++   NDHFDTS(24)=-24,
++   NDHFDTS(25)=-25,
++   NDHFDTS(26)=-26,
++   NDHFDTS(27)=-27,
++   NDHFDTS(28)=-28,
++   NDHFDTS(29)=-29,
++   NDHFDTS(30)=-30,
++   NDHFDTS(31)=-31,
++   NDHFDTS(32)=-32,
++   NDHFDTS(33)=-33,
++   NDHFDTS(34)=-34,
++   NDHFDTS(35)=-35,
++   NDHFDTS(36)=-36,
++   NDHFDTS(37)=-37,
++   NDHFDTS(38)=-38,
++   NDHFDTS(39)=-39,
++   NDHFDTS(40)=-40,
++   NDHFDTS(41)=-41,
++   NDHFDTS(42)=-42,
++   NDHFDTS(43)=-43,
++   NDHFDTS(44)=-44,
++   NDHFDTS(45)=-45,
++   NDHFDTS(46)=-46,
++   NDHFDTS(47)=-47,
++   NDHFDTS(48)=-48,
++   NDHFDTS(49)=-49,
++   NDHFDTS(50)=-50,
++   NDHFDTS(51)=-51,
++   NDHFDTS(52)=-52,
++   NDHFDTS(53)=-53,
++   NDHFDTS(54)=-54,
++   NDHFDTS(55)=-55,
++   NDHFDTS(56)=-56,
++   NDHFDTS(57)=-57,
++   NDHFDTS(58)=-58,
++   NDHFDTS(59)=-59,
++   NDHFDTS(60)=-60,
++   NDHFDTS(61)=-61,
++   NDHFDTS(62)=-62,
++   NDHFDTS(63)=-63,
++   NDHFDTS(64)=-64,
++   NDHFDTS(65)=-65,
++   NDHFDTS(66)=-66,
++   NDHFDTS(67)=-67,
++   NDHFDTS(68)=-68,
++   NDHFDTS(69)=-69,
++   NDHFDTS(70)=-70,
++   NDHFDTS(71)=-71,
++   NDHFDTS(72)=-72,
++   NDHFDTS(73)=-73,
++   NDHFDTS(74)=-74,
++   NDHFDTS(75)=-75,
++   NDHFDTS(76)=-76,
++   NDHFDTS(77)=-77,
++   NDHFDTS(78)=-78,
++   NDHFZTS(0)=-9,
++   NDHFZTS(1)=-6,
++   NDHFZTS(2)=-12,
++   NDHFZTS(3)=-18,
++   NDHFZTS(4)=-24,
++   NDHFZTS(5)=-36,
++   NDHFZTS(6)=-48,
++   NDHFZTS(7)=-60,
++   NDHFZTS(8)=-72,
++   NDHFZTS(9)=-96,
++   NFRDHFD=1,
++   NFRDHFZ=1,
++   NFRGDI=1,
++   NFRHIS=1,
++   NFRPOS=1,
++   NFRSDI=1,
++   NGDITS(0)=-1,
++   NGDITS(1)=0,
++   NFPOS=1,
++   NSDITS(0)=-1,
++   NSDITS(1)=0,
++   NSPPR=1,
++   CFPNCF='ECHFP',
++   CNPPATH='.',
++   NHISTS(0)=-86,
++   NHISTS(1)=0,
++   NHISTS(2)=-1,
++   NHISTS(3)=-2,
++   NHISTS(4)=-3,
++   NHISTS(5)=-4,
++   NHISTS(6)=-5,
++   NHISTS(7)=-6,
++   NHISTS(8)=-7,
++   NHISTS(9)=-8,
++   NHISTS(10)=-9,
++   NHISTS(11)=-10,
++   NHISTS(12)=-11,
++   NHISTS(13)=-12,
++   NHISTS(14)=-13,
++   NHISTS(15)=-14,
++   NHISTS(16)=-15,
++   NHISTS(17)=-16,
++   NHISTS(18)=-17,
++   NHISTS(19)=-18,
++   NHISTS(20)=-19,
++   NHISTS(21)=-20,
++   NHISTS(22)=-21,
++   NHISTS(23)=-22,
++   NHISTS(24)=-23,
++   NHISTS(25)=-24,
++   NHISTS(26)=-25,
++   NHISTS(27)=-26,
++   NHISTS(28)=-27,
++   NHISTS(29)=-28,
++   NHISTS(30)=-29,
++   NHISTS(31)=-30,
++   NHISTS(32)=-31,
++   NHISTS(33)=-32,
++   NHISTS(34)=-33,
++   NHISTS(35)=-34,
++   NHISTS(36)=-35,
++   NHISTS(37)=-36,
++   NHISTS(38)=-37,
++   NHISTS(39)=-38,
++   NHISTS(40)=-39,
++   NHISTS(41)=-40,
++   NHISTS(42)=-41,
++   NHISTS(43)=-42,
++   NHISTS(44)=-43,
++   NHISTS(45)=-44,
++   NHISTS(46)=-45,
++   NHISTS(47)=-46,
++   NHISTS(48)=-47,
++   NHISTS(49)=-48,
++   NHISTS(50)=-49,
++   NHISTS(51)=-50,
++   NHISTS(52)=-51,
++   NHISTS(53)=-52,
++   NHISTS(54)=-53,
++   NHISTS(55)=-54,
++   NHISTS(56)=-55,
++   NHISTS(57)=-56,
++   NHISTS(58)=-57,
++   NHISTS(59)=-58,
++   NHISTS(60)=-59,
++   NHISTS(61)=-60,
++   NHISTS(62)=-61,
++   NHISTS(63)=-62,
++   NHISTS(64)=-63,
++   NHISTS(65)=-64,
++   NHISTS(66)=-65,
++   NHISTS(67)=-66,
++   NHISTS(68)=-67,
++   NHISTS(69)=-68,
++   NHISTS(70)=-69,
++   NHISTS(71)=-70,
++   NHISTS(72)=-71,
++   NHISTS(73)=-72,
++   NHISTS(74)=-73,
++   NHISTS(75)=-74,
++   NHISTS(76)=-75,
++   NHISTS(77)=-76,
++   NHISTS(78)=-77,
++   NHISTS(79)=-78,
++   NHISTS(80)=-81,
++   NHISTS(81)=-84,
++   NHISTS(82)=-90,
++   NHISTS(83)=-96,
++   NHISTS(84)=-102,
++   NHISTS(85)=-108,
++   NHISTS(86)=-114,
++   NPOSTS(0)=-115,
++   NPOSTS(1)=0,
++   NPOSTS(2)=-1,
++   NPOSTS(3)=-2,
++   NPOSTS(4)=-3,
++   NPOSTS(5)=-4,
++   NPOSTS(6)=-5,
++   NPOSTS(7)=-6,
++   NPOSTS(8)=-7,
++   NPOSTS(9)=-8,
++   NPOSTS(10)=-9,
++   NPOSTS(11)=-10,
++   NPOSTS(12)=-11,
++   NPOSTS(13)=-12,
++   NPOSTS(14)=-13,
++   NPOSTS(15)=-14,
++   NPOSTS(16)=-15,
++   NPOSTS(17)=-16,
++   NPOSTS(18)=-17,
++   NPOSTS(19)=-18,
++   NPOSTS(20)=-19,
++   NPOSTS(21)=-20,
++   NPOSTS(22)=-21,
++   NPOSTS(23)=-22,
++   NPOSTS(24)=-23,
++   NPOSTS(25)=-24,
++   NPOSTS(26)=-25,
++   NPOSTS(27)=-26,
++   NPOSTS(28)=-27,
++   NPOSTS(29)=-28,
++   NPOSTS(30)=-29,
++   NPOSTS(31)=-30,
++   NPOSTS(32)=-31,
++   NPOSTS(33)=-32,
++   NPOSTS(34)=-33,
++   NPOSTS(35)=-34,
++   NPOSTS(36)=-35,
++   NPOSTS(37)=-36,
++   NPOSTS(38)=-37,
++   NPOSTS(39)=-38,
++   NPOSTS(40)=-39,
++   NPOSTS(41)=-40,
++   NPOSTS(42)=-41,
++   NPOSTS(43)=-42,
++   NPOSTS(44)=-43,
++   NPOSTS(45)=-44,
++   NPOSTS(46)=-45,
++   NPOSTS(47)=-46,
++   NPOSTS(48)=-47,
++   NPOSTS(49)=-48,
++   NPOSTS(50)=-49,
++   NPOSTS(51)=-50,
++   NPOSTS(52)=-51,
++   NPOSTS(53)=-52,
++   NPOSTS(54)=-53,
++   NPOSTS(55)=-54,
++   NPOSTS(56)=-55,
++   NPOSTS(57)=-56,
++   NPOSTS(58)=-57,
++   NPOSTS(59)=-58,
++   NPOSTS(60)=-59,
++   NPOSTS(61)=-60,
++   NPOSTS(62)=-61,
++   NPOSTS(63)=-62,
++   NPOSTS(64)=-63,
++   NPOSTS(65)=-64,
++   NPOSTS(66)=-65,
++   NPOSTS(67)=-66,
++   NPOSTS(68)=-67,
++   NPOSTS(69)=-68,
++   NPOSTS(70)=-69,
++   NPOSTS(71)=-70,
++   NPOSTS(72)=-71,
++   NPOSTS(73)=-72,
++   NPOSTS(74)=-73,
++   NPOSTS(75)=-74,
++   NPOSTS(76)=-75,
++   NPOSTS(77)=-76,
++   NPOSTS(78)=-77,
++   NPOSTS(79)=-78,
++   NPOSTS(80)=-79,
++   NPOSTS(81)=-80,
++   NPOSTS(82)=-81,
++   NPOSTS(83)=-82,
++   NPOSTS(84)=-83,
++   NPOSTS(85)=-84,
++   NPOSTS(86)=-85,
++   NPOSTS(87)=-86,
++   NPOSTS(88)=-87,
++   NPOSTS(89)=-88,
++   NPOSTS(90)=-89,
++   NPOSTS(91)=-90,
++   NPOSTS(92)=-91,
++   NPOSTS(93)=-92,
++   NPOSTS(94)=-93,
++   NPOSTS(95)=-94,
++   NPOSTS(96)=-95,
++   NPOSTS(97)=-96,
++   NPOSTS(98)=-97,
++   NPOSTS(99)=-98,
++   NPOSTS(100)=-99,
++   NPOSTS(101)=-100,
++   NPOSTS(102)=-101,
++   NPOSTS(103)=-102,
++   NPOSTS(104)=-103,
++   NPOSTS(105)=-104,
++   NPOSTS(106)=-105,
++   NPOSTS(107)=-106,
++   NPOSTS(108)=-107,
++   NPOSTS(109)=-108,
++   NPOSTS(110)=-109,
++   NPOSTS(111)=-110,
++   NPOSTS(112)=-111,
++   NPOSTS(113)=-112,
++   NPOSTS(114)=-113,
++   NPOSTS(115)=-114,
++   NSFXHISTS(0)=-12,
++   NSFXHISTS(1)=0,
++   NSFXHISTS(2)=-3,
++   NSFXHISTS(3)=-6,
++   NSFXHISTS(4)=-9,
++   NSFXHISTS(5)=-12,
++   NSFXHISTS(6)=-15,
++   NSFXHISTS(7)=-18,
++   NSFXHISTS(8)=-21,
++   NSFXHISTS(9)=-24,
++   NSFXHISTS(10)=-48,
++   NSFXHISTS(11)=-72,
++   NSFXHISTS(12)=-96,
++   LOLDPP=.FALSE.,
++ /
++ &NAMCT1
++   LRFILAF=.FALSE.,
++   N1POS=1,
++   N1RES=0,
++   N1SFXHIS=1,
++ /
++ &NAMCUMF
++   RMFDEPS=0.15,
++   RPRCON=4.E-3,
++ /
++ &NAMCUMFS
++ /
++ &NAMCVER
++   LVERTFE=.TRUE.,
++   NVFE_TYPE=3,
++ /
++ &NAMCVMNH
++   OTADJS=10800.,
++   XCDEPTH=1.,
++   XCDEPTH_D=4000.,
++   XDTPERT=0.3,
++   XENTR=0.01,
++   LSMOOTH=.FALSE.,
++   XATPERT=500.,
++   XBTPERT=0.5,
++   XAW=1.,
++   XBW=0.5,
++ /
++ &NAMDDH
++   BDEDDH(1,1)=4.,
++   BDEDDH(2,1)=1.,
++   BDEDDH(3,1)=-85.94,
++   BDEDDH(4,1)=79.99,
++   BDEDDH(1,2)=4.,
++   BDEDDH(2,2)=1.,
++   BDEDDH(3,2)=-156.616,
++   BDEDDH(4,2)=71.322,
++   BDEDDH(1,3)=4.,
++   BDEDDH(2,3)=1.,
++   BDEDDH(3,3)=26.65,
++   BDEDDH(4,3)=67.37,
++   BDEDDH(1,4)=4.,
++   BDEDDH(2,4)=1.,
++   BDEDDH(3,4)=14.124,
++   BDEDDH(4,4)=52.167,
++   BDEDDH(1,5)=4.,
++   BDEDDH(2,5)=1.,
++   BDEDDH(3,5)=4.927,
++   BDEDDH(4,5)=51.971,
++   BDEDDH(1,6)=4.,
++   BDEDDH(2,6)=1.,
++   BDEDDH(3,6)=-1.437,
++   BDEDDH(4,6)=51.145,
++   BDEDDH(1,7)=4.,
++   BDEDDH(2,7)=1.,
++   BDEDDH(3,7)=2.208,
++   BDEDDH(4,7)=48.713,
++   BDEDDH(1,8)=4.,
++   BDEDDH(2,8)=1.,
++   BDEDDH(3,8)=-0.692,
++   BDEDDH(4,8)=44.832,
++   BDEDDH(1,9)=4.,
++   BDEDDH(2,9)=1.,
++   BDEDDH(3,9)=4.407,
++   BDEDDH(4,9)=43.858,
++   BDEDDH(1,10)=4.,
++   BDEDDH(2,10)=1.,
++   BDEDDH(3,10)=1.374,
++   BDEDDH(4,10)=43.575,
++   BDEDDH(1,11)=4.,
++   BDEDDH(2,11)=1.,
++   BDEDDH(3,11)=0.37,
++   BDEDDH(4,11)=43.128,
++   BDEDDH(1,12)=4.,
++   BDEDDH(2,12)=1.,
++   BDEDDH(3,12)=15.75,
++   BDEDDH(4,12)=40.59,
++   BDEDDH(1,13)=4.,
++   BDEDDH(2,13)=1.,
++   BDEDDH(3,13)=-97.5,
++   BDEDDH(4,13)=36.617,
++   BDEDDH(1,14)=4.,
++   BDEDDH(2,14)=1.,
++   BDEDDH(3,14)=2.176,
++   BDEDDH(4,14)=13.477,
++   BDEDDH(1,15)=4.,
++   BDEDDH(2,15)=1.,
++   BDEDDH(3,15)=166.916,
++   BDEDDH(4,15)=-0.521,
++   BDEDDH(1,16)=4.,
++   BDEDDH(2,16)=1.,
++   BDEDDH(3,16)=147.425,
++   BDEDDH(4,16)=-2.006,
++   BDEDDH(1,17)=4.,
++   BDEDDH(2,17)=1.,
++   BDEDDH(3,17)=130.891,
++   BDEDDH(4,17)=-12.425,
++   BDEDDH(1,18)=4.,
++   BDEDDH(2,18)=1.,
++   BDEDDH(3,18)=-5.783,
++   BDEDDH(4,18)=41.816,
++   BDEDDH(1,19)=4.,
++   BDEDDH(2,19)=1.,
++   BDEDDH(3,19)=24.65,
++   BDEDDH(4,19)=60.183,
++   BDEDDH(1,20)=4.,
++   BDEDDH(2,20)=1.,
++   BDEDDH(3,20)=27.5,
++   BDEDDH(4,20)=62.666,
++   BDEDDH(1,21)=4.,
++   BDEDDH(2,21)=1.,
++   BDEDDH(3,21)=25.566,
++   BDEDDH(4,21)=66.55,
++   BDEDDH(1,22)=4.,
++   BDEDDH(2,22)=1.,
++   BDEDDH(3,22)=123.34,
++   BDEDDH(4,22)=-75.08,
++   BDEDDH(1,23)=4.,
++   BDEDDH(2,23)=1.,
++   BDEDDH(3,23)=127.21,
++   BDEDDH(4,23)=34.76,
++   BDEDDH(1,24)=4.,
++   BDEDDH(2,24)=1.,
++   BDEDDH(3,24)=140.01,
++   BDEDDH(4,24)=-66.66,
++   BDEDDH(1,25)=4.,
++   BDEDDH(2,25)=1.,
++   BDEDDH(3,25)=-26.65,
++   BDEDDH(4,25)=-75.58,
++   LHDDOP=.TRUE.,
++   LHDEFD=.TRUE.,
++   LHDEFZ=.TRUE.,
++   LHDHKS=.TRUE.,
++   LHDZON=.TRUE.,
++   NDHKD=30,
++ /
++ &NAMDFI
++ /
++ &NAMDIM
++   NPROMA=-16,
++ /
++ &NAMDIMO
++ /
++ &NAMDIM_TRAJ
++ /
++ &NAMDPHY
++ /
++ &NAMDPRECIPS
++ /
++ &NAMDVISI
++   HVISI=10.0,
++ /
++ &NAMDYN
++   LADVF=.TRUE.,
++   NTLAG=3,
++   NVLAG=3,
++   NWLAG=3,
++   RCMSLP0=1.,
++   REPS1=0.,
++   REPS2=0.,
++   REPSM1=0.,
++   REPSM2=0.,
++   REPSP1=0.,
++   RW2TLFF=1.,
++   SIPR=100000.,
++   SITR=350.,
++   VESL=0.,
++   XIDT=0.,
++   RDAMPDIV=4.,
++   RDAMPQ=0.,
++   RDAMPT=0.,
++   RDAMPVOR=50.,
++   SLEVDH1=0.15,
++   SLEVDH2=0.08,
++   NITMP=4,
++   RATIO_HDI_TOP=20.,
++ /
++ &NAMDYNA
++   LAPRXPK=.TRUE.,
++   NDLNPR=0,
++   LSETTLS=.TRUE.,
++   LSETTLST=.TRUE.,
++   LSETTLSV=.TRUE.,
++ /
++ &NAMDYNCORE
++ /
++ &NAMEMIS_CONF
++ /
++ &NAMENKF
++ /
++ &NAMFA
++   NBITCS=-1,
++   NBITPG=-1,
++   NSTRON=-1,
++   LSUPPDATE=.FALSE.,
++   YFAIRAD%NBITS=12,
++   YFALRAD%NBITS=12,
++   YFATKE%NBITS=16,
++   YFACLF%NBITS=6,
++   YFA_XUGST%CLNAME='CLSU.RAF60M.XFU',
++   YFA_XVGST%CLNAME='CLSV.RAF60M.XFU',
++   YFA_MXCLWC%CLNAME='CLD_WX_60M',
++   YFA_XPTYPE%CLNAME='CLSPTYPE_60M',
++   YFA_XPTYPESEV%CLNAME='CLSPTYPESEV_60M',
++   YFA_VISICLD%CLNAME='CLSVISIN_60',
++   YFA_VISIHYD%CLNAME='CLSVISIHYDN60',
++   YFA_XUGST2%CLNAME='CLSU.RAF180M.XFU',
++   YFA_XVGST2%CLNAME='CLSV.RAF180M.XFU',
++   YFA_MXCLWC2%CLNAME='CLD_WX_180M',
++   YFA_XPTYPE2%CLNAME='CLSPTYPE_180M',
++   YFA_XPTYPESEV2%CLNAME='CLSPTYPESEV_180M',
++   YFA_VISICLD2%CLNAME='CLSVISIN_180',
++   YFA_VISIHYD2%CLNAME='CLSVISIHYDN180',
++   CMODEL='OUTPUTID',
++   LEXTERN=.TRUE.,
++   NVGRIB=123,
++ /
++ &NAMFAINIT
++   JPXTRO=2000,
++ /
++ &NAMFPC
++   CFPFMT='LALON',
++   NFITI=1,
++   NFITV=1,
++   LFPMOIS=.TRUE.,
++   NFPCLI=1,
++   NFPGRIB=141,
++   RFPVCAP=7000.,
++   NFPCAPE=5,
++   RENTRA=0.0001,
++   LFPPACKING=.FALSE.,
++   NITERPV=8,
++   LCRITSNOWTEMP=.FALSE.,
++   LFPCAPEX=.TRUE.,
++   NFPINPHY=4,
++   CFPDOM(1)='EURAT01',
++   CFPDOM(2)='ATOURX01',
++   CFPDOM(3)='GLOB025',
++   CFPDOM(4)='GLOB01',
++   CFPDOM(5)='EURAT1S20',
++   CFP2DF(1)='SURFPRESSION',
++   CFP2DF(2)='MSLPRESSURE',
++   CFP2DF(3)='SURFTOT.WAT.VAPO',
++   CFP2DF(4)='SURFISOTPW0.MALT',
++   CFP2DF(5)='SURFCAPE.POS.F00',
++   CFP2DF(6)='C002_METEOSAT_11',
++   CFP2DF(7)='C006_METEOSAT_11',
++   CFP2DF(8)='SURFISOTPW1.MALT',
++   CFP2DF(9)='SURFISOTPW2.MALT',
++   CFP3DF(1)='GEOPOTENTIEL',
++   CFP3DF(2)='TEMPERATURE',
++   CFP3DF(3)='VENT_ZONAL',
++   CFP3DF(4)='VENT_MERIDIEN',
++   CFP3DF(5)='HUMI_RELATIVE',
++   CFP3DF(6)='THETA_PRIM_W',
++   CFP3DF(7)='PRESSURE',
++   CFP3DF(8)='ABS_VORTICITY',
++   CFP3DF(9)='VITESSE_VERTICALE',
++   CFP3DF(10)='DIVERGENCE',
++   CFP3DF(11)='POT_VORTICIT',
++   CFP3DF(12)='TEMPE_POTENT',
++   CFP3DF(13)='RAD_LIQUID_WATER',
++   CFP3DF(14)='RAD_SOLID_WATER',
++   CFP3DF(15)='CLOUD_FRACTI',
++   CFP3DF(16)='TKE',
++   CFP3DF(17)='ISOT_ALTIT',
++   CFP3DF(18)='EDR',
++   CFPPHY(1)='SURFTEMPERATURE',
++   CFPPHY(2)='PROFTEMPERATURE',
++   CFPPHY(3)='SURFRESERV.EAU',
++   CFPPHY(4)='PROFRESERV.EAU',
++   CFPPHY(5)='SURFRESERV.GLACE',
++   CFPPHY(6)='PROFRESERV.GLACE',
++   CFPPHY(7)='SURFRESERV.NEIGE',
++   CFPPHY(8)='INTSURFGEOPOTENT',
++   CFPXFU(1)='SURFNEBUL.TOTALE',
++   CFPXFU(2)='SURFNEBUL.CONVEC',
++   CFPXFU(3)='SURFNEBUL.HAUTE',
++   CFPXFU(4)='SURFNEBUL.MOYENN',
++   CFPXFU(5)='SURFNEBUL.BASSE',
++   CFPXFU(6)='SURFCAPE.MOD.XFU',
++   CFPXFU(7)='CLPMOCON.MOD.XFU',
++   CFPXFU(8)='CLPMHAUT.MOD.XFU',
++   CFPXFU(9)='CLSU.RAF60M.XFU',
++   CFPXFU(10)='CLSV.RAF60M.XFU',
++   CFPXFU(11)='CLSTEMPERATURE',
++   CFPXFU(12)='CLSHUMI.RELATIVE',
++   CFPXFU(13)='CLSVENT.ZONAL',
++   CFPXFU(14)='CLSVENT.MERIDIEN',
++   CFPXFU(15)='CLSMAXI.TEMPERAT',
++   CFPXFU(16)='CLSMINI.TEMPERAT',
++   CFPXFU(17)='CLSU.RAF180M.XFU',
++   CFPXFU(18)='CLSV.RAF180M.XFU',
++   CFPXFU(19)='CLPTOPCONV.MOD.XFU',
++   CFPXFU(20)='CLSVISIN_60',
++   CFPXFU(21)='CLSVISIHYDN60',
++   CFPXFU(22)='CLD_WX_60M',
++   CFPXFU(23)='CLSVISIN_180',
++   CFPXFU(24)='CLSVISIHYDN180',
++   CFPXFU(25)='CLD_WX_180M',
++   CFPXFU(26)='CLSPTYPE_60M',
++   CFPXFU(27)='CLSPTYPESEV_60M',
++   CFPXFU(28)='CLSPTYPE_180M',
++   CFPXFU(29)='CLSPTYPESEV_180M',
++   CFPCFU(1)='SURFTENS.TOTA.ZO',
++   CFPCFU(2)='SURFTENS.TOTA.ME',
++   CFPCFU(3)='SURFPREC.EAU.CON',
++   CFPCFU(4)='SURFPREC.NEI.CON',
++   CFPCFU(5)='SURFPREC.EAU.GEC',
++   CFPCFU(6)='SURFPREC.NEI.GEC',
++   CFPCFU(7)='SOMMFLU.RAY.SOLA',
++   CFPCFU(8)='SURFFLU.RAY.SOLA',
++   CFPCFU(9)='SOMMFLU.RAY.THER',
++   CFPCFU(10)='SURFFLU.RAY.THER',
++   CFPCFU(11)='SURFFLU.LAT.MTOT',
++   CFPCFU(12)='SURFFLU.MTOTA.NE',
++   CFPCFU(13)='SURFFLU.CHA.SENS',
++   CFPCFU(14)='SURFRAYT.LUNE.DE',
++   CFPCFU(15)='SURFRAYT SOL CL',
++   CFPCFU(16)='SURFRAYT THER CL',
++   CFPCFU(17)='SURFRAYT SOLA DE',
++   CFPCFU(18)='SURFRAYT THER DE',
++   CFPCFU(19)='SURFRAYT DIR SUR',
++   RFP3H(1)=10.,
++   RFP3H(2)=20.,
++   RFP3H(3)=35.,
++   RFP3H(4)=50.,
++   RFP3H(5)=75.,
++   RFP3H(6)=100.,
++   RFP3H(7)=150.,
++   RFP3H(8)=200.,
++   RFP3H(9)=250.,
++   RFP3H(10)=375.,
++   RFP3H(11)=500.,
++   RFP3H(12)=625.,
++   RFP3H(13)=750.,
++   RFP3H(14)=875.,
++   RFP3H(15)=1000.,
++   RFP3H(16)=1125.,
++   RFP3H(17)=1250.,
++   RFP3H(18)=1375.,
++   RFP3H(19)=1500.,
++   RFP3H(20)=1750.,
++   RFP3H(21)=2000.,
++   RFP3H(22)=2250.,
++   RFP3H(23)=2500.,
++   RFP3H(24)=2750.,
++   RFP3H(25)=3000.,
++   RFP3P(1)=100.,
++   RFP3P(2)=200.,
++   RFP3P(3)=300.,
++   RFP3P(4)=500.,
++   RFP3P(5)=700.,
++   RFP3P(6)=1000.,
++   RFP3P(7)=2000.,
++   RFP3P(8)=3000.,
++   RFP3P(9)=5000.,
++   RFP3P(10)=7000.,
++   RFP3P(11)=10000.,
++   RFP3P(12)=12500.,
++   RFP3P(13)=15000.,
++   RFP3P(14)=17500.,
++   RFP3P(15)=20000.,
++   RFP3P(16)=22500.,
++   RFP3P(17)=25000.,
++   RFP3P(18)=27500.,
++   RFP3P(19)=30000.,
++   RFP3P(20)=35000.,
++   RFP3P(21)=40000.,
++   RFP3P(22)=45000.,
++   RFP3P(23)=50000.,
++   RFP3P(24)=55000.,
++   RFP3P(25)=60000.,
++   RFP3P(26)=65000.,
++   RFP3P(27)=70000.,
++   RFP3P(28)=75000.,
++   RFP3P(29)=80000.,
++   RFP3P(30)=85000.,
++   RFP3P(31)=90000.,
++   RFP3P(32)=92500.,
++   RFP3P(33)=95000.,
++   RFP3P(34)=100000.,
++   RFP3PV(1)=0.0000015,
++   RFP3PV(2)=0.000002,
++   RFP3PV(3)=7.0D-7,
++   RFP3I(1)=-273.15,
++   RFP3I(2)=-263.15,
++   RFP3I(3)=-261.15,
++   RFP3I(4)=-253.15,
++ /
++ &NAMFPD
++ /
++ &NAMFPDY2
++ /
++ &NAMFPDYF
++ /
++ &NAMFPDYH
++ /
++ &NAMFPDYI
++ /
++ &NAMFPDYP
++ /
++ &NAMFPDYS
++ /
++ &NAMFPDYT
++ /
++ &NAMFPDYV
++ /
++ &NAMFPF
++   NFPCMAX=4049,
++   LFPRDFIL=.FALSE.,
++   NFMAX(1)=450,
++   NFMAX(2)=450,
++   NFMAX(3)=210,
++   NFMAX(4)=350,
++   NFMAX(5)=350,
++ /
++ &NAMFPG
++ /
++ &NAMFPIOS
++   NFPXFLD=128,
++ /
++ &NAMFPMOVE
++ /
++ &NAMFPPHY
++ /
++ &NAMFPSC2
++   NFPROMA=50,
++ /
++ &NAMFPSC2_DEP
++   NFPROMA_DEP=50,
++ /
++ &NAMGEM
++ /
++ &NAMGFL
++   YI_NL%LADV=.TRUE.,
++   YI_NL%LGP=.TRUE.,
++   YI_NL%LGPINGP=.TRUE.,
++   YI_NL%LPHY=.FALSE.,
++   YI_NL%LQM=.TRUE.,
++   YI_NL%LREQOUT=.FALSE.,
++   YI_NL%LT1=.TRUE.,
++   YI_NL%NREQIN=1,
++   YL_NL%LADV=.TRUE.,
++   YL_NL%LGP=.TRUE.,
++   YL_NL%LGPINGP=.TRUE.,
++   YL_NL%LPHY=.FALSE.,
++   YL_NL%LQM=.TRUE.,
++   YL_NL%LREQOUT=.FALSE.,
++   YL_NL%LT1=.TRUE.,
++   YL_NL%NREQIN=1,
++   YR_NL%LADV=.TRUE.,
++   YR_NL%LGP=.TRUE.,
++   YR_NL%LGPINGP=.TRUE.,
++   YR_NL%LPHY=.FALSE.,
++   YR_NL%LQM=.TRUE.,
++   YR_NL%LREQOUT=.FALSE.,
++   YR_NL%LT1=.TRUE.,
++   YR_NL%NREQIN=1,
++   YS_NL%LADV=.TRUE.,
++   YS_NL%LGP=.TRUE.,
++   YS_NL%LGPINGP=.TRUE.,
++   YS_NL%LPHY=.FALSE.,
++   YS_NL%LQM=.TRUE.,
++   YS_NL%LREQOUT=.FALSE.,
++   YS_NL%LT1=.TRUE.,
++   YS_NL%NREQIN=1,
++   YTKE_NL%LADV=.TRUE.,
++   YTKE_NL%LGP=.TRUE.,
++   YTKE_NL%LGPINGP=.TRUE.,
++   YTKE_NL%LQM=.TRUE.,
++   YTKE_NL%LREQOUT=.TRUE.,
++   YTKE_NL%LT1=.TRUE.,
++   YTKE_NL%NCOUPLING=0,
++   YTKE_NL%NREQIN=1,
++   YIRAD_NL%LGP=.TRUE.,
++   YIRAD_NL%LREQOUT=.TRUE.,
++   YIRAD_NL%NREQIN=0,
++   YLRAD_NL%LGP=.TRUE.,
++   YLRAD_NL%LREQOUT=.TRUE.,
++   YLRAD_NL%NREQIN=0,
++   YA_NL%LGP=.TRUE.,
++   YA_NL%LREQOUT=.TRUE.,
++   YA_NL%NREQIN=0,
++ /
++ &NAMGRIB
++ /
++ &NAMGWD
++ /
++ &NAMGWDIAG
++ /
++ &NAMGWWMS
++ /
++ &NAMIAU
++ /
++ &NAMICE
++ /
++ &NAMINI
++ /
++ &NAMINTFLEX
++ /
++ &NAMIOMI
++ /
++ &NAMIOS
++ /
++ &NAMIO_SERV
++   NPROC_IO=NBPROC_IO,
++   NIO_SERV_METHOD=2,
++   NMSG_LEVEL_SERVER=1,
++   NMSG_LEVEL_CLIENT=1,
++   NIO_SERV_BUF_MAXSIZE=20,
++   NPROCESS_LEVEL=5,
++ /
++ &NAMJBCODES
++ /
++ &NAMJG
++ /
++ &NAMLCZ
++ /
++ &NAMLIMA
++ /
++ &NAMLSFORC
++ /
++ &NAMMARS
++ /
++ &NAMMCC
++ /
++ &NAMMCUF
++   LMCUF=.TRUE.,
++   NCUFNR=2,
++   RMCUFI(1)=10800.,
++   RMCUFI(2)=21600.,
++ /
++ &NAMMETHOX
++ /
++ &NAMMKODB
++ /
++ &NAMMODERR
++ /
++ &NAMMTS
++   LUBIQUITAIRE=.FALSE.,
++   LISP_HYBRID=.TRUE.,
++ /
++ &NAMMWAVE
++ /
++ &NAMNORGWD
++ /
++ &NAMNPROF
++ /
++ &NAMNUD
++ /
++ &NAMOBS
++ /
++ &NAMONEDVAR
++ /
++ &NAMOOPS
++ /
++ &NAMOPH
++   CFNHWF='ECHIS',
++   LINC=.TRUE.,
++   NTIMEFMT=1,
++ /
++ &NAMOPTCMEM
++ /
++ &NAMPAR0
++   MBX_SIZE=2048000000,
++   MP_TYPE=2,
++   NOUTPUT=1,
++   NPROC=NBPROC,
++   NSPECRESMIN=1199,
++ /
++ &NAMPAR1
++   LEQ_REGIONS=.TRUE.,
++   LSLONDEM=.TRUE.,
++   LSPLIT=.TRUE.,
++   NCOMBFLEN=1638400,
++   NSTRIN=NBPROC,
++   NSTROUT=NBPROC,
++ /
++ &NAMPARAR
++ /
++ &NAMPHMSE
++   LPGDFWR=.FALSE.,
++ /
++ &NAMPHY
++   CGMIXLEN='AY',
++   LAERODES=.TRUE.,
++   LAEROLAN=.TRUE.,
++   LAEROSEA=.TRUE.,
++   LAEROSOO=.TRUE.,
++   LCONDWT=.TRUE.,
++   LDIFCONS=.TRUE.,
++   LFPCOR=.TRUE.,
++   LNEWD=.TRUE.,
++   LNOIAS=.TRUE.,
++   LO3ABC=.TRUE.,
++   LPROCLD=.TRUE.,
++   LRAY=.FALSE.,
++   LRAYFM=.TRUE.,
++   LRAYLU=.TRUE.,
++   LRNUMX=.TRUE.,
++   LSSD=.TRUE.,
++   LSTRA=.FALSE.,
++   LVGSN=.TRUE.,
++   LCVPPKF=.TRUE.,
++   LECDEEP=.TRUE.,
++   LECSHAL=.TRUE.,
++   LECT=.TRUE.,
++   LFLUSO=.TRUE.,
++   LNEBECT=.FALSE.,
++   LSMITH_CDEV=.TRUE.,
++   LO3FL=.TRUE.,
++   LECTFL=.TRUE.,
++   LZ0HSREL=.TRUE.,
++   LADJCLD=.TRUE.,
++   NCALLRAD=2,
++   LECTFL0=.TRUE.,
++   LGLACIERS=.TRUE.,
++   LDAYD=.TRUE.,
++   LEDR=.TRUE.,
++   LCVRA=.FALSE.,
++   LEDMFI=.FALSE.,
++   LGPCMT=.FALSE.,
++   LNCVPGY=.FALSE.,
++   LPTOPC=.TRUE.,
++   LDPRECIPS=.TRUE.,
++   LDPRECIPS2=.TRUE.,
++   NDPRECPERIOD2=3600,
++   LCVTDK=.TRUE.,
++ /
++ &NAMPHY0
++   EDD=1.,
++   EDK=1.,
++   GWDCD=5.4,
++   GWDSE=0.005,
++   GWDVALI=0.5,
++   REVASX=2.0D-7,
++   RICRLM=0.5,
++   TDDGP=0.6,
++   TUDGP=0.6,
++   USURIC=0.175,
++   USURICL=1.,
++   USURID=0.1,
++   VZ0CM=0.0001,
++   XBLM=8.5,
++   XMAXLM=5000.,
++   XMINLM=10.,
++   ALMAVX=1000.,
++   RFACNSM=1.2,
++   RFLCHCE=0.25,
++   RKFBTAU=7200.,
++   RPRTH=1.,
++   RQICRT2=0.,
++   RQICVMIN=0.00001,
++   SXNBCO=1.,
++   ALMAVE=0.,
++   RQCRNS=0.,
++   RQICRSN=1.,
++   TFVI=0.08,
++   TFVL=0.02,
++   TFVS=1.5,
++   ECTMAX=35.,
++   AECLS4=3.,
++   GCVNU=0.00005,
++   GCVPSI=1.,
++   GCVPSIE=1.,
++   QSNEBC=-1.,
++   QSSUSC=5.,
++   RCVEVAP=0.25,
++   GCVHMIN=30000.,
++   GCVOMGE=1.,
++   GDDEVA=0.2,
++   GCVOMGQ=0.,
++   REFLKUO=5000.,
++   GCVOMDPS=2000.,
++   GCVOMGSX=0.5,
++   GCVOMCA=-1.918,
++   GCVOMCC=1.35,
++   GCVRHMIN=0.5,
++   GCVRHMAX=1.,
++   GCVOMGS=1.,
++ /
++ &NAMPHY1
++   ALBMIN=0.65,
++   ALCRIN=0.81,
++   EMMGLA=0.98,
++   EMMMER=0.99,
++   ALRCN1=0.01,
++ /
++ &NAMPHY2
++   FACRAF=4.,
++   XMULAF=0.,
++   LRAFTKE=.TRUE.,
++   HTKERAF=20.,
++   FACRAFCV=0.5,
++ /
++ &NAMPHY3
++ /
++ &NAMPHYDS
++ /
++ &NAMPPC
++ /
++ &NAMPPVI
++ /
++ &NAMPRE
++ /
++ &NAMRAD15
++ /
++ &NAMRADCMEM
++ /
++ &NAMRCF
++ /
++ &NAMRCOEF
++ /
++ &NAMRES
++ /
++ &NAMRGRI
++ /
++ &NAMRINC
++ /
++ &NAMRIP
++   CSTOP='FCSTOP',
++   TSTEP='TIMESTEP',
++ /
++ &NAMRIP0
++ /
++ &NAMRLX
++ /
++ &NAMSATS
++   LPARTIAL_COEF_FILES=.TRUE.,
++ /
++ &NAMSCC
++ /
++ &NAMSCEN
++ /
++ &NAMSCM
++ /
++ &NAMSEKF
++ /
++ &NAMSENS
++ /
++ &NAMSFXCMP
++   CFLDNAME(1)='????????????????',
++   NBBITS(1)=24,
++   NVGRIBSFX=123,
++ /
++ &NAMSIMPHL
++ /
++ &NAMSPNG
++ /
++ &NAMSPP
++ /
++ &NAMSPSDT
++ /
++ &NAMSTA
++ /
++ &NAMSTOPH
++ /
++ &NAMSWE
++ /
++ &NAMTESTVAR
++ /
++ &NAMTHLIM
++ /
++ &NAMTOPH
++   ETCVIM=1000.,
++   ETNEBU=1000.,
++   ETPLUI=1000.,
++   XDRMTK=2.0D-8,
++   XDRMTP=800.,
++   XDRMTX=4.0D-7,
++   XDRMUK=1.0D-7,
++   XDRMUP=800.,
++   XDRMUX=0.000002,
++ /
++ &NAMTRAJP
++ /
++ &NAMTRANS
++   LFFTW=.TRUE.,
++ /
++ &NAMTRANS0
++ /
++ &NAMTS
++ /
++ &NAMVAR
++ /
++ &NAMVARBC
++ /
++ &NAMVARBC_AIREP
++ /
++ &NAMVARBC_ALLSKY
++ /
++ &NAMVARBC_GBRAD
++ /
++ &NAMVARBC_RAD
++ /
++ &NAMVARBC_RSONDE
++ /
++ &NAMVARBC_SFCOBS
++ /
++ &NAMVARBC_TCWV
++ /
++ &NAMVARBC_TO3
++ /
++ &NAMVAREPS
++ /
++ &NAMVDF
++ /
++ &NAMVDOZ
++ /
++ &NAMVOLCANO
++ /
++ &NAMVRTL
++ /
++ &NAMVV0
++ /
++ &NAMVV1
++ /
++ &NAMVWRK
++ /
++ &NAMWAVELETJB
++ /
++ &NAMXFU
++   LXCLP=.TRUE.,
++   LXCLS=.TRUE.,
++   LXFU=.TRUE.,
++   LXHHCLS=.TRUE.,
++   LXICV=.TRUE.,
++   LXNEBPA=.TRUE.,
++   LXNEBTT=.TRUE.,
++   LXQCLS=.TRUE.,
++   LXSOIL=.TRUE.,
++   LXTGST=.TRUE.,
++   LXTTCLS=.TRUE.,
++   LXXGST=.TRUE.,
++   LXXGST2=.TRUE.,
++   LXNUVCLS=.TRUE.,
++   NXGSTPERIOD2=10800,
++   LXCTOP=.TRUE.,
++   LXVISI=.TRUE.,
++   LXVISI2=.TRUE.,
++   NVISIPERIOD2=10800,
++   NRAZTS(1)=0,
++   NRAZTS(2)=-3,
++   NRAZTS(3)=-6,
++   NRAZTS(4)=-9,
++   NRAZTS(5)=-12,
++   NRAZTS(6)=-15,
++   NRAZTS(7)=-18,
++   NRAZTS(8)=-21,
++   NRAZTS(9)=-24,
++   NRAZTS(10)=-27,
++   NRAZTS(11)=-30,
++   NRAZTS(12)=-33,
++   NRAZTS(13)=-36,
++   NRAZTS(14)=-39,
++   NRAZTS(15)=-42,
++   NRAZTS(16)=-45,
++   NRAZTS(17)=-48,
++   NRAZTS(18)=-51,
++   NRAZTS(19)=-54,
++   NRAZTS(20)=-57,
++   NRAZTS(21)=-60,
++   NRAZTS(22)=-63,
++   NRAZTS(23)=-66,
++   NRAZTS(24)=-69,
++   NRAZTS(25)=-72,
++   NRAZTS(26)=-75,
++   NRAZTS(27)=-78,
++   NRAZTS(28)=-81,
++   NRAZTS(29)=-84,
++   NRAZTS(30)=-87,
++   NRAZTS(31)=-90,
++   NRAZTS(32)=-93,
++   NRAZTS(33)=-96,
++   NRAZTS(34)=-99,
++   NRAZTS(35)=-102,
++ /
++ &NAM_CANAPE
++ /
++ &NAM_DISTRIBUTED_VECTORS
++ /
++ &NAPHLC
++ /
++ &NEMCT0
++ /
++ &NEMDIM
++ /
++ &NEMDYN
++ /
++ &NEMELBC0A
++ /
++ &NEMELBC0B
++ /
++ &NEMFPEZO
++ /
++ &NEMGEO
++ /
++ &NEMJK
++ /
++ &NEMVAR
++ /
++ &NEMWAVELET
++ /
+diff --git a/Examples/namelist/ARPPNT/namarp_41t1_ARPEGE_OPER b/examples/namelist/ARPPNT/namarp_41t1_ARPEGE_OPER
+similarity index 100%
+rename from Examples/namelist/ARPPNT/namarp_41t1_ARPEGE_OPER
+rename to examples/namelist/ARPPNT/namarp_41t1_ARPEGE_OPER
+diff --git a/examples/namelist/SURFEX/al46t1_arome-op1.01.nam-namel_prep b/examples/namelist/SURFEX/al46t1_arome-op1.01.nam-namel_prep
+new file mode 100644
+index 0000000..ef17ab7
+--- /dev/null
++++ b/examples/namelist/SURFEX/al46t1_arome-op1.01.nam-namel_prep
+@@ -0,0 +1,62 @@
++&NAM_CONF_PROJ
++  XLAT0=46.70,
++  XLON0=2.0000000,
++  XRPK=0.727772757657211,
++  XBETA=0.00,
++ /
++&NAM_CONF_PROJ_GRID
++  XLATCEN=46.70,
++  XLONCEN=2.0000000,
++  NIMAX=739,
++  NJMAX=789,
++  XDX=2500.0,
++  XDY=2500.0,
++ /
++&NAM_DIAG_ISBAn
++  LPGD=.TRUE.,
++  LSURF_DIAG_ALBEDO=.TRUE.,
++/
++&NAM_IO_OFFLINE
++  LFAGMAP=.TRUE.,
++  CSURF_FILETYPE = 'FA   ',
++  CPREPFILE = 'PREP2',
++  CPGDFILE = 'PGD2',
++/
++&NAM_ISBA
++  XUNIF_RUNOFFB = 0.5,
++  CISBA         = '3-L',
++  CPHOTO        = 'NON',
++  NPATCH        = 1,
++  NGROUND_LAYER = 3,
++/
++&NAM_PGD_GRID
++  CGRID = 'CONF PROJ',
++/
++&NAM_PGD_SCHEMES
++  CNATURE = 'ISBA  ',
++  CSEA    = 'SEAFLX',
++  CTOWN   = 'TEB   ',
++  CWATER  = 'WATFLX',
++/
++&NAM_PREP_SEAFLUX
++  LSEA_SBL =.FALSE.,
++/
++&NAM_PREP_SURF_ATM
++  CFILETYPE    = 'FA   ',
++  CFILE    = 'PREP1',     
++  CFILEPGDTYPE = 'FA   ',
++  CFILEPGD = 'PGD1',
++  NHALO_PREP = 2,
++/
++&NAM_PREP_ISBA
++  LISBA_CANOPY=.FALSE.,
++/
++&NAM_WRITE_SURF_ATM
++  LNOWRITE_TEXFILE=.TRUE.,
++/
++&NAM_PREP_WATFLUX
++  LWAT_SBL=.FALSE.,
++/
++&NAM_SURF_ATM
++  LVERTSHIFT=.TRUE.,
++/
+diff --git a/examples/namelist/SURFEX/al46t1_arome-op1.01.nam-namel_previ_surfex_prod b/examples/namelist/SURFEX/al46t1_arome-op1.01.nam-namel_previ_surfex_prod
+new file mode 100644
+index 0000000..f37263b
+--- /dev/null
++++ b/examples/namelist/SURFEX/al46t1_arome-op1.01.nam-namel_previ_surfex_prod
+@@ -0,0 +1,44 @@
++ &NAM_DIAG_ISBAN
++   LPGD=.TRUE.,
++   LSURF_MISC_BUDGET=.TRUE.,
++ /
++ &NAM_DIAG_SURFN
++   LCOEF=.TRUE.,
++   LSURF_BUDGET=.TRUE.,
++   N2M=2,
++ /
++ &NAM_ISBAN
++   CROUGH='NONE',
++   CSCOND='NP89',
++ /
++ &NAM_REPROD_OPER
++   LREPROD_OPER=.TRUE.,
++ /
++ &NAM_SEAFLUXN
++   CSEA_FLUX='ECUME',
++   LPWG=.FALSE.,
++   LPRECIP=.FALSE.,
++   LPWEBB=.FALSE.,
++ /
++ &NAM_SSON
++   CROUGH='Z01D',
++   XFRACZ0=5.,
++   LDSV=.FALSE.,
++   LDSH=.TRUE.,
++   LDSL=.TRUE.,
++ /
++ &NAM_SURF_ATM
++   XRIMAX=0.2,
++   LNOSOF=.TRUE.,
++ /
++ &NAM_SURF_ATMN
++   LVERTSHIFT=.TRUE.,
++ /
++ &NAM_WRITE_DIAG_SURFN
++   LPROVAR_TO_DIAG=.FALSE.,
++   LSELECT=.TRUE.,
++   CSELECT(1)='T2M','HU2M','XX','YY','DX','DY','SST','Z0SEA','TS_WATER','Z0WATER','TG1','TG2','TG3','WG1','WG2','WG3','WGI1','WGI2','WGI3','WR','WSN_VEG1','RSN_VEG1','ASN_VEG','TSRAD_NAT','RESA','TROOF1','TROOF2','TROOF3','TROOF4','TROOF5','WS_ROOF','TROAD1','TROAD2','TROAD3','TROAD4','TROAD5','WS_ROAD','TWALL1','TWALL2','TWALL3','TWALL4','TWALL5','TI_BLD','T_WIN1','TI_ROAD','WSN_RF1','RSN_RF1','TSN_RF1','ASN_RF','WSN_RD1','RSN_RD1','TSN_RD1','ASN_RD','TCANYON','QCANYON','STORAGE_TYPE','MASDEV','VERSION','BUG','DIM_FULL','DTCUR','LAT0','LON0','RPK','BETA','LATORI','LONORI','IMAX','JMAX','RW_PRECIP','BUDC','SEA_OCEAN','SEA_SBL','WAT_SBL','SN_VEG_N','SN_VEG','LSNOW_FRAC_T','GLACIER','TEMPARP','NLITTER','NLITTLEVS','NSOILCARB','ISBA_CANOPY','SN_RF_N','SN_RF','SN_RD_N','SN_RD','SN_RD_TYP','SN_RF_TYP','TEB_CANOPY','STORAGETYPE','CARTESIAN','GRID_TYPE','SN_VEG_TYP','RESPSL','ROAD_DIR','WALL_OPT','LAI','VEG','RSMIN','DG2','_FBUF_SIZE','_FBUF_DIM1','_FBUF_DIM2','_FBUF_NAME','_FBUF_TYPE','_FBUF_MASK','LCPL_GCM','HANDLE_SIC','SSS',
++ /
++ &NAM_WRITE_SURF_ATM
++   LNOWRITE_TEXFILE=.TRUE.,
++ /
+diff --git a/examples/namelist/SURFEX/cy46t1_op1.01.nam-namel_prep_sfx b/examples/namelist/SURFEX/cy46t1_op1.01.nam-namel_prep_sfx
+new file mode 100644
+index 0000000..bb718b3
+--- /dev/null
++++ b/examples/namelist/SURFEX/cy46t1_op1.01.nam-namel_prep_sfx
+@@ -0,0 +1,61 @@
++ &NAETLDIAG
++ /
++ &NAMACV
++ /
++ &NAMAERDET
++ /
++ &NAMCOMPO
++ /
++ &NAMLIMA
++ /
++ &NAMMETHOX
++ /
++ &NAMSPP
++ /
++ &NAM_FILE_NAMES
++   HPGDFILE='PGDFILE',
++   CINIFILE='INIT_SURF',
++ /
++ &NAM_IO_OFFLINE
++   LPRINT=.TRUE.,
++   CSURF_FILETYPE='FA',
++   CPREPFILE='PREP2',
++   CPGDFILE='PGD2',
++   LFAGMAP=.TRUE.,
++ /
++ &NAM_ISBAN
++   LGLACIER=.TRUE.,
++ /
++ &NAM_PREP_ISBA
++   LISBA_CANOPY=.FALSE.,
++ /
++ &NAM_PREP_ISBA_SNOW
++   LSNOW_IDEAL=.TRUE.,
++ /
++ &NAM_PREP_SEAFLUX
++   LSEA_SBL=.FALSE.,
++   CSEAICE_SCHEME='GELATO',
++ /
++ &NAM_PREP_SURF_ATM
++   CFILETYPE='FA',
++   CFILE='PREP1',
++   CFILEPGDTYPE='FA',
++   CFILEPGD='PGD1',
++   NHALO_PREP=2,
++ /
++ &NAM_PREP_WATFLUX
++   LWAT_SBL=.FALSE.,
++ /
++ &NAM_REPROD_OPER
++   LREPROD_OPER=.TRUE.,
++ /
++ &NAM_SEAICEn
++   CINTERPOL_SIC = 'UNIF',
++ /
++ &NAM_SURF_ATM
++   LNOSOF=.FALSE.,
++   LVERTSHIFT=.FALSE.,
++ /
++ &NAM_WRITE_SURF_ATM
++   LNOWRITE_TEXFILE=.TRUE.,
++ /
+diff --git a/examples/namelist/SURFEX/cy46t1_op1.01.nam-namel_previ_surfex b/examples/namelist/SURFEX/cy46t1_op1.01.nam-namel_previ_surfex
+new file mode 100644
+index 0000000..cd97717
+--- /dev/null
++++ b/examples/namelist/SURFEX/cy46t1_op1.01.nam-namel_previ_surfex
+@@ -0,0 +1,77 @@
++ &NAETLDIAG
++ /
++ &NAMACV
++ /
++ &NAMAERDET
++ /
++ &NAMCOMPO
++ /
++ &NAMLIMA
++ /
++ &NAMMETHOX
++ /
++ &NAMSPP
++ /
++ &NAM_DIAG_ISBAN
++   LSURF_MISC_BUDGET=.TRUE.,
++   LSURF_EVAP_BUDGET=.TRUE.,
++   LSURF_DIAG_ALBEDO=.TRUE.,
++   LPATCH_BUDGET=.FALSE.,
++   LPGD=.TRUE.,
++ /
++ &NAM_DIAG_SURFN
++   N2M=2,
++   LSURF_BUDGET=.TRUE.,
++   LCOEF=.TRUE.,
++   LSURF_VARS=.TRUE.,
++ /
++ &NAM_ISBAN
++   CROUGH='NONE',
++   XCGMAX=0.000008,
++   LGLACIER=.TRUE.,
++ /
++ &NAM_REPROD_OPER
++   LREPROD_OPER=.TRUE.,
++ /
++ &NAM_SEAFLUXn
++   CSEA_FLUX='ECUME6',
++   LPWG=.FALSE.,
++   LPRECIP=.TRUE.,
++   LPWEBB=.FALSE.,
++   XICHCE=0.,
++ /
++ &NAM_SEAICEn
++   LDIAG_SEAICE=.TRUE.,
++   CINTERPOL_SIC='UNIF',
++   CONSTRAIN_CSV='NONE',
++   XFREEZING_SST=-1.8,
++   XSIC_EFOLDING_TIME=0,
++   XCD_ICE_CST=0.0015,
++   XSI_FLX_DRV=-20.,
++ /
++ &NAM_SSON
++   CROUGH='Z01D',
++ /
++ &NAM_SURF_ATM
++   LARP_PN=.TRUE.,
++   XRIMAX=0.2,
++   LNOSOF=.FALSE.,
++   LVERTSHIFT=.TRUE.,
++ /
++ &NAM_SURF_CSTS
++   XANSMIN=0.65,
++   XALBWATICE=0.65,
++   XALBSEAICE=0.65,
++   XEMISWATICE=0.97,
++   XZ0SN=0.01,
++   XZ0HSN=0.001,
++   XEMISSN=0.99,
++ /
++ &NAM_WRITE_DIAG_SURFn
++   LPROVAR_TO_DIAG=.FALSE.,
++   LSELECT=.TRUE.,
++   CSELECT(1)='LONINF','LATINF','LONSUP','LATSUP','LCPL_GCM','HANDLE_SIC','SSS','LATGAUSS','LONGAUSS','LAT_G_XY','LON_G_XY','MESHGAUSS','SST','Z0SEA','TS_WATER','Z0WATER','TG1','TG2','TG3','WG1','WG2','WG3','WGI1','WGI2','WGI3','WR','WSN_VEG1','RSN_VEG1','ASN_VEG','TSRAD_NAT','RESA','STORAGE_TYPE','MASDEV','VERSION','BUG','DIM_FULL','DTCUR','NLATI','LAPO','LOPO','CODIL','NLOPA','RW_PRECIP','BUDC','SEA_OCEAN','SEA_SBL','WAT_SBL','SN_VEG_N','SN_VEG','LSNOW_FRAC_T','GLACIER','TEMPARP','NLITTER','NLITTLEVS','NSOILCARB','ISBA_CANOPY','STORAGETYPE','CARTESIAN','GRID_TYPE','SN_VEG_TYP','RESPSL','T2M','HU2M','LAI','VEG','RSMIN','DG2','ICE_STO','_FBUF_SIZE','_FBUF_DIM1','_FBUF_DIM2','_FBUF_NAME','_FBUF_TYPE','_FBUF_MASK','ALBVIS_ISBA','ALBNIR_ISBA','ALBUV_ISBA','ALBVIS_S','ALBNIR_S','ALBUV_S','ICENL','ICENT','ICEUSTAR','ICEAGE_1','ICEVMP_1','ICEASN_1','ICEFSI_1','ICEHSI_1','ICESSI_1','ICETSF_1','ICEHSN_1','ICERSN_1','ICEH_1_1','ICEH_1_2','ICEH_1_3','ICEH_1_4','ICEH_1_5','ICEH_1_6','ICEH_1_7','ICEH_1_8','ICEH_1_9','ICEH_1_10','SIC_MTH0','SIC_MTH1','SIC_MTH2','SIC_MTH3','SIC','SEAICE_SCHEM',
++ /
++ &NAM_WRITE_SURF_ATM
++   LNOWRITE_TEXFILE=.TRUE.,
++ /
+diff --git a/examples/namelist/SURFEX/nam.sfx.46t1.test b/examples/namelist/SURFEX/nam.sfx.46t1.test
+new file mode 100644
+index 0000000..3fdede2
+--- /dev/null
++++ b/examples/namelist/SURFEX/nam.sfx.46t1.test
+@@ -0,0 +1,232 @@
++&NAM_CARTESIAN
++  NIMAX           = 1,
++  NJMAX           = 4,
++  XDX             = 250000.,
++  XDY             = 250000.,
++  XLAT0           = 36.0,
++  XLON0           = -97.5,
++/
++&NAM_COVER
++  XUNIF_COVER(1)  = 1.,
++/
++&NAM_DIAG_SURFn
++  LCOEF           = T,
++  LRAD_BUDGET     = T,
++  LRESET_BUDGETC  = T,
++  LSURF_BUDGET    = T,
++  LSURF_BUDGETC   = T,
++  LSURF_VARS      = T,
++  N2M             = 2,
++/
++&NAM_FRAC
++  LECOCLIMAP      = F,
++  XUNIF_NATURE    = 0.,
++  XUNIF_SEA       = 1.,
++  XUNIF_TOWN      = 0.,
++  XUNIF_WATER     = 0.,
++/
++&NAM_IDEAL_FLUX
++  CSFTQ           = 'W/m2',
++  CUSTARTYPE      = 'Z0',
++  NFORCF          = 30,
++  NFORCT          = 30,
++  XALB            = 0.07,
++  XEMIS           = 1.,
++  XSFCO2          = 0.,
++  XSFTH(   1)     = -30.000000,
++  XSFTH(   2)     = -15.000000,
++  XSFTH(   3)     = 0.000000,
++  XSFTH(   4)     = 15.000000,
++  XSFTH(   5)     = 30.000000,
++  XSFTH(   6)     = 45.000000,
++  XSFTH(   7)     = 60.000000,
++  XSFTH(   8)     = 75.000000,
++  XSFTH(   9)     = 90.000000,
++  XSFTH(  10)     = 100.000000,
++  XSFTH(  11)     = 110.000000,
++  XSFTH(  12)     = 120.000000,
++  XSFTH(  13)     = 130.000000,
++  XSFTH(  14)     = 140.000000,
++  XSFTH(  15)     = 140.000000,
++  XSFTH(  16)     = 140.000000,
++  XSFTH(  17)     = 132.000000,
++  XSFTH(  18)     = 124.000000,
++  XSFTH(  19)     = 116.000000,
++  XSFTH(  20)     = 108.000000,
++  XSFTH(  21)     = 100.000000,
++  XSFTH(  22)     = 78.000000,
++  XSFTH(  23)     = 56.000000,
++  XSFTH(  24)     = 34.000000,
++  XSFTH(  25)     = 12.000000,
++  XSFTH(  26)     = -10.000000,
++  XSFTH(  27)     = -10.000000,
++  XSFTH(  28)     = -10.000000,
++  XSFTH(  29)     = -10.000000,
++  XSFTH(  30)     = -10.000000,
++  XSFTQ(   1)     = 5.000000,
++  XSFTQ(   2)     = 35.625000,
++  XSFTQ(   3)     = 66.250000,
++  XSFTQ(   4)     = 96.875000,
++  XSFTQ(   5)     = 127.500000,
++  XSFTQ(   6)     = 158.125000,
++  XSFTQ(   7)     = 188.750000,
++  XSFTQ(   8)     = 219.375000,
++  XSFTQ(   9)     = 250.000000,
++  XSFTQ(  10)     = 290.000000,
++  XSFTQ(  11)     = 330.000000,
++  XSFTQ(  12)     = 370.000000,
++  XSFTQ(  13)     = 410.000000,
++  XSFTQ(  14)     = 450.000000,
++  XSFTQ(  15)     = 475.000000,
++  XSFTQ(  16)     = 500.000000,
++  XSFTQ(  17)     = 484.000000,
++  XSFTQ(  18)     = 468.000000,
++  XSFTQ(  19)     = 452.000000,
++  XSFTQ(  20)     = 436.000000,
++  XSFTQ(  21)     = 420.000000,
++  XSFTQ(  22)     = 372.000000,
++  XSFTQ(  23)     = 324.000000,
++  XSFTQ(  24)     = 276.000000,
++  XSFTQ(  25)     = 228.000000,
++  XSFTQ(  26)     = 180.000000,
++  XSFTQ(  27)     = 135.000000,
++  XSFTQ(  28)     = 90.000000,
++  XSFTQ(  29)     = 45.000000,
++  XSFTQ(  30)     = 0.000000,
++  XTIMEF(   1)    = 0.000000,
++  XTIMEF(   2)    = 1800.000000,
++  XTIMEF(   3)    = 3600.000000,
++  XTIMEF(   4)    = 5400.000000,
++  XTIMEF(   5)    = 7200.000000,
++  XTIMEF(   6)    = 9000.000000,
++  XTIMEF(   7)    = 10800.000000,
++  XTIMEF(   8)    = 12600.000000,
++  XTIMEF(   9)    = 14400.000000,
++  XTIMEF(  10)    = 16200.000000,
++  XTIMEF(  11)    = 18000.000000,
++  XTIMEF(  12)    = 19800.000000,
++  XTIMEF(  13)    = 21600.000000,
++  XTIMEF(  14)    = 23400.000000,
++  XTIMEF(  15)    = 25200.000000,
++  XTIMEF(  16)    = 27000.000000,
++  XTIMEF(  17)    = 28800.000000,
++  XTIMEF(  18)    = 30600.000000,
++  XTIMEF(  19)    = 32400.000000,
++  XTIMEF(  20)    = 34200.000000,
++  XTIMEF(  21)    = 36000.000000,
++  XTIMEF(  22)    = 37800.000000,
++  XTIMEF(  23)    = 39600.000000,
++  XTIMEF(  24)    = 41400.000000,
++  XTIMEF(  25)    = 43200.000000,
++  XTIMEF(  26)    = 45000.000000,
++  XTIMEF(  27)    = 46800.000000,
++  XTIMEF(  28)    = 48600.000000,
++  XTIMEF(  29)    = 50400.000000,
++  XTIMEF(  30)    = 52200.000000,
++  XTIMET(   1)    =   0.00,
++  XTIMET(   2)    = 1800.00,
++  XTIMET(   3)    = 3600.00,
++  XTIMET(   4)    = 5400.00,
++  XTIMET(   5)    = 7200.00,
++  XTIMET(   6)    = 9000.00,
++  XTIMET(   7)    = 10800.00,
++  XTIMET(   8)    = 12600.00,
++  XTIMET(   9)    = 14400.00,
++  XTIMET(  10)    = 16200.00,
++  XTIMET(  11)    = 18000.00,
++  XTIMET(  12)    = 19800.00,
++  XTIMET(  13)    = 21600.00,
++  XTIMET(  14)    = 23400.00,
++  XTIMET(  15)    = 25200.00,
++  XTIMET(  16)    = 27000.00,
++  XTIMET(  17)    = 28800.00,
++  XTIMET(  18)    = 30600.00,
++  XTIMET(  19)    = 32400.00,
++  XTIMET(  20)    = 34200.00,
++  XTIMET(  21)    = 36000.00,
++  XTIMET(  22)    = 37800.00,
++  XTIMET(  23)    = 39600.00,
++  XTIMET(  24)    = 41400.00,
++  XTIMET(  25)    = 43200.00,
++  XTIMET(  26)    = 45000.00,
++  XTIMET(  27)    = 46800.00,
++  XTIMET(  28)    = 48600.00,
++  XTIMET(  29)    = 50400.00,
++  XTIMET(  30)    = 52200.00,
++  XTSRAD(   1)    = 310.000000,
++  XTSRAD(   2)    = 310.000000,
++  XTSRAD(   3)    = 310.000000,
++  XTSRAD(   4)    = 310.000000,
++  XTSRAD(   5)    = 310.000000,
++  XTSRAD(   6)    = 310.000000,
++  XTSRAD(   7)    = 310.000000,
++  XTSRAD(   8)    = 310.000000,
++  XTSRAD(   9)    = 310.000000,
++  XTSRAD(  10)    = 310.000000,
++  XTSRAD(  11)    = 310.000000,
++  XTSRAD(  12)    = 310.000000,
++  XTSRAD(  13)    = 310.000000,
++  XTSRAD(  14)    = 310.000000,
++  XTSRAD(  15)    = 310.000000,
++  XTSRAD(  16)    = 310.000000,
++  XTSRAD(  17)    = 310.000000,
++  XTSRAD(  18)    = 310.000000,
++  XTSRAD(  19)    = 310.000000,
++  XTSRAD(  20)    = 310.000000,
++  XTSRAD(  21)    = 310.000000,
++  XTSRAD(  22)    = 310.000000,
++  XTSRAD(  23)    = 310.000000,
++  XTSRAD(  24)    = 310.000000,
++  XTSRAD(  25)    = 310.000000,
++  XTSRAD(  26)    = 310.000000,
++  XTSRAD(  27)    = 310.000000,
++  XTSRAD(  28)    = 310.000000,
++  XTSRAD(  29)    = 310.000000,
++  XTSRAD(  30)    = 310.000000,
++  XZ0             = 0.035,
++/
++&NAM_IO_OFFLINE
++  CPGDFILE        = 'PGD',
++  CPREPFILE       = 'PREP',
++  CSURF_FILETYPE  = 'FA   ',
++  LFAGMAP         = T,
++/
++&NAM_IO_SURF_ARO
++/
++&NAM_PGD_GRID
++  CGRID           = 'CARTESIAN',
++/
++&NAM_PGD_SCHEMES
++  CNATURE         = 'NONE',
++  CSEA            = 'FLUX',
++  CTOWN           = 'NONE',
++  CWATER          = 'NONE',
++/
++&NAM_PREP_SURF_ATM
++  NDAY            = 21,
++  NMONTH          = 6,
++  NYEAR           = 1997,
++  XTIME           = 41400,
++/
++&NAM_SURF_ATM
++  LNOSOF          = T,
++  LVERTSHIFT      = F,
++  XDELTA_MAX      = 0.9,
++  XRIMAX          = 0.2,
++  XVZ0CM          = 1.E-5,
++/
++&NAM_SURF_CSTS
++  XALBCOEF_TA96   = 0.036,
++  XALBSCA_WAT     = 0.065,
++  XALBSEAICE      = 0.71,
++  XALBWAT         = 0.065,
++  XALBWATICE      = 0.40,
++  XEMISSN         = 0.99,
++  XEMISWAT        = 0.96,
++  XEMISWATICE     = 0.97,
++  XHGLA           = 1.0E3,
++  XWSNV           = 2.0,
++/
++&NAM_ZS
++  XUNIF_ZS        = 314.0,
++/
+diff --git a/Examples/namelist/SURFEX/nam.sfx.tl127.CMIP6.v631 b/examples/namelist/SURFEX/nam.sfx.tl127.CMIP6.v631
+similarity index 100%
+rename from Examples/namelist/SURFEX/nam.sfx.tl127.CMIP6.v631
+rename to examples/namelist/SURFEX/nam.sfx.tl127.CMIP6.v631
+diff --git a/Examples/post/config_AMMA.py b/examples/post/config_AMMA.py
+similarity index 100%
+rename from Examples/post/config_AMMA.py
+rename to examples/post/config_AMMA.py
+diff --git a/Examples/post/config_AMMAsec.py b/examples/post/config_AMMAsec.py
+similarity index 100%
+rename from Examples/post/config_AMMAsec.py
+rename to examples/post/config_AMMAsec.py
+diff --git a/Examples/post/config_ARMCU.py b/examples/post/config_ARMCU.py
+similarity index 100%
+rename from Examples/post/config_ARMCU.py
+rename to examples/post/config_ARMCU.py
+diff --git a/Examples/post/config_ARMCVP.py b/examples/post/config_ARMCVP.py
+similarity index 100%
+rename from Examples/post/config_ARMCVP.py
+rename to examples/post/config_ARMCVP.py
+diff --git a/Examples/post/config_ASTEX.py b/examples/post/config_ASTEX.py
+similarity index 100%
+rename from Examples/post/config_ASTEX.py
+rename to examples/post/config_ASTEX.py
+diff --git a/Examples/post/config_AYOTTE.py b/examples/post/config_AYOTTE.py
+similarity index 100%
+rename from Examples/post/config_AYOTTE.py
+rename to examples/post/config_AYOTTE.py
+diff --git a/Examples/post/config_BOMEX.py b/examples/post/config_BOMEX.py
+similarity index 100%
+rename from Examples/post/config_BOMEX.py
+rename to examples/post/config_BOMEX.py
+diff --git a/Examples/post/config_CINDY-DYNAMO.py b/examples/post/config_CINDY-DYNAMO.py
+similarity index 100%
+rename from Examples/post/config_CINDY-DYNAMO.py
+rename to examples/post/config_CINDY-DYNAMO.py
+diff --git a/Examples/post/config_DYCOMS.py b/examples/post/config_DYCOMS.py
+similarity index 100%
+rename from Examples/post/config_DYCOMS.py
+rename to examples/post/config_DYCOMS.py
+diff --git a/Examples/post/config_DYNAMO.py b/examples/post/config_DYNAMO.py
+similarity index 100%
+rename from Examples/post/config_DYNAMO.py
+rename to examples/post/config_DYNAMO.py
+diff --git a/Examples/post/config_Derbyshire.py b/examples/post/config_Derbyshire.py
+similarity index 100%
+rename from Examples/post/config_Derbyshire.py
+rename to examples/post/config_Derbyshire.py
+diff --git a/Examples/post/config_FIRE.py b/examples/post/config_FIRE.py
+similarity index 100%
+rename from Examples/post/config_FIRE.py
+rename to examples/post/config_FIRE.py
+diff --git a/Examples/post/config_GABLS1.py b/examples/post/config_GABLS1.py
+similarity index 100%
+rename from Examples/post/config_GABLS1.py
+rename to examples/post/config_GABLS1.py
+diff --git a/Examples/post/config_GABLS4.py b/examples/post/config_GABLS4.py
+similarity index 100%
+rename from Examples/post/config_GABLS4.py
+rename to examples/post/config_GABLS4.py
+diff --git a/Examples/post/config_IHOP.py b/examples/post/config_IHOP.py
+similarity index 100%
+rename from Examples/post/config_IHOP.py
+rename to examples/post/config_IHOP.py
+diff --git a/Examples/post/config_LBA.py b/examples/post/config_LBA.py
+similarity index 100%
+rename from Examples/post/config_LBA.py
+rename to examples/post/config_LBA.py
+diff --git a/Examples/post/config_MPACE.py b/examples/post/config_MPACE.py
+similarity index 100%
+rename from Examples/post/config_MPACE.py
+rename to examples/post/config_MPACE.py
+diff --git a/Examples/post/config_RCE.py b/examples/post/config_RCE.py
+similarity index 100%
+rename from Examples/post/config_RCE.py
+rename to examples/post/config_RCE.py
+diff --git a/Examples/post/config_RCEMIP.py b/examples/post/config_RCEMIP.py
+similarity index 100%
+rename from Examples/post/config_RCEMIP.py
+rename to examples/post/config_RCEMIP.py
+diff --git a/Examples/post/config_RICO.py b/examples/post/config_RICO.py
+similarity index 100%
+rename from Examples/post/config_RICO.py
+rename to examples/post/config_RICO.py
+diff --git a/Examples/post/config_SANDU.py b/examples/post/config_SANDU.py
+similarity index 100%
+rename from Examples/post/config_SANDU.py
+rename to examples/post/config_SANDU.py
+diff --git a/Examples/post/config_SCMS.py b/examples/post/config_SCMS.py
+similarity index 100%
+rename from Examples/post/config_SCMS.py
+rename to examples/post/config_SCMS.py
+diff --git a/Examples/post/config_WANGARA.py b/examples/post/config_WANGARA.py
+similarity index 100%
+rename from Examples/post/config_WANGARA.py
+rename to examples/post/config_WANGARA.py
+diff --git a/Examples/post/config_default.py b/examples/post/config_default.py
+similarity index 100%
+rename from Examples/post/config_default.py
+rename to examples/post/config_default.py
+diff --git a/Examples/post/variables.py b/examples/post/variables.py
+similarity index 100%
+rename from Examples/post/variables.py
+rename to examples/post/variables.py
+diff --git a/examples/setenv b/examples/setenv
+new file mode 100644
+index 0000000..990abf3
+--- /dev/null
++++ b/examples/setenv
+@@ -0,0 +1,2 @@
++export PATH=/home/roehrig/Tools/EMS/last/apptools:$PATH
++export PYTHONPATH=/home/roehrig/Tools/EMS/last:$PYTHONPATH
+diff --git a/install_macRR.sh b/install.sh
+similarity index 98%
+rename from install_macRR.sh
+rename to install.sh
+index ad79e6b..72406b2 100755
+--- a/install_macRR.sh
++++ b/install.sh
+@@ -15,7 +15,7 @@ REP_EMS=$HOME/Tools/EMS
+ REP_MUSC=$HOME/MUSC
+ 
+ # Environment file to use
+-PROFILE=.profile
++PROFILE=.bash_profile
+ 
+ #####################################################
+ 
+@@ -96,7 +96,7 @@ fi
+ # Prepare what is needed to run MUSC simulations in REP_MUSC
+ [ -d "$REP_MUSC" ] || mkdir -p $REP_MUSC
+ cd $REP_MUSC
+-cp -r $REP_EMS/Examples/* .
++cp -r $REP_EMS/examples/* .
+ ln -s $REP_EMS/ems/apptools/MUSC.py
+ 
+ for ff in convertLFA2nc.py lfa2nc.py convert2p.py convert2z.py 

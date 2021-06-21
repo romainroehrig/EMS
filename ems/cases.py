@@ -42,18 +42,16 @@ logger.debug("CASES directory: " + rep0)
 # GABLS1 Case
 case = 'GABLS1'
 cases.append(case)
-subcases[case] = ['REF','MESONH']
-data_input[case] = {}
-for subcase in subcases[case]:
-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+subcases[case] = ['REF', 'MESONH']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 # GABLS4 Case
 case = 'GABLS4'
 cases.append(case)
-subcases[case] = ['STAGE3','STAGE3-SHORT']
-data_input[case] = {}
-for subcase in subcases[case]:
-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+subcases[case] = ['STAGE3', 'STAGE3-SHORT']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 ####################################
 #### Dry convection cases
@@ -61,18 +59,16 @@ for subcase in subcases[case]:
 # AYOTTE Cases
 case = 'AYOTTE'
 cases.append(case)
-subcases[case] = ['00SC','00WC','03SC','05SC','05WC','24F','24SC']
-data_input[case] = {}
-for subcase in subcases[case]:
-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+subcases[case] = ['00SC', '00WC', '03SC', '05SC', '05WC', '24F', '24SC']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 # IHOP Cases
 case = 'IHOP'
 cases.append(case)
 subcases[case] = ['REF']
-data_input[case] = {}
-for subcase in subcases[case]:
-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 # AMMAsec Cases
 #case = 'AMMAsec'
@@ -95,41 +91,36 @@ for subcase in subcases[case]:
 case = 'SCMS'
 cases.append(case)
 subcases[case] = ['REF']
-data_input[case] = {}
-for subcase in subcases[case]:
-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 # RICO Case
 case = 'RICO'
 cases.append(case)
-subcases[case] = ['SHORT','MESONH']
-data_input[case] = {}
-for subcase in subcases[case]:
-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+subcases[case] = ['SHORT', 'MESONH']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 # ARMCU Case
 case = 'ARMCU'
 cases.append(case)
-subcases[case] = ['REF','E3SM','MESONH','E3SM']
-data_input[case] = {}
-for subcase in subcases[case]:
-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+subcases[case] = ['REF', 'MESONH', 'E3SM']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 # BOMEX Case
 case = 'BOMEX'
 cases.append(case)
 subcases[case] = ['REF']
-data_input[case] = {}
-for subcase in subcases[case]:
-    data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 # MPACE Case
 case = 'MPACE'
 cases.append(case)
 subcases[case] = ['REF']
-data_input[case] = {}
-for subcase in subcases[case]:
-    data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 
 ####################################
@@ -159,10 +150,9 @@ for subcase in subcases[case]:
 # SANDU composite cases
 case = 'SANDU'
 cases.append(case)
-subcases[case] = ['REF','FAST','SLOW']
-data_input[case] = {}
-for subcase in subcases[case]:
-    data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+subcases[case] = ['REF', 'FAST', 'SLOW']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 ####################################
 #### Deep convection cases
@@ -188,8 +178,8 @@ for subcase in subcases[case]:
 case = 'AMMA'
 cases.append(case)
 subcases[case] = ['REF']
-data_input[case] = {}
-data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 # CINDY-DYNAMO cases
 #case = 'CINDY-DYNAMO'
@@ -218,7 +208,7 @@ data_input[case]['REF'] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
 
 case = 'DYNAMO'
 cases.append(case)
-subcases[case] = ['NSA3A','NSA3A_D1','NSA3A_D30']
+subcases[case] = ['NSA3A', 'NSA3A_D1', 'NSA3A_D30', 'NSA3A_MJO1']
 data_input[case] = {}
 for subcase in subcases[case]:
     data_input[case][subcase] = rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
@@ -292,7 +282,7 @@ def check(case,subcase):
 
     if not(subcase in subcases[case]):
         logging.error('subcase {0} is not known for case {1}'.format(subcase,case))
-        logging.error('known subcases for case {0}:'.format(case), subcases[case])
+        logging.error('known subcases for case {0}: {1}'.format(case, ' '.join(subcases[case])))
         available(case)
         raise ValueError
 

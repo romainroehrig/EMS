@@ -71,11 +71,14 @@ def install_atm(model, case, subcase, filecase,
                 raise
 
         # Directory for forcings
-        dirforc = 'files_{0}_{1}s/'.format(vert_grid_name, int(timestep)) if timestep is not None else None
-        dirforc = os.path.join(rep,dirforc)
-        if os.path.exists(dirforc):
-            shutil.rmtree(dirforc)
-        os.mkdir(dirforc)
+        if lforc_ascii:
+            dirforc = 'files_{0}_{1}s/'.format(vert_grid_name, int(timestep)) if timestep is not None else None
+            dirforc = os.path.join(rep,dirforc)
+            if os.path.exists(dirforc):
+                shutil.rmtree(dirforc)
+            os.mkdir(dirforc)
+        else:
+            dirforc = None
 
         # Directory for diagnostics
         dirdiags = 'images/'
@@ -172,16 +175,23 @@ def install_sfx(model, case, subcase, filecase, repout,
         if os.WEXITSTATUS(result) != 0:
             raise RuntimeError("Error during PREP execution")
         for f in ['PGD.des', 'class_cover_data.tex', 'PREP.des']:
-            os.remove(f)
+            try:
+                os.remove(f)
+            except OSError:
+                pass
+            except:
+                raise
+
 
         t0 = perf(t0, 'Prepare PGD/PREP')
     else: 
         logger.info('Nothing is done')
 
     os.chdir(repinit)
-    logger.info('-'*40)
 
     t0= perf(tinit, 'Total')
+
+    logger.info('#'*40)
 
 def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=False,lupdate=False,lrerun=False):
 
@@ -205,6 +215,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         logger.info('Ecoclimap directory: ' + config['ecoclimap'])
         logger.info('SURFEX PGD/PREP format: ' + config['sfxfmt'])
     logger.info('Initial Conditions file: ' + config['initfile'])
+    logger.info('rrtm files: {0}'.format(config['rrtm']))
     if model == 'ARPCLIMAT':
         logger.info('Atmospheric forcing files: ' + config['forcingfiles'])
     if config['lsurfex']:
@@ -229,7 +240,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
     if not(flagExist):
         os.makedirs(rep)
         os.chdir(rep)
-        os.makedirs('./logs/')
+        os.makedirs('./listings/')
         os.symlink(filecase,'data_input.nc')
         os.system('cp ' + config['namATMref'] + ' namATMref')
         if config['lsurfex']:
@@ -243,7 +254,8 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         # Preparation namelist
         NSTOP = ems.prep_nam_atm(model, 'data_input.nc',
                          config['namATMref'], config['TSTEP'],
-                         namout="namarp_{0}".format(config['name']))
+                         namout="namarp_{0}".format(config['name']),
+                         lsurfex=config['lsurfex'])
 
         t0 = perf(t0, 'Prepare {0} namelist'.format(model))
 
@@ -276,6 +288,8 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
             if config['lsurfex']:
                 g.write('NAMSFX=namsfx_' + config['name'] + '\n')
             g.write('#\n')
+            g.write('RRTM=' + config['rrtm'] + '\n')
+            g.write('#\n')
             g.write('INITFILE=' + config['initfile'] + '\n')
             if model == 'ARPCLIMAT':
                 g.write('FORCING_FILES=' + config['forcingfiles'] + '\n')
@@ -301,7 +315,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
             g.write('ln -s param_' + config['name'] + ' param\n')
             g.write('. ./param\n')
             g.write('. ./run.sh > run_${CONFIG}.log 2>&1\n')
-            g.write('mv run_${CONFIG}.log logs/\n')
+            g.write('mv run_${CONFIG}.log listings/\n')
             g.write('echo log file: logs/run_${CONFIG}.log\n')
             g.write('date')
 

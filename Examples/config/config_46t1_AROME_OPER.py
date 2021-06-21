@@ -29,6 +29,7 @@ caseDependent = True
 
 # EMS configuration
 model = 'AROME46t1'
+lforc_ascii = False
 lsurfex = False
 loverwrite = True
 lupdate_ATM = True 

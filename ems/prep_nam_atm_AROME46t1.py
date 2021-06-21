@@ -50,6 +50,42 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
                 if obj == '__MBX_SIZE__': nam[namin][param][i] = '2048000000'
                 if obj == '__LOPT_SCALAR__': nam[namin][param][i] = '.TRUE.'
                 if obj == '__NCOMBFLEN__': nam[namin][param][i] = '1800000'
+    
+    #Replace some strings by suitable values
+    nam['NAMIO_SERV']['NPROC_IO'] = ['0']
+    for k in ('NPRGPEW', 'NPRGPNS', 'NPROC', 'NPRTRV', 'NPRTRW'):
+        nam['NAMPAR0'][k] = ['1']
+    nam['NAMPAR1']['NSTROUT'] = ['1']
+    
+    #Deactivate SLHD and COMAD
+    for k in ('LSLHD_GFL', 'LSLHD_SPD', 'LSLHD_SVD', 'LSLHD_T', 'LSLHD_W',
+              'LCOMADH', 'LCOMADV', 'LCOMAD_GFL', 'LCOMAD_SP', 'LCOMAD_SPD',
+              'LCOMAD_SVD', 'LCOMAD_T', 'LCOMAD_W'):
+        nam['NAMDYNA'][k] = ['.FALSE.']
+    for k in nam['NAMGFL'].keys():
+        if k.endswith('%LSLHD') or k.endswith('%LCOMAD'):
+            nam['NAMGFL'][k] = ['.FALSE.']
+
+    #Deactivate predictor-corrector
+    nam['NAMDYNA']['LPC_CHEAP'] = ['.FALSE.']
+    nam['NAMDYNA']['LPC_FULL'] = ['.FALSE.']
+    nam['NAMDYN']['NSITER'] = ['0']
+
+    #Deactivate NH dyn
+    nam['NAMCT0']['LNHEE'] = ['.FALSE.'] #because required input fields are absent
+    
+    #Deactivate MPI
+    nam['NAMPAR0']['LMPOFF'] = ['.TRUE.']
+    
+    #Deactivate spectral nudging
+    nam['NEMELBC0A']['LESPCPL'] = ['FALSE']
+
+    #Other mod
+    for k in nam['NAMPAR1'].keys():
+        if k.replace(' ', '') == 'NDISTIO(12)':
+            del nam['NAMPAR1'][k] #gfortran does not like this option (info from P. Marguinaud)
+    for k in ('LADVF', 'LIMPF', 'LQMPD', 'LQMT', 'LQMVD'):
+        nam['NAMDYN'][k] = ['.FALSE.']
 
     # Aerosols and Ozone
     nam['NAMPHY']['LAEROSEA'] = ['.FALSE.']
@@ -200,9 +236,20 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
     else:  
         dt = timein.data[1]-timein.data[0]
 
-    for param in ['LGEOST_UV_FRC', 'LQV_ADV_FRC', 'LT_ADV_FRC']:
+    for param in ['LGEOST_UV_FRC', 'LQV_ADV_FRC', 'LT_ADV_FRC', 'LUV_ADV_FRC',
+                  'LSW_FRC', 'LSOMEGA_FRC',
+                  'LUV_NUDG', 'LT_NUDG', 'LQV_NUDG']:
         nam[nn][param] = ['.FALSE.']
     nam[nn]['LMUSCLFA'] = ['.TRUE.']
+
+    # Important: the following must in the same order as in prep_init_forc_atm 
+    # (consistently with nam1D)
+
+    if attributes['adv_ua'] == 1 or attributes['adv_va'] == 1:
+        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
+        nam[nn]['LUV_ADV_FRC'] = ['.TRUE.']
+        logger.error('ERROR: Case not yet coded for adv_ua/adv_va = 1')
+        raise NotImplementedError('U/V advection not yet validated')
 
     if attributes['adv_ta'] == 1 or attributes['radiation'] == 'tend':
         nam['NAMCT0']['LSFORC'] = ['.TRUE.']
@@ -222,30 +269,17 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
         for it in range(0, nt_f):
             nam[nn]['NL_QV_ADV_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
 
-    if attributes['adv_ua'] == 1 or attributes['adv_va'] == 1:
-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
-        nam[nn]['LUV_ADV_FRC'] = ['.TRUE.']
-        logger.error('ERROR: Case not yet coded for adv_ua/adv_va = 1')
-        raise ValueError
-
-    if attributes['forc_wap'] == 1:
-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
-        nam[nn]['LSOMEGA_FRC'] = ['.TRUE.']
-        logger.error('ERROR: Case not yet coded for forc_wap = 1')
-        raise ValueError
-
-    if attributes['forc_wa'] == 1:
-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
-        nam[nn]['LSW_FRC'] = ['TRUE']
-        logger.error('ERROR: Case not yet coded for forc_wa = 1')
-        raise ValueError
+    if attributes['surface_forcing_wind'] == 'z0':
+        if not(lsurfex):
+            nam[nn]['RZ0_FORC'] = [str(case.variables['z0'].data[0])]
 
     if attributes['forc_geo'] == 1:
         nam['NAMCT0']['LSFORC']=['.TRUE.']
         nam[nn]['LGEOST_UV_FRC'] = ['.TRUE.']
         W = 7.2921e-5
         nam['NAMLSFORC']['RCORIO_FORC'] = [str(2. * W * math.sin(lat * math.pi / 180))]
-        nam[nn]['RZ0_FORC'] = ['0.035']
+        if not(lsurfex):
+            nam[nn]['RZ0_FORC'] = [str(case.variables['z0'].data[0])] # Useful ?
         nam[nn]['NGEOST_U_DEB'] = [str(1 + nt_f * i)]
         nam[nn]['NGEOST_U_NUM'] = [str(nt_f)]
         i += 1
@@ -255,29 +289,64 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
         for it in range(nt_f):
             nam[nn]['NL_GEOST_UV_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
 
+    if attributes['forc_wa'] == 1:
+        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
+        nam[nn]['LSW_FRC'] = ['TRUE']
+        nam[nn]['NLSW_DEB'] = [str(1 + i * nt_f)]
+        nam[nn]['NLSW_NUM'] = [str(nt_f)]
+        i += 1
+        for it in range(0, nt_f):
+            nam[nn]['NL_LSW_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
+
+    elif attributes['forc_wap'] == 1:
+        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
+        nam[nn]['LSOMEGA_FRC'] = ['.TRUE.']
+        nam[nn]['NLSOMEGA_DEB'] = [str(1 + i * nt_f)]
+        nam[nn]['NLSOMEGA_NUM'] = [str(nt_f)]
+        i += 1
+        for it in range(0, nt_f):
+            nam[nn]['NL_LSOMEGA_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
+
     if attributes['nudging_ua'] > 0. or attributes['nudging_va'] > 0.:
         nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LUV_NUDG'] = ['.TRUE.']
+        nam[nn]['NU_NUDG_DEB'] = [str(1 + i * nt_f)]
+        nam[nn]['NUV_NUDG_NUM'] = [str(nt_f)]
+        i += 1
+        nam[nn]['NV_NUDG_DEB'] = [str(1 + i * nt_f)]
+        i += 1
+        for it in range(nt_f):
+            nam[nn]['NL_UV_NUDG_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
+
         nam[nn]['RELAX_TAUU'] = [str(float(attributes['nudging_ua']))]
         nam['NAMTOPH']['ETRELAXU'] = [str(float(attributes['pa_nudging_ua']))]
-        logger.error('ERROR: Case not yet coded for nudging_ua/va > 0')
-        raise ValueError
+        logger.warning('Nudging not yet fully validated')
 
     if attributes['nudging_ta'] > 0.:
         nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LT_NUDG'] = ['.TRUE.']
+        nam[nn]['NT_NUDG_DEB'] = [str(1 + i * nt_f)]
+        nam[nn]['NT_NUDG_NUM'] = [str(nt_f)]
+        i += 1
+        for it in range(nt_f):
+            nam[nn]['NL_T_NUDG_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
+
         nam[nn]['RELAX_TAUT'] = [str(float(attributes['nudging_ta']))]
         nam['NAMTOPH']['ETRELAXT'] = [str(float(attributes['pa_nudging_ta']))]
-        logger.error('ERROR: Case not yet coded for nudging_ta > 0')
-        raise ValueError
+        logger.warning('Nudging not yet fully validated')
 
     if attributes['nudging_qv'] > 0. :
         nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LQV_NUDG'] = ['.TRUE.']
+        nam[nn]['NQV_NUDG_DEB'] = [str(1 + i * nt_f)]
+        nam[nn]['NQV_NUDG_NUM'] = [str(nt_f)]
+        i += 1
+        for it in range(nt_f):
+            nam[nn]['NL_QV_NUDG_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
+
         nam[nn]['RELAX_TAUQ'] = [str(float(attributes['nudging_qv']))]
         nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['pa_nudging_qv']))]
-        logger.error('ERROR: Case not yet coded for nudging_qv > 0')
-        raise ValueError
+        logger.warning('Nudging not yet fully validated')
 
     nam['NAMGFL']['NGFL_FORC'] = [str(int(nt_f * i))]
 
@@ -297,6 +366,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
             for it in range(nt_f):
                nam[nn]['NL_SH_ADV_TIME(   ' + str(int(it + 1)) + " )"] = [str(int(dt * it))]
                nam[nn]['NL_LH_ADV_TIME(   ' + str(int(it + 1)) + " )"] = [str(int(dt * it))]
+            nam['NAMPHYDS']['NSFORC'] = [str(int((j + 1) * nt_f))]
 
 
 

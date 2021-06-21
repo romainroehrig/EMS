@@ -3,7 +3,7 @@
 #------------------------------------------------------------
 # 			INTIALISATION
 #------------------------------------------------------------
-set -x
+set -ex
 
 export OMP_NUM_THREADS=1
 
@@ -21,6 +21,11 @@ ADVEC=sli
 
 DIR=`pwd`
 
+LISTINGDIR=$DIR/listings
+if [ ! -d $LISTINGDIR ] ; then
+  mkdir -p $LISTINGDIR
+fi
+
 OUTPUTDIR=$DIR/Output/LFA/
 OUTPUTDIR0=$DIR/Output/
 
@@ -29,15 +34,10 @@ if [ ! -d $OUTPUTDIR ] ; then
 fi
 
 TMPDIR=$HOME/tmp/EXEMUSC
-
-if [ ! -d $TMPDIR ] ; then
-  mkdir -p $TMPDIR
-else
-  find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
-fi
+[ -d $TMPDIR ] && rm -rf $TMPDIR
+mkdir -p $TMPDIR
 
 cd $TMPDIR
-rm -rf $TMPDIR/* || :
 
 ladate=`date`
 set +x
@@ -67,15 +67,16 @@ set -x
 ln -s $DIR/$NAMARP fort.4
 cat < fort.4
 
-set +x
-echo ''
-echo ' Get the namelist SURFEX'
-echo ''
-set -x
+if [ -v NAMSFX ]; then
+  set +x
+  echo ''
+  echo ' Get the namelist SURFEX'
+  echo ''
+  set -x
 
-ln -s $DIR/$NAMSFX EXSEG1.nam
-cat < EXSEG1.nam
-
+  ln -s $DIR/$NAMSFX EXSEG1.nam
+  cat < EXSEG1.nam
+fi
 
 #       **********************************
 #       * Get initial and forcing files  *
@@ -92,8 +93,8 @@ set -x
 ln -s $INITFILE ICMSH${EXP}INIT
 ln -s $FORCING_FILES files
 
-ln -s  $PREP TEST.lfi
-ln -s  $PGD PGD.lfi
+[ -v PREP ] && ln -s  $PREP TEST.lfi
+[ -v PGD ] && ln -s  $PGD PGD.lfi
 
 
 #       **********************************
@@ -123,6 +124,10 @@ echo ' ALADIN job running '
 echo ''
 set -x
 
+ulimit -s unlimited
+
+unset LD_LIBRARY_PATH
+
 date
 ./MASTER -c001 -vmeteo -maladin -e${EXP} -t$TSTEP -f$NSTOP -a$ADVEC  >lola 2>&1
 date
@@ -134,7 +139,7 @@ echo ' Listing for the not parallelised part: file lola'
 echo ''
 set -x
 
-cat lola
+#cat lola
 
 if [ -a NODE.001_01 ]
 then
@@ -145,7 +150,7 @@ then
     echo ' Listing for the parallelised part: file' $file
     echo ''
     set -x
-    cat $file
+    #cat $file
   done
 fi
 
@@ -162,8 +167,8 @@ set -x
 find $OUTPUTDIR/ -name '*' -exec rm -f {} \;
 find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
 #find ./ -name 'out*.txt' -exec mv {} $OUTPUTDIR \;
-find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
-find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
+find ./ -name 'NODE*' -exec mv {} $LISTINGDIR \;
+find ./ -name 'lola' -exec mv {} $LISTINGDIR \;
 
 set +x
 echo ''
@@ -185,8 +190,8 @@ echo ''
 set -x
 
 set +x
-#rm -rf $TMPDIR/*
-find $TMPDIR/ -name '*' -exec rm -rf {} \;
+rm -rf $TMPDIR
+#find $TMPDIR/ -name '*' -exec rm -rf {} \;
 set -x
 #       ********************************************
 #       * Copie eventuelle des routines convert2nc *
@@ -229,7 +234,7 @@ then
 
   # seems necessary in some circumstances (deep shells?)
   unset PYTHONHOME
-  ./convertLFA2nc.py 
+  ./convertLFA2nc.py
 
 fi
 
