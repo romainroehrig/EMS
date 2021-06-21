@@ -8,8 +8,8 @@ OBJS	 =	acadfa1D_main.o \
 		acadfa_sueframe.o \
 		real2spec.o \
 
-XRD	 =	/home/common/pack/arp603_export.01.GFORTRAN610.cx/lib/libxrd.local.a
-XLA	 =      /home/common/pack/arp603_export.01.GFORTRAN610.cx/lib/libxla.local.a
+XRD	 =	/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/lib/libxrd.local.a
+XLA	 =      /cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/lib/libxla.local.a
 GRIBEX   =      /home/common/sync/gfortran/auxlibs/lib/libgribex.a 
 MPIDUMMY =      /home/common/sync/gfortran/auxlibs/lib/libmpidummy.a
 LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
