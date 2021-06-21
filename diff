@@ -1,0 +1,549 @@
+diff --git a/aux/ASCII2FA/bin/ascii2fa b/aux/ASCII2FA/bin/ascii2fa
+index 672b5d7..96a0548 100755
+Binary files a/aux/ASCII2FA/bin/ascii2fa and b/aux/ASCII2FA/bin/ascii2fa differ
+diff --git a/aux/ASCII2FA/src/Makefile b/aux/ASCII2FA/src/Makefile
+index 8ab7679..e095950 100755
+--- a/aux/ASCII2FA/src/Makefile
++++ b/aux/ASCII2FA/src/Makefile
+@@ -1,8 +1,7 @@
+ # acadfa makefile
+ 
+ FC	 =	gfortran
+-FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
+-F90FLAGS =      -fconvert=swap -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -DDARWIN -DADDRESS64 -fdefault-real-8 -fdefault-double-8 -g -O2
++F90FLAGS =      -fopenmp -fconvert=swap -fno-second-underscore -fbacktrace -m64 -fopenmp -gdwarf-3 -ffree-line-length-none -fno-sign-zero -fpic -fno-range-check -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -g -O2 -ftree-vectorize  -DADDRESS64
+ EXEC	 =	acadfa_exe
+ 
+ OBJS	 =	acadfa1D_main.o \
+@@ -10,12 +9,11 @@ OBJS	 =	acadfa1D_main.o \
+ 		real2spec.o \
+ 		empty.o 
+ 
+-XRDLOC	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxrd.local.a 
+-XRDMAIN	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxrd.main.a 
+-XLA	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxla.main.a 
+-GRIBEX   =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libgribex.a 
+-MPIDUMMY =      /Users/romainroehrig/libraries/auxlibs/GNU/auxlibs/lib/libmpidummy.a
+-LIBS	 =	$(XRDLOC) $(XRDMAIN) $(XLA) $(GRIBEX) $(MPIDUMMY) 
++XRD	 =	/home/common/pack/arp603_export.01.GFORTRAN610.cx/lib/libxrd.local.a
++XLA	 =      /home/common/pack/arp603_export.01.GFORTRAN610.cx/lib/libxla.local.a
++GRIBEX   =      /home/common/sync/gfortran/auxlibs/lib/libgribex.a 
++MPIDUMMY =      /home/common/sync/gfortran/auxlibs/lib/libmpidummy.a
++LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
+ 
+ %.o:%.F90
+ 	$(FC) $(F90FLAGS) -c $<
+diff --git a/aux/lfa4py/Makefile b/aux/lfa4py/Makefile
+index 6d340e8..1a548e6 100644
+--- a/aux/lfa4py/Makefile
++++ b/aux/lfa4py/Makefile
+@@ -21,7 +21,7 @@ liblfa.a: cllang.o caracteres_lfa.o lfa.o init_gfortran.o
+ 	ar r liblfa.a cllang.o caracteres_lfa.o lfa.o init_gfortran.o *.mod
+ 
+ lfa4py.so: lfa4py.o liblfa.a
+-	gfortran $(FFLAGS) -shared -L. -l lfa lfa4py.o -o lfa4py.so
++	gfortran $(FFLAGS) -shared lfa4py.o -L. -l lfa -o lfa4py.so
+ 	rm -f *.o *.a *.mod
+ 
+ clean: 
+diff --git a/aux/lfa4py/lfa4py.so b/aux/lfa4py/lfa4py.so
+index 1d78781..0b67b8a 100755
+Binary files a/aux/lfa4py/lfa4py.so and b/aux/lfa4py/lfa4py.so differ
+diff --git a/aux/lfatools/bin/cllangu b/aux/lfatools/bin/cllangu
+index fb1e1b6..ddf95e1 100755
+Binary files a/aux/lfatools/bin/cllangu and b/aux/lfatools/bin/cllangu differ
+diff --git a/aux/lfatools/bin/lfa2lfa b/aux/lfatools/bin/lfa2lfa
+index 9ea0865..efbfbf0 100755
+Binary files a/aux/lfatools/bin/lfa2lfa and b/aux/lfatools/bin/lfa2lfa differ
+diff --git a/aux/lfatools/bin/lfa2lfp b/aux/lfatools/bin/lfa2lfp
+index afc92d1..038d8a4 100755
+Binary files a/aux/lfatools/bin/lfa2lfp and b/aux/lfatools/bin/lfa2lfp differ
+diff --git a/aux/lfatools/bin/lfa_autodocumentation b/aux/lfatools/bin/lfa_autodocumentation
+index 81a8c39..4e1454b 100755
+Binary files a/aux/lfatools/bin/lfa_autodocumentation and b/aux/lfatools/bin/lfa_autodocumentation differ
+diff --git a/aux/lfatools/bin/lfa_demo b/aux/lfatools/bin/lfa_demo
+index 512a742..9106519 100755
+Binary files a/aux/lfatools/bin/lfa_demo and b/aux/lfatools/bin/lfa_demo differ
+diff --git a/aux/lfatools/bin/lfac b/aux/lfatools/bin/lfac
+index da679d3..a82087f 100755
+Binary files a/aux/lfatools/bin/lfac and b/aux/lfatools/bin/lfac differ
+diff --git a/aux/lfatools/bin/lfacre b/aux/lfatools/bin/lfacre
+index 49371c4..f6c902d 100755
+Binary files a/aux/lfatools/bin/lfacre and b/aux/lfatools/bin/lfacre differ
+diff --git a/aux/lfatools/bin/lfadiff b/aux/lfatools/bin/lfadiff
+index 1098916..0dc09e3 100755
+Binary files a/aux/lfatools/bin/lfadiff and b/aux/lfatools/bin/lfadiff differ
+diff --git a/aux/lfatools/bin/lfadiffart b/aux/lfatools/bin/lfadiffart
+index db4bfd8..42d49b7 100755
+Binary files a/aux/lfatools/bin/lfadiffart and b/aux/lfatools/bin/lfadiffart differ
+diff --git a/aux/lfatools/bin/lfadiffrel b/aux/lfatools/bin/lfadiffrel
+index f6fb680..c7f2096 100755
+Binary files a/aux/lfatools/bin/lfadiffrel and b/aux/lfatools/bin/lfadiffrel differ
+diff --git a/aux/lfatools/bin/lfafreq b/aux/lfatools/bin/lfafreq
+index db12761..d303cbc 100755
+Binary files a/aux/lfatools/bin/lfafreq and b/aux/lfatools/bin/lfafreq differ
+diff --git a/aux/lfatools/bin/lfalaf b/aux/lfatools/bin/lfalaf
+index d688e21..a79fdc6 100755
+Binary files a/aux/lfatools/bin/lfalaf and b/aux/lfatools/bin/lfalaf differ
+diff --git a/aux/lfatools/bin/lfaminm b/aux/lfatools/bin/lfaminm
+index b54e404..2fdb724 100755
+Binary files a/aux/lfatools/bin/lfaminm and b/aux/lfatools/bin/lfaminm differ
+diff --git a/aux/lfatools/bin/lfamoy b/aux/lfatools/bin/lfamoy
+index 24e2039..4fad90f 100755
+Binary files a/aux/lfatools/bin/lfamoy and b/aux/lfatools/bin/lfamoy differ
+diff --git a/aux/lfatools/bin/lfareu b/aux/lfatools/bin/lfareu
+index b9ee641..9b659cb 100755
+Binary files a/aux/lfatools/bin/lfareu and b/aux/lfatools/bin/lfareu differ
+diff --git a/aux/lfatools/bin/lfatest b/aux/lfatools/bin/lfatest
+index 81268f2..f320148 100755
+Binary files a/aux/lfatools/bin/lfatest and b/aux/lfatools/bin/lfatest differ
+diff --git a/aux/lfatools/bin/lfp2lfa b/aux/lfatools/bin/lfp2lfa
+index b47a98e..adbcc6c 100755
+Binary files a/aux/lfatools/bin/lfp2lfa and b/aux/lfatools/bin/lfp2lfa differ
+diff --git a/ems/scripts/run_ARPCLIMAT.sh.save b/ems/scripts/run_ARPCLIMAT.sh.save
+deleted file mode 100755
+index 9f77945..0000000
+--- a/ems/scripts/run_ARPCLIMAT.sh.save
++++ /dev/null
+@@ -1,238 +0,0 @@
+-#!/bin/sh
+-
+-#------------------------------------------------------------
+-# 			INTIALISATION
+-#------------------------------------------------------------
+-set -x
+-
+-export OMP_NUM_THREADS=1
+-
+-export DR_HOOK_IGNORE_SIGNALS=-1
+-export DR_HOOK=0
+-
+-. ./param
+-
+-EXP=ARPE
+-ADVEC=sli
+-
+-#       *************************************
+-#       * Directories Initialisation        *
+-#       *************************************
+-
+-DIR=`pwd`
+-
+-OUTPUTDIR=$DIR/Output/LFA/
+-OUTPUTDIR0=$DIR/Output/
+-
+-if [ ! -d $OUTPUTDIR ] ; then
+-  mkdir -p $OUTPUTDIR
+-fi
+-
+-TMPDIR=$HOME/tmp/EXEMUSC
+-
+-if [ ! -d $TMPDIR ] ; then
+-  mkdir -p $TMPDIR
+-else
+-  find $TMPDIR/ -name '*' -exec rm -rf {} \; || :
+-fi
+-
+-cd $TMPDIR
+-rm -rf $TMPDIR/* || :
+-
+-ladate=`date`
+-set +x
+-echo '------------------------------------------------------------'
+-echo 'run execute le ' $ladate
+-echo 'cycle =' $cycle 'config = ' $CONFIG
+-echo 'Atmospheric namelist =' $NAMARP
+-echo 'Surfex namelist =' $NAMSFX
+-echo 'Executable =' $MASTER
+-echo 'Time step =' $TSTEP 'seconds; Run stops at ' $NSTOP
+-echo 'Number of levels =' $levels
+-echo 'Conditions initiales et forcages =' $INITFILE
+-echo 'Conditions pour la surface =' $PREP
+-echo 'Dossier des sorties =' $OUTPUTDIR
+-echo '------------------------------------------------------------'
+-set -x
+-#       **********************************
+-#       *        Get namelists           *
+-#       **********************************
+-
+-set +x
+-echo ''
+-echo ' Get the atmospheric namelist'
+-echo ''
+-set -x
+-
+-ln -s $DIR/$NAMARP fort.4
+-cat < fort.4
+-
+-set +x
+-echo ''
+-echo ' Get the namelist SURFEX'
+-echo ''
+-set -x
+-
+-ln -s $DIR/$NAMSFX EXSEG1.nam
+-cat < EXSEG1.nam
+-
+-
+-#       **********************************
+-#       * Get initial and forcing files  *
+-#       **********************************
+-
+-set +x
+-echo ''
+-echo ' Get Initial conditions for atmosphere and surface '
+-echo ' Get Forcing files '
+-echo ''
+-set -x
+-
+-
+-ln -s $INITFILE ICMSH${EXP}INIT
+-ln -s $FORCING_FILES files
+-
+-ln -s  $PREP TEST.lfi
+-ln -s  $PGD PGD.lfi
+-
+-
+-#       **********************************
+-#       *            For SURFEX          *
+-#       **********************************
+-
+-
+-ln -s $ecoclimap/ecoclimapII_eu_covers_param.bin ecoclimapII_eu_covers_param.bin
+-ln -s $ecoclimap/ecoclimapI_covers_param.bin ecoclimapI_covers_param.bin
+-
+-#       **********************************
+-#       *            Execution           *
+-#       **********************************
+-
+-set +x
+-echo ''
+-echo ' Get the executable file '
+-echo ''
+-set -x
+-
+-ln -s $MASTER MASTER
+-chmod 755 MASTER
+-
+-set +x
+-echo ''
+-echo ' ALADIN job running '
+-echo ''
+-set -x
+-
+-date
+-./MASTER -c001 -vmeteo -maladin -e${EXP} -t$TSTEP -f$NSTOP -a$ADVEC  >lola 2>&1
+-date
+-ls -l
+-
+-set +x
+-echo ''
+-echo ' Listing for the not parallelised part: file lola'
+-echo ''
+-set -x
+-
+-cat lola
+-
+-if [ -a NODE.001_01 ]
+-then
+-  for file in NODE*
+-  do
+-    set +x
+-    echo ''
+-    echo ' Listing for the parallelised part: file' $file
+-    echo ''
+-    set -x
+-    cat $file
+-  done
+-fi
+-
+-#       **********************************
+-#       *     Save model results         *
+-#       **********************************
+-
+-set +x
+-echo ''
+-echo ' Historic files saving '
+-echo ''
+-set -x
+-
+-find $OUTPUTDIR/ -name '*' -exec rm -f {} \;
+-find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
+-#find ./ -name 'out*.txt' -exec mv {} $OUTPUTDIR \;
+-find ./ -name 'NODE*' -exec mv {} $OUTPUTDIR \;
+-find ./ -name 'lola' -exec mv {} $OUTPUTDIR \;
+-
+-set +x
+-echo ''
+-echo ' Present files on the workdir $TMPDIR '
+-echo ''
+-set -x
+-
+-ls -l
+-
+-#       **********************************
+-#       *        Nettoyage final         *
+-#       *        Final Cleaning          *
+-#       **********************************
+-
+-set +x
+-echo ''
+-echo ' Final cleaning of the workdir $TMPDIR '
+-echo ''
+-set -x
+-
+-set +x
+-#rm -rf $TMPDIR/*
+-find $TMPDIR/ -name '*' -exec rm -rf {} \;
+-set -x
+-#       ********************************************
+-#       * Copie eventuelle des routines convert2nc *
+-#       * Possible copy of convert2nc routines     *
+-#       ********************************************
+-
+-if [ $installpost = True ]
+-then
+-  cd $OUTPUTDIR0
+-  rm -f *.py *.pyc 
+-  set +x
+-  echo ''
+-  echo ' Install post-processing '
+-  echo ''
+-  set -x
+-
+-  files2install='convertLFA2nc.py lfa2nc.py convert2p.py convert2z.py'
+-
+-  for file in $files2install
+-  do
+-    ln -s $dirpost/$file
+-  done
+-  ln -s $dirpost/$configpost config.py
+-  ln -s $dirpost/$variablesDict variables.py
+-fi
+-
+-#       ********************************************
+-#       * Conversion eventuelle en netcdf          *
+-#       * Possible conversion in netcdf            *
+-#       ********************************************
+-
+-if [ $runpost = True ]
+-then
+-  cd $OUTPUTDIR0
+-  set +x
+-  echo ''
+-  echo ' Postprocessing '
+-  echo ''
+-  set -x
+-
+-  # seems necessary in some circumstances (deep shells?)
+-  unset PYTHONHOME
+-  ./convertLFA2nc.py 
+-
+-fi
+-
+-date
+-
+-cd $DIR
+diff --git a/examples/config/config_46t1_AROME_OPER.py b/examples/config/config_46t1_AROME_OPER.py
+index 49f84c6..1c43398 100644
+--- a/examples/config/config_46t1_AROME_OPER.py
++++ b/examples/config/config_46t1_AROME_OPER.py
+@@ -2,7 +2,7 @@
+ # -*- coding:UTF-8 -*-
+ 
+ import os
+-REP_MUSC = '/Users/romainroehrig/MUSC/riette'
++REP_MUSC = '/home/roehrig/MUSC/riette'
+ 
+ ############# Begin editing
+ 
+@@ -11,8 +11,8 @@ GROUP = '46t1'
+ EXPID = __name__[7:]
+ 
+ # Binaries
+-MASTER = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/MASTERODB'
+-ASCII2FA = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/ASCII2FA'
++MASTER = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/MASTERODB'
++ASCII2FA = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.muxc/bin/ASCII2FA'
+ 
+ # Namelists
+ ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/namarp_46t1_AROME_OPER')
+diff --git a/examples/config/config_46t1_AROME_SFX.py b/examples/config/config_46t1_AROME_SFX.py
+index e6d1a00..47e4bf8 100644
+--- a/examples/config/config_46t1_AROME_SFX.py
++++ b/examples/config/config_46t1_AROME_SFX.py
+@@ -2,7 +2,7 @@
+ # -*- coding:UTF-8 -*-
+ 
+ import os
+-REP_MUSC = '/Users/romainroehrig/MUSC/riette'
++REP_MUSC = '/home/roehrig/MUSC/riette'
+ 
+ ############# Begin editing
+ 
+@@ -11,10 +11,10 @@ GROUP = '46t1'
+ EXPID = __name__[7:]
+ 
+ # Binaries
+-MASTER = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/MASTERODB'
+-PGD = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/PGD'
+-PREP = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/PREP'
+-ASCII2FA = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/ASCII2FA'
++MASTER = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/MASTERODB'
++PGD = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/PGD'
++PREP = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/PREP'
++ASCII2FA = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/ASCII2FA'
+ 
+ # Namelists
+ ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/namarp_46t1_AROME_OPER')
+diff --git a/examples/config/config_46t1op1_AROME_OPER.py b/examples/config/config_46t1op1_AROME_OPER.py
+new file mode 100644
+index 0000000..6fc7f6c
+--- /dev/null
++++ b/examples/config/config_46t1op1_AROME_OPER.py
+@@ -0,0 +1,41 @@
++#!/usr/bin/env python
++# -*- coding:UTF-8 -*-
++
++import os
++REP_MUSC = '/home/roehrig/MUSC/riette'
++
++############# Begin editing
++
++GROUP = '46t1_op1.01'
++# EXPID will be taken from this file name following the convention config_EXPID.py (__name__ = config_EXPID) 
++EXPID = __name__[7:]
++
++# Binaries
++MASTER = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin/MASTERODB'
++ASCII2FA = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.muxc/bin/ASCII2FA'
++
++# Namelists
++ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/al46t1_arome-op1.01.nam-namel_previ_dyn_prod')
++
++# Model configuration
++vert_grid = os.path.join(REP_MUSC, 'grid/L90_AROME.dta')
++timestep = 50
++
++# Postprocessing
++dirpost = os.path.join(REP_MUSC,'post')
++variablesDict = 'variables.py'
++defaultConfigPost = 'config_default.py'
++caseDependent = True
++
++# EMS configuration
++model = 'AROME46t1'
++lforc_ascii = False
++lsurfex = False
++loverwrite = True
++lupdate_ATM = True 
++lupdate_RUN = True
++
++# ecoclimap data
++#ecoclimap
++
++############# End editing
+diff --git a/examples/config/config_46t1op1_AROME_SFX.py b/examples/config/config_46t1op1_AROME_SFX.py
+new file mode 100644
+index 0000000..47fd1c8
+--- /dev/null
++++ b/examples/config/config_46t1op1_AROME_SFX.py
+@@ -0,0 +1,46 @@
++#!/usr/bin/env python
++# -*- coding:UTF-8 -*-
++
++import os
++REP_MUSC = '/home/roehrig/MUSC/riette'
++
++############# Begin editing
++
++GROUP = '46t1_op1.01'
++# EXPID will be taken from this file name following the convention config_EXPID.py (__name__ = config_EXPID) 
++EXPID = __name__[7:]
++
++# Binaries
++MASTER = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin/MASTERODB'
++PGD = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin/PGD'
++PREP = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin/PREP'
++ASCII2FA = '/home/roehrig/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin/ASCII2FA'
++
++# Namelists
++ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/al46t1_arome-op1.01.nam-namel_previ_dyn_prod')
++SFXNAM_prep = os.path.join(REP_MUSC, 'namelist/SURFEX/al46t1_arome-op1.01.nam-namel_prep')
++SFXNAM_run = os.path.join(REP_MUSC, 'namelist/SURFEX/al46t1_arome-op1.01.nam-namel_previ_surfex_prod')
++
++# Model configuration
++vert_grid = os.path.join(REP_MUSC, 'grid/L90_AROME.dta')
++timestep = 50
++
++# Postprocessing
++dirpost = os.path.join(REP_MUSC,'post')
++variablesDict = 'variables.py'
++defaultConfigPost = 'config_default.py'
++caseDependent = True
++
++# EMS configuration
++model = 'AROME46t1'
++lforc_ascii = False
++lsurfex = True
++sfxfmt = 'FA'
++loverwrite = True
++lupdate_ATM = True 
++lupdate_RUN = True
++
++# ecoclimap data
++#ecoclimap
++
++############# End editing
+diff --git a/examples/config/config_arp631_CMIP6.py b/examples/config/config_arp631_CMIP6.py
+index 5a92e29..868f69d 100644
+--- a/examples/config/config_arp631_CMIP6.py
++++ b/examples/config/config_arp631_CMIP6.py
+@@ -2,7 +2,7 @@
+ # -*- coding:UTF-8 -*-
+ 
+ import os
+-REP_MUSC = '/Users/romainroehrig/MUSC/riette'
++REP_MUSC = '/home/roehrig/MUSC/riette'
+ 
+ ############# Begin editing
+ 
+@@ -11,10 +11,10 @@ GROUP = 'V631'
+ EXPID = __name__[7:]
+ 
+ # Binaries
+-MASTER = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin//MASTERODB'
+-PGD = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PGD'
+-PREP = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PREP'
+-#ASCII2FA
++MASTER = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/MASTER'
++PGD = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PGD'
++PREP = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PREP'
++ASCII2FA = '/home/roehrig/pack/arp603_export.01.GFORTRAN610.cx.ascii2fa/bin/ASCII2FA'
+ 
+ # Namelists
+ ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631')
+diff --git a/examples/setenv b/examples/setenv
+new file mode 100644
+index 0000000..990abf3
+--- /dev/null
++++ b/examples/setenv
+@@ -0,0 +1,2 @@
++export PATH=/home/roehrig/Tools/EMS/last/apptools:$PATH
++export PYTHONPATH=/home/roehrig/Tools/EMS/last:$PYTHONPATH
+diff --git a/install_macRR.sh b/install.sh
+similarity index 99%
+rename from install_macRR.sh
+rename to install.sh
+index 399a136..72406b2 100755
+--- a/install_macRR.sh
++++ b/install.sh
+@@ -15,7 +15,7 @@ REP_EMS=$HOME/Tools/EMS
+ REP_MUSC=$HOME/MUSC
+ 
+ # Environment file to use
+-PROFILE=.profile
++PROFILE=.bash_profile
+ 
+ #####################################################
+ 
