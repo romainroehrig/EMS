@@ -2,7 +2,7 @@
 # -*- coding:UTF-8 -*-
 
 import os
-REP_MUSC = '/home/roehrig/MUSC/riette'
+REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
@@ -11,10 +11,11 @@ GROUP = 'V631'
 EXPID = __name__[7:]
 
 # Binaries
-MASTER = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/MASTER'
-PGD = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PGD'
-PREP = '/home/common/pack/arp603_export.01.GFORTRAN610.cx/bin/PREP'
-ASCII2FA = '/home/roehrig/pack/arp603_export.01.GFORTRAN610.cx.ascii2fa/bin/ASCII2FA'
+bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/bin'
+MASTER = os.path.join(bindir, 'MASTER')
+PGD = os.path.join(bindir, 'PGD')
+PREP = os.path.join(bindir, 'PREP')
+ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 
 # Namelists
 ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631')
@@ -32,10 +33,12 @@ caseDependent = True
 
 # EMS configuration
 model = 'ARPCLIMAT'
+#lascii_forc
 lsurfex = True
+#sfxfmt
 loverwrite = True
-lupdate_ATM = True 
-lupdate_SFX = True 
+lupdate_ATM = True
+lupdate_SFX = True
 lupdate_RUN = True
 
 # ecoclimap data

@@ -2,7 +2,7 @@
 # -*- coding:UTF-8 -*-
 
 import os
-REP_MUSC = '/home/roehrig/MUSC/riette'
+REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
@@ -11,11 +11,15 @@ GROUP = '46t1'
 EXPID = __name__[7:]
 
 # Binaries
-MASTER = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin/MASTERODB'
-ASCII2FA = '/home/roehrig/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.muxc/bin/ASCII2FA'
+bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin'
+MASTER = os.path.join(bindir, 'MASTERODB')
+#PGD
+#PREP
+ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 
 # Namelists
 ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/namarp_46t1_AROME_OPER')
+#SFXNAM
 
 # Model configuration
 vert_grid = os.path.join(REP_MUSC, 'grid/L60_AROME.dta')
@@ -31,6 +35,7 @@ caseDependent = True
 model = 'AROME46t1'
 lforc_ascii = False
 lsurfex = False
+#sfxfmt
 loverwrite = True
 lupdate_ATM = True 
 lupdate_RUN = True
