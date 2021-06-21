@@ -12,30 +12,23 @@ export DR_HOOK=0
 
 . ./param
 
+os=`uname`
+
 EXP=ARPE
-ADVEC=sli
 
 #       *************************************
 #       * Directories Initialisation        *
 #       *************************************
 
 DIR=`pwd`
-
-LISTINGDIR=$DIR/listings
-if [ ! -d $LISTINGDIR ] ; then
-  mkdir -p $LISTINGDIR
-fi
-
 OUTPUTDIR=$DIR/Output/LFA/
 OUTPUTDIR0=$DIR/Output/
-
-if [ ! -d $OUTPUTDIR ] ; then
-  mkdir -p $OUTPUTDIR
-fi
-
+LISTINGDIR=$DIR/listings
 TMPDIR=$HOME/tmp/EXEMUSC
-[ -d $TMPDIR ] && rm -rf $TMPDIR
-mkdir -p $TMPDIR
+
+[ ! -d $LISTINGDIR ] && mkdir -p $LISTINGDIR
+[ ! -d $OUTPUTDIR ] && mkdir -p $OUTPUTDIR
+[ -d $TMPDIR ] && rm -rf $TMPDIR; mkdir -p $TMPDIR
 
 cd $TMPDIR
 
@@ -67,7 +60,7 @@ set -x
 ln -s $DIR/$NAMARP fort.4
 cat < fort.4
 
-if [ -v NAMSFX ]; then
+if [ -n "$NAMSFX" ]; then
   set +x
   echo ''
   echo ' Get the namelist SURFEX'
@@ -91,11 +84,20 @@ set -x
 
 
 ln -s $INITFILE ICMSH${EXP}INIT
-ln -s $FORCING_FILES files
+[ -n "$FORCING_FILES" ] && ln -s $FORCING_FILES files
 
-[ -v PREP ] && ln -s  $PREP TEST.lfi
-[ -v PGD ] && ln -s  $PGD PGD.lfi
+[ -n "$PREP" ] && ln -s  $PREP TEST.lfi
+[ -n "$PGD" ] && ln -s  $PGD PGD.lfi
 
+
+#       **********************************
+#       *            For RRTM            *
+#       **********************************
+
+if [ -n "$RRTM" ]; then
+    ln -s $RRTM rrtm.tgz
+    tar zxf rrtm.tgz
+fi
 
 #       **********************************
 #       *            For SURFEX          *
@@ -124,35 +126,18 @@ echo ' ALADIN job running '
 echo ''
 set -x
 
-ulimit -s unlimited
+[ ! $os == "Darwin" ] && ulimit -s unlimited
 
 unset LD_LIBRARY_PATH
 
 date
-./MASTER -c001 -vmeteo -maladin -e${EXP} -t$TSTEP -f$NSTOP -a$ADVEC  >lola 2>&1
+if [ $model == "ARPCLIMAT" ]; then
+    ./MASTER -c001 -vmeteo -maladin -e${EXP} -t$TSTEP -f$NSTOP -asli  >lola 2>&1
+else
+    ./MASTER >lola 2>&1
+fi
 date
 ls -l
-
-set +x
-echo ''
-echo ' Listing for the not parallelised part: file lola'
-echo ''
-set -x
-
-#cat lola
-
-if [ -a NODE.001_01 ]
-then
-  for file in NODE*
-  do
-    set +x
-    echo ''
-    echo ' Listing for the parallelised part: file' $file
-    echo ''
-    set -x
-    #cat $file
-  done
-fi
 
 #       **********************************
 #       *     Save model results         *
@@ -166,7 +151,6 @@ set -x
 
 find $OUTPUTDIR/ -name '*' -exec rm -f {} \;
 find ./ -name 'Out*' -exec mv {} $OUTPUTDIR \;
-#find ./ -name 'out*.txt' -exec mv {} $OUTPUTDIR \;
 find ./ -name 'NODE*' -exec mv {} $LISTINGDIR \;
 find ./ -name 'lola' -exec mv {} $LISTINGDIR \;
 
@@ -191,7 +175,6 @@ set -x
 
 set +x
 rm -rf $TMPDIR
-#find $TMPDIR/ -name '*' -exec rm -rf {} \;
 set -x
 #       ********************************************
 #       * Copie eventuelle des routines convert2nc *
