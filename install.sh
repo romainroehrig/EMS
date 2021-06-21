@@ -65,23 +65,23 @@ fi
 [ -d "$REP_MUSC" ] || mkdir -p $REP_MUSC
 cd $REP_MUSC
 cp -r $REP_EMS/examples/* .
-ln -s $REP_EMS/ems/apptools/MUSC.py
+ln -s $REP_EMS/apptools/MUSC.py
 
 for ff in convertLFA2nc.py lfa2nc.py convert2p.py convert2z.py 
 do
 
-  ln -s $REP_EMS/ems/apptools/ems_$ff $REP_MUSC/post/$ff
+  ln -s $REP_EMS/apptools/ems_$ff $REP_MUSC/post/$ff
 
 done
 
-sed -i '' "/__REP_MUSC__/ s/${REP_MUSC}/" setenv
-sed -i '' "/__REP_EMS__/ s/${REP_EMS}/" setenv
+tmp=$(printf '%s' "$REP_EMS" | sed -e 's/[\/&]/\\&/g')
+sed -i "s/__REP_EMS__/"$tmp"/" setenv
 
 cd config
 for ff in `ls config_*.py`
 do
-
-  sed -i '' "/__REP_MUSC__/ s/${REP_MUSC}/" $ff
+  tmp=$(printf '%s' "$REP_MUSC" | sed -e 's/[\/&]/\\&/g')
+  sed -i "s/__REP_MUSC__/"$tmp"/" $ff
 
 done
 cd ..
@@ -97,6 +97,7 @@ if [ $testing == "y" ]; then
   # Testing ARPEGE-Climat 6.3.1
   if [ $test_arp631 == 'y' ]; then
     cd $REP_MUSC
+    source setenv
 
     ./MUSC.py -config config/config_arp631_CMIP6.py -case ARMCU -subcase REF
     [ -f $REP_MUSC/ATM/V631/arp631_CMIP6/ARMCU/REF/initfile_L91 ] || echo "PROBLEM when preparing atmospheric files"
