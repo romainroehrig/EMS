@@ -7,8 +7,7 @@ EXEC	 =	acadfa_exe
 
 OBJS	 =	acadfa1D_main.o \
 		acadfa_sueframe.o \
-		real2spec.o \
-		empty.o 
+		real2spec.o
 
 XRDLOC	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxrd.local.a 
 XRDMAIN	 =	/Users/romainroehrig/pack/arp603_export.01.MPIGNU640.x.highres/lib/libxrd.main.a 
