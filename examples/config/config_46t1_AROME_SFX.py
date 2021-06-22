@@ -2,7 +2,7 @@
 # -*- coding:UTF-8 -*-
 
 import os
-REP_MUSC = '/Users/romainroehrig/MUSC/riette'
+REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
@@ -11,10 +11,11 @@ GROUP = '46t1'
 EXPID = __name__[7:]
 
 # Binaries
-MASTER = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/MASTERODB'
-PGD = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/PGD'
-PREP = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/PREP'
-ASCII2FA = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin/ASCII2FA'
+bindir = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin'
+MASTER = os.path.join(bindir, 'MASTERODB')
+PGD = os.path.join(bindir, 'PGD')
+PREP = os.path.join(bindir, 'PREP')
+ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 
 # Namelists
 ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/namarp_46t1_AROME_OPER')
@@ -36,7 +37,8 @@ lforc_ascii = False
 lsurfex = True
 sfxfmt = 'FA'
 loverwrite = True
-lupdate_ATM = True 
+lupdate_ATM = True
+lupdateSFX = True
 lupdate_RUN = True
 
 # ecoclimap data

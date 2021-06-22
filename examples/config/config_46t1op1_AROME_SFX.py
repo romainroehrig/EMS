@@ -6,23 +6,24 @@ REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
-GROUP = '46t1'
+GROUP = '46t1_op1.01'
 # EXPID will be taken from this file name following the convention config_EXPID.py (__name__ = config_EXPID) 
 EXPID = __name__[7:]
 
 # Binaries
-bindir = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin'
+bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
-#PGD
-#PREP
+PGD = os.path.join(bindir, 'PGD')
+PREP = os.path.join(bindir, 'PREP')
 ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 
 # Namelists
-ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/namarp_46t1_AROME_OPER')
-#SFXNAM
+ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/al46t1_arome-op1.01.nam-namel_previ_dyn_prod')
+SFXNAM_prep = os.path.join(REP_MUSC, 'namelist/SURFEX/al46t1_arome-op1.01.nam-namel_prep')
+SFXNAM_run = os.path.join(REP_MUSC, 'namelist/SURFEX/al46t1_arome-op1.01.nam-namel_previ_surfex_prod')
 
 # Model configuration
-vert_grid = os.path.join(REP_MUSC, 'grid/L60_AROME.dta')
+vert_grid = os.path.join(REP_MUSC, 'grid/L90_AROME.dta')
 timestep = 50
 
 # Postprocessing
@@ -34,11 +35,11 @@ caseDependent = True
 # EMS configuration
 model = 'AROME46t1'
 lforc_ascii = False
-lsurfex = False
-#sfxfmt
+lsurfex = True
+sfxfmt = 'FA'
 loverwrite = True
 lupdate_ATM = True
-#lupdate_SFX
+lupdate_SFX = True
 lupdate_RUN = True
 
 # ecoclimap data

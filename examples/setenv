@@ -1,2 +1,2 @@
-export PATH=$HOME/Tools/EMS/last/apptools:$PATH
-export PYTHONPATH=$HOME/Tools/EMS/last:$PYTHONPATH
+export PATH=__REP_EMS__/apptools:$PATH
+export PYTHONPATH=__REP_EMS__:$PYTHONPATH

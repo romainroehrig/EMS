@@ -110,7 +110,7 @@ def install_atm(model, case, subcase, filecase,
 
     os.chdir(repinit)
 
-    logger.info('-'*40)
+    logger.info('#'*40)
       
 
 def install_sfx(model, case, subcase, filecase, repout,

@@ -2,7 +2,7 @@
 # -*- coding:UTF-8 -*-
 
 import os
-REP_MUSC = '/Users/romainroehrig/MUSC/riette'
+REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
@@ -11,9 +11,10 @@ GROUP = 'V631'
 EXPID = __name__[7:]
 
 # Binaries
-MASTER = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin//MASTERODB'
-PGD = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PGD'
-PREP = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin/PREP'
+bindir = '/Users/romainroehrig/rootpack/arp603_export.01.MPIGNU640.x/bin'
+MASTER = os.path.join(bindir, 'MASTERODB')
+PGD = os.path.join(bindir, 'PGD')
+PREP = os.path.join(bindir, 'PREP')
 #ASCII2FA
 
 # Namelists
@@ -32,10 +33,12 @@ caseDependent = True
 
 # EMS configuration
 model = 'ARPCLIMAT'
+#lascii_forc
 lsurfex = True
+#sfxfmt
 loverwrite = True
-lupdate_ATM = True 
-lupdate_SFX = True 
+lupdate_ATM = True
+lupdate_SFX = True
 lupdate_RUN = True
 
 # ecoclimap data

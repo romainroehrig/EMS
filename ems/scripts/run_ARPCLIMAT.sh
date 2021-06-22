@@ -86,8 +86,13 @@ set -x
 ln -s $INITFILE ICMSH${EXP}INIT
 [ -n "$FORCING_FILES" ] && ln -s $FORCING_FILES files
 
-[ -n "$PREP" ] && ln -s  $PREP TEST.lfi
-[ -n "$PGD" ] && ln -s  $PGD PGD.lfi
+if [ $model == "ARPCLIMAT" ]; then
+    [ -n "$PREP" ] && ln -s  $PREP TEST.lfi
+    [ -n "$PGD" ] && ln -s  $PGD PGD.lfi
+else
+    [ -n "$PREP" ] && ln -s  $PREP ICMSH${EXP}INIT.sfx
+    [ -n "$PGD" ] && ln -s  $PGD Const.Clim.sfx	
+fi
 
 
 #       **********************************
