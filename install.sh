@@ -99,7 +99,7 @@ if [ $testing == "y" ]; then
     cd $REP_MUSC
     source setenv
 
-    ./MUSC.py -config config/config_arp631_CMIP6.py -case ARMCU -subcase REF
+    MPLBACKEND=Agg ./MUSC.py -config config/config_arp631_CMIP6.py -case ARMCU -subcase REF
     [ -f $REP_MUSC/ATM/V631/arp631_CMIP6/ARMCU/REF/initfile_L91 ] || echo "PROBLEM when preparing atmospheric files"
     [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM when prepararing PGD"
     [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM when preparing PREP"
