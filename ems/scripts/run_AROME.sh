@@ -115,7 +115,7 @@ echo ''
 set -x
 
 ln -s $MASTER MASTER
-chmod 755 MASTER
+[! -x MASTER ] && chmod 755 MASTER
 
 set +x
 echo ''
