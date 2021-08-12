@@ -60,6 +60,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True):
 
     # Various update
     nam['NAMMCC']['LMCC03'] = ['.FALSE.']
+    nam['NAMPAR0']['LMPOFF'] = ['.TRUE.']
     for param in ['NPRGPEW', 'NPRGPNS', 'NPROC', 'NPRTRV', 'NPRTRW']:
         nam['NAMPAR0'][param] = ['1']
     nam['NAMPAR1']['LEQ_REGIONS'] = ['.FALSE.']
