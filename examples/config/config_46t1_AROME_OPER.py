@@ -11,7 +11,7 @@ GROUP = '46t1'
 EXPID = __name__[7:]
 
 # Binaries
-bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin'
+bindir = '/Users/romain/rootpack/46_t1.01.MPIGNU1120.x/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
 #PGD
 #PREP
@@ -37,7 +37,8 @@ lforc_ascii = False
 lsurfex = False
 #sfxfmt
 loverwrite = True
-lupdate_ATM = True 
+lupdate_ATM = True
+#lupdate_SFX
 lupdate_RUN = True
 
 # ecoclimap data

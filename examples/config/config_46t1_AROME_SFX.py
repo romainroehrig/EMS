@@ -11,7 +11,7 @@ GROUP = '46t1'
 EXPID = __name__[7:]
 
 # Binaries
-bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin'
+bindir = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')
