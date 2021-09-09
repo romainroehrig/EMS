@@ -1,18 +1,21 @@
 # acadfa makefile
 
 FC	 =	gfortran
-F90FLAGS =      -fopenmp -fconvert=swap -fno-second-underscore -fbacktrace -m64 -fopenmp -gdwarf-3 -ffree-line-length-none -fno-sign-zero -fpic -fno-range-check -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -g -O2 -ftree-vectorize  -DADDRESS64
+FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
+F90FLAGS =      -fconvert=swap -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -DDARWIN -DADDRESS64 -fdefault-real-8 -fdefault-double-8 -g -O2
 EXEC	 =	acadfa_exe
 
 OBJS	 =	acadfa1D_main.o \
 		acadfa_sueframe.o \
-		real2spec.o \
+		real2spec.o
 
-XRD	 =	/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/lib/libxrd.local.a
-XLA	 =      /cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/lib/libxla.local.a
-GRIBEX   =      /home/common/sync/gfortran/auxlibs/lib/libgribex.a 
-MPIDUMMY =      /home/common/sync/gfortran/auxlibs/lib/libmpidummy.a
-LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
+XRDLOC	 =	/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/lib/libxrd.local.a 
+#XRDMAIN	 =	/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/lib/libxrd.local.a 
+XLA	 =	/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/lib/libxla.local.a 
+GRIBEX   =      /Users/romain/libraries/auxlibs.3.4/GNU/auxlibs/lib/libgribex.a 
+MPIDUMMY =      /Users/romain/libraries/auxlibs.3.4/GNU/auxlibs/lib/libmpidummy.a
+#LIBS	 =	$(XRDLOC) $(XRDMAIN) $(XLA) $(GRIBEX) $(MPIDUMMY) 
+LIBS	 =	$(XRDLOC) $(XLA) $(GRIBEX) $(MPIDUMMY) 
 
 %.o:%.F90
 	$(FC) $(F90FLAGS) -c $<

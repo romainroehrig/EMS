@@ -11,7 +11,7 @@ GROUP = 'V631'
 EXPID = __name__[7:]
 
 # Binaries
-bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/bin'
+bindir = '/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/bin'
 MASTER = os.path.join(bindir, 'MASTER')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')
