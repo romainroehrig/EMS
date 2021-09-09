@@ -12,10 +12,10 @@ EXPID = __name__[7:]
 
 # Binaries
 bindir = '/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/bin'
-MASTER = os.path.join(bindir, 'MASTER')
+MASTER = os.path.join(bindir, 'MASTERODB')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')
-ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+#ASCII2FA
 
 # Namelists
 ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631')
