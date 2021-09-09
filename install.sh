@@ -75,13 +75,13 @@ do
 done
 
 tmp=$(printf '%s' "$REP_EMS" | sed -e 's/[\/&]/\\&/g')
-sed -i "s/__REP_EMS__/"$tmp"/" setenv
+sed -i .bak "s/__REP_EMS__/"$tmp"/" setenv
 
 cd config
 for ff in `ls config_*.py`
 do
   tmp=$(printf '%s' "$REP_MUSC" | sed -e 's/[\/&]/\\&/g')
-  sed -i "s/__REP_MUSC__/"$tmp"/" $ff
+  sed -i .bak "s/__REP_MUSC__/"$tmp"/" $ff
 
 done
 cd ..
