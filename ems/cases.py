@@ -127,11 +127,11 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
 #### Stratocumulus cases
 
 # FIRE Case
-#case = 'FIRE'
-#cases.append(case)
-#subcases[case] = ['REF']
-#data_input[case] = {}
-#data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR.nc'
+case = 'FIRE'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 
 # DYCOMS Case
 #case = 'DYCOMS'
