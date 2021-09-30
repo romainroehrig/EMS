@@ -7,8 +7,7 @@ REP_MUSC = '__REP_MUSC__'
 ############# Begin editing
 
 GROUP = '46t1'
-# EXPID will be taken from this file name following the convention config_EXPID.py (__name__ = config_EXPID) 
-EXPID = __name__[7:]
+# EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
 bindir = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin'

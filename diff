@@ -1,0 +1,297 @@
+diff --git a/apptools/MUSC.py b/apptools/MUSC.py
+index dee732d..7ea3010 100755
+--- a/apptools/MUSC.py
++++ b/apptools/MUSC.py
+@@ -74,21 +74,21 @@ if __name__ == '__main__':
+     if not(os.path.isfile(config_file)):
+         raise ValueError("The configuration file {0} does not exist".format(config_file))
+ 
+-    EXPID = config_file.split('/')[-1][7:-3]
++    configloc = config_file.split('/')[-1]
+ 
+     try:
+-        os.remove('./config.py')
++        os.remove('./{0}'.format(configloc))
+     except OSError:
+         pass
+     except:
+         raise
+ 
+-    os.symlink(config_file,"./config.py")
+-    import config as CM
++    os.symlink(config_file,"./{0}".format(configloc))
++    
++    CM = importlib.import_module(configloc[:-3]) 
+ 
+     # Get configuration:
+     atts = {}
+-    atts['EXPID'] = EXPID
+     # First loop over attributes which have a default (see above)
+     for att in ['GROUP', 'model', 'ASCII2FA', 'lforc_ascii', 'lsurfex',
+                 'dirpost', 'variablesDict', 'defaultConfigPost', 'caseDependent',
+@@ -105,7 +105,7 @@ if __name__ == '__main__':
+             raise
+ 
+     # Then loop over attributes that must be given
+-    attlist = ['MASTER', 'ATMNAM', 'vert_grid', 'timestep']
++    attlist = ['EXPID', 'MASTER', 'ATMNAM', 'vert_grid', 'timestep']
+     if atts['lsurfex']:
+         attlist += ['SFXNAM_prep', 'SFXNAM_run', 'PGD', 'PREP']
+     for att in attlist:
+@@ -257,6 +257,6 @@ if __name__ == '__main__':
+         else:
+             logger.info('Run data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_RUN))
+ 
+-    os.remove("./config.py")
+-    os.remove("./config.pyc")
++    os.remove("./{0}".format(configloc))
++    os.remove("./{0}c".format(configloc))
+  
+diff --git a/aux/ASCII2FA/bin/ascii2fa b/aux/ASCII2FA/bin/ascii2fa
+index 1c6f9c9..7ae601c 100755
+Binary files a/aux/ASCII2FA/bin/ascii2fa and b/aux/ASCII2FA/bin/ascii2fa differ
+diff --git a/aux/ASCII2FA/src/Makefile b/aux/ASCII2FA/src/Makefile
+index 93a29e1..808865f 100755
+--- a/aux/ASCII2FA/src/Makefile
++++ b/aux/ASCII2FA/src/Makefile
+@@ -1,21 +1,18 @@
+ # acadfa makefile
+ 
+ FC	 =	gfortran
+-FFLAGS	 =      -ff2c -fconvert=big-endian -frecord-marker=4 $(M32) -ffixed-form -fdefault-real-8 -DADDRESS64 -DLITTLE_ENDIAN -DHIGHRES
+-F90FLAGS =      -fconvert=swap -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -DDARWIN -DADDRESS64 -fdefault-real-8 -fdefault-double-8 -g -O2
++F90FLAGS =      -fopenmp -fconvert=swap -fno-second-underscore -fbacktrace -m64 -fopenmp -gdwarf-3 -ffree-line-length-none -fno-sign-zero -fpic -fno-range-check -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -g -O2 -ftree-vectorize  -DADDRESS64
+ EXEC	 =	acadfa_exe
+ 
+ OBJS	 =	acadfa1D_main.o \
+ 		acadfa_sueframe.o \
+-		real2spec.o
++		real2spec.o \
+ 
+-XRDLOC	 =	/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/lib/libxrd.local.a 
+-#XRDMAIN	 =	/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/lib/libxrd.local.a 
+-XLA	 =	/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/lib/libxla.local.a 
+-GRIBEX   =      /Users/romain/libraries/auxlibs.3.4/GNU/auxlibs/lib/libgribex.a 
+-MPIDUMMY =      /Users/romain/libraries/auxlibs.3.4/GNU/auxlibs/lib/libmpidummy.a
+-#LIBS	 =	$(XRDLOC) $(XRDMAIN) $(XLA) $(GRIBEX) $(MPIDUMMY) 
+-LIBS	 =	$(XRDLOC) $(XLA) $(GRIBEX) $(MPIDUMMY) 
++XRD	 =	/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/lib/libxrd.local.a
++XLA	 =      /cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/lib/libxla.local.a
++GRIBEX   =      /home/common/sync/gfortran/auxlibs/lib/libgribex.a 
++MPIDUMMY =      /home/common/sync/gfortran/auxlibs/lib/libmpidummy.a
++LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
+ 
+ %.o:%.F90
+ 	$(FC) $(F90FLAGS) -c $<
+diff --git a/aux/lfa4py/lfa4py.so b/aux/lfa4py/lfa4py.so
+index e2f935f..0b67b8a 100755
+Binary files a/aux/lfa4py/lfa4py.so and b/aux/lfa4py/lfa4py.so differ
+diff --git a/data/CASES/DYNAMO_NSA3A_MJO1_SCM_driver.nc b/data/CASES/DYNAMO_NSA3A_MJO1_SCM_driver.nc
+index ecf67db..7ba60e4 100644
+Binary files a/data/CASES/DYNAMO_NSA3A_MJO1_SCM_driver.nc and b/data/CASES/DYNAMO_NSA3A_MJO1_SCM_driver.nc differ
+diff --git a/data/CASES/FIRE_REF_SCM_driver.nc b/data/CASES/FIRE_REF_SCM_driver.nc
+deleted file mode 100644
+index bc82ed3..0000000
+Binary files a/data/CASES/FIRE_REF_SCM_driver.nc and /dev/null differ
+diff --git a/data/CASES/SCMS_REF_DEF_driver.nc b/data/CASES/SCMS_REF_DEF_driver.nc
+new file mode 100644
+index 0000000..8fc8f7c
+Binary files /dev/null and b/data/CASES/SCMS_REF_DEF_driver.nc differ
+diff --git a/ems/cases.py b/ems/cases.py
+index 39e4b51..2e1248b 100644
+--- a/ems/cases.py
++++ b/ems/cases.py
+@@ -127,11 +127,11 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
+ #### Stratocumulus cases
+ 
+ # FIRE Case
+-case = 'FIRE'
+-cases.append(case)
+-subcases[case] = ['REF']
+-data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+-                             for subcase in subcases[case]}
++#case = 'FIRE'
++#cases.append(case)
++#subcases[case] = ['REF']
++#data_input[case] = {}
++#data_input[case]['REF'] = rep0 + '/FIRE/Fire-I_driver_RR.nc'
+ 
+ # DYCOMS Case
+ #case = 'DYCOMS'
+diff --git a/ems/lfa2nc.py b/ems/lfa2nc.py
+index 5059393..3fe5555 100755
+--- a/ems/lfa2nc.py
++++ b/ems/lfa2nc.py
+@@ -123,7 +123,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
+     
+     if lalt40:
+         alt40 = f.createDimension('alt40', 40)
+-        alt40s = f.createVariable('alt40', 'f4', ('alt40', ))
++        alt40s = f.createVariable('alt40', 'f8', ('alt40', ))
+         alt40s.long_name = 'altitude'
+         alt40s.units = 'm'
+         alt40s.axis = 'Z'
+@@ -135,7 +135,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
+     
+     if ltemp:
+         temp = f.createDimension('tempAxis', 40)
+-        temps = f.createVariable('tempAxis', 'f4', ('tempAxis', ))
++        temps = f.createVariable('tempAxis', 'f8', ('tempAxis', ))
+         temps.long_name = 'Temperature'
+         temps.units = 'C'
+         temps[:] = [-91.5, -88.5, -85.5, -82.5, -79.5, -76.5, -73.5, -70.5, -67.5, -64.5,
+@@ -145,7 +145,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
+     
+     if lsza5:
+         sza5 = f.createDimension('sza5', 5)
+-        sza5s = f.createVariable('sza5', 'f4', ('sza5', ))
++        sza5s = f.createVariable('sza5', 'f8', ('sza5', ))
+         sza5s.long_name = 'Solar Zenith Angle'
+         sza5s.units = 'degree'
+         sza5s[:] = [0., 20., 40., 60., 80.]
+@@ -159,7 +159,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
+     
+     if ldbze: #lvar4D['cfadDbze94']:
+         dbze = f.createDimension('dbze', 15)
+-        dbzes = f.createVariable('dbze', 'f4', ('dbze', ))
++        dbzes = f.createVariable('dbze', 'f8', ('dbze', ))
+         dbzes.long_name = 'CloudSat simulator equivalent radar reflectivity factor'
+         dbzes.units = 'dBZ'  
+         dbzes[:] = [-47.5, -42.5, -37.5, -32.5, -27.5, -22.5, -17.5, -12.5,
+@@ -167,21 +167,21 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
+     
+     if lsratio: #lvar4D['cfadLidarsr532']:
+         sratio = f.createDimension('scatratio', 15)
+-        sratios = f.createVariable('scatratio', 'f4', ('scatratio', ))
++        sratios = f.createVariable('scatratio', 'f8', ('scatratio', ))
+         sratios.long_name = 'lidar backscattering ratio'
+         sratios.units = '1'
+         sratios[:] = [0.005, 0.605, 2.1, 4., 6., 8.5, 12.5, 17.5, 22.5, 27.5, 35., 45., 55., 70., 50040.]
+     
+     if ltau: #lvar4D['clisccp'] or lvar4D['clmodis'] or lvar4D['clMISR']:  
+         tau = f.createDimension('tau', 7)
+-        taus = f.createVariable('tau', 'f4', ('tau', ))
++        taus = f.createVariable('tau', 'f8', ('tau', ))
+         taus.long_name = 'cloud optical depth'
+         taus.units = '1'  
+         taus[:] = [0.15, 0.8, 2.45, 6.5, 16.2, 41.5, 100.]
+     
+     if lplev7: #lvar4D['clisccp'] or lvar4D['clmodis']:  
+         plev7 = f.createDimension('plev7', 7)  
+-        plev7s = f.createVariable('plev7', 'f4', ('plev7', ))
++        plev7s = f.createVariable('plev7', 'f8', ('plev7', ))
+         plev7s.long_name = 'pressure'
+         plev7s.units = 'Pa'
+         plev7s.axis = 'Z'
+@@ -197,7 +197,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
+                                          3.5, 4.5, 6., 8., 10., 12., 14.5, 16., 18.]]
+     
+     time = f.createDimension('time', None)
+-    times = f.createVariable('time', 'f4', ('time', ))
++    times = f.createVariable('time', 'f8', ('time', ))
+     times.calendar = 'gregorian'
+     times.axis = 'T'
+ 
+@@ -228,13 +228,9 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
+                 raw = r.readfield(var + '_001')
+             else:
+                 raw = r.readfield(var)
+-            #if f.data_model == 'NETCDF3_CLASSIC' and raw.dtype == numpy.dtype('int64'):
+-            #    #int64 not supported by this netcdf format
+-            #    raw = raw.astype(numpy.int32)
+-            if raw.dtype == numpy.dtype('int64'):
++            if f.data_model == 'NETCDF3_CLASSIC' and raw.dtype == numpy.dtype('int64'):
++                #int64 not supported by this netcdf format
+                 raw = raw.astype(numpy.int32)
+-            if raw.dtype == numpy.dtype('float64'):
+-                raw = raw.astype(numpy.float32)
+             #Netcdf variable creation
+             if it == 0:
+                 if len(raw) == 1:
+diff --git a/ems/prep_nam_atm_ARPCLIMAT.py b/ems/prep_nam_atm_ARPCLIMAT.py
+index 0d00c5f..8c269f9 100644
+--- a/ems/prep_nam_atm_ARPCLIMAT.py
++++ b/ems/prep_nam_atm_ARPCLIMAT.py
+@@ -60,7 +60,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True):
+ 
+     # Various update
+     nam['NAMMCC']['LMCC03'] = ['.FALSE.']
+-    nam['NAMPAR0']['LMPOFF'] = ['.TRUE.']
+     for param in ['NPRGPEW', 'NPRGPNS', 'NPROC', 'NPRTRV', 'NPRTRW']:
+         nam['NAMPAR0'][param] = ['1']
+     nam['NAMPAR1']['LEQ_REGIONS'] = ['.FALSE.']
+diff --git a/examples/config/config_46t1_AROME_OPER.py b/examples/config/config_46t1_AROME_OPER.py
+index 442ef3a..4957c41 100644
+--- a/examples/config/config_46t1_AROME_OPER.py
++++ b/examples/config/config_46t1_AROME_OPER.py
+@@ -11,7 +11,7 @@ GROUP = '46t1'
+ EXPID = __name__[7:]
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/46_t1.01.MPIGNU1120.x/bin'
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin'
+ MASTER = os.path.join(bindir, 'MASTERODB')
+ #PGD
+ #PREP
+@@ -37,8 +37,7 @@ lforc_ascii = False
+ lsurfex = False
+ #sfxfmt
+ loverwrite = True
+-lupdate_ATM = True
+-#lupdate_SFX
++lupdate_ATM = True 
+ lupdate_RUN = True
+ 
+ # ecoclimap data
+diff --git a/examples/config/config_46t1_AROME_SFX.py b/examples/config/config_46t1_AROME_SFX.py
+index e7cb957..4ed6da7 100644
+--- a/examples/config/config_46t1_AROME_SFX.py
++++ b/examples/config/config_46t1_AROME_SFX.py
+@@ -11,7 +11,7 @@ GROUP = '46t1'
+ EXPID = __name__[7:]
+ 
+ # Binaries
+-bindir = '/Users/romainroehrig/rootpack/46_t1.01.MPIGNU640.x/bin'
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/46_t1.01.GFORTRAN610ECCOD.xfftw.musc/bin'
+ MASTER = os.path.join(bindir, 'MASTERODB')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+diff --git a/examples/config/config_arp631_CMIP6.py b/examples/config/config_arp631_CMIP6.py
+index 273a51a..28e347f 100644
+--- a/examples/config/config_arp631_CMIP6.py
++++ b/examples/config/config_arp631_CMIP6.py
+@@ -11,11 +11,11 @@ GROUP = 'V631'
+ EXPID = __name__[7:]
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+-#ASCII2FA
++ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+ 
+ # Namelists
+ ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631')
+diff --git a/install.sh b/install.sh
+index 2f9f18c..d1a7436 100755
+--- a/install.sh
++++ b/install.sh
+@@ -75,13 +75,13 @@ do
+ done
+ 
+ tmp=$(printf '%s' "$REP_EMS" | sed -e 's/[\/&]/\\&/g')
+-sed -i .bak "s/__REP_EMS__/"$tmp"/" setenv
++sed -i "s/__REP_EMS__/"$tmp"/" setenv
+ 
+ cd config
+ for ff in `ls config_*.py`
+ do
+   tmp=$(printf '%s' "$REP_MUSC" | sed -e 's/[\/&]/\\&/g')
+-  sed -i .bak "s/__REP_MUSC__/"$tmp"/" $ff
++  sed -i "s/__REP_MUSC__/"$tmp"/" $ff
+ 
+ done
+ cd ..
