@@ -123,7 +123,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
     
     if lalt40:
         alt40 = f.createDimension('alt40', 40)
-        alt40s = f.createVariable('alt40', 'f8', ('alt40', ))
+        alt40s = f.createVariable('alt40', 'f4', ('alt40', ))
         alt40s.long_name = 'altitude'
         alt40s.units = 'm'
         alt40s.axis = 'Z'
@@ -135,7 +135,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
     
     if ltemp:
         temp = f.createDimension('tempAxis', 40)
-        temps = f.createVariable('tempAxis', 'f8', ('tempAxis', ))
+        temps = f.createVariable('tempAxis', 'f4', ('tempAxis', ))
         temps.long_name = 'Temperature'
         temps.units = 'C'
         temps[:] = [-91.5, -88.5, -85.5, -82.5, -79.5, -76.5, -73.5, -70.5, -67.5, -64.5,
@@ -145,7 +145,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
     
     if lsza5:
         sza5 = f.createDimension('sza5', 5)
-        sza5s = f.createVariable('sza5', 'f8', ('sza5', ))
+        sza5s = f.createVariable('sza5', 'f4', ('sza5', ))
         sza5s.long_name = 'Solar Zenith Angle'
         sza5s.units = 'degree'
         sza5s[:] = [0., 20., 40., 60., 80.]
@@ -159,7 +159,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
     
     if ldbze: #lvar4D['cfadDbze94']:
         dbze = f.createDimension('dbze', 15)
-        dbzes = f.createVariable('dbze', 'f8', ('dbze', ))
+        dbzes = f.createVariable('dbze', 'f4', ('dbze', ))
         dbzes.long_name = 'CloudSat simulator equivalent radar reflectivity factor'
         dbzes.units = 'dBZ'  
         dbzes[:] = [-47.5, -42.5, -37.5, -32.5, -27.5, -22.5, -17.5, -12.5,
@@ -167,21 +167,21 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
     
     if lsratio: #lvar4D['cfadLidarsr532']:
         sratio = f.createDimension('scatratio', 15)
-        sratios = f.createVariable('scatratio', 'f8', ('scatratio', ))
+        sratios = f.createVariable('scatratio', 'f4', ('scatratio', ))
         sratios.long_name = 'lidar backscattering ratio'
         sratios.units = '1'
         sratios[:] = [0.005, 0.605, 2.1, 4., 6., 8.5, 12.5, 17.5, 22.5, 27.5, 35., 45., 55., 70., 50040.]
     
     if ltau: #lvar4D['clisccp'] or lvar4D['clmodis'] or lvar4D['clMISR']:  
         tau = f.createDimension('tau', 7)
-        taus = f.createVariable('tau', 'f8', ('tau', ))
+        taus = f.createVariable('tau', 'f4', ('tau', ))
         taus.long_name = 'cloud optical depth'
         taus.units = '1'  
         taus[:] = [0.15, 0.8, 2.45, 6.5, 16.2, 41.5, 100.]
     
     if lplev7: #lvar4D['clisccp'] or lvar4D['clmodis']:  
         plev7 = f.createDimension('plev7', 7)  
-        plev7s = f.createVariable('plev7', 'f8', ('plev7', ))
+        plev7s = f.createVariable('plev7', 'f4', ('plev7', ))
         plev7s.long_name = 'pressure'
         plev7s.units = 'Pa'
         plev7s.axis = 'Z'
@@ -197,7 +197,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
                                          3.5, 4.5, 6., 8., 10., 12., 14.5, 16., 18.]]
     
     time = f.createDimension('time', None)
-    times = f.createVariable('time', 'f8', ('time', ))
+    times = f.createVariable('time', 'f4', ('time', ))
     times.calendar = 'gregorian'
     times.axis = 'T'
 
@@ -228,9 +228,13 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
                 raw = r.readfield(var + '_001')
             else:
                 raw = r.readfield(var)
-            if f.data_model == 'NETCDF3_CLASSIC' and raw.dtype == numpy.dtype('int64'):
-                #int64 not supported by this netcdf format
+            #if f.data_model == 'NETCDF3_CLASSIC' and raw.dtype == numpy.dtype('int64'):
+            #    #int64 not supported by this netcdf format
+            #    raw = raw.astype(numpy.int32)
+            if raw.dtype == numpy.dtype('int64'):
                 raw = raw.astype(numpy.int32)
+            if raw.dtype == numpy.dtype('float64'):
+                raw = raw.astype(numpy.float32)
             #Netcdf variable creation
             if it == 0:
                 if len(raw) == 1:
