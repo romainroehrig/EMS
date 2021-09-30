@@ -84,7 +84,7 @@ if __name__ == '__main__':
         raise
 
     os.symlink(config_file,"./config.py")
-    CM = importlib.import_module('config') 
+    import config as CM
 
     # Get configuration:
     atts = {}
