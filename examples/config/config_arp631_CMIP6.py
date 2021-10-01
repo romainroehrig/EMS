@@ -7,8 +7,7 @@ REP_MUSC = '__REP_MUSC__'
 ############# Begin editing
 
 GROUP = 'V631'
-# EXPID will be taken from this file name following the convention config_EXPID.py (__name__ = config_EXPID) 
-EXPID = __name__[7:]
+# EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
 bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/bin'

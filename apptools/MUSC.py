@@ -74,21 +74,21 @@ if __name__ == '__main__':
     if not(os.path.isfile(config_file)):
         raise ValueError("The configuration file {0} does not exist".format(config_file))
 
-    configloc = config_file.split('/')[-1]
+    EXPID = config_file.split('/')[-1][7:-3]
 
     try:
-        os.remove('./{0}'.format(configloc))
+        os.remove('./config.py')
     except OSError:
         pass
     except:
         raise
 
-    os.symlink(config_file,"./{0}".format(configloc))
-    
-    CM = importlib.import_module(configloc[:-3]) 
+    os.symlink(config_file,"./config.py")
+    import config as CM
 
     # Get configuration:
     atts = {}
+    atts['EXPID'] = EXPID
     # First loop over attributes which have a default (see above)
     for att in ['GROUP', 'model', 'ASCII2FA', 'lforc_ascii', 'lsurfex',
                 'dirpost', 'variablesDict', 'defaultConfigPost', 'caseDependent',
@@ -105,7 +105,7 @@ if __name__ == '__main__':
             raise
 
     # Then loop over attributes that must be given
-    attlist = ['EXPID', 'MASTER', 'ATMNAM', 'vert_grid', 'timestep']
+    attlist = ['MASTER', 'ATMNAM', 'vert_grid', 'timestep']
     if atts['lsurfex']:
         attlist += ['SFXNAM_prep', 'SFXNAM_run', 'PGD', 'PREP']
     for att in attlist:
@@ -257,6 +257,6 @@ if __name__ == '__main__':
         else:
             logger.info('Run data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_RUN))
 
-    os.remove("./{0}".format(configloc))
-    os.remove("./{0}c".format(configloc))
+    os.remove("./config.py")
+    os.remove("./config.pyc")
  
