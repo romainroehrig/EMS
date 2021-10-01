@@ -7,7 +7,7 @@ REP_MUSC = '__REP_MUSC__'
 ############# Begin editing
 
 GROUP = 'V631'
-# EXPID will be taken from this file name following the convention config_EXPID.py 
+# EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
 bindir = '/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/bin'
