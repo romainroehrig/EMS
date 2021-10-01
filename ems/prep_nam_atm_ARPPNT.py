@@ -51,16 +51,16 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
                 if obj == 'NBPROC_IO': nam[namin][param][i] = '1'
 
     # Aerosols and Ozone
-    nam['NAMPHY']['LAEROSEA'] = ['.FALSE.']
-    nam['NAMPHY']['LAEROLAN'] = ['.FALSE.']
-    nam['NAMPHY']['LAEROSOO'] = ['.FALSE.']
-    nam['NAMPHY']['LAERODES'] = ['.FALSE.']
+    #nam['NAMPHY']['LAEROSEA'] = ['.FALSE.']
+    #nam['NAMPHY']['LAEROLAN'] = ['.FALSE.']
+    #nam['NAMPHY']['LAEROSOO'] = ['.FALSE.']
+    #nam['NAMPHY']['LAERODES'] = ['.FALSE.']
 
-    nam['NAMPHY']['LOZONE'] = ['.FALSE.']
-    nam['NAMPHY']['LO3ABC'] = ['.FALSE.']
-    nam['NAMPHY']['LO3FL'] = ['.FALSE.']
+    #nam['NAMPHY']['LOZONE'] = ['.FALSE.']
+    #nam['NAMPHY']['LO3ABC'] = ['.FALSE.']
+    #nam['NAMPHY']['LO3FL'] = ['.FALSE.']
 
-    nam['NAMPHY']['LRAYFM'] = ['.FALSE.']
+    #nam['NAMPHY']['LRAYFM'] = ['.FALSE.']
     nam['NAMPHY']['LEDR'] = ['.FALSE.',]
 
     #nam['NAMPHY']['LRELAXT'] = ['.FALSE.']
