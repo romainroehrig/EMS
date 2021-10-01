@@ -6,7 +6,7 @@ set -evx
 # User specific
 
 # EMS Version
-EMS_VERSION=TO BE DEFINED
+EMS_VERSION=2.2.mac
 
 # Directory where EMS is installed
 REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
