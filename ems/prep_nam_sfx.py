@@ -29,7 +29,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
     logger.info('Output namelist: ' + namout)
     logger.info('Output format for PGD/PREP: ' + sfxfmt)
 
-    nam2keep = ['NAM_CARTESIAN', 'NAM_COVER', 'NAM_DIAG_SURFn', 'NAM_FRAC', 'NAM_IO_OFFLINE',
+    nam2keep = ['NAM_CARTESIAN', 'NAM_COVER', 'NAM_DIAG_SURFN', 'NAM_FRAC', 'NAM_IO_OFFLINE',
                 'NAM_IO_SURF_ARO', 'NAM_PGD_GRID', 'NAM_PGD_SCHEMES', 'NAM_PREP_SURF_ATM',
                 'NAM_SURF_ATM', 'NAM_SURF_CSTS', 'NAM_ZS']
 
@@ -37,7 +37,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
 
     # Remove a few namelists
     for nn in ['NAMDIM', 'NAMGEM', 'NAMRGRI', 'NAMVV1', 'NAMRGRI', 'NAM_IO_SURF_ARO',
-               'NAM_OASIS', 'NAM_SFX_LAND_CPL', 'NAM_DIAG_SURF_ATMn']:
+               'NAM_OASIS', 'NAM_SFX_LAND_CPL', 'NAM_DIAG_SURF_ATMN']:
         try:      
             del(nam[nn])
         except KeyError:
@@ -91,21 +91,21 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
     nam[nn] = {}
 
     # NAM_DIAG_SURFn
-    nn = 'NAM_DIAG_SURFn'
+    nn = 'NAM_DIAG_SURFN'
     nam[nn] = {}
     nam[nn]['N2M'] = ['2']
     for tt in ['LSURF_VARS', 'LSURF_BUDGET', 'LCOEF', 'LRAD_BUDGET', 'LSURF_BUDGETC', 'LRESET_BUDGETC']:
         nam[nn][tt] = ['T']     
 
     # NAM_SEAFLUXn
-    nn = 'NAM_SEAFLUXn'
+    nn = 'NAM_SEAFLUXN'
     try:
         del(nam[nn]['CINTERPOL_SST'])
     except KeyError:
         pass
 
     # NAM_SEAICEn
-    nn = 'NAM_SEAICEn'
+    nn = 'NAM_SEAICEN'
     try:
         del(nam[nn]['CINTERPOL_SIC'])
     except KeyError:
@@ -203,7 +203,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             nam[nn]['CSEA'] = ["'SEAFLX'"]
             nam2keep.append('NAM_DATA_SEAFLUX')
             nam2keep.append('NAM_PREP_SEAFLUX')
-            nam2keep.append('NAM_SEAFLUXn')
+            nam2keep.append('NAM_SEAFLUXN')
         elif surfaceForcing == 'surface_flux':
             nam[nn]['CSEA'] = ["'FLUX'"]
             nam2keep.append('NAM_IDEAL_FLUX')
@@ -222,7 +222,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             nam2keep.append('NAM_ISBA')
             nam2keep.append('NAM_PREP_ISBA')
             nam2keep.append('NAM_PREP_ISBA_SNOW')
-            nam2keep.append('NAM_ISBAn')
+            nam2keep.append('NAM_ISBAN')
             nam2keep.append('NAM_DEEPSOIL')
             nam2keep.append('NAM_DATA_ISBA')
             nam2keep.append('NAM_DATA_TSZ0')
@@ -313,7 +313,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
                 nam[nn]['XUNIF_CLAY'] = ['1.']
                 nam[nn]['XUNIF_RUNOFFB'] = ['0.5']
                 nam[nn]['XUNIF_SAND'] = ['0.']
-                #nn = 'NAM_ISBAn'
+                #nn = 'NAM_ISBAN'
                 #nam[nn] = {}
                 #nam[nn]['LGLACIER'] = ['.TRUE.']
                 nn = 'NAM_PREP_ISBA_SNOW'
@@ -341,7 +341,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
                 nam[nn]['XTIME_SST(%(ii)4.i)'%{"ii": it + 1}] = ['%(seconds)7.1f'%{"seconds": dates[it].hour * 3600 + dates[it].minute * 60 + dates[it].second}]
 
             if lalb:
-                nam['NAM_SEAFLUXn']['CSEA_ALB'] = ["'UNIF'"]
+                nam['NAM_SEAFLUXN']['CSEA_ALB'] = ["'UNIF'"]
                 nn = 'NAM_SURF_CSTS'
                 nam[nn]['XALBCOEF_TA96'] = [str(alb)]
                 nam[nn]['XALBSCA_WAT'] = [str(alb)]
