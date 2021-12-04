@@ -89,7 +89,7 @@ elif [ "$machine" = "Darwin" ] ; then
 	#
 	# Darwin : gfortran flags.
         #export FC="gfortran -fconvert=big-endian -cpp"
-	export FC="gfortran -fconvert=big-endian -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -cpp -g -O2"
+	export FC="gfortran -fconvert=big-endian -fno-second-underscore -fbacktrace -fopenmp -fno-sign-zero -fpic -ffree-line-length-none -m64 -ffree-form  -cpp -g -O2 -fallow-argument-mismatch"
         export BIBC="ar r"
 	#-----------------------------------------------
 	# Precision in bytes of integers and real.
