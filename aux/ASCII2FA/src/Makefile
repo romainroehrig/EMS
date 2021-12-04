@@ -12,8 +12,8 @@ OBJS	 =	acadfa1D_main.o \
 XRDLOC	 =	/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/lib/libxrd.local.a 
 #XRDMAIN	 =	/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/lib/libxrd.local.a 
 XLA	 =	/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/lib/libxla.local.a 
-GRIBEX   =      /Users/romain/libraries/auxlibs.3.4/GNU/auxlibs/lib/libgribex.a 
-MPIDUMMY =      /Users/romain/libraries/auxlibs.3.4/GNU/auxlibs/lib/libmpidummy.a
+GRIBEX   =      /Users/romain/libraries/auxlibs.3.5/lib/libgribex.a 
+MPIDUMMY =      /Users/romain/libraries/auxlibs.3.5/lib/libmpidummy.a
 #LIBS	 =	$(XRDLOC) $(XRDMAIN) $(XLA) $(GRIBEX) $(MPIDUMMY) 
 LIBS	 =	$(XRDLOC) $(XLA) $(GRIBEX) $(MPIDUMMY) 
 
