@@ -17,10 +17,10 @@ import netCDF4 as nc
 import numpy as np
 from scipy import interpolate
 
-from Axis import Axis
+from .Axis import Axis
 
-from variables_attributes import attributes as var_attributes
-import plotbasics
+from .variables_attributes import attributes as var_attributes
+from . import plotbasics
 
 class Variable:
 
