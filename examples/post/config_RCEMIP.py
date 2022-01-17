@@ -1,11 +1,24 @@
+#!/usr/bin/env python
+# -*- coding:UTF-8 -*-
+# Copyright (c) Météo France (2014-)
+# This software is governed by the CeCILL-C license under French law.
+# http://www.cecill.info
+
 #saveall = True
 saveall = False
 
-var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','lhfn','shf','tsurf','prw','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke']
+#var2save = ['pfull','zfull','theta','qv','cl']
 
-var2save = var2save + ['tntrlw','tntrsw','tntpbl','tntlscp','tntc','tntd','tnupbl','tnuc','tnud','tnvpbl','tnvc','tnvd','tntadv','tntnudg','tnugeo','tnvgeo','tendu','tendv','tendq','tendh']
-
-var2save = var2save + ['ZTAU_ECUME','t2m','huss','uas','vas','O3','rO3','rCO2','rCH4','rN2O','rsdt','rsut','rlut','rsds','rsus','rsdscs','rsuscs','rlds','rlus','rldscs']
+var2save = ['pfull','zfull','theta','ta','qv','hur','ua','va','wap','tke',
+        'ql','qi','qr','qsn','qlc','qic','qrc','qsnc',
+        'cl','clt','prw','lwp',
+        'pr','hfls','hfss','ustar','ts','z0',
+        'mf','alpha_up','wa_up','ta_up','qv_up','b_up','dTv_up',
+        'ent_up','ent_up_org','ent_up_turb','det_up','det_up_org','det_up_turb',
+        'dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp'
+        'Q1','tnta_turb','tnta_conv','tnta_micro',
+        'Q2','tnqv_turb','tnqv_micro','tnqv_conv',
+        ]
 
 convert2p = True
 convert2z = False
