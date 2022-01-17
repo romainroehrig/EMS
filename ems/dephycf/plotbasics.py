@@ -1,14 +1,13 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Created on 27 November 2019
+Provide basic plotting function based on matplotlib
 
+Created on 27 November 2019
 @author: Romain Roehrig
 """
 
-import os
 import numpy as np
-
 import matplotlib.pyplot as plt
 
 def plot(x,y,x2=None,y2=None,xlim=None,ylim=None,xlabel=None,ylabel=None,title=None,rep_images=None,name=None,label="",label2="",yunits=None):
@@ -27,14 +26,13 @@ def plot(x,y,x2=None,y2=None,xlim=None,ylim=None,xlabel=None,ylabel=None,title=N
     if rep_images is None:
       plt.savefig(name)
     else:
-      plt.savefig(os.path.join(rep_images, name))
+      plt.savefig(rep_images + name)
     plt.close()
 
 def plot2D(x,y,z,xlim=None,ylim=None,xlabel=None,ylabel=None,title=None,rep_images=None,name=None,yunits=None):
     nt,nz = z.shape
     X = np.tile(x,(nz,1))
     Y = np.tile(y,(nt,1))
-    #plt.pcolormesh(X,np.transpose(Y),np.transpose(z))
     plt.contourf(X,np.transpose(Y),np.transpose(z))
     if not(xlim is None): plt.xlim(xlim)
     if not(ylim is None): plt.ylim(ylim)
@@ -46,5 +44,5 @@ def plot2D(x,y,z,xlim=None,ylim=None,xlabel=None,ylabel=None,title=None,rep_imag
     if rep_images is None:
       plt.savefig(name)
     else:
-      plt.savefig(os.path.join(rep_images, name))
+      plt.savefig(rep_images + name)
     plt.close()
