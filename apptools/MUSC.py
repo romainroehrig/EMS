@@ -258,5 +258,5 @@ if __name__ == '__main__':
             logger.info('Run data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_RUN))
 
     os.remove("./config.py")
-    os.remove("./config.pyc")
+    #os.remove("./config.pyc")
  

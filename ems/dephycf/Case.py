@@ -20,14 +20,14 @@ import netCDF4 as nc
 
 import numpy as np
 
-from Axis import Axis
-from Variable import Variable, read as readvar, interpol
+from .Axis import Axis
+from .Variable import Variable, read as readvar, interpol
 
-from variables_attributes import attributes as var_attributes
-from attributes import known_attributes, required_attributes
+from .variables_attributes import attributes as var_attributes
+from .attributes import known_attributes, required_attributes
 
-import thermo
-import constants as CC
+from . import thermo
+from . import constants as CC
 
 # Default start and en dates
 startDate0 = datetime(1979,1,1,0,0,0)

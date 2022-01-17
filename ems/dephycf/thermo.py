@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 import math
 import numpy as np
 
-import constants as cc
+from . import constants as cc
 
 #############################
 def rt2qt(rt, units='kg kg-1'):
