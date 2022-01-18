@@ -131,7 +131,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True):
     nam[nn]['LSFORC'] = ['.TRUE.']
     nam[nn]['LVERTFE'] = ['.FALSE.']
     nam[nn]['LSFXORO'] = ['.FALSE.']
-    tmp = nam[nn].keys()
+    tmp = list(nam[nn].keys())
     for param in tmp:
         if param[0] == 'N':
             del(nam[nn][param])
@@ -249,7 +249,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True):
         nam[nn]['RELAX_TAUQ'] = [str(float(attributes['nudging_qv']))]
         nam['NAMTOPH']['ETRELAXQ'] = [str(float(attributes['pa_nudging_qv']))]
 
-    if attributes.has_key('RCE') and attributes['RCE'] == 1:
+    if 'RCE' in attributes and attributes['RCE'] == 1:
         nam['NAMAQUAMF'] = {}
         nam['NAMCT0']['LRCE'] = ['.TRUE.']
         if lDEPHY:
@@ -260,7 +260,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True):
             nam['NAMRIP']['RANGLE'] = [str(float(attributes['zangle']))]
             nam['NAMSCEN']['RI0'] = [str(float(attributes['I0']))]
             nn = 'NAMCLDP'
-            if attributes.has_key('CCN'):
+            if 'CCN' in attributes:
                 tmp = math.log(attributes['CCN'] / 1.e6) / math.log(10)
             else:
                 tmp = 2.
@@ -282,7 +282,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True):
             coefs['CFC11'] = 1.e-12 # pptv
             coefs['CFC12'] = 1.e-12 # pptv
             for g in GHG.keys():
-                if attributes.has_key(g):
+                if g in attributes:
                     nam[nn]['RC' + g] = [str(float(attributes[g]) * coefs[g])]
                 else: 
                     nam[nn]['RC' + g] = [str(GHG[g]*coefs[g])]
