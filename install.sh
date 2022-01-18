@@ -6,7 +6,7 @@ set -evx
 # User specific
 
 # EMS Version
-EMS_VERSION=2.2
+EMS_VERSION=2.3
 
 # Directory where EMS is installed
 REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
