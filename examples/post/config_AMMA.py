@@ -1,25 +1,15 @@
-#!/usr/bin/env python
-# -*- coding:UTF-8 -*-
-# Copyright (c) Météo France (2014-)
-# This software is governed by the CeCILL-C license under French law.
-# http://www.cecill.info
-
 #saveall = True
 saveall = False
 
-#var2save = ['pfull','zfull','theta','qv','cl']
 
-var2save = ['pfull','zfull','theta','ta','qv','hur','ua','va','wap','tke',
-        'ql','qi','qr','qsn','qlc','qic','qrc','qsnc',
-        'cl','clt','prw','lwp','iwp',
-        'pr','hfls','hfss','ustar','ts','z0',
-        'mf','alpha_up','wa_up','ta_up','qv_up','b_up','dTv_up',
-        'ent_up','ent_up_org','ent_up_turb','det_up','det_up_org','det_up_turb',
-        'dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp'
-        'Q1','tnta_turb','tnta_conv','tnta_micro',
-        'Q2','tnqv_turb','tnqv_micro','tnqv_conv',
-        'tnqt','tnthl'
-        ]
+var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','shf','tsurf','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','w_up','Mf','alpha_up','ustar','z0','dTv_up','T_up','qv_up','eps_u','det_u','B_up','eps_u_org','eps_u_tur','det_u_org','det_u_tur','lwp','iwp','tnqt','tnthl']
+
+#var2save = var2save + ['tntrlw','tntrsw','tntpbl','tntlscp','tntc','tntd','tnupbl','tnuc','tnud','tnvpbl','tnvc','tnvd','tntadv','tntnudg','tnugeo','tnvgeo','tendu','tendv','tendq','tendh']
+
+#var2save = var2save + ['delta_t','delta_q','dt_wake','dq_wake','dt_wake2','dq_wake2','omega_up','alpha_up','wake_fip','Cstar','hw','ZMWAKE','ZCWAKE','ZS12','ZCTH','ZMTH','ZALPTH','ZWUP','ZALPHAUP','sigmaw']
+
+#var2save = var2save + ['buoy','w_up_bud','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp','dTv_up','ZUDALWAKE','ZBUOWAKE','ZALFW','ZWWMWX','ZVVER','ZDOMEGA','ZWW','ZWX','ZMW','ZMX','ZMTOT']
+
 
 convert2p = True #False
 convert2z = False
