@@ -1,2205 +1,520 @@
-#pres et presH joue un role particulier donc doivent etre definies
-varnames = {}
-names = {}
-units = {}
-coefs = {}
-
-#---------------------------------------------------------------------------------------------------
-#                        Variable in ARPEGE/MUSC
-#---------------------------------------------------------------------------------------------------
-
-# 1. Variables dynamiques et thermodynamiques
-#      pf(pres), ph (presH), zf(zg), zh(zgH), rho, temp(ta), qv(hus), hur, ql, qi, qr, qsn, tke, theta(th), thv, thl, thlv, qsat,
-#      u(ua), v(va), wa, wap
-#      qlc, qic, qrc, qsnc, qlshc, qishc, qrshc, qsnshc
-# 2. Variables nuageuses
-#      rneb(cl), cls, cc (clt), cltc, cltl, cltm, clth
-# 3. Variables pluies
-#      precls, snowls, precc, snowc, rain(pr), prls, prc, ppr, pprls, pprc    
-# 4. Variables rayonnement
-#      rsdt, rsdtcs, rldt, rldtcs, rsut, rsutcs, rlut, rlutcs, rst, rstcs, rlt, rltcs
-#      rsds, rsdscs, rsus, rsuscs, rlds, rldscs, rlus, rluscs, rss, rsscs, rls, rlscs
-#      SWd, SWu, SWdcs, SWucs, SWnet, LWd, LWu, LWdcs, LWucs, LWnet
-#      mu1, mueff, I0, alb_ss
-# 5. Variables flux de surface
-#      shf(hfss), lhf(hfls), lhfn(hflsn)
-#      evap, evapi, evapn
-#      tauu, tauv, ustar
-#      Cd, Ch, Ce, Cdn, Chn, Cen
-#      Ugr
-#      z0, z0h, zref, tsurf, qsurf
-for var in ['PUSTAR','PCD','PCH','PCE','ZUSR','ZTSR','ZQSR','PZ0SEA','PZ0HSEA','ZDU','ZDT','ZDQ','ZVMOD','PTA','PQA','PQSAT','PSST','ZTAU','ZHF','ZEF']:
-  varnames[var + '_ECUME'] = var + '_ECUME'
-  names[var + '_ECUME'] = var + '_ECUME'
-  units[var + '_ECUME'] = '-'
-  coefs[var + '_ECUME'] = 1    
-# 6. Variables integrees sur la colonne
-#      prw, lwp, iwp, cwp
-# 7. Variables en surface
-#      t2m(tas), huss, hurs, uas, vas, pblh, ts
-# 8.1 Tendances de la physique
-#      Q1, Q2, Qrad
-#      tnthl, tnqt
-#      tntrswn tntrlw, tntrswcs, tntrlwcs, tntpbl, tntlscp, tntc, tntshc, tntd
-#      tnthrswn tnthrlw, tnthrswcs, tnthrlwcs, tnthpbl, tnthlscp, tnthc, tnthshc, tnthd
-#      tnqvpbl, tnqvlscp, tnqvc, tnqvshc, tnqvd
-#      tnupbl, tnuc, tnushc, tnud, tnvpbl, tnvc, tnvshc, tnvd
-#      tnthlrswn tnthlrlw, tnthlrswcs, tnthlrlwcs, tnthlpbl, tnthllscp, tnthlc, tnthlshc, tnthld
-#      tnqtpbl, tnqtlscp, tnqtc, tnqtshc, tnqtd
-#      tnql, tnqi, tnqr, tnqsn
-#      tnqlc, tnqic, tnqrc, tnqsnc
-#      tnqlshc, tnqishc, tnqrshc, tnqsnc
-#      tntcas, tntcs, tntfplcl, tntfplcn, tntfccql, tntfecl, tntfccqn, tntfecn, tntfhimcc
-#      tntfplsl, tntfplsn, tntfcsql, tntfesl, tntfcsqn, tntfesn
-#      tendu, tendv, tendh, tendq
-# 8.2 Flux de la physique
-#      wpqp_pbl, wpthp_pbl, wpqp_conv, wpthp_conv, wpqtp_pbl, wpthlp_pbl, wpqtp_conv, wpthlp_conv
-#      wpup_pbl, wpvp_pbl, wpup_conv, wpvp_conv
-# 9. Tendances liees au forcages
-#      tntadv, tntnudg, tnqadv, tnqvnudg, tnunudg, tnvnudg, tnugeo, tnvgeo
-# 10. Divers
-#      Cp, Lv
-# 11. Bilan eau et energie
-#      qflux, qfluxPr, qfluxEv, dwater, efluxTOA, efluxSfc, denergy
-#      RMSE9, RMSE0, RMSE1, RDMSE, msefluxSfc
-#      iQadv, iQnud, iTadv, iTnud, iUadv, iUnud, iVadv, iVnud, iEadv, iEnud
-#      efluxSfcRad, efluxSfcTurb, efluxSfcConv, efluxSfcAdj, efluxSfcPrSen, efluxSfcPrLat
-#      iMSEadv, iMSEnud, iQw, iEw
-# 12. Especes Gazeuses
-#      rCO2, rCH4, rN2O, rNO2, rCFC11, rCFC12, rCFC22, rCCL4, rO3
-# 13. Variables du schema de convection Bougeault 1985
-#      alpha, Mf, Tu, Thu, qvu, qcu
-# 14. Variables du schema PCMT
-#      alpha_up, w_up, omega_up, alpha_dn, w_dn, omega_dn, cape, T_up, qv_up, omega_ref
-#      w_up_bud, dw_buoy, dw_fric, dw_Kd, dw_entr, dw_transp, buoy, Mf, eps_u, eps_u_org, eps_u_tur, entr_u, detr_u, dTv_up, B_up
-#      aipcmt, knnd, knlab, ZS15, ZS16, ZTAU,ZWMAX,ZZMAX,ZKMAX,ZINTEGMAX,ZMMAX
-for var in ['ZWMAX','ZZMAX','ZKMAX','ZINTEGMAX','ZMMAX','ZINTEGA','ZMOD','ZRE']:
-  varnames[var] = var
-  names[var] = var
-  units[var] = '-'
-  coefs[var] = 1
-# Variables du schema TKE
-for var in ['LMECT','TKEDIF','TKEDISS','TKEPRDY','TKEPRTH','TKETEND','PECTCLS','PKCLS','PKUROV','PUSLE','PPRODTH']:
-  varnames[var] = var
-  names[var] = var
-  units[var] = '-'
-  coefs[var] = 1
-for var in ['ECT0','ECT1','TNECT_DYN','TNECT_BUO','TNECT_DIS','TNECT_DIF','KU']:
-  varnames[var] = var
-  names[var] = var
-  units[var] = '-'
-  coefs[var] = 1
-# 15. Variables pour le wake
-#      delta_t, delta_q, d_delta_t_gw, omgb_dth, omgb, dt_KE, dq_KE, dt_PBL, dq_PBL
-#      omg_w, dp_delt_omg, spread_w, delta_th, dt_wake, dq_wake, t_undi, q_undi, 
-#      d_delta_t, d_delta_q,
-#      hw, sigmaw, wake_pe, wake_fip, wake_gfl, Cstar, wdens
-#      dt_dn, dt_up, dq_dn, dq_up, Mf_dn, Mf_up, sigd, omgb
-#      t_undi_pcmt, q_undi_pcmt, t_wake_pcmt, q_wake_pcmt
-#      qw_undi, qw_wake, Tw_wake, Tw_undi, qsat_undi, qsat_wake
-#      dt_wake2, dq_wake2
-#      ZMWAKE, ZCWAKE, ZS12
-# 16. Variables pour la turbulence
-#      Q11, igs, igs2, igs2turb, igs2conv, sigs, sigs2, sigs2turb, sigs2conv, mlen
-#      Q11min, Q11max, acoef, sigc0, sigc1
-# 17. Variables COSP
-#      frac_out
-#      cltcalipso, cllcalipso, clmcalipso, clhcalipso, clcalipso
-#      cllcalipsoice, clmcalipsoice, clhcalipsoice, cltcalipsoice
-#      cllcalipsoliq, clmcalipsoliq, clhcalipsoliq, cltcalipsoliq
-#      cllcalipsoun, clmcalipsoun, clhcalipsoun, cltcalipsoun
-#      clcalipso, lidarBetaMol532
-#      clcalipsoice, clcalipsoliq, clcalipsoun, 
-#      clcalipsotmp, clcalipsotmpice, clcalipsotmpliq, clcalipsotmpun
-#      parasolRefl
-#      atb532, cfadLidarsr532
-#      dbze94, cfadDbze94
-#      cltlidarradar, clcalipso2
-#      cltisccp, pctisccp, tauisccp, albisccp, meantbisccp, meantbclrisccp, 
-#      boxtauisccp, boxptopisccp
-#      clisccp
-#      cltmodis, clwmodis, climodis, clhmodis, clmmodis, cllmodis
-#      tautmodis, tauwmodis, tauimodis, tautlogmodis, tauwlogmodis, tauilogmodis
-#      reffclwmodis, reffclimodis
-#      pctmodis, lwpmodis, iwpmodis
-#      clmodis
-#      clMISR
-#      COSP input : 
-#      'ZLAT_COSP','ZLON_COSP','PLSM_COSP','PMU0_COSP','PEMIS_COSP','PTS_COSP',
-#      'ZAP_COSP','ZAPH_COSP','ZAPHI_COSP','ZAPHIF_COSP',
-#      'ZU_COSP','ZV_COSP',
-#      'ZT_COSP','ZQ_COSP','ZRH_COSP','ZOZN_COSP','ZCLFR_COSP','ZCLFRCC_COSP',
-#      'ZMRLSLIQ_COSP','ZMRLSICE_COSP','ZMRCCLIQ_COSP','ZMRCCICE_COSP',
-#      'ZFLLSRAIN_COSP','ZFLLSSNOW_COSP','ZFLCCRAIN_COSP','ZFLCCSNOW_COSP',
-#      'ZRADLP_COSP','ZRADIP_COSP',
-#      'ZTAUSW_COSP','ZEMILW_COSP'
-
-##########################################
-# 1. Variables dynamiques et thermodynamiques
-
-varnames['pf']  = 'PAPRSF'
-varnames['ph'] = 'PAPRS'
-
-varnames['zf']    = 'PAPHIF'
-varnames['zh']   = 'PAPHI'
-
-varnames['rho']   = 'RHO'
-varnames['temp']    = 'PT'
-varnames['qv']   = 'PQ'
-varnames['hur']   = 'PRH'
-varnames['ql']    = 'PQLI'
-varnames['qi']    = 'PQICE'
-varnames['qr']    = 'PQR'
-varnames['qsn']   = 'PQSN'
-
-varnames['qlc']   = 'PQLCONV'
-varnames['qic']   = 'PQICONV'
-varnames['qrc']   = 'PQRCONV'
-varnames['qsnc']  = 'PQSCONV'
-
-varnames['qlshc'] = 'PQLSHCONV'
-varnames['qishc'] = 'PQISHCONV'
-varnames['qrshc'] = 'PQRSHCONV'
-varnames['qsnshc']= 'PQSSHCONV'
-
-varnames['tke']   = 'PECT'
-
-varnames['theta']    = 'THETA'
-varnames['thv']   = 'THETAV'
-varnames['thl']   = 'THETAL'
-varnames['thlv']  = 'THETAVL'
-
-varnames['qsat']  = 'PQSAT'
-
-varnames['u']    = 'PU'
-varnames['v']    = 'PV'
-varnames['wa']    = 'ZW'
-varnames['wap']   = 'ZOMEGA'
-
-##########################################
-# 2. Variables nuageuses
-
-varnames['rneb']    = 'PNEB'
-varnames['cls']   = 'ZNEBS'
-varnames['cc']   = 'PCLCT'
-varnames['cltc']  = 'PCLCC'
-varnames['cltl']  = 'PCLCL'
-varnames['cltm']  = 'PCLCM'
-varnames['clth']  = 'PCLCH'
-
-##########################################
-# 3. Variables pluies
-
-varnames['precls']= 'PFPLSL'
-varnames['snowls']= 'PFPLSN'
-varnames['precc'] = 'PFPLCL'
-varnames['snowc'] = 'PFPLCN'
-
-varnames['rain']    = 'PRECS_TOT'
-varnames['prls']  = 'PRECS_LS'
-varnames['prc']   = 'PRECS_CONV'
-varnames['ppr']   = 'PREC_TOT'
-varnames['pprls'] = 'PREC_LS'
-varnames['pprc']  = 'PREC_C'
-
-##########################################
-# 4. Variables rayonnement
-
-varnames['rsdt']  = 'SW_TOA_dn'
-varnames['rsdtcs']= 'SW_TOA_cs_dn'
-varnames['rldt']  = 'LW_TOA_dn'
-varnames['rldtcs']= 'LW_TOA_cs_dn'
-varnames['rsut']  = 'SW_TOA_up'
-varnames['rsutcs']= 'SW_TOA_cs_up'
-varnames['rlut']  = 'LW_TOA_up'
-varnames['rlutcs']= 'LW_TOA_cs_up'
-varnames['rst']   = 'SW_TOA'
-varnames['rstcs'] = 'SW_TOA_cs'
-varnames['rlt']   = 'LW_TOA'
-varnames['rltcs'] = 'LW_TOA_cs'
-
-varnames['rsds']  = 'SW_Surf_dn'
-varnames['rsdscs']= 'SW_Surf_cs_dn'
-varnames['rsus']  = 'SW_Surf_up'
-varnames['rsuscs']= 'SW_Surf_cs_up'
-varnames['rlds']  = 'LW_Surf_dn'
-varnames['rldscs']= 'LW_Surf_cs_dn'
-varnames['rlus']  = 'LW_Surf_up'
-varnames['rluscs']= 'LW_Surf_cs_up'
-varnames['rss']   = 'SW_Surf'
-varnames['rsscs'] = 'SW_Surf_cs'
-varnames['rls']   = 'LW_Surf'
-varnames['rlscs'] = 'LW_Surf_cs'
-
-varnames['SWd'] = 'SWd'
-varnames['SWu'] = 'SWu'
-varnames['SWdcs'] = 'SWdcs'
-varnames['SWucs'] = 'SWucs'
-varnames['SWnet'] = 'PFRSO'
-
-varnames['LWd'] = 'LWd'
-varnames['LWu'] = 'LWu'
-varnames['LWdcs'] = 'LWdcs'
-varnames['LWucs'] = 'LWucs'
-varnames['LWnet'] = 'PFRTH'
-
-varnames['mu1'] = 'ZMU0'
-varnames['mueff'] = 'ZMU0EFF'
-varnames['I0'] = 'ZI0'
-varnames['daydur'] = 'Day duration'
-
-varnames['alb_ss'] = 'SW_ALB'
-
-##########################################
-# 5. Variables flux de surface
-
-varnames['lhf']  = 'PFCLL'
-varnames['shf']  = 'PFCS'
-varnames['lhfn'] = 'PFCLN'
-
-varnames['evap'] = 'PFEVL'
-varnames['evapi'] = 'PFEVI'
-varnames['evapn'] = 'PFEVN'
-
-varnames['tauu']  = 'PSFU'
-varnames['tauv']  = 'PSFV'
-varnames['ustar']  = 'ZUSTAR'
-
-varnames['Cd'] = 'ZCD'
-varnames['Ch'] = 'ZCH'
-varnames['Ce'] = 'ZCE'
-
-varnames['Cdn'] = 'ZCDN'
-varnames['Chn'] = 'ZCHN'
-varnames['Cen'] = 'ZCEN'
-
-varnames['Ugr'] = 'UGR'
-
-varnames['z0']  = 'PZ0'
-varnames['z0h']  = 'PZ0H'
-varnames['zref'] = 'PZREF'
-
-varnames['tsurf'] = 'PTS'
-varnames['qsurf'] = 'PQS'
-
-##########################################
-# 6. Variables integrees sur la colonne
-
-varnames['prw']   = 'WVP'
-varnames['lwp']   = 'LWP'
-varnames['iwp']   = 'IWP'
-varnames['cwp']   = 'CWP'
-
-##########################################
-# 7. Variables en surface
-
-varnames['t2m']   = 'PTCLS'
-varnames['huss']  = 'PQCLS'
-varnames['hurs']  = 'PRHCLS'
-varnames['uas']   = 'PUCLS'
-varnames['vas']   = 'PVCLS'
-
-varnames['pblh']  = 'HCLA'
-
-varnames['ts']    = 'PTS'
-
-##########################################
-# 8.1 Tendances de la physique
-
-varnames['Q1']    = 'Q1'
-varnames['Q2']    = 'Q2'
-varnames['QRad']  = 'QRad'
-
-varnames['tnth'] = 'TENDTHETA'
-varnames['tnthl'] = 'TENDTHETAL'
-varnames['tnqt']  = 'TENDQT'
-
-varnames['tntrsw']= 'TENDSWT'
-varnames['tntrlw']= 'TENDLWT'
-varnames['tntrswcs']= 'TENDSWTCS'
-varnames['tntrlwcs']= 'TENDLWTCS'
-varnames['tntpbl']= 'TENDTT'
-varnames['tntlscp'] = 'TENDST'
-varnames['tntc']  = 'TENDCT'
-varnames['tntshc']  = 'TENDSHCT'
-varnames['tntd']  = 'TENDMT'
-
-varnames['tnthrsw']= 'TENDSWTH'
-varnames['tnthrlw']= 'TENDLWTH'
-varnames['tnthrswcs']= 'TENDSWTHCS'
-varnames['tnthrlwcs']= 'TENDLWTHCS'
-varnames['tnthpbl']= 'TENDTTH'
-varnames['tnthlscp'] = 'TENDSTH'
-varnames['tnthc']  = 'TENDCTH'
-varnames['tnthshc']  = 'TENDSHCTH'
-varnames['tnthd']  = 'TENDMTH'
-
-varnames['tnqvpbl'] = 'TENDTQ'
-varnames['tnqvlscp'] = 'TENDSQ'
-varnames['tnqvc'] = 'TENDCQ'
-varnames['tnqvshc'] = 'TENDSHCQ'
-varnames['tnqvd'] = 'TENDMQ'
-
-varnames['tnupbl']= 'TENDTU'
-varnames['tnuc']  = 'TENDCU'
-varnames['tnushc']  = 'TENDSHCU'
-varnames['tnud']  = 'TENDMU'
-
-varnames['tnvpbl']= 'TENDTV'
-varnames['tnvc']  = 'TENDCV'
-varnames['tnvshc']  = 'TENDSHCV'
-varnames['tnvd']  = 'TENDMV'
-
-varnames['tnthlrsw']= 'TENDSWTHL'
-varnames['tnthlrlw']= 'TENDLWTHL'
-varnames['tnthlrswcs']= 'TENDSWTHLCS'
-varnames['tnthlrlwcs']= 'TENDLWTHLCS'
-varnames['tnthlpbl'] = 'TENDTTHL'
-varnames['tnthllscp'] = 'TENDSTHL'
-varnames['tnthlc']= 'TENDCTHL'
-varnames['tnthlshc']= 'TENDSHCTHL'
-varnames['tnthld']= 'TENDMTHL'
-
-varnames['tnqtpbl'] = 'TENDTQT'
-varnames['tnqtlscp'] = 'TENDSQT'
-varnames['tnqtc'] = 'TENDCQT'
-varnames['tnqtshc'] = 'TENDSHCQT'
-varnames['tnqtd'] = 'TENDMQT'
-
-varnames['tnql']  = 'TENDQL'
-varnames['tnqi']  = 'TENDQI'
-varnames['tnqr']  = 'TENDQR'
-varnames['tnqsn']  = 'TENDQS'
-
-varnames['tnqlc'] = 'TENDQLCONV'
-varnames['tnqic'] = 'TENDQICONV'
-varnames['tnqrc'] = 'TENDQRCONV'
-varnames['tnqsnc'] = 'TENDQSCONV'
-
-varnames['tnqlshc'] = 'TENDQLSHCONV'
-varnames['tnqishc'] = 'TENDQISHCONV'
-varnames['tnqrshc'] = 'TENDQRSHCONV'
-varnames['tnqsnshc'] = 'TENDQSSHCONV'
-
-varnames['tntcas'] = 'TENDTCAS'
-varnames['tntcs'] = 'TENDTCS'
-varnames['tntfplcl'] = 'TENDTFPLCL'
-varnames['tntfplcn'] = 'TENDTFPLCN'
-varnames['tntfccql'] = 'TENDTFCCQL'
-varnames['tntfecl'] = 'TENDTFECL'
-varnames['tntfccqn'] = 'TENDTFCCQN'
-varnames['tntfecn'] = 'TENDTFECN'
-varnames['tntfhimcc'] = 'TENDTFHIMCC'
-
-varnames['tntfplsl'] = 'TENDTFPLSL'
-varnames['tntfplsn'] = 'TENDTFPLSN'
-varnames['tntfcsql'] = 'TENDTFCSQL'
-varnames['tntfesl'] = 'TENDTFESL'
-varnames['tntfcsqn'] = 'TENDTFCSQN'
-varnames['tntfesn'] = 'TENDTFESN'
-
-varnames['tendu'] = 'TENDU'
-varnames['tendv'] = 'TENDV'
-varnames['tendq'] = 'TENDQ'
-varnames['tendh'] = 'TENDH'
-
-
-##########################################
-# 8.2 Flux de la physique
-
-varnames['wpqp_pbl'] = 'WPQP_TU'
-varnames['wpthp_pbl'] = 'WPTHP_TU'
-varnames['wpup_pbl'] = 'WPUP_TU'
-varnames['wpvp_pbl'] = 'WPVP_TU'
-varnames['wpqp_conv'] = 'WPQP_CV'
-varnames['wpthp_conv'] = 'WPTHP_CV'
-varnames['wpup_conv'] = 'WPUP_CV'
-varnames['wpvp_conv'] = 'WPVP_CV'
-varnames['wpqtp_pbl'] = 'ZWPQT_tur'
-varnames['wpthlp_pbl'] = 'WTHL_tur'
-varnames['wpqtp_conv'] = 'ZWPQT_dee'
-varnames['wpthlp_conv'] = 'WTHL_dee'
-
-##########################################
-# 9. Tendances liees au forcages
-
-varnames['tntadv'] = 'ZFT_ADV'
-varnames['tntnudg'] = 'ZFT_NUDG'
-varnames['tnqvadv'] = 'ZFQ_ADV'
-varnames['tnqvnudg'] = 'ZFQ_NUDG'
-varnames['tnunudg'] = 'ZFU_NUDG'
-varnames['tnvnudg'] = 'ZFV_NUDG'
-varnames['tnugeo'] = 'ZFUGEO'
-varnames['tnvgeo'] = 'ZFVGEO'
-
-##########################################
-# 10. Divers
-
-varnames['Cp'] = 'PCP'
-varnames['Lv'] = 'PLH'
-
-##########################################
-# 11. Bilan eau et energie
-
-varnames['qflux'] = 'WATERFLUX'
-varnames['qfluxEv'] = 'WATERFLUXE'
-varnames['qfluxPr'] = 'WATERFLUXP'
-varnames['dwater'] = 'RDWATER'
-varnames['efluxTOA'] = 'EFLUXTOA'
-varnames['efluxSfc'] = 'EFLUXSFC'
-varnames['denergy'] = 'RDENERGY'
-varnames['RMSE9'] = 'RMSE9'
-varnames['RMSE0'] = 'RMSE0'
-varnames['RMSE1'] = 'RMSE1'
-varnames['RDMSE'] = 'RDMSE'
-varnames['msefluxSfc'] = 'MSEFLUXSFC'
-varnames['iQadv'] = 'TOTFORCQADV'
-varnames['iQnud'] = 'TOTFORCQNUD'
-varnames['iTadv'] = 'TOTFORCTADV'
-varnames['iTnud'] = 'TOTFORCTNUD'
-varnames['iUadv'] = 'TOTFORCUADV'
-varnames['iUnud'] = 'TOTFORCUNUD'
-varnames['iVadv'] = 'TOTFORCVADV'
-varnames['iVnud'] = 'TOTFORCVNUD'
-varnames['iEadv'] = 'TOTFORCEADV'
-varnames['iEnud'] = 'TOTFORCENUD'
-varnames['efluxSfcRad'] = 'EFLUXSFCRAD'
-varnames['efluxSfcTurb'] = 'EFLUXSFCTS'
-varnames['efluxSfcConv'] = 'EFLUXSFCCS'
-varnames['efluxSfcAdj'] = 'EFLUXSFCCAS'
-varnames['efluxSfcPrSen'] = 'EFLUXSFC1'
-varnames['efluxSfcPrLat'] = 'EFLUXSFC2'
-varnames['iMSEadv'] = 'MSEADV'
-varnames['iMSEnud'] = 'MSENUD'
-varnames['iMSEw'] = 'MSEW'
-varnames['iQw'] = 'WATERW'
-varnames['iEw'] = 'ENERGYW'
-
-##########################################
-# 12. Especes Gazeuses
-
-varnames['rCO2'] = 'ZCO2'
-varnames['rCH4'] = 'ZCH4'
-varnames['rN2O'] = 'ZN2O'
-varnames['rNO2'] = 'ZNO2'
-varnames['rCFC11'] = 'ZC11'
-varnames['rCFC12'] = 'ZC12'
-varnames['rCFC22'] = 'ZC22'
-varnames['rCCL4'] = 'ZCL4'
-varnames['rO3'] = 'ZOZN'
-
-##########################################
-# 13. Variables du schema de convection Bougeault 1985
-
-varnames['alpha'] = 'ZALF'
-varnames['Mfbougeault'] = 'ZFORM2'
-varnames['Tu'] = 'ZTN'
-varnames['Thu'] = 'ZTHN'
-varnames['qvu'] = 'ZQN'
-varnames['qcu'] = 'ZLN'
-
-##########################################
-# 14. Variables du schema PCMT
-
-varnames['alpha_up'] = 'PUDAL'
-varnames['w_up'] = 'ZWU' #'ZUDW' #'ZUDW_ACPCMT' #'PUDW'
-varnames['omega_up'] = 'PUDOM'
-varnames['alpha_dn'] = 'PDDAL'
-varnames['w_dn'] = 'ZDDW' #'ZDDW_ACPCMT' #'PDDW'
-varnames['omega_dn'] = 'PDDOM'
-varnames['cape'] = 'PCAPE'
-varnames['T_up'] = 'PTU'
-varnames['qv_up'] = 'PQU'
-varnames['omega_ref'] = 'ZVVREF'
-varnames['w_up_bud'] = 'BILOM'
-varnames['dw_buoy'] = 'BILOM+TBUOY'
-varnames['dw_fric'] = 'BILOM+TFRIC'
-varnames['dw_Kd'] = 'BILOM+TKD'
-varnames['dw_entr'] = 'BILOM+TENTR'
-varnames['dw_transp'] = 'BILOM+TTRANSP'
-varnames['buoy'] = 'ZBUO_W'
-varnames['Mf'] = 'MF'
-varnames['eps_u'] = 'ZEPSILON_U'
-varnames['det_u'] = 'ZDELTA_U'
-varnames['eps_u_org'] = 'ZEPS_ORG'
-varnames['eps_u_tur'] = 'ZEPS_TUR'
-varnames['det_u_org'] = 'ZDEL_ORG'
-varnames['det_u_tur'] = 'ZDEL_TUR'
-varnames['entr_u'] = 'ZENTR_U'
-varnames['detr_u'] = 'ZDETR_U'
-varnames['dTv_up'] = 'TVUD-TVENV'
-varnames['B_up'] = 'B_UP'
-varnames['aipcmt'] = 'AIPCMT'
-varnames['knnd'] = 'KNND'
-varnames['knlab'] = 'KNLAB'
-varnames['ZS15'] = 'ZS15'
-varnames['ZS16'] = 'ZS16'
-varnames['ZTAU'] = 'ZTAU'
-
-##########################################
-# 15. Variables pour le wake
-
-varnames['delta_t'] = 'PWAKEDELTAT'
-varnames['delta_q'] = 'PWAKEDELTAQ'
-varnames['d_delta_t_gw'] = 'PWAKEDDELTATGW'
-varnames['omgb_dth'] = 'PWAKEOMGBDTH'
-varnames['dp_omgb'] = 'PWAKEDPOMGB'
-varnames['dt_KE'] = 'PWAKEDTKE'
-varnames['dq_KE'] = 'PWAKEDQKE'
-varnames['dt_PBL'] = 'PWAKEDTPBL'
-varnames['dq_PBL'] = 'PWAKEDQPBL'
-varnames['omg_w'] = 'PWAKEOMG'
-varnames['dp_delt_omg'] = 'PWAKEDPDELTOMG'
-varnames['spread_w'] = 'PWAKESPREAD'
-varnames['delta_th'] = 'PWAKEDTH'
-varnames['dt_wake'] = 'PDTWAKE'
-varnames['dt_wake2'] = 'TENDWAKET'
-varnames['dq_wake'] = 'PDQWAKE'
-varnames['dq_wake2'] = 'TENDWAKEQ'
-varnames['t_undi'] = 'PTUNDI'
-varnames['q_undi'] = 'PQUNDI'
-varnames['d_delta_t'] = 'PWAKEDDELTAT'
-varnames['d_delta_q'] = 'PWAKEDDELTAQ'
-varnames['hw'] = 'PWAKEH'
-varnames['sigmaw'] = 'PWAKES'
-varnames['wake_pe'] = 'PWAKEPE'
-varnames['wake_fip'] = 'PWAKEFIP'
-varnames['wake_gfl'] = 'PWAKEGFL'
-varnames['Cstar'] = 'PWAKECSTAR'
-varnames['wdens'] = 'PWAKEDENS'
-varnames['dt_dn'] = 'ZDTDWN'
-varnames['dt_up'] = 'ZDTA'
-varnames['dq_dn'] = 'ZDQDWN'
-varnames['dq_up'] = 'ZDQA'
-varnames['Mf_dn'] = 'ZMDWN'
-varnames['Mf_up'] = 'ZMUP'
-varnames['sigd'] = 'ZSIGD'
-varnames['omgb'] = 'POMGB'
-varnames['t_undi_pcmt'] = 'ZTUNDI'
-varnames['q_undi_pcmt'] = 'ZQUNDI'
-varnames['t_wake_pcmt'] = 'ZTWAKE'
-varnames['q_wake_pcmt'] = 'ZQWAKE'
-varnames['qw_undi'] = 'ZQWUNDI'
-varnames['qw_wake'] = 'ZQWWAKE'
-varnames['Tw_wake'] = 'ZTWWAKE'
-varnames['Tw_undi'] = 'ZTWUNDI'
-varnames['qsat_undi'] = 'ZQSATUNDI'
-varnames['qsat_wake'] = 'ZQSATWAKE'
-varnames['ZMWAKE'] = 'ZMWAKE'
-varnames['ZCWAKE'] = 'ZCWAKE'
-varnames['ZS12'] = 'ZS12'
-
-##########################################
-# 16. Variables pour la turbulence
-
-varnames['Q11'] = 'ZQ11'
-varnames['Q11min'] = 'ZQ1MIN'
-varnames['Q11max'] = 'ZQ1MAX'
-varnames['igs'] = 'ZIGMAS'
-varnames['igs2'] = 'ZIGMAS2'
-varnames['igs2turb'] = 'ZIGMAS2TURB'
-varnames['igs2conv'] = 'ZIGMAS2CONV'
-varnames['sigs'] = 'ZSIGMAS'
-varnames['sigs2'] = 'ZSIGMAS2'
-varnames['sigs2turb'] = 'ZSIGMAS2TURB'
-varnames['sigs2conv'] = 'ZSIGMAS2CONV'
-varnames['mlen'] = 'ZZLMF'
-varnames['acoef'] = 'ZAA'
-varnames['sigc0'] = 'PSIGCLOUD0'
-varnames['sigc1'] = 'PSIGCLOUD1'
-
-##########################################
-# 17. Variables COSP
-
-for vv in ['cltcalipso','cllcalipso','clmcalipso','clhcalipso','clcalipso','cllcalipsoice','clmcalipsoice','clhcalipsoice','cltcalipsoice','cllcalipsoliq','clmcalipsoliq','clhcalipsoliq','cltcalipsoliq','cllcalipsoun','clmcalipsoun','clhcalipsoun','cltcalipsoun','clcalipso','lidarBetaMol532','clcalipsoice','clcalipsoliq','clcalipsoun','clcalipsotmp','clcalipsotmpice','clcalipsotmpliq','clcalipsotmpun','parasolRefl','cltlidarradar','clcalipso2','cltisccp','pctisccp','tauisccp','albisccp','meantbisccp','meantbclrisccp','boxtauisccp','boxptopisccp','cltmodis','clwmodis','climodis','clhmodis','clmmodis','cllmodis','tautmodis','tauwmodis','tauimodis','tautlogmodis','tauwlogmodis','tauilogmodis','reffclwmodis','reffclimodis','pctmodis','lwpmodis','iwpmodis','toffset','fracout','atb532','cfadLidarsr532','dbze94','cfadDbze94','clisccp','clmodis','clMISR']:
-  varnames[vv] = vv
-
-for vv in ['ZLAT_COSP','ZLON_COSP','PLSM_COSP','PMU0_COSP','PEMIS_COSP','PTS_COSP','ZAP_COSP','ZAPH_COSP','ZAPHI_COSP','ZAPHIF_COSP','ZU_COSP','ZV_COSP','ZT_COSP','ZQ_COSP','ZRH_COSP','ZOZN_COSP','ZCLFR_COSP','ZCLFRCC_COSP','ZMRLSLIQ_COSP','ZMRLSICE_COSP','ZMRCCLIQ_COSP','ZMRCCICE_COSP','ZFLLSRAIN_COSP','ZFLLSSNOW_COSP','ZFLCCRAIN_COSP','ZFLCCSNOW_COSP','ZRADLP_COSP','ZRADIP_COSP','ZTAUSW_COSP','ZEMILW_COSP']:
-  varnames[vv] = vv
-
-#---------------------------------------------------------------------------------------------------
-#                        Long name of variables
-#---------------------------------------------------------------------------------------------------
-
-##########################################
-# 1. Variables dynamiques et thermodynamiques
-
-names['pf']  = 'Pressure on Full Levels'
-names['ph'] = 'Pressure on Half Levels'
-
-names['zf']    = 'Geopotential on Full Levels'
-names['zh']   = 'Geopotential on Half Levels'
-
-names['rho']   = 'Air Volumic Mass'
-names['temp']    = 'Air Temperature'
-names['qv']   = 'Specific Humidity'
-names['hur']   = 'Relative Humidity'
-names['ql']    = 'Specific Mass of Cloud Liquid Water'
-names['qi']    = 'Specific Mass of Cloud Ice Water'
-names['qr']    = 'Specific Mass of Rain'
-names['qsn']   = 'Specific Mass of Snow'
-
-names['qlc']   = 'Specific Mass of Convective Liquid Water'
-names['qic']   = 'Specific Mass of Convective Ice Water'
-names['qrc']   = 'Specific Mass of Convective Rain'
-names['qsnc']  = 'Specific Mass of Convective Snow'
-
-names['qlshc'] = 'Specific Mass of Shallow Convection Liquid Water'
-names['qishc'] = 'Specific Mass of Shallow Convection Ice Water'
-names['qrshc'] = 'Specific Mass of Shallow Convection Rain'
-names['qsnshc']= 'Specific Mass of Shallow Convection Snow'
-
-names['tke']   = 'Turbulent Kinetic Energy'
-
-names['theta']    = 'Potential Temperature'
-names['thv']    = 'Virtual Potential Temperature'
-names['thl']    = 'Liquid Potential Temperature'
-names['thlv']    = 'Virtual Potential Temperature'
-
-names['qsat']  = 'Specific Humidity at Saturation'
-
-names['u']    = 'Zonal Wind'
-names['v']    = 'Meridional Wind'
-names['wa']    = 'Vertical Velocity'
-names['wap']   = 'Vertical Pressure Velocity'
-
-##########################################
-# 2. Variables nuageuses
-
-names['rneb']    = 'Cloud Fraction'
-names['cls']   = 'Stratiform Cloud Fraction'
-names['cc']   = 'Total Cloud Fraction'
-names['cltc']  = 'Total Convective Cloud Fraction'
-names['cltl']  = 'Total Low Cloud Fraction'
-names['cltm']  = 'Total Mid Cloud Fraction'
-names['clth']  = 'Total High Cloud Fraction'
-
-##########################################
-# 3. Variables pluies
-
-names['precls']= 'Large-Scale Precipitation Flux'
-names['snowls']= 'Large-Scale Snow Flux'
-names['precc'] = 'Convective Precipitation Flux'
-names['snowc'] = 'Convective Snow Flux'
-
-names['rain']    = 'Surface Precipitation'
-names['prls']  = 'Surface Large-Scale Precipitation'
-names['prc']   = 'Surface Convective Precipitation'
-names['ppr']   = 'Total Precipitation Profile'
-names['pprls'] = 'Large-Scale Precipitation Profile'
-names['pprc']  = 'Convective Precipitation Profile'
-
-##########################################
-# 4. Variables rayonnement
-
-names['rsdt']  = 'Downward SW Radiation at TOA'
-names['rsdtcs']= 'Clear-sky Downward SW Radiation at TOA'
-names['rldt']  = 'Downward LW Radiation at TOA'
-names['rldtcs']= 'Clear-sky Downward LW Radiation at TOA'
-names['rsut']  = 'Upward SW Radiation at TOA'
-names['rsutcs']= 'Clear-sky Upward SW Radiation at TOA'
-names['rlut']  = 'Upward LW Radiation at TOA'
-names['rlutcs']= 'Clear-sky Upward LW Radiation at TOA'
-names['rst']   = 'SW Radiation at TOA'
-names['rstcs'] = 'Clear-sky SW Radiation at TOA'
-names['rlt']   = 'LW Radiation at TOA'
-names['rltcs'] = 'Clear-sky LW Radiation at TOA'
-
-names['rsds']  = 'Downward SW Radiation at Surface'
-names['rsdscs']= 'Clear-sky Downward SW Radiation at Surface'
-names['rsus']  = 'Upward SW Radiation at Surface'
-names['rsuscs']= 'Clear-sky Upward SW Radiation at Surface'
-names['rlds']  = 'Downward LW Radiation at Surface'
-names['rldscs']= 'Clear-sky Downward LW Radiation at Surface'
-names['rlus']  = 'Upward LW Radiation at Surface'
-names['rluscs']= 'Clear-sky Upward LW Radiation at Surface'
-names['rss']   = 'SW Radiation at Surface'
-names['rsscs'] = 'Clear-sky SW Radiation at Surface'
-names['rls']   = 'LW Radiation at Surface'
-names['rlscs'] = 'Clear-sky LW Radiation at Surface'
-
-names['SWd'] = 'Downward SW Flux'
-names['SWu'] = 'Upward SW Flux'
-names['SWdcs'] = 'CS Downward SW Flux'
-names['SWucs'] = 'CS Upward SW Flux'
-names['SWnet'] = 'Net SW Flux'
-
-names['LWd'] = 'Downward LW Flux'
-names['LWu'] = 'Upward LW Flux'
-names['LWdcs'] = 'CS Downward LW Flux'
-names['LWucs'] = 'CS Upward LW Flux'
-names['LWnet'] = 'Net LW Flux'
-
-names['mu1'] = 'Sinus of zenith angle'
-names['mueff'] = 'Sinus of effective zenith angle'
-names['I0'] = 'Solar irradiance'
-names['daydur'] = 'Day duration'
-
-names['alb_ss'] = 'SW Surface Albedo'
-
-##########################################
-# 5. Variables flux de surface
-
-names['lhf']  = 'Surface Latent Heat Flux'
-names['shf']  = 'Surface Sensible Heat Flux'
-names['lhfn'] = 'Surface Latent Heat Flux over Snow or Ice'
-
-names['evap']  = 'Evaporation over liquid water (or wet soil)'
-names['evapi'] = 'Evaporation over frozen soil'
-names['evapn'] = 'Evaporation over snow (or ice) and frozen soil'
-
-names['tauu']  = 'Surface zonal stress'
-names['tauv']  = 'Surface meridional stress'
-names['ustar']  = 'ustar'
-
-names['Cd'] = 'Surface Exchange Coefficient for Wind'
-names['Ch'] = 'Surface Exchange Coefficient for Heat'
-names['Ce'] = 'Surface Exchange Coefficient for Water Vapor'
-
-names['Cdn'] = 'Surface Exchange Neutral Coefficient for Wind'
-names['Chn'] = 'Surface Exchange Neutral Coefficient for Heat'
-names['Cen'] = 'Surface Exchange Neutral Coefficient for Water Vapor'
-
-names['Ugr'] = 'Wind gustiness due to precipitation'
-
-names['z0']  = 'z0'
-names['z0h']  = 'z0h'
-names['zref'] = 'Altitude of the first atmospheric level'
-
-names['tsurf'] = 'Surface temperature (SST)'
-names['qsurf'] = 'Surface saturated specific humidity (qsat(SST))'
-
-##########################################
-# 6. Variables integrees sur la colonne
-
-names['prw']   = 'Precipitable Water'
-names['lwp']   = 'Liquid Water Path'
-names['iwp']   = 'Ice Water Path'
-names['cwp']   = 'Cloud Water Path'
-
-##########################################
-# 7. Variables en surface
-
-names['t2m']   = '2-meter Air Temperature'
-names['huss']  = '2-meter Specific Humidity'
-names['hurs']  = '2-meter Relative Humidity'
-names['uas']   = '10-meter Zonal Wind'
-names['vas']   = '10-meter Meridional Wind'
-
-names['pblh']  = 'Planetary Boundary Layer Height'
-
-names['ts']    = 'Surface Temperature'
-
-##########################################
-# 8.1 Tendances de la physique
-
-names['Q1']    = 'Apparent Heat Source'
-names['Q2']    = 'Apparent Moisture Sink'
-names['QRad']  = 'Radiative Heating Rate'
-
-names['tnthl'] = 'Liquid Potential Temperature Tendency due to Physics'
-names['tnqt'] = 'Total Water Tendency due to Physics'
-
-names['tntrsw'] = 'Temperature Tendency due to SW Radiation'
-names['tntrlw'] = 'Temperature Tendency due to LW Radiation'
-names['tntrswcs'] = 'Temperature Tendency due to Clear-sky SW Radiation'
-names['tntrlwcs'] = 'Temperature Tendency due to Clear-sky LW Radiation'
-names['tntpbl'] = 'Temperature Tendency due to Turbulence'
-names['tntlscp'] = 'Temperature Tendency due to Large-scale Condensation and Precipitation'
-names['tntc'] = 'Temperature Tendency due to Convection'
-names['tntshc'] = 'Temperature Tendency due to Shallow Convection'
-names['tntd'] = 'Temperature Tendency due to Other Processes'
-
-names['tnthrsw'] = 'Potential Temperature Tendency due to SW Radiation'
-names['tnthrlw'] = 'Potential Temperature Tendency due to LW Radiation'
-names['tnthrswcs'] = 'Potential Temperature Tendency due to Clear-sky SW Radiation'
-names['tnthrlwcs'] = 'Potential Temperature Tendency due to Clear-sky LW Radiation'
-names['tnthpbl'] = 'Potential Temperature Tendency due to Turbulence'
-names['tnthlscp'] = 'Potential Temperature Tendency due to Large-scale Condensation and Precipitation'
-names['tnthc'] = 'Potential Temperature Tendency due to Convection'
-names['tnthshc'] = 'Potential Temperature Tendency due to Shallow Convection'
-names['tnthd'] = 'Potential Temperature Tendency due to Other Processes'
-
-names['tnqvpbl'] = 'Specific Humidity Tendency due to Turbulence'
-names['tnqvlscp'] = 'Specific Humidity Tendency due to Large-scale Condensation and Precipitation'
-names['tnqvc'] = 'Specific Humidity Tendency due to Convection'
-names['tnqvshc'] = 'Specific Humidity Tendency due to Shallow Convection'
-names['tnqvd'] = 'Specific Humidity Tendency due to Other Processes'
-
-names['tnupbl'] = 'Zonal Wind Tendency due to Turbulence'
-names['tnuc'] = 'Zonal Wind Tendency due to Convection'
-names['tnushc'] = 'Zonal Wind Tendency due to Shallow Convection'
-names['tnud'] = 'Zonal Wind Tendency due to Other Processes'
-
-names['tnvpbl'] = 'Meridional Wind Tendency due to Turbulence'
-names['tnvc'] = 'Meridional Wind Tendency due to Convection'
-names['tnvshc'] = 'Meridional Wind Tendency due to Shallow Convection'
-names['tnvd'] = 'Meridional Wind Tendency due to Other Processes'
-
-names['tnthlrsw'] = 'Liquid Potential Temperature Tendency due to SW Radiation'
-names['tnthlrlw'] = 'Liquid Potential Temperature Tendency due to LW Radiation'
-names['tnthlrswcs'] = 'Liquid Potential Temperature Tendency due to Clear-sky SW Radiation'
-names['tnthlrlwcs'] = 'Liquid Potential Temperature Tendency due to Clear-sky LW Radiation'
-names['tnthlpbl'] = 'Liquid Potential Temperature Tendency due to Turbulence'
-names['tnthllscp'] = 'Liquid Potential Temperature Tendency due to Large-scale Condensation and Precipitation'
-names['tnthlc'] = 'Liquid Potential Temperature Tendency due to Convection'
-names['tnthlshc'] = 'Liquid Potential Temperature Tendency due to Shallow Convection'
-names['tnthld'] = 'Liquid Potential Temperature Tendency due to Other Processes'
-
-names['tnqtpbl'] = 'Total Water Tendency due to Turbulence'
-names['tnqtlscp'] = 'Total Water Tendency due to Large-scale Condensation and Precipitation'
-names['tnqtc'] = 'Total Water Tendency due to Convection'
-names['tnqtshc'] = 'Total Water Tendency due to Shallow Convection'
-names['tnqtd'] = 'Total Water Tendency due to Other Processes'
-
-names['tnql'] = 'Liquid Water Tendency due to Physics'
-names['tnqi'] = 'Ice Water Tendency due to Physics'
-names['tnqr'] = 'Rain Tendency due to Physics'
-names['tnqsn'] = 'Snow Tendency due to Physics'
-
-names['tnqlc'] = 'Convective Liquid Water Tendency due to Physics'
-names['tnqic'] = 'Convective Ice Water Tendency due to Physics'
-names['tnqrc'] = 'Convective Rain Tendency due to Physics'
-names['tnqsnc'] = 'Convective Snow Tendency due to Physics'
-
-names['tnqlshc'] = 'Shallow Convection Liquid Water Tendency due to Physics'
-names['tnqishc'] = 'Shallow Convection Ice Water Tendency due to Physics'
-names['tnqrshc'] = 'Shallow Convection Rain Tendency due to Physics'
-names['tnqsnshc'] = 'Shallow Convection Snow Tendency due to Physics'
-
-names['tntcas'] = 'Temperature Tendency due to Dry Convective Adjustment'
-names['tntcs'] = 'Temperature Tendency due to Convective Eddies'
-names['tntfplcl'] = 'Temperature Tendency due to Convective Liquid Precipitation'
-names['tntfplcn'] = 'Temperature Tendency due to Convective Solid Precipitation'
-names['tntfccql'] = 'Temperature Tendency due to Convective Liquid Precipitation Generation'
-names['tntfecl'] = 'Temperature Tendency due to Convective Liquid Precipitation Evaporation'
-names['tntfccqn'] = 'Temperature Tendency due to Convective Solid Precipitation Generation'
-names['tntfecn'] = 'Temperature Tendency due to Convective Solid Precipitation Evaporation'
-names['tntfhimcc'] = 'Temperature Tendency due to Convective Melting/Icing'
-
-names['tntfplsl'] = 'Temperature Tendency due to Stratiform Liquid Precipitation'
-names['tntfplsn'] = 'Temperature Tendency due to Stratiform Solid Precipitation'
-names['tntfcsql'] = 'Temperature Tendency due to Stratiform Liquid Precipitation Generation'
-names['tntfesl'] = 'Temperature Tendency due to Stratiform Liquid Precipitation Evaporation'
-names['tntfcsqn'] = 'Temperature Tendency due to Stratiform Solid Precipitation Generation'
-names['tntfesn'] = 'Temperature Tendency due to Stratiform Solid Precipitation Evaporation'
-
-names['tendu'] = 'TENDU'
-names['tendv'] = 'TENDV'
-names['tendq'] = 'TENDQ'
-names['tendh'] = 'TENDH'
-
-##########################################
-# 8.2 Flux de la physique
-
-names['wpqp_pbl'] = 'Water Vapor Water Flux due to Turbulence'
-names['wpthp_pbl'] = 'Potential Temperature Flux due to Turbulence'
-names['wpup_pbl'] = 'Zonal Wind Flux due to Turbulence'
-names['wpvp_pbl'] = 'Meridional Wind Flux due to Turbulenve'
-names['wpqp_conv'] = 'Water Vapor Water Flux due to Convection'
-names['wpthp_conv'] = 'Potential Temperature Flux due to Convection'
-names['wpup_conv'] = 'Zonal Wind Flux due to Convection'
-names['wpvp_conv'] = 'Meridional Wind Flux due to Convection'
-names['wpqtp_pbl'] = 'Total Water Flux due to Turbulence'
-names['wpthlp_pbl'] = 'Liquid Potential Temperature Flux due to Turbulence'
-names['wpqtp_conv'] = 'Total Water flux due to Convection'
-names['wpthlp_conv'] = 'Liquid Potential Temperature Flux due to Convection'
-
-##########################################
-# 9. Tendances liees au forcages
-
-names['tntadv'] = 'Temperature Tendency due to Horizontal Advection'
-names['tntnudg'] = 'Temperature Tendency due to Nudging'
-names['tnqadv'] = 'Specific Humidity Tendency due to Horizontal Advection'
-names['tnqvnudg'] = 'Specific Humidity Tendency due to Nudging'
-names['tnunudg'] = 'Zonal wind Tendency due to Nudging'
-names['tnvnudg'] = 'Meridional wind Tendency due to Nudging'
-names['tnugeo'] = 'Zonal Wind Tendency due to Geostrophic Adjustment'
-names['tnvgeo'] = 'Meridional Wind Tendency due to Geostrophic Adjustment'
-
-##########################################
-# 10. Divers
-
-names['Cp'] = 'Heat Capacity of Air'
-names['Lv'] = 'Latent Heat of Vaporization'
-
-##########################################
-# 11. Bilan eau et energie
-
-names['qflux'] = 'Net Flux of water in the atmosphere'
-names['qfluxPr'] = 'Net Flux of water at Surface due to Precipitation'
-names['qfluxEv'] = 'Net Flux of water at Surface due to Evaporation'
-names['dwater'] = 'RDWATER'
-names['efluxTOA'] = 'Net Enthalpy Flux at TOA'
-names['efluxSfc'] = 'Net Enthalpy Flux at Surface'
-names['denergy'] = 'RDENERGY'
-
-names['RMSE9'] = 'RMSE9'
-names['RMSE0'] = 'RMSE0'
-names['RMSE1'] = 'RMSE1'
-names['RDMSE'] = 'RDMSE'
-names['msefluxSfc'] = 'Net Moist Static Energy Flux at Surface'
-names['iQadv'] = 'Horizontal Advection of moisture integrated over the atmospheric column'
-names['iQnud'] = 'Moisture Tendency due to nudging integrated over the atmospheric column'
-names['iTadv'] = 'Horizontal Advection of temperature integrated over the atmospheric column'
-names['iTnud'] = 'Temperature Tendency due to nudging integrated over the atmospheric column'
-names['iUadv'] = 'Horizontal Advection of zonal wind integrated over the atmospheric column'
-names['iUnud'] = 'Zonal Wind Tendency due to nudging integrated over the atmospheric column'
-names['iVadv'] = 'Horizontal Advection of meridional wind integrated over the atmospheric column'
-names['iVnud'] = 'Meridional Wind Tendency due to nudging integrated over the atmospheric column'
-names['iEadv'] = 'Horizontal Advection of enthalpy integrated over the atmospheric column'
-names['iEnud'] = 'Enthalpy Tendency due to nudging integrated over the atmospheric column'
-
-names['efluxSfcRad'] = 'Surface Enthalpy Flux due to radiation'
-names['efluxSfcTurb'] = 'Surface Enthalpy Flux due to turbulence'
-names['efluxSfcConv'] = 'Surface Enthalpy Flux due to convective eddies'
-names['efluxSfcAdj'] = 'Surface Enthalpy Flux due to dry adjustment'
-names['efluxSfcPrSen'] = 'Surface Enthalpy Flux due to sensible heat of precipitation'
-names['efluxSfcPrLat'] = 'Surface Enthalpy Flux due to latent heat of precipitation'
-names['iMSEadv'] = 'Horizontal Advection of moist static energy integrated over the atmospheric column'
-names['iMSEnud'] = 'Moist Static Energy Tendency due to nudging integrated over the atmospheric column'
-names['iMSEw'] = 'Vertical Advection of moist static energy integrated over the atmospheric column'
-names['iQw'] = 'Vertical Advection of specific humidity integrated over the atmospheric column'
-names['iEw'] = 'Vertical Advection of enthalpy integrated over the atmospheric column'
-
-##########################################
-# 12. Especes Gazeuses
-
-names['rCO2'] = 'CO2 Mixing Ratio'
-names['rCH4'] = 'CH4 Mixing Ratio'
-names['rN2O'] = 'N2O Mixing Ratio'
-names['rNO2'] = 'NO2 Mixing Ratio'
-names['rCFC11'] = 'CFC11 Mixing Ratio'
-names['rCFC12'] = 'CFC12 Mixing Ratio'
-names['rCFC22'] = 'CFC22 Mixing Ratio'
-names['rCCL4'] = 'CCL4 Mixing Ratio'
-names['rO3'] = 'O3 Mixing Ratio'
-
-##########################################
-# 13. Variables du schema de convection Bougeault 1985
-
-names['alpha'] = 'Closure coefficient'
-names['Mf'] = 'Mass Flux'
-names['Tu'] = 'Updraft Temperature'
-names['Thu'] = 'Updraft Potential Temperature'
-names['qvu'] = 'Updraft Specific Humidity'
-names['qcu'] = 'Updraft Condensed Water'
-
-##########################################
-# 14. Variables du schema PCMT
-
-names['alpha_up'] = 'Convective Updraft Fraction'
-names['w_up'] = 'Convective Updraft Velocity'
-names['omega_up'] = 'Convective Updraft Pressure Velocity'
-names['alpha_dn'] = 'Convective Downdraft Fraction'
-names['w_dn'] = 'Convective Downdraft Velocity'
-names['omega_dn'] = 'Convective Downdraft Pressure Velocity'
-names['cape'] = 'CAPE'
-names['T_up'] = 'Convective Updraft Temperature'
-names['qv_up'] = 'Convective Updraft Specific Humidity'
-names['omega_ref'] = 'Reference Vertical Velocity'
-names['w_up_bud'] = 'Updraft Vertical Velocity used in Budget Equation'
-names['dw_buoy'] = 'Updraft Vertical Velocity Tendency due to Vertical Buoyancy'
-names['dw_fric'] = 'Updraft Vertical Velocity Tendency due to Friction'
-names['dw_Kd'] = 'Updraft Vertical Velocity Tendency due to Aerodynamic Drag'
-names['dw_entr'] = 'Updraft Vertical Velocity Tendency due to Entrainment'
-names['dw_transp'] = 'Updraft Vertical Velocity Tendency due to Vertical Transport'
-names['buoy'] = 'Convection Buoyancy used in Updraft Vertical Velocity Budget'
-names['Mf'] = 'Convective Mass Flux'
-names['eps_u'] = 'Fractional Convective Updraft Entrainment'
-names['det_u'] = 'Fractional Convective Updraft Detrainment'
-names['eps_u_org'] = 'Fractional Organised Convective Updraft Entrainment'
-names['eps_u_tur'] = 'Fractional Turbulent Convective Updraft Entrainment'
-names['det_u_org'] = 'Fractional Organised Convective Updraft Detrainment'
-names['det_u_tur'] = 'Fractional Turbulent Convective Updraft Detrainment'
-names['entr_u'] = 'Convective Updraft Entrainment'
-names['detr_u'] = 'Convective Updraft Detrainment'
-names['dTv_up'] = 'Tv_updraft-Tv_env'
-names['B_up'] = 'Updraft_Buoyancy'
-names['aipcmt'] = 'Activity index of PCMT'
-names['knnd'] = 'KNND'
-names['knlab'] = 'KNLAB'
-names['ZS15'] = 'ZS15'
-names['ZS16'] = 'ZS16'
-names['ZTAU'] = 'ZTAU'
-
-##########################################
-# 15. Variables pour le wake
-
-names['delta_t'] = 'delta T'
-names['delta_q'] = 'delta q'
-names['d_delta_t_gw'] = ' delta T tendency due to GW'
-names['omgb_dth'] = 'flux of delta_theta transported by LS omega'
-names['dp_omgb'] = 'vertical gradient of large scale omega'
-names['dt_KE'] = 'differential heating (wake-unperturbed) CONV'
-names['dq_KE'] = 'differential moistening (wake-unperturbed) CONV'
-names['dt_PBL'] = 'differential heating (wake-unperturbed) PBL'
-names['dq_PBL'] = 'differential moistening (wake-unperturbed) PBL'
-names['omg_w'] = 'Wake verticale velocity'
-names['dp_delt_omg'] = 'vertical gradient of wake_omg'
-names['spread_w'] = 'Spreading term in wake_delt'
-names['delta_th'] = 'Potential Temperature Difference'
-names['dt_wake'] = 'T tendency due to wake'
-names['dt_wake2'] = 'T tendency due to wake (cptend_new)'
-names['dq_wake'] = 'q tendency due to wake'
-names['dq_wake2'] = 'q tendency due to wake (cptend_new)'
-names['t_undi'] = 'Temperature in unperturbed area'
-names['q_undi'] = 'Specific humidity in unperturbed area'
-names['d_delta_t'] = 'delta T tendency'
-names['d_delta_q'] = 'delta q tendency'
-names['hw'] = 'Wake depth'
-names['sigmaw'] = 'wake fractional area'
-names['wake_pe'] = 'Wake Potential Energy (WAPE)'
-names['wake_fip'] = 'wake ALP'
-names['wake_gfl'] = 'Wake Gust Front Length'
-names['Cstar'] = 'Wake spreading velocity'
-names['wdens'] = 'Wake density'
-names['dt_dn'] = 'T tendendy due to downdrafts'
-names['dt_up'] = 'T tendency due to updrafts'
-names['dq_dn'] = 'qv tendendy due to downdrafts'
-names['dq_up'] = 'qv tendency due to updrafts'
-names['Mf_dn'] = 'Downdraft Mass flux'
-names['Mf_up'] = 'Updraft Mass flux'
-names['sigd'] = 'Downdraft area fraction'
-names['omgb'] = 'LS Vertical Velocity'
-names['t_undi_pcmt'] = 'Temperature in undisturbed area (PCMT)'
-names['q_undi_pcmt'] = 'Specific Humidity in undisturbed area (PCMT)'
-names['t_wake_pcmt'] = 'Temperature in wake (PCMT)'
-names['q_wake_pcmt'] = 'Specific Humidity in wake (PCMT)'
-names['qw_undi'] = 'Wet-bulb Specific Humidity in undisturbed area'
-names['qw_wake'] = 'Wet-bulb Specific Humidity in wake'
-names['Tw_wake'] = 'Wet-bulb Temperature in wake'
-names['Tw_undi'] = 'Wet-bulb Temperature in undisturbed area'
-names['qsat_undi'] = 'Saturation Specific Humidity in undisturbed area'
-names['qsat_wake'] = 'Saturation Specific Humidity in wake'
-names['ZMWAKE'] = 'ZMWAKE'
-names['ZCWAKE'] = 'ZCWAKE'
-names['ZS12'] = 'ZS12'
-
-##########################################
-# 16. Variables pour la turbulence
-
-names['Q11'] = 'Normalized saturation deficit'
-names['Q11min'] = 'Minimum Normalized saturation deficit'
-names['Q11max'] = 'Maximum Normalized saturation deficit'
-names['igs'] = 'Subgrid Standard Deviation of s'
-names['igs2'] = 'Subgrid Variance of s'
-names['igs2conv'] = 'Convective Subgrid Variance of s'
-names['igs2turb'] = 'Turbulent Subgrid Variance of s'
-names['sigs'] = 'Subgrid Standard Deviation of s (LNEBECT)'
-names['sigs2'] = 'Subgrid Variance of s (LNEBECT)'
-names['sigs2conv'] = 'Convective Subgrid Variance of s (LNEBECT)'
-names['sigs2turb'] = 'Turbulent Subgrid Variance of s (LNEBECT)'
-names['mlen'] = 'Mixing Length*g'
-names['acoef'] = 'a Coefficient'
-names['sigc0'] = 'PSIGCLOUD0'
-names['sigc1'] = 'PSIGCLOUD1'
-
-##########################################
-# 17. Variables COSP
-
-for vv in ['cltcalipso','cllcalipso','clmcalipso','clhcalipso','clcalipso','cllcalipsoice','clmcalipsoice','clhcalipsoice','cltcalipsoice','cllcalipsoliq','clmcalipsoliq','clhcalipsoliq','cltcalipsoliq','cllcalipsoun','clmcalipsoun','clhcalipsoun','cltcalipsoun','clcalipso','lidarBetaMol532','clcalipsoice','clcalipsoliq','clcalipsoun','clcalipsotmp','clcalipsotmpice','clcalipsotmpliq','clcalipsotmpun','parasolRefl','cltlidarradar','clcalipso2','cltisccp','pctisccp','tauisccp','albisccp','meantbisccp','meantbclrisccp','boxtauisccp','boxptopisccp','cltmodis','clwmodis','climodis','clhmodis','clmmodis','cllmodis','tautmodis','tauwmodis','tauimodis','tautlogmodis','tauwlogmodis','tauilogmodis','reffclwmodis','reffclimodis','pctmodis','lwpmodis','iwpmodis','toffset','fracout','atb532','cfadLidarsr532','dbze94','cfadDbze94','clisccp','clmodis','clMISR']:
-  names[vv] = vv
-
-for vv in ['ZLAT_COSP','ZLON_COSP','PLSM_COSP','PMU0_COSP','PEMIS_COSP','PTS_COSP','ZAP_COSP','ZAPH_COSP','ZAPHI_COSP','ZAPHIF_COSP','ZU_COSP','ZV_COSP','ZT_COSP','ZQ_COSP','ZRH_COSP','ZOZN_COSP','ZCLFR_COSP','ZCLFRCC_COSP','ZMRLSLIQ_COSP','ZMRLSICE_COSP','ZMRCCLIQ_COSP','ZMRCCICE_COSP','ZFLLSRAIN_COSP','ZFLLSSNOW_COSP','ZFLCCRAIN_COSP','ZFLCCSNOW_COSP','ZRADLP_COSP','ZRADIP_COSP','ZTAUSW_COSP','ZEMILW_COSP']:
-  names[vv] = vv	
-
-#---------------------------------------------------------------------------------------------------
-#                        Units
-#---------------------------------------------------------------------------------------------------
-
-##########################################
-# 1. Variables dynamiques et thermodynamiques
-
-units['pf']  = 'Pa'
-units['ph'] = 'Pa'
-
-units['zf']    = 'm'
-units['zh']   = 'm'
-
-units['rho']   = 'kg/m3'
-units['temp']    = 'K'
-units['qv']   = 'kg/kg'
-units['hur']   = '-'
-units['ql']    = 'kg/kg'
-units['qi']    = 'kg/kg'
-units['qr']    = 'kg/kg'
-units['qsn']   = 'kg/kg'
-
-units['qlc']   = 'kg/kg'
-units['qic']   = 'kg/kg'
-units['qrc']   = 'kg/kg'
-units['qsnc']  = 'kg/kg'
-
-units['qlshc'] = 'kg/kg'
-units['qishc'] = 'kg/kg'
-units['qrshc'] = 'kg/kg'
-units['qsnshc']= 'kg/kg'
-
-
-units['tke']   = 'm2/s2'
-
-units['theta']    = 'K'
-units['thv']    = 'K'
-units['thl']    = 'K'
-units['thlv']    = 'K'
-
-units['qsat']  = 'kg/kg'
-
-units['u']    = 'm/s'
-units['v']    = 'm/s'
-units['wa']    = 'm/s'
-units['wap']   = 'Pa/s'
-
-##########################################
-# 2. Variables nuageuses
-
-units['rneb']    = '-'
-units['cls']   = '-'
-units['cc']   = '-'
-units['cltc']  = '-'
-units['cltl']  = '-'
-units['cltm']  = '-'
-units['clth']  = '-'
-
-##########################################
-# 3. Variables pluies
-
-units['precls']= 'kg/m2/s'
-units['snowls']= 'kg/m2/s'
-units['precc'] = 'kg/m2/s'
-units['snowc'] = 'kg/m2/s'
-
-units['rain']  = 'kg/m2/s'
-units['prls']  = 'kg/m2/s'
-units['prc']  = 'kg/m2/s'
-units['ppr'] = 'kg/m2/s'
-units['pprls'] = 'kg/m2/s'
-units['pprc'] = 'kg/m2/s'
-
-##########################################
-# 4. Variables rayonnement
-
-units['rsdt']  = 'W/m2'
-units['rsdtcs']= 'W/m2'
-units['rldt']  = 'W/m2'
-units['rldtcs']= 'W/m2'
-units['rsut']  = 'W/m2'
-units['rsutcs']= 'W/m2'
-units['rlut']  = 'W/m2'
-units['rlutcs']= 'W/m2'
-units['rst']   = 'W/m2'
-units['rstcs'] = 'W/m2'
-units['rlt']   = 'W/m2'
-units['rltcs'] = 'W/m2'
-
-units['rsds']  = 'W/m2'
-units['rsdscs']= 'W/m2'
-units['rsus']  = 'W/m2'
-units['rsuscs']= 'W/m2'
-units['rlds']  = 'W/m2'
-units['rldscs']= 'W/m2'
-units['rlus']  = 'W/m2'
-units['rluscs']= 'W/m2'
-units['rss']   = 'W/m2'
-units['rsscs'] = 'W/m2'
-units['rls']   = 'W/m2'
-units['rlscs'] = 'W/m2'
-
-units['SWd'] = 'W/m2'
-units['SWu'] = 'W/m2'
-units['SWdcs'] = 'W/m2'
-units['SWucs'] = 'W/m2'
-units['SWnet'] = 'W/m2'
-
-units['LWd'] = 'W/m2'
-units['LWu'] = 'W/m2'
-units['LWdcs'] = 'W/m2'
-units['LWucs'] = 'W/m2'
-units['LWnet'] = 'W/m2'
-
-units['mu1'] = '-'
-units['mueff'] = '-'
-units['I0'] = 'W/m2'
-units['daydur'] = 's'
-
-units['alb_ss'] = '-'
-
-##########################################
-# 5. Variables flux de surface
-
-units['lhf']  = 'W/m2'
-units['shf']  = 'W/m2'
-units['lhfn'] = 'W/m2'
-
-units['evap'] = 'kg/m2/s'
-units['evapi'] = 'kg/m2/s'
-units['evapn'] = 'kg/m2/s'
-
-units['tauu']  = 'kg m-1 s-2'
-units['tauv']  = 'kg m-1 s-2'
-units['ustar']  = 'm/s'
-
-units['Cd'] = '-'
-units['Ch'] = '-'
-units['Ce'] = '-'
-
-units['Cdn'] = '-'
-units['Chn'] = '-'
-units['Cen'] = '-'
-
-units['Ugr'] = 'm/s'
-
-units['z0']  = 'm'
-units['z0h']  = 'm'
-units['zref'] = 'm'
-
-units['tsurf'] = 'K'
-units['qsurf'] = 'kg/kg'
-
-##########################################
-# 6. Variables integrees sur la colonne
-
-units['prw']   = 'kg/m2'
-units['lwp']   = 'kg/m2'
-units['iwp']   = 'kg/m2'
-units['cwp']   = 'kg/m2'
-
-##########################################
-# 7. Variables en surface
-
-units['t2m']   = 'K'
-units['huss']  = 'kg/kg'
-units['hurs']  = '-'
-units['uas']   = 'm/s'
-units['vas']   = 'm/s'
-
-units['pblh']  = 'm'
-
-units['ts']    = 'K'
-
-##########################################
-# 8.1 Tendances de la physique
-
-units['Q1']    = 'K/s'
-units['Q2']    = 'K/s'
-units['QRad']  = 'K/s'
-
-units['tnthl'] = 'K/s'
-units['tnqt'] = 'kg/kg/s'
-
-units['tntrsw'] = 'K/s'
-units['tntrlw'] = 'K/s'
-units['tntrswcs'] = 'K/s'
-units['tntrlwcs'] = 'K/s'
-units['tntpbl'] = 'K/s'
-units['tntlscp'] = 'K/s'
-units['tntc'] = 'K/s'
-units['tntshc'] = 'K/s'
-units['tntd'] = 'K/s'
-
-units['tnthrsw'] = 'K/s'
-units['tnthrlw'] = 'K/s'
-units['tnthrswcs'] = 'K/s'
-units['tnthrlwcs'] = 'K/s'
-units['tnthpbl'] = 'K/s'
-units['tnthlscp'] = 'K/s'
-units['tnthc'] = 'K/s'
-units['tnthshc'] = 'K/s'
-units['tnthd'] = 'K/s'
-
-units['tnqvpbl'] = 'kg/kg/s'
-units['tnqvlscp'] = 'kg/kg/s'
-units['tnqvc'] = 'kg/kg/s'
-units['tnqvshc'] = 'kg/kg/s'
-units['tnqvd'] = 'kg/kg/s'
-
-units['tnupbl'] = 'm/s2'
-units['tnuc'] = 'm/s2'
-units['tnushc'] = 'm/s2'
-units['tnud'] = 'm/s2'
-
-units['tnvpbl'] = 'm/s2'
-units['tnvc'] = 'm/s2'
-units['tnvshc'] = 'm/s2'
-units['tnvd'] = 'm/s2'
-
-units['tnthlrsw'] = 'K/s'
-units['tnthlrlw'] = 'K/s'
-units['tnthlrswcs'] = 'K/s'
-units['tnthlrlwcs'] = 'K/s'
-units['tnthlpbl'] = 'K/s'
-units['tnthllscp'] = 'K/s'
-units['tnthlc'] = 'K/s'
-units['tnthlshc'] = 'K/s'
-units['tnthld'] = 'K/s'
-
-units['tnqtpbl'] = 'kg/kg/s'
-units['tnqtlscp'] = 'kg/kg/s'
-units['tnqtc'] = 'kg/kg/s'
-units['tnqtshc'] = 'kg/kg/s'
-units['tnqtd'] = 'kg/kg/s'
-
-units['tnql'] = 'kg/kg/s'
-units['tnqi'] = 'kg/kg/s'
-units['tnqr'] = 'kg/kg/s'
-units['tnqsn'] = 'kg/kg/s'
-
-units['tnqlc'] = 'kg/kg/s'
-units['tnqic'] = 'kg/kg/s'
-units['tnqrc'] = 'kg/kg/s'
-units['tnqsnc'] = 'kg/kg/s'
-
-units['tnqlshc'] = 'kg/kg/s'
-units['tnqishc'] = 'kg/kg/s'
-units['tnqrshc'] = 'kg/kg/s'
-units['tnqsnshc'] = 'kg/kg/s'
-
-units['tntcas'] = 'K/s'
-units['tntcs'] = 'K/s'
-units['tntfplcl'] = 'K/s'
-units['tntfplcn'] = 'K/s'
-units['tntfccql'] = 'K/s'
-units['tntfecl'] = 'K/s'
-units['tntfccqn'] = 'K/s'
-units['tntfecn'] = 'K/s'
-units['tntfhimcc'] = 'K/s'
-
-units['tntfplsl'] = 'K/s'
-units['tntfplsn'] = 'K/s'
-units['tntfcsql'] = 'K/s'
-units['tntfesl'] = 'K/s'
-units['tntfcsqn'] = 'K/s'
-units['tntfesn'] = 'K/s'
-
-units['tendu'] = '-'
-units['tendv'] = '-'
-units['tendq'] = '-'
-units['tendh'] = '-'
-
-
-##########################################
-# 8.2 Flux de la physique
-
-units['wpqp_pbl'] = 'kg kg-1 m s-1'
-units['wpthp_pbl'] = 'K m s-1'
-units['wpup_pbl'] = 'm2 s-2'
-units['wpvp_pbl'] = 'm2 s-2'
-units['wpqp_conv'] = 'kg kg-1 m s-1'
-units['wpthp_conv'] = 'K m s-1'
-units['wpup_conv'] = 'm2 s-2'
-units['wpvp_conv'] = 'm2 s-2'
-units['wpqtp_pbl'] = 'kg kg-1 m s-1'
-units['wpthlp_pbl'] = 'K m s-1'
-units['wpqtp_conv'] = 'kg kg-1 m s-1'
-units['wpthlp_conv'] = 'K m s-1'
-
-##########################################
-# 9. Tendances liees au forcages
-
-units['tntadv'] = 'K/s'
-units['tntnudg'] = 'K/s'
-units['tnqadv'] = 'kg/kg/s'
-units['tnqvnudg'] = 'kg/kg/s'
-units['tnunudg'] = 'm/s2'
-units['tnvnudg'] = 'm/s2'
-units['tnugeo'] = 'm/s2'
-units['tnvgeo'] = 'm/s2'
-
-##########################################
-# 10. Divers
-
-units['Cp'] = 'J/K/kg'
-units['Lv'] = 'J/kg'
-
-##########################################
-# 11. Bilan eau et energie
-
-units['qflux'] = 'kg/m2/s'
-units['qfluxPr'] = 'kg/m2/s'
-units['qfluxEv'] = 'kg/m2/s'
-units['dwater'] = 'kg/m2'
-units['efluxTOA'] = 'W/m2'
-units['efluxSfc'] = 'W/m2'
-units['denergy'] = 'J/kg'
-
-units['RMSE9'] = '-'
-units['RMSE0'] = '-'
-units['RMSE1'] = '-'
-units['RDMSE'] = '-'
-units['msefluxSfc'] = 'W/m2'
-units['iQadv'] = 'kg/m2/s'
-units['iQnud'] = 'kg/m2/s'
-units['iTadv'] = 'K kg/m2/s'
-units['iTnud'] = 'K kg/m2/s'
-units['iUadv'] = 'm2/s2'
-units['iUnud'] = 'm2/s2'
-units['iVadv'] = 'm2/s2'
-units['iVnud'] = 'm2/s2'
-units['iEadv'] = 'W/m2'
-units['iEnud'] = 'W/m2'
-
-units['efluxSfcRad'] = 'W/m2'
-units['efluxSfcTurb'] = 'W/m2'
-units['efluxSfcConv'] = 'W/m2'
-units['efluxSfcAdj'] = 'W/m2'
-units['efluxSfcPrSen'] = 'W/m2'
-units['efluxSfcPrLat'] = 'W/m2'
-
-units['iMSEadv'] = 'W/m2'
-units['iMSEnud'] = 'W/m2'
-units['iMSEw'] = 'W/m2'
-units['iQw'] = 'kg/m2/s'
-units['iEw'] = 'W/m2'
-
-##########################################
-# 12. Especes Gazeuses
-
-units['rCO2'] = 'kg/kg'
-units['rCH4'] = 'kg/kg'
-units['rN2O'] = 'kg/kg'
-units['rNO2'] = 'kg/kg'
-units['rCFC11'] = 'kg/kg'
-units['rCFC12'] = 'kg/kg'
-units['rCFC22'] = 'kg/kg'
-units['rCCL4'] = 'kg/kg'
-units['rO3'] = 'kg/kg'
-
-##########################################
-# 13. Variables du schema de convection Bougeault 1985
-
-units['alpha'] = '-'
-units['Mf'] = 'kg/m2/s'
-units['Tu'] = 'K'
-units['Thu'] = 'K'
-units['qvu'] = 'kg/kg'
-units['qcu'] = 'kg/kg'
-
-##########################################
-# 14. Variables du schema PCMT
-
-units['alpha_up'] = '-'
-units['w_up'] = 'm/s'
-units['omega_up'] = 'Pa/s'
-units['alpha_dn'] = '-'
-units['w_dn'] = 'm/s'
-units['omega_dn'] = 'Pa/s'
-units['cape'] = 'J/kg'
-units['T_up'] = 'K'
-units['qv_up'] = 'kg/kg'
-units['omega_ref'] = 'Pa/s'
-units['w_up_bud'] = 'Pa s-1'
-units['dw_buoy'] = 'Pa s-2'
-units['dw_fric'] = 'Pa s-2'
-units['dw_Kd'] = 'Pa s-2'
-units['dw_entr'] = 'Pa s-2'
-units['dw_transp'] = 'Pa s-2'
-units['buoy'] = 'm s-2'
-units['Mf'] = 'kg m-2 s-1'
-units['eps_u'] = 'm-1'
-units['det_u'] = 'm-1'
-units['eps_u_org'] = 'm-1'
-units['eps_u_tur'] = 'm-1'
-units['det_u_org'] = 'm-1'
-units['det_u_tur'] = 'm-1'
-units['entr_u'] = 's-1'
-units['detr_u'] = 's-1'
-units['dTv_up'] = 'K'
-units['B_up'] = 'm s-2'
-units['aipcmt'] = '-'
-units['knnd'] = '-'
-units['knlab'] = '-'
-units['ZS15'] = '-'
-units['ZS16'] = '-'
-units['ZTAU'] = '-'
-
-##########################################
-# 15. Variables pour le wake
-
-units['delta_t'] = 'K'
-units['delta_q'] = 'kg/kg'
-units['d_delta_t_gw'] = 'K/s'
-units['omgb_dth'] = 'K/s'
-units['dp_omgb'] = '/s'
-units['dt_KE'] = 'K/s'
-units['dq_KE'] = 'kg/kg/s'
-units['dt_PBL'] = 'K/s'
-units['dq_PBL'] = 'kg/kg/S'
-units['omg_w'] = 'Pa/s'
-units['dp_delt_omg'] = '/s'
-units['spread_w'] = 'K/s'
-units['delta_th'] = 'K'
-units['dt_wake'] = 'K/s'
-units['dt_wake2'] = 'K/s'
-units['dq_wake'] = 'K_s'
-units['dq_wake2'] = 'K_s'
-units['t_undi'] = 'K'
-units['q_undi'] = 'kg/kg'
-units['d_delta_t'] = 'K/s'
-units['d_delta_q'] = 'kg/kg/s'
-units['hw'] = 'm'
-units['sigmaw'] = '-'
-units['wake_pe'] = 'J/kg'
-units['wake_fip'] = 'W/m2'
-units['wake_gfl'] = 'm'
-units['Cstar'] = 'm/s'
-units['wdens'] = '/m2'
-units['dt_dn'] = 'K/s'
-units['dt_up'] = 'K/s'
-units['dq_dn'] = 'kg/kg/s'
-units['dq_up'] = 'kg/kg/s'
-units['Mf_dn'] = 'kg/m2/s'
-units['Mf_up'] = 'kg/m2/s'
-units['sigd'] = '-'
-units['omgb'] = 'Pa/s'
-units['t_undi_pcmt'] = 'K'
-units['q_undi_pcmt'] = 'kg/kg'
-units['t_wake_pcmt'] = 'K'
-units['q_wake_pcmt'] = 'kg/kg'
-units['qw_undi'] = 'kg/kg'
-units['qw_wake'] = 'kg/kg'
-units['Tw_wake'] = 'K'
-units['Tw_undi'] = 'K'
-units['qsat_undi'] = 'kg/kg'
-units['qsat_wake'] = 'kg/kg'
-units['ZMWAKE'] = 'kg/m2/s'
-units['ZCWAKE'] = '-'
-units['ZS12'] = 'Pa'
-
-##########################################
-# 16. Variables pour la turbulence
-
-units['Q11'] = '-'
-units['Q11min'] = '-'
-units['Q11max'] = '-'
-units['igs'] = 'kg/kg'
-units['igs2'] = '(kg/kg)^2'
-units['igs2turb'] = '(kg/kg)^2'
-units['igs2conv'] = '(kg/kg)^2'
-units['sigs'] = 'kg/kg'
-units['sigs2'] = '(kg/kg)^2'
-units['sigs2turb'] = '(kg/kg)^2'
-units['sigs2conv'] = '(kg/kg)^2'
-units['mlen'] = 'm2 s-2'
-units['acoef'] = '-'
-units['sigc0'] = 'kg/kg'
-units['sigc1'] = 'kg/kg'
-
-##########################################
-# 17. Variables COSP
-
-units['cltcalipso'] = '%'
-units['cllcalipso'] = '%'
-units['clmcalipso'] = '%'
-units['clhcalipso'] = '%'
-units['clcalipso'] = '%'
-units['cllcalipsoice'] = '%'
-units['clmcalipsoice'] = '%'
-units['clhcalipsoice'] = '%'
-units['cltcalipsoice'] = '%'
-units['cllcalipsoliq'] = '%'
-units['clmcalipsoliq'] = '%'
-units['clhcalipsoliq'] = '%'
-units['cltcalipsoliq'] = '%'
-units['cllcalipsoun'] = '%'
-units['clmcalipsoun'] = '%'
-units['clhcalipsoun'] = '%'
-units['cltcalipsoun'] = '%'
-units['lidarBetaMol532'] = 'm-1 sr-1'
-units['clcalipsoice'] = '%'
-units['clcalipsoliq'] = '%'
-units['clcalipsoun'] = '%'
-units['clcalipsotmp'] = '%'
-units['clcalipsotmpice'] = '%'
-units['clcalipsotmpliq'] = '%'
-units['clcalipsotmpun'] = '%'
-units['parasolRefl'] = '1'
-units['cltlidarradar'] = '%'
-units['clcalipso2'] = '%'
-units['cltisccp'] = '%'
-units['pctisccp'] = 'Pa'
-units['tauisccp'] = '1'
-units['albisccp'] = '1'
-units['meantbisccp'] = 'K'
-units['meantbclrisccp'] = 'K'
-units['boxtauisccp'] = '1'
-units['boxptopisccp'] = 'Pa'
-units['cltmodis'] = '%'
-units['clwmodis'] = '%'
-units['climodis'] = '%'
-units['clhmodis'] = '%'
-units['clmmodis'] = '%'
-units['cllmodis'] = '%'
-units['tautmodis'] = '1'
-units['tauwmodis'] = '1'
-units['tauimodis'] = '1'
-units['tautlogmodis'] = '1'
-units['tauwlogmodis'] = '1'
-units['tauilogmodis'] = '1'
-units['reffclwmodis'] = 'm'
-units['reffclimodis'] = 'm'
-units['pctmodis'] = 'Pa'
-units['lwpmodis'] = 'kg m-2'
-units['iwpmodis'] = 'kg m-2'
-units['toffset'] = 'day'
-units['fracout'] = '1'
-units['atb532'] = 'm-1 sr-1'
-units['cfadLidarsr532'] = '1'
-units['dbze94'] = '1'
-units['cfadDbze94'] = '1'
-units['clisccp'] = '%'
-units['clmodis'] = '%'
-units['clMISR'] = '%'
-
-for vv in ['ZLAT_COSP','ZLON_COSP','PLSM_COSP','PMU0_COSP','PEMIS_COSP','PTS_COSP','ZAP_COSP','ZAPH_COSP','ZAPHI_COSP','ZAPHIF_COSP','ZU_COSP','ZV_COSP','ZT_COSP','ZQ_COSP','ZRH_COSP','ZOZN_COSP','ZCLFR_COSP','ZCLFRCC_COSP','ZMRLSLIQ_COSP','ZMRLSICE_COSP','ZMRCCLIQ_COSP','ZMRCCICE_COSP','ZFLLSRAIN_COSP','ZFLLSSNOW_COSP','ZFLCCRAIN_COSP','ZFLCCSNOW_COSP','ZRADLP_COSP','ZRADIP_COSP','ZTAUSW_COSP','ZEMILW_COSP']:
-  units[vv] = '-'
-
-
-#---------------------------------------------------------------------------------------------------
-#                        Coefs
-#---------------------------------------------------------------------------------------------------
-
-##########################################
-# 1. Variables dynamiques et thermodynamiques
-
-coefs['pf']  = 1
-coefs['ph'] = 1
-
-coefs['zf']   = 1/9.80665
-coefs['zh']   = 1/9.80665
-
-coefs['rho']   = 1
-coefs['temp']    = 1
-coefs['qv']   = 1
-coefs['hur']   = 1
-coefs['ql']    = 1
-coefs['qi']    = 1
-coefs['qr']    = 1
-coefs['qsn']   = 1
-
-coefs['qlc']   = 1
-coefs['qic']   = 1
-coefs['qrc']   = 1
-coefs['qsnc']  = 1
-
-coefs['qlshc'] = 1
-coefs['qishc'] = 1
-coefs['qrshc'] = 1
-coefs['qsnshc']= 1
-
-
-coefs['tke']   = 1
-
-coefs['theta']    = 1
-coefs['thv']    = 1
-coefs['thl']    = 1
-coefs['thlv']    = 1
-
-coefs['qsat']  = 1
-
-coefs['u']    = 1
-coefs['v']    = 1
-coefs['wa']    = 1
-coefs['wap']   = 1
-
-##########################################
-# 2. Variables nuageuses
-
-coefs['rneb']    = 1
-coefs['cls']   = 1
-coefs['cc']   = 1
-coefs['cltc']  = 1
-coefs['cltl']  = 1
-coefs['cltm']  = 1
-coefs['clth']  = 1
-
-##########################################
-# 3. Variables pluies
-
-coefs['precls']= 1
-coefs['snowls']= 1
-coefs['precc'] = 1
-coefs['snowc'] = 1
-
-coefs['rain']  = 1
-coefs['prls']  = 1
-coefs['prc']  = 1
-coefs['ppr'] = 1
-coefs['pprls'] = 1
-coefs['pprc'] = 1
-
-##########################################
-# 4. Variables rayonnement
-
-coefs['rsdt']  = 1
-coefs['rsdtcs']= 1
-coefs['rldt']  = 1
-coefs['rldtcs']= 1
-coefs['rsut']  = 1
-coefs['rsutcs']= 1
-coefs['rlut']  = 1
-coefs['rlutcs']= 1
-coefs['rst']   = 1
-coefs['rstcs'] = 1
-coefs['rlt']   = 1
-coefs['rltcs'] = 1
-
-coefs['rsds']  = 1
-coefs['rsdscs']= 1
-coefs['rsus']  = 1
-coefs['rsuscs']= 1
-coefs['rlds']  = 1
-coefs['rldscs']= 1
-coefs['rlus']  = 1
-coefs['rluscs']= 1
-coefs['rss']   = 1
-coefs['rsscs'] = 1
-coefs['rls']   = 1
-coefs['rlscs'] = 1
-
-coefs['SWd'] = 1
-coefs['SWu'] = 1
-coefs['SWdcs'] = 1
-coefs['SWucs'] = 1
-coefs['SWnet'] = 1
-
-coefs['LWd'] = 1
-coefs['LWu'] = 1
-coefs['LWdcs'] = 1
-coefs['LWucs'] = 1
-coefs['LWnet'] = 1
-
-coefs['mu1'] = 1
-coefs['mueff'] = 1
-coefs['I0'] = 1
-coefs['daydur'] = 1
-
-coefs['alb_ss'] = 1
-
-##########################################
-# 5. Variables flux de surface
-
-coefs['lhf']  = 1
-coefs['shf']  = 1
-coefs['lhfn'] = 1
-
-coefs['evap'] = 1
-coefs['evapi'] = 1
-coefs['evapn'] = 1
-
-coefs['tauu']  = 1
-coefs['tauv']  = 1
-coefs['ustar']  = 1
-
-coefs['Cd'] = 1
-coefs['Ch'] = 1
-coefs['Ce'] = 1
-
-coefs['Cdn'] = 1
-coefs['Chn'] = 1
-coefs['Cen'] = 1
-
-coefs['Ugr'] = 1
-
-coefs['z0']  = 1
-coefs['z0h']  = 1
-coefs['zref'] = 1
-
-coefs['tsurf'] = 1
-coefs['qsurf'] = 1
-
-##########################################
-# 6. Variables integrees sur la colonne
-
-coefs['prw']   = 1
-coefs['lwp']   = 1
-coefs['iwp']   = 1
-coefs['cwp']   = 1
-
-##########################################
-# 7. Variables en surface
-
-coefs['t2m']   = 1
-coefs['huss']  = 1
-coefs['hurs']  = 1
-coefs['uas']   = 1
-coefs['vas']   = 1
-
-coefs['pblh']  = 1
-
-coefs['ts']    = 1
-
-##########################################
-# 8.1 Tendances de la physique
-
-coefs['Q1']    = 1
-coefs['Q2']    = 1
-coefs['QRad']  = 1
-
-coefs['tnthl'] = 1
-coefs['tnqt'] = 1
-
-coefs['tntrsw'] = 1
-coefs['tntrlw'] = 1
-coefs['tntrswcs'] = 1
-coefs['tntrlwcs'] = 1
-coefs['tntpbl'] = 1
-coefs['tntlscp'] = 1
-coefs['tntc'] = 1
-coefs['tntshc'] = 1
-coefs['tntd'] = 1
-
-coefs['tnthrsw'] = 1
-coefs['tnthrlw'] = 1
-coefs['tnthrswcs'] = 1
-coefs['tnthrlwcs'] = 1
-coefs['tnthpbl'] = 1
-coefs['tnthlscp'] = 1
-coefs['tnthc'] = 1
-coefs['tnthshc'] = 1
-coefs['tnthd'] = 1
-
-coefs['tnqvpbl'] = 1
-coefs['tnqvlscp'] = 1
-coefs['tnqvc'] = 1
-coefs['tnqvshc'] = 1
-coefs['tnqvd'] = 1
-
-coefs['tnupbl'] = 1
-coefs['tnuc'] = 1
-coefs['tnushc'] = 1
-coefs['tnud'] = 1
-
-coefs['tnvpbl'] = 1
-coefs['tnvc'] = 1
-coefs['tnvshc'] = 1
-coefs['tnvd'] = 1
-
-coefs['tnthlrsw'] = 1
-coefs['tnthlrlw'] = 1
-coefs['tnthlrswcs'] = 1
-coefs['tnthlrlwcs'] = 1
-coefs['tnthlpbl'] = 1
-coefs['tnthllscp'] = 1
-coefs['tnthlc'] = 1
-coefs['tnthlshc'] = 1
-coefs['tnthld'] = 1
-
-coefs['tnqtpbl'] = 1
-coefs['tnqtlscp'] = 1
-coefs['tnqtc'] = 1
-coefs['tnqtshc'] = 1
-coefs['tnqtd'] = 1
-
-coefs['tnql'] = 1
-coefs['tnqi'] = 1
-coefs['tnqr'] = 1
-coefs['tnqsn'] = 1
-
-coefs['tnqlc'] = 1
-coefs['tnqic'] = 1
-coefs['tnqrc'] = 1
-coefs['tnqsnc'] = 1
-
-coefs['tnqlshc'] = 1
-coefs['tnqishc'] = 1
-coefs['tnqrshc'] = 1
-coefs['tnqsnshc'] = 1
-
-coefs['tntcas'] = 1
-coefs['tntcs'] = 1
-coefs['tntfplcl'] = 1
-coefs['tntfplcn'] = 1
-coefs['tntfccql'] = 1
-coefs['tntfecl'] = 1
-coefs['tntfccqn'] = 1
-coefs['tntfecn'] = 1
-coefs['tntfhimcc'] = 1
-
-coefs['tntfplsl'] = 1
-coefs['tntfplsn'] = 1
-coefs['tntfcsql'] = 1
-coefs['tntfesl'] = 1
-coefs['tntfcsqn'] = 1
-coefs['tntfesn'] = 1
-
-coefs['tendu'] = 1
-coefs['tendv'] = 1
-coefs['tendq'] = 1
-coefs['tendh'] = 1
-
-##########################################
-# 8.2 Flux de la physique
-
-coefs['wpqp_pbl'] = 1
-coefs['wpthp_pbl'] = 1
-coefs['wpup_pbl'] = 1
-coefs['wpvp_pbl'] = 1
-coefs['wpqp_conv'] = 1
-coefs['wpthp_conv'] = 1
-coefs['wpup_conv'] = 1
-coefs['wpvp_conv'] = 1
-coefs['wpqtp_pbl'] = 1
-coefs['wpthlp_pbl'] = 1
-coefs['wpqtp_conv'] = 1
-coefs['wpthlp_conv'] = 1
-
-##########################################
-# 9. Tendances liees au forcages
-
-coefs['tntadv'] = 1
-coefs['tntnudg'] = 1
-coefs['tnqadv'] = 1
-coefs['tnqvnudg'] = 1
-coefs['tnunudg'] = 1
-coefs['tnvnudg'] = 1
-coefs['tnugeo'] = 1
-coefs['tnvgeo'] = 1
-
-##########################################
-# 10. Divers
-
-coefs['Cp'] = 1
-coefs['Lv'] = 1
-
-##########################################
-# 11. Bilan eau et energie
-
-coefs['qflux'] = 1
-coefs['qfluxPr'] = 1
-coefs['qfluxEv'] = 1
-coefs['dwater'] = 1
-coefs['efluxTOA'] = 1
-coefs['efluxSfc'] = 1
-coefs['denergy'] = 1
-
-coefs['RMSE9'] = 1
-coefs['RMSE0'] = 1
-coefs['RMSE1'] = 1
-coefs['RDMSE'] = 1
-coefs['msefluxSfc'] = 1
-coefs['iQadv'] = 1
-coefs['iQnud'] = 1
-coefs['iTadv'] = 1
-coefs['iTnud'] = 1
-coefs['iUadv'] = 1
-coefs['iUnud'] = 1
-coefs['iVadv'] = 1
-coefs['iVnud'] = 1
-coefs['iEadv'] = 1
-coefs['iEnud'] = 1
-
-coefs['efluxSfcRad'] = 1
-coefs['efluxSfcTurb'] = 1
-coefs['efluxSfcConv'] = 1
-coefs['efluxSfcAdj'] = 1
-coefs['efluxSfcPrSen'] = 1
-coefs['efluxSfcPrLat'] = 1
-
-coefs['iMSEadv'] = 1
-coefs['iMSEnud'] = 1
-coefs['iMSEw'] = 1
-coefs['iQw'] = 1
-coefs['iEw'] = 1
-
-##########################################
-# 12. Especes Gazeuses
-
-coefs['rCO2'] = 1
-coefs['rCH4'] = 1
-coefs['rN2O'] = 1
-coefs['rNO2'] = 1
-coefs['rCFC11'] = 1
-coefs['rCFC12'] = 1
-coefs['rCFC22'] = 1
-coefs['rCCL4'] = 1
-coefs['rO3'] = 1
-
-##########################################
-# 13. Variables du schema de convection Bougeault 1985
-
-coefs['alpha'] = 1
-coefs['Mf'] = 1
-coefs['Tu'] = 1
-coefs['Thu'] = 1
-coefs['qvu'] = 1
-coefs['qcu'] = 1
-
-##########################################
-# 14. Variables du schema PCMT
-
-coefs['alpha_up'] = 1
-coefs['w_up'] = 1
-coefs['omega_up'] = 1
-coefs['alpha_dn'] = 1
-coefs['w_dn'] = 1
-coefs['omega_dn'] = 1
-coefs['cape'] = 1
-coefs['T_up'] = 1
-coefs['qv_up'] = 1
-coefs['omega_ref'] = 1
-coefs['w_up_bud'] = 1
-coefs['dw_buoy'] = 1
-coefs['dw_fric'] = 1
-coefs['dw_Kd'] = 1
-coefs['dw_entr'] = 1
-coefs['dw_transp'] = 1
-coefs['buoy'] = 1
-coefs['Mf'] = 1
-coefs['eps_u'] = 1
-coefs['det_u'] = 1
-coefs['eps_u_org'] = 1
-coefs['eps_u_tur'] = 1
-coefs['det_u_org'] = 1
-coefs['det_u_tur'] = 1
-coefs['entr_u'] = 1
-coefs['detr_u'] = 1
-coefs['dTv_up'] = 1
-coefs['B_up'] = 1
-coefs['aipcmt'] = 1
-coefs['knnd'] = 1
-coefs['knlab'] = 1
-coefs['ZS15'] = 1
-coefs['ZS16'] = 1
-coefs['ZTAU'] = 1
-
-##########################################
-# 15. Variables pour le wake
-
-coefs['delta_t'] = 1
-coefs['delta_q'] = 1
-coefs['d_delta_t_gw'] = 1
-coefs['omgb_dth'] = 1
-coefs['dp_omgb'] = 1
-coefs['dt_KE'] = 1
-coefs['dq_KE'] = 1
-coefs['dt_PBL'] = 1
-coefs['dq_PBL'] = 1
-coefs['omg_w'] = 1
-coefs['dp_delt_omg'] = 1
-coefs['spread_w'] = 1
-coefs['delta_th'] = 1
-coefs['dt_wake'] = 1
-coefs['dt_wake2'] = 1
-coefs['dq_wake'] = 1
-coefs['dq_wake2'] = 1
-coefs['t_undi'] = 1
-coefs['q_undi'] = 1
-coefs['d_delta_t'] = 1
-coefs['d_delta_q'] = 1
-coefs['hw'] = 1
-coefs['sigmaw'] = 1
-coefs['wake_pe'] = 1
-coefs['wake_fip'] = 1
-coefs['wake_gfl'] = 1
-coefs['Cstar'] = 1
-coefs['wdens'] = 1
-coefs['dt_dn'] = 1
-coefs['dt_up'] = 1
-coefs['dq_dn'] = 1
-coefs['dq_up'] = 1
-coefs['Mf_dn'] = 1
-coefs['Mf_up'] = 1
-coefs['sigd'] = 1
-coefs['omgb'] = 1
-coefs['t_undi_pcmt'] = 1
-coefs['q_undi_pcmt'] = 1
-coefs['t_wake_pcmt'] = 1
-coefs['q_wake_pcmt'] = 1
-coefs['qw_undi'] = 1
-coefs['qw_wake'] = 1
-coefs['Tw_wake'] = 1
-coefs['Tw_undi'] = 1
-coefs['qsat_undi'] = 1
-coefs['qsat_wake'] = 1
-coefs['ZMWAKE'] = 1
-coefs['ZCWAKE'] = 1
-coefs['ZS12'] = 1
-
-##########################################
-# 16. Variables pour la turbulence
-
-coefs['Q11'] = 1
-coefs['Q11min'] = 1
-coefs['Q11max'] = 1
-coefs['igs'] = 1
-coefs['igs2'] = 1
-coefs['igs2turb'] = 1
-coefs['igs2conv'] = 1
-coefs['sigs'] = 1
-coefs['sigs2'] = 1
-coefs['sigs2turb'] = 1
-coefs['sigs2conv'] = 1
-coefs['mlen'] = 1
-coefs['acoef'] = 1
-coefs['sigc0'] = 1
-coefs['sigc1'] = 1
-
-##########################################
-# 17. Variables COSP
-
-coefs['cltcalipso'] = 1
-coefs['cllcalipso'] = 1
-coefs['clmcalipso'] = 1
-coefs['clhcalipso'] = 1
-coefs['clcalipso'] = 1
-coefs['cllcalipsoice'] = 1
-coefs['clmcalipsoice'] = 1
-coefs['clhcalipsoice'] = 1
-coefs['cltcalipsoice'] = 1
-coefs['cllcalipsoliq'] = 1
-coefs['clmcalipsoliq'] = 1
-coefs['clhcalipsoliq'] = 1
-coefs['cltcalipsoliq'] = 1
-coefs['cllcalipsoun'] = 1
-coefs['clmcalipsoun'] = 1
-coefs['clhcalipsoun'] = 1
-coefs['cltcalipsoun'] = 1
-coefs['lidarBetaMol532'] = 1
-coefs['clcalipsoice'] = 1
-coefs['clcalipsoliq'] = 1
-coefs['clcalipsoun'] = 1
-coefs['clcalipsotmp'] = 1
-coefs['clcalipsotmpice'] = 1
-coefs['clcalipsotmpliq'] = 1
-coefs['clcalipsotmpun'] = 1
-coefs['parasolRefl'] = '1'
-coefs['cltlidarradar'] = 1
-coefs['clcalipso2'] = 1
-coefs['cltisccp'] = 1
-coefs['pctisccp'] = 1
-coefs['tauisccp'] = 1
-coefs['albisccp'] = 1
-coefs['meantbisccp'] = 1
-coefs['meantbclrisccp'] = 1
-coefs['boxtauisccp'] = 1
-coefs['boxptopisccp'] = 1
-coefs['cltmodis'] = 1
-coefs['clwmodis'] = 1
-coefs['climodis'] = 1
-coefs['clhmodis'] = 1
-coefs['clmmodis'] = 1
-coefs['cllmodis'] = 1
-coefs['tautmodis'] = 1
-coefs['tauwmodis'] = 1
-coefs['tauimodis'] = 1
-coefs['tautlogmodis'] = 1
-coefs['tauwlogmodis'] = 1
-coefs['tauilogmodis'] = 1
-coefs['reffclwmodis'] = 1
-coefs['reffclimodis'] = 1
-coefs['pctmodis'] = 1
-coefs['lwpmodis'] = 1
-coefs['iwpmodis'] = 1
-coefs['toffset'] = 1
-coefs['fracout'] = 1
-coefs['atb532'] = 1
-coefs['cfadLidarsr532'] = 1
-coefs['dbze94'] = 1
-coefs['cfadDbze94'] = 1
-coefs['clisccp'] = 1
-coefs['clmodis'] = 1
-coefs['clMISR'] = 1
-
-for vv in ['ZLAT_COSP','ZLON_COSP','PLSM_COSP','PMU0_COSP','PEMIS_COSP','PTS_COSP','ZAP_COSP','ZAPH_COSP','ZAPHI_COSP','ZAPHIF_COSP','ZU_COSP','ZV_COSP','ZT_COSP','ZQ_COSP','ZRH_COSP','ZOZN_COSP','ZCLFR_COSP','ZCLFRCC_COSP','ZMRLSLIQ_COSP','ZMRLSICE_COSP','ZMRCCLIQ_COSP','ZMRCCICE_COSP','ZFLLSRAIN_COSP','ZFLLSSNOW_COSP','ZFLCCRAIN_COSP','ZFLCCSNOW_COSP','ZRADLP_COSP','ZRADIP_COSP','ZTAUSW_COSP','ZEMILW_COSP']:
-  coefs[vv] = 1
+#!/usr/bin/env python
+# -*- coding:UTF-8 -*-
+# Copyright (c) Météo France (2014-)
+# This software is governed by the CeCILL-C license under French law.
+# http://www.cecill.info
+
+# 1. Dynamical and thermodynamical variables
+# 2. Cloud variables
+# 3. Precipitation variables
+# 4. Radiation variables
+# 5. Surface turbulent fluxes
+# 6. Vertically-integrated variables
+# 7. Near-surface variables
+# 8. Physical tendencies
+# 9. Physics fluxes
+# 10. Forcing tendencies
+# 11. Water and energy budget
+# 12. Gaseous variables
+# 13. Convective variables
+# 14. Wake variables
+# 15. Turbulence variables
+# 16. COSP variables
+# 16.1 COSP input variables
+# 17. Miscellanenous
+
+variables = {
+# 1. Dynamical and thermodynamical variables
+    'hur'               : {'varname':               'PRH', 'units':                 '-', 'coef':         1, 'name':'Relative Humidity'}, 
+    'pf'                : {'varname':            'PAPRSF', 'units':                'Pa', 'coef':         1, 'name':'Pressure on Full Levels'}, 
+    'ph'                : {'varname':             'PAPRS', 'units':                'Pa', 'coef':         1, 'name':'Pressure on Half Levels'}, 
+    'qi'                : {'varname':             'PQICE', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Cloud Ice Water'}, 
+    'qic'               : {'varname':           'PQICONV', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Convective Ice Water'}, 
+    'qishc'             : {'varname':         'PQISHCONV', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Shallow Convection Ice Water'}, 
+    'ql'                : {'varname':              'PQLI', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Cloud Liquid Water'}, 
+    'qlc'               : {'varname':           'PQLCONV', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Convective Liquid Water'}, 
+    'qlshc'             : {'varname':         'PQLSHCONV', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Shallow Convection Liquid Water'}, 
+    'qr'                : {'varname':               'PQR', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Rain'}, 
+    'qrc'               : {'varname':           'PQRCONV', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Convective Rain'}, 
+    'qrshc'             : {'varname':         'PQRSHCONV', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Shallow Convection Rain'}, 
+    'qsat'              : {'varname':             'PQSAT', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Humidity at Saturation'}, 
+    'qsn'               : {'varname':              'PQSN', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Snow'}, 
+    'qsnc'              : {'varname':           'PQSCONV', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Convective Snow'}, 
+    'qsnshc'            : {'varname':         'PQSSHCONV', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Mass of Shallow Convection Snow'}, 
+    'qv'                : {'varname':                'PQ', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Humidity'}, 
+    'rho'               : {'varname':               'RHO', 'units':             'kg/m3', 'coef':         1, 'name':'Air Volumic Mass'}, 
+    'temp'              : {'varname':                'PT', 'units':                 'K', 'coef':         1, 'name':'Air Temperature'}, 
+    'theta'             : {'varname':             'THETA', 'units':                 'K', 'coef':         1, 'name':'Potential Temperature'}, 
+    'thl'               : {'varname':            'THETAL', 'units':                 'K', 'coef':         1, 'name':'Liquid Potential Temperature'}, 
+    'thlv'              : {'varname':           'THETAVL', 'units':                 'K', 'coef':         1, 'name':'Virtual Potential Temperature'}, 
+    'thv'               : {'varname':            'THETAV', 'units':                 'K', 'coef':         1, 'name':'Virtual Potential Temperature'}, 
+    'tke'               : {'varname':              'PECT', 'units':             'm2/s2', 'coef':         1, 'name':'Turbulent Kinetic Energy'}, 
+    'u'                 : {'varname':                'PU', 'units':               'm/s', 'coef':         1, 'name':'Zonal Wind'}, 
+    'v'                 : {'varname':                'PV', 'units':               'm/s', 'coef':         1, 'name':'Meridional Wind'}, 
+    'wa'                : {'varname':                'ZW', 'units':               'm/s', 'coef':         1, 'name':'Vertical Velocity'}, 
+    'wap'               : {'varname':            'ZOMEGA', 'units':              'Pa/s', 'coef':         1, 'name':'Vertical Pressure Velocity'}, 
+    'zf'                : {'varname':            'PAPHIF', 'units':                 'm', 'coef':0.10197162129779283, 'name':'Geopotential on Full Levels'}, 
+    'zh'                : {'varname':             'PAPHI', 'units':                 'm', 'coef':0.10197162129779283, 'name':'Geopotential on Half Levels'}, 
+# 2. Cloud variables
+    'cc'                : {'varname':             'PCLCT', 'units':                 '-', 'coef':         1, 'name':'Total Cloud Fraction'}, 
+    'cls'               : {'varname':             'ZNEBS', 'units':                 '-', 'coef':         1, 'name':'Stratiform Cloud Fraction'}, 
+    'cltc'              : {'varname':             'PCLCC', 'units':                 '-', 'coef':         1, 'name':'Total Convective Cloud Fraction'}, 
+    'clth'              : {'varname':             'PCLCH', 'units':                 '-', 'coef':         1, 'name':'Total High Cloud Fraction'}, 
+    'cltl'              : {'varname':             'PCLCL', 'units':                 '-', 'coef':         1, 'name':'Total Low Cloud Fraction'}, 
+    'cltm'              : {'varname':             'PCLCM', 'units':                 '-', 'coef':         1, 'name':'Total Mid Cloud Fraction'}, 
+    'rneb'              : {'varname':              'PNEB', 'units':                 '-', 'coef':         1, 'name':'Cloud Fraction'}, 
+# 3. Precipitation variables
+    'ppr'               : {'varname':          'PREC_TOT', 'units':           'kg/m2/s', 'coef':         1, 'name':'Total Precipitation Profile'}, 
+    'pprc'              : {'varname':            'PREC_C', 'units':           'kg/m2/s', 'coef':         1, 'name':'Convective Precipitation Profile'}, 
+    'pprls'             : {'varname':           'PREC_LS', 'units':           'kg/m2/s', 'coef':         1, 'name':'Large-Scale Precipitation Profile'}, 
+    'prc'               : {'varname':        'PRECS_CONV', 'units':           'kg/m2/s', 'coef':         1, 'name':'Surface Convective Precipitation'}, 
+    'precc'             : {'varname':            'PFPLCL', 'units':           'kg/m2/s', 'coef':         1, 'name':'Convective Precipitation Flux'}, 
+    'precls'            : {'varname':            'PFPLSL', 'units':           'kg/m2/s', 'coef':         1, 'name':'Large-Scale Precipitation Flux'}, 
+    'prls'              : {'varname':          'PRECS_LS', 'units':           'kg/m2/s', 'coef':         1, 'name':'Surface Large-Scale Precipitation'}, 
+    'rain'              : {'varname':         'PRECS_TOT', 'units':           'kg/m2/s', 'coef':         1, 'name':'Surface Precipitation'}, 
+    'snowc'             : {'varname':            'PFPLCN', 'units':           'kg/m2/s', 'coef':         1, 'name':'Convective Snow Flux'}, 
+    'snowls'            : {'varname':            'PFPLSN', 'units':           'kg/m2/s', 'coef':         1, 'name':'Large-Scale Snow Flux'}, 
+# 4. Radiation variables
+    'I0'                : {'varname':               'ZI0', 'units':              'W/m2', 'coef':         1, 'name':'Solar irradiance'}, 
+    'LWd'               : {'varname':               'LWd', 'units':              'W/m2', 'coef':         1, 'name':'Downward LW Flux'}, 
+    'LWdcs'             : {'varname':             'LWdcs', 'units':              'W/m2', 'coef':         1, 'name':'CS Downward LW Flux'}, 
+    'LWnet'             : {'varname':             'PFRTH', 'units':              'W/m2', 'coef':         1, 'name':'Net LW Flux'}, 
+    'LWu'               : {'varname':               'LWu', 'units':              'W/m2', 'coef':         1, 'name':'Upward LW Flux'}, 
+    'LWucs'             : {'varname':             'LWucs', 'units':              'W/m2', 'coef':         1, 'name':'CS Upward LW Flux'}, 
+    'SWd'               : {'varname':               'SWd', 'units':              'W/m2', 'coef':         1, 'name':'Downward SW Flux'}, 
+    'SWdcs'             : {'varname':             'SWdcs', 'units':              'W/m2', 'coef':         1, 'name':'CS Downward SW Flux'}, 
+    'SWnet'             : {'varname':             'PFRSO', 'units':              'W/m2', 'coef':         1, 'name':'Net SW Flux'}, 
+    'SWu'               : {'varname':               'SWu', 'units':              'W/m2', 'coef':         1, 'name':'Upward SW Flux'}, 
+    'SWucs'             : {'varname':             'SWucs', 'units':              'W/m2', 'coef':         1, 'name':'CS Upward SW Flux'}, 
+    'alb_ss'            : {'varname':            'SW_ALB', 'units':                 '-', 'coef':         1, 'name':'SW Surface Albedo'}, 
+    'mu1'               : {'varname':              'ZMU0', 'units':                 '-', 'coef':         1, 'name':'Sinus of zenith angle'}, 
+    'mueff'             : {'varname':           'ZMU0EFF', 'units':                 '-', 'coef':         1, 'name':'Sinus of effective zenith angle'}, 
+    'rlds'              : {'varname':        'LW_Surf_dn', 'units':              'W/m2', 'coef':         1, 'name':'Downward LW Radiation at Surface'}, 
+    'rldscs'            : {'varname':     'LW_Surf_cs_dn', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky Downward LW Radiation at Surface'}, 
+    'rldt'              : {'varname':         'LW_TOA_dn', 'units':              'W/m2', 'coef':         1, 'name':'Downward LW Radiation at TOA'}, 
+    'rldtcs'            : {'varname':      'LW_TOA_cs_dn', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky Downward LW Radiation at TOA'}, 
+    'rls'               : {'varname':           'LW_Surf', 'units':              'W/m2', 'coef':         1, 'name':'LW Radiation at Surface'}, 
+    'rlscs'             : {'varname':        'LW_Surf_cs', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky LW Radiation at Surface'}, 
+    'rlt'               : {'varname':            'LW_TOA', 'units':              'W/m2', 'coef':         1, 'name':'LW Radiation at TOA'}, 
+    'rltcs'             : {'varname':         'LW_TOA_cs', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky LW Radiation at TOA'}, 
+    'rlus'              : {'varname':        'LW_Surf_up', 'units':              'W/m2', 'coef':         1, 'name':'Upward LW Radiation at Surface'}, 
+    'rluscs'            : {'varname':     'LW_Surf_cs_up', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky Upward LW Radiation at Surface'}, 
+    'rlut'              : {'varname':         'LW_TOA_up', 'units':              'W/m2', 'coef':         1, 'name':'Upward LW Radiation at TOA'}, 
+    'rlutcs'            : {'varname':      'LW_TOA_cs_up', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky Upward LW Radiation at TOA'}, 
+    'rsds'              : {'varname':        'SW_Surf_dn', 'units':              'W/m2', 'coef':         1, 'name':'Downward SW Radiation at Surface'}, 
+    'rsdscs'            : {'varname':     'SW_Surf_cs_dn', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky Downward SW Radiation at Surface'}, 
+    'rsdt'              : {'varname':         'SW_TOA_dn', 'units':              'W/m2', 'coef':         1, 'name':'Downward SW Radiation at TOA'}, 
+    'rsdtcs'            : {'varname':      'SW_TOA_cs_dn', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky Downward SW Radiation at TOA'}, 
+    'rss'               : {'varname':           'SW_Surf', 'units':              'W/m2', 'coef':         1, 'name':'SW Radiation at Surface'}, 
+    'rsscs'             : {'varname':        'SW_Surf_cs', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky SW Radiation at Surface'}, 
+    'rst'               : {'varname':            'SW_TOA', 'units':              'W/m2', 'coef':         1, 'name':'SW Radiation at TOA'}, 
+    'rstcs'             : {'varname':         'SW_TOA_cs', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky SW Radiation at TOA'}, 
+    'rsus'              : {'varname':        'SW_Surf_up', 'units':              'W/m2', 'coef':         1, 'name':'Upward SW Radiation at Surface'}, 
+    'rsuscs'            : {'varname':     'SW_Surf_cs_up', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky Upward SW Radiation at Surface'}, 
+    'rsut'              : {'varname':         'SW_TOA_up', 'units':              'W/m2', 'coef':         1, 'name':'Upward SW Radiation at TOA'}, 
+    'rsutcs'            : {'varname':      'SW_TOA_cs_up', 'units':              'W/m2', 'coef':         1, 'name':'Clear-sky Upward SW Radiation at TOA'}, 
+# 5. Surface turbulent fluxes
+    'Cd'                : {'varname':               'ZCD', 'units':                 '-', 'coef':         1, 'name':'Surface Exchange Coefficient for Wind'}, 
+    'Cdn'               : {'varname':              'ZCDN', 'units':                 '-', 'coef':         1, 'name':'Surface Exchange Neutral Coefficient for Wind'}, 
+    'Ce'                : {'varname':               'ZCE', 'units':                 '-', 'coef':         1, 'name':'Surface Exchange Coefficient for Water Vapor'}, 
+    'Cen'               : {'varname':              'ZCEN', 'units':                 '-', 'coef':         1, 'name':'Surface Exchange Neutral Coefficient for Water Vapor'}, 
+    'Ch'                : {'varname':               'ZCH', 'units':                 '-', 'coef':         1, 'name':'Surface Exchange Coefficient for Heat'}, 
+    'Chn'               : {'varname':              'ZCHN', 'units':                 '-', 'coef':         1, 'name':'Surface Exchange Neutral Coefficient for Heat'}, 
+    'Ugr'               : {'varname':               'UGR', 'units':               'm/s', 'coef':         1, 'name':'Wind gustiness due to precipitation'}, 
+    'evap'              : {'varname':             'PFEVL', 'units':           'kg/m2/s', 'coef':         1, 'name':'Evaporation over liquid water (or wet soil)'}, 
+    'evapi'             : {'varname':             'PFEVI', 'units':           'kg/m2/s', 'coef':         1, 'name':'Evaporation over frozen soil'}, 
+    'evapn'             : {'varname':             'PFEVN', 'units':           'kg/m2/s', 'coef':         1, 'name':'Evaporation over snow (or ice) and frozen soil'}, 
+    'lhf'               : {'varname':             'PFCLL', 'units':              'W/m2', 'coef':         1, 'name':'Surface Latent Heat Flux'}, 
+    'lhfn'              : {'varname':             'PFCLN', 'units':              'W/m2', 'coef':         1, 'name':'Surface Latent Heat Flux over Snow or Ice'}, 
+    'qsurf'             : {'varname':               'PQS', 'units':             'kg/kg', 'coef':         1, 'name':'Surface saturated specific humidity (qsat(SST))'}, 
+    'shf'               : {'varname':              'PFCS', 'units':              'W/m2', 'coef':         1, 'name':'Surface Sensible Heat Flux'}, 
+    'tauu'              : {'varname':              'PSFU', 'units':        'kg m-1 s-2', 'coef':         1, 'name':'Surface zonal stress'}, 
+    'tauv'              : {'varname':              'PSFV', 'units':        'kg m-1 s-2', 'coef':         1, 'name':'Surface meridional stress'}, 
+    'tsurf'             : {'varname':               'PTS', 'units':                 'K', 'coef':         1, 'name':'Surface temperature (SST)'}, 
+    'ustar'             : {'varname':            'ZUSTAR', 'units':               'm/s', 'coef':         1, 'name':'ustar'}, 
+    'z0'                : {'varname':               'PZ0', 'units':                 'm', 'coef':         1, 'name':'z0'}, 
+    'z0h'               : {'varname':              'PZ0H', 'units':                 'm', 'coef':         1, 'name':'z0h'}, 
+    'zref'              : {'varname':             'PZREF', 'units':                 'm', 'coef':         1, 'name':'Altitude of the first atmospheric level'}, 
+# 6. Vertically-integrated variables
+    'cwp'               : {'varname':               'CWP', 'units':             'kg/m2', 'coef':         1, 'name':'Cloud Water Path'}, 
+    'iwp'               : {'varname':               'IWP', 'units':             'kg/m2', 'coef':         1, 'name':'Ice Water Path'}, 
+    'lwp'               : {'varname':               'LWP', 'units':             'kg/m2', 'coef':         1, 'name':'Liquid Water Path'}, 
+    'prw'               : {'varname':               'WVP', 'units':             'kg/m2', 'coef':         1, 'name':'Precipitable Water'}, 
+# 7. Near-surface variables
+    'hurs'              : {'varname':            'PRHCLS', 'units':                 '-', 'coef':         1, 'name':'2-meter Relative Humidity'}, 
+    'huss'              : {'varname':             'PQCLS', 'units':             'kg/kg', 'coef':         1, 'name':'2-meter Specific Humidity'}, 
+    'pblh'              : {'varname':              'HCLA', 'units':                 'm', 'coef':         1, 'name':'Planetary Boundary Layer Height'}, 
+    't2m'               : {'varname':             'PTCLS', 'units':                 'K', 'coef':         1, 'name':'2-meter Air Temperature'}, 
+    'ts'                : {'varname':               'PTS', 'units':                 'K', 'coef':         1, 'name':'Surface Temperature'}, 
+    'uas'               : {'varname':             'PUCLS', 'units':               'm/s', 'coef':         1, 'name':'10-meter Zonal Wind'}, 
+    'vas'               : {'varname':             'PVCLS', 'units':               'm/s', 'coef':         1, 'name':'10-meter Meridional Wind'}, 
+# 8. Physical tendencies
+    'Q1'                : {'varname':                'Q1', 'units':               'K/s', 'coef':         1, 'name':'Apparent Heat Source'}, 
+    'Q2'                : {'varname':                'Q2', 'units':               'K/s', 'coef':         1, 'name':'Apparent Moisture Sink'}, 
+    'QRad'              : {'varname':              'QRad', 'units':               'K/s', 'coef':         1, 'name':'Radiative Heating Rate'}, 
+    'tendh'             : {'varname':             'TENDH', 'units':                 '-', 'coef':         1, 'name':'TENDH'}, 
+    'tendq'             : {'varname':             'TENDQ', 'units':                 '-', 'coef':         1, 'name':'TENDQ'}, 
+    'tendu'             : {'varname':             'TENDU', 'units':                 '-', 'coef':         1, 'name':'TENDU'}, 
+    'tendv'             : {'varname':             'TENDV', 'units':                 '-', 'coef':         1, 'name':'TENDV'}, 
+    'tnqi'              : {'varname':            'TENDQI', 'units':           'kg/kg/s', 'coef':         1, 'name':'Ice Water Tendency due to Physics'}, 
+    'tnqic'             : {'varname':        'TENDQICONV', 'units':           'kg/kg/s', 'coef':         1, 'name':'Convective Ice Water Tendency due to Physics'}, 
+    'tnqishc'           : {'varname':      'TENDQISHCONV', 'units':           'kg/kg/s', 'coef':         1, 'name':'Shallow Convection Ice Water Tendency due to Physics'}, 
+    'tnql'              : {'varname':            'TENDQL', 'units':           'kg/kg/s', 'coef':         1, 'name':'Liquid Water Tendency due to Physics'}, 
+    'tnqlc'             : {'varname':        'TENDQLCONV', 'units':           'kg/kg/s', 'coef':         1, 'name':'Convective Liquid Water Tendency due to Physics'}, 
+    'tnqlshc'           : {'varname':      'TENDQLSHCONV', 'units':           'kg/kg/s', 'coef':         1, 'name':'Shallow Convection Liquid Water Tendency due to Physics'}, 
+    'tnqr'              : {'varname':            'TENDQR', 'units':           'kg/kg/s', 'coef':         1, 'name':'Rain Tendency due to Physics'}, 
+    'tnqrc'             : {'varname':        'TENDQRCONV', 'units':           'kg/kg/s', 'coef':         1, 'name':'Convective Rain Tendency due to Physics'}, 
+    'tnqrshc'           : {'varname':      'TENDQRSHCONV', 'units':           'kg/kg/s', 'coef':         1, 'name':'Shallow Convection Rain Tendency due to Physics'}, 
+    'tnqsn'             : {'varname':            'TENDQS', 'units':           'kg/kg/s', 'coef':         1, 'name':'Snow Tendency due to Physics'}, 
+    'tnqsnc'            : {'varname':        'TENDQSCONV', 'units':           'kg/kg/s', 'coef':         1, 'name':'Convective Snow Tendency due to Physics'}, 
+    'tnqsnc'            : {'varname':        'TENDQSCONV', 'units':           'kg/kg/s', 'coef':         1, 'name':'Convective Snow Tendency due to Physics'}, 
+    'tnqt'              : {'varname':            'TENDQT', 'units':           'kg/kg/s', 'coef':         1, 'name':'Total Water Tendency due to Physics'}, 
+    'tnqtc'             : {'varname':           'TENDCQT', 'units':           'kg/kg/s', 'coef':         1, 'name':'Total Water Tendency due to Convection'}, 
+    'tnqtd'             : {'varname':           'TENDMQT', 'units':           'kg/kg/s', 'coef':         1, 'name':'Total Water Tendency due to Other Processes'}, 
+    'tnqtlscp'          : {'varname':           'TENDSQT', 'units':           'kg/kg/s', 'coef':         1, 'name':'Total Water Tendency due to Large-scale Condensation and Precipitation'}, 
+    'tnqtpbl'           : {'varname':           'TENDTQT', 'units':           'kg/kg/s', 'coef':         1, 'name':'Total Water Tendency due to Turbulence'}, 
+    'tnqtshc'           : {'varname':         'TENDSHCQT', 'units':           'kg/kg/s', 'coef':         1, 'name':'Total Water Tendency due to Shallow Convection'}, 
+    'tnqvc'             : {'varname':            'TENDCQ', 'units':           'kg/kg/s', 'coef':         1, 'name':'Specific Humidity Tendency due to Convection'}, 
+    'tnqvd'             : {'varname':            'TENDMQ', 'units':           'kg/kg/s', 'coef':         1, 'name':'Specific Humidity Tendency due to Other Processes'}, 
+    'tnqvlscp'          : {'varname':            'TENDSQ', 'units':           'kg/kg/s', 'coef':         1, 'name':'Specific Humidity Tendency due to Large-scale Condensation and Precipitation'}, 
+    'tnqvpbl'           : {'varname':            'TENDTQ', 'units':           'kg/kg/s', 'coef':         1, 'name':'Specific Humidity Tendency due to Turbulence'}, 
+    'tnqvshc'           : {'varname':          'TENDSHCQ', 'units':           'kg/kg/s', 'coef':         1, 'name':'Specific Humidity Tendency due to Shallow Convection'}, 
+    'tntc'              : {'varname':            'TENDCT', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Convection'}, 
+    'tntcas'            : {'varname':          'TENDTCAS', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Dry Convective Adjustment'}, 
+    'tntcs'             : {'varname':           'TENDTCS', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Convective Eddies'}, 
+    'tntd'              : {'varname':            'TENDMT', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Other Processes'}, 
+    'tntfccql'          : {'varname':        'TENDTFCCQL', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Convective Liquid Precipitation Generation'}, 
+    'tntfccqn'          : {'varname':        'TENDTFCCQN', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Convective Solid Precipitation Generation'}, 
+    'tntfcsql'          : {'varname':        'TENDTFCSQL', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Stratiform Liquid Precipitation Generation'}, 
+    'tntfcsqn'          : {'varname':        'TENDTFCSQN', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Stratiform Solid Precipitation Generation'}, 
+    'tntfecl'           : {'varname':         'TENDTFECL', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Convective Liquid Precipitation Evaporation'}, 
+    'tntfecn'           : {'varname':         'TENDTFECN', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Convective Solid Precipitation Evaporation'}, 
+    'tntfesl'           : {'varname':         'TENDTFESL', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Stratiform Liquid Precipitation Evaporation'}, 
+    'tntfesn'           : {'varname':         'TENDTFESN', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Stratiform Solid Precipitation Evaporation'}, 
+    'tntfhimcc'         : {'varname':       'TENDTFHIMCC', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Convective Melting/Icing'}, 
+    'tntfplcl'          : {'varname':        'TENDTFPLCL', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Convective Liquid Precipitation'}, 
+    'tntfplcn'          : {'varname':        'TENDTFPLCN', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Convective Solid Precipitation'}, 
+    'tntfplsl'          : {'varname':        'TENDTFPLSL', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Stratiform Liquid Precipitation'}, 
+    'tntfplsn'          : {'varname':        'TENDTFPLSN', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Stratiform Solid Precipitation'}, 
+    'tnthc'             : {'varname':           'TENDCTH', 'units':               'K/s', 'coef':         1, 'name':'Potential Temperature Tendency due to Convection'}, 
+    'tnthd'             : {'varname':           'TENDMTH', 'units':               'K/s', 'coef':         1, 'name':'Potential Temperature Tendency due to Other Processes'}, 
+    'tnthl'             : {'varname':        'TENDTHETAL', 'units':               'K/s', 'coef':         1, 'name':'Liquid Potential Temperature Tendency due to Physics'}, 
+    'tnthlc'            : {'varname':          'TENDCTHL', 'units':               'K/s', 'coef':         1, 'name':'Liquid Potential Temperature Tendency due to Convection'}, 
+    'tnthld'            : {'varname':          'TENDMTHL', 'units':               'K/s', 'coef':         1, 'name':'Liquid Potential Temperature Tendency due to Other Processes'}, 
+    'tnthllscp'         : {'varname':          'TENDSTHL', 'units':               'K/s', 'coef':         1, 'name':'Liquid Potential Temperature Tendency due to Large-scale Condensation and Precipitation'}, 
+    'tnthlpbl'          : {'varname':          'TENDTTHL', 'units':               'K/s', 'coef':         1, 'name':'Liquid Potential Temperature Tendency due to Turbulence'}, 
+    'tnthlrlw'          : {'varname':         'TENDLWTHL', 'units':               'K/s', 'coef':         1, 'name':'Liquid Potential Temperature Tendency due to LW Radiation'}, 
+    'tnthlrlwcs'        : {'varname':       'TENDLWTHLCS', 'units':               'K/s', 'coef':         1, 'name':'Liquid Potential Temperature Tendency due to Clear-sky LW Radiation'}, 
+    'tnthlrsw'          : {'varname':         'TENDSWTHL', 'units':               'K/s', 'coef':         1, 'name':'Liquid Potential Temperature Tendency due to SW Radiation'}, 
+    'tnthlrswcs'        : {'varname':       'TENDSWTHLCS', 'units':               'K/s', 'coef':         1, 'name':'Liquid Potential Temperature Tendency due to Clear-sky SW Radiation'}, 
+    'tnthlscp'          : {'varname':           'TENDSTH', 'units':               'K/s', 'coef':         1, 'name':'Potential Temperature Tendency due to Large-scale Condensation and Precipitation'}, 
+    'tnthlshc'          : {'varname':        'TENDSHCTHL', 'units':               'K/s', 'coef':         1, 'name':'Liquid Potential Temperature Tendency due to Shallow Convection'}, 
+    'tnthpbl'           : {'varname':           'TENDTTH', 'units':               'K/s', 'coef':         1, 'name':'Potential Temperature Tendency due to Turbulence'}, 
+    'tnthrlw'           : {'varname':          'TENDLWTH', 'units':               'K/s', 'coef':         1, 'name':'Potential Temperature Tendency due to LW Radiation'}, 
+    'tnthrlwcs'         : {'varname':        'TENDLWTHCS', 'units':               'K/s', 'coef':         1, 'name':'Potential Temperature Tendency due to Clear-sky LW Radiation'}, 
+    'tnthrsw'           : {'varname':          'TENDSWTH', 'units':               'K/s', 'coef':         1, 'name':'Potential Temperature Tendency due to SW Radiation'}, 
+    'tnthrswcs'         : {'varname':        'TENDSWTHCS', 'units':               'K/s', 'coef':         1, 'name':'Potential Temperature Tendency due to Clear-sky SW Radiation'}, 
+    'tnthshc'           : {'varname':         'TENDSHCTH', 'units':               'K/s', 'coef':         1, 'name':'Potential Temperature Tendency due to Shallow Convection'}, 
+    'tntlscp'           : {'varname':            'TENDST', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Large-scale Condensation and Precipitation'}, 
+    'tntpbl'            : {'varname':            'TENDTT', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Turbulence'}, 
+    'tntrlw'            : {'varname':           'TENDLWT', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to LW Radiation'}, 
+    'tntrlwcs'          : {'varname':         'TENDLWTCS', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Clear-sky LW Radiation'}, 
+    'tntrsw'            : {'varname':           'TENDSWT', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to SW Radiation'}, 
+    'tntrswcs'          : {'varname':         'TENDSWTCS', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Clear-sky SW Radiation'}, 
+    'tntshc'            : {'varname':          'TENDSHCT', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Shallow Convection'}, 
+    'tnuc'              : {'varname':            'TENDCU', 'units':              'm/s2', 'coef':         1, 'name':'Zonal Wind Tendency due to Convection'}, 
+    'tnud'              : {'varname':            'TENDMU', 'units':              'm/s2', 'coef':         1, 'name':'Zonal Wind Tendency due to Other Processes'}, 
+    'tnupbl'            : {'varname':            'TENDTU', 'units':              'm/s2', 'coef':         1, 'name':'Zonal Wind Tendency due to Turbulence'}, 
+    'tnushc'            : {'varname':          'TENDSHCU', 'units':              'm/s2', 'coef':         1, 'name':'Zonal Wind Tendency due to Shallow Convection'}, 
+    'tnvc'              : {'varname':            'TENDCV', 'units':              'm/s2', 'coef':         1, 'name':'Meridional Wind Tendency due to Convection'}, 
+    'tnvd'              : {'varname':            'TENDMV', 'units':              'm/s2', 'coef':         1, 'name':'Meridional Wind Tendency due to Other Processes'}, 
+    'tnvpbl'            : {'varname':            'TENDTV', 'units':              'm/s2', 'coef':         1, 'name':'Meridional Wind Tendency due to Turbulence'}, 
+    'tnvshc'            : {'varname':          'TENDSHCV', 'units':              'm/s2', 'coef':         1, 'name':'Meridional Wind Tendency due to Shallow Convection'}, 
+# 9. Physics fluxes
+    'wpqp_conv'         : {'varname':           'WPQP_CV', 'units':     'kg kg-1 m s-1', 'coef':         1, 'name':'Water Vapor Water Flux due to Convection'}, 
+    'wpqp_pbl'          : {'varname':           'WPQP_TU', 'units':     'kg kg-1 m s-1', 'coef':         1, 'name':'Water Vapor Water Flux due to Turbulence'}, 
+    'wpqtp_conv'        : {'varname':         'ZWPQT_dee', 'units':     'kg kg-1 m s-1', 'coef':         1, 'name':'Total Water flux due to Convection'}, 
+    'wpqtp_pbl'         : {'varname':         'ZWPQT_tur', 'units':     'kg kg-1 m s-1', 'coef':         1, 'name':'Total Water Flux due to Turbulence'}, 
+    'wpthlp_conv'       : {'varname':          'WTHL_dee', 'units':           'K m s-1', 'coef':         1, 'name':'Liquid Potential Temperature Flux due to Convection'}, 
+    'wpthlp_pbl'        : {'varname':          'WTHL_tur', 'units':           'K m s-1', 'coef':         1, 'name':'Liquid Potential Temperature Flux due to Turbulence'}, 
+    'wpthp_conv'        : {'varname':          'WPTHP_CV', 'units':           'K m s-1', 'coef':         1, 'name':'Potential Temperature Flux due to Convection'}, 
+    'wpthp_pbl'         : {'varname':          'WPTHP_TU', 'units':           'K m s-1', 'coef':         1, 'name':'Potential Temperature Flux due to Turbulence'}, 
+    'wpup_conv'         : {'varname':           'WPUP_CV', 'units':            'm2 s-2', 'coef':         1, 'name':'Zonal Wind Flux due to Convection'}, 
+    'wpup_pbl'          : {'varname':           'WPUP_TU', 'units':            'm2 s-2', 'coef':         1, 'name':'Zonal Wind Flux due to Turbulence'}, 
+    'wpvp_conv'         : {'varname':           'WPVP_CV', 'units':            'm2 s-2', 'coef':         1, 'name':'Meridional Wind Flux due to Convection'}, 
+    'wpvp_pbl'          : {'varname':           'WPVP_TU', 'units':            'm2 s-2', 'coef':         1, 'name':'Meridional Wind Flux due to Turbulenve'}, 
+# 10. Forcing tendencies
+    'tnqvadv'           : {'varname':           'ZFQ_ADV', 'units':                '??', 'coef':       1.0, 'name':'ZFQ_ADV'}, 
+    'tnqvnudg'          : {'varname':          'ZFQ_NUDG', 'units':           'kg/kg/s', 'coef':         1, 'name':'Specific Humidity Tendency due to Nudging'}, 
+    'tntadv'            : {'varname':           'ZFT_ADV', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Horizontal Advection'}, 
+    'tntnudg'           : {'varname':          'ZFT_NUDG', 'units':               'K/s', 'coef':         1, 'name':'Temperature Tendency due to Nudging'}, 
+    'tnugeo'            : {'varname':            'ZFUGEO', 'units':              'm/s2', 'coef':         1, 'name':'Zonal Wind Tendency due to Geostrophic Adjustment'}, 
+    'tnunudg'           : {'varname':          'ZFU_NUDG', 'units':              'm/s2', 'coef':         1, 'name':'Zonal wind Tendency due to Nudging'}, 
+    'tnvgeo'            : {'varname':            'ZFVGEO', 'units':              'm/s2', 'coef':         1, 'name':'Meridional Wind Tendency due to Geostrophic Adjustment'}, 
+    'tnvnudg'           : {'varname':          'ZFV_NUDG', 'units':              'm/s2', 'coef':         1, 'name':'Meridional wind Tendency due to Nudging'}, 
+# 11. Water and energy budget
+    'RDMSE'             : {'varname':             'RDMSE', 'units':                 '-', 'coef':         1, 'name':'RDMSE'}, 
+    'RMSE0'             : {'varname':             'RMSE0', 'units':                 '-', 'coef':         1, 'name':'RMSE0'}, 
+    'RMSE1'             : {'varname':             'RMSE1', 'units':                 '-', 'coef':         1, 'name':'RMSE1'}, 
+    'RMSE9'             : {'varname':             'RMSE9', 'units':                 '-', 'coef':         1, 'name':'RMSE9'}, 
+    'denergy'           : {'varname':          'RDENERGY', 'units':              'J/kg', 'coef':         1, 'name':'RDENERGY'}, 
+    'dwater'            : {'varname':           'RDWATER', 'units':             'kg/m2', 'coef':         1, 'name':'RDWATER'}, 
+    'efluxSfc'          : {'varname':          'EFLUXSFC', 'units':              'W/m2', 'coef':         1, 'name':'Net Enthalpy Flux at Surface'}, 
+    'efluxSfcAdj'       : {'varname':       'EFLUXSFCCAS', 'units':              'W/m2', 'coef':         1, 'name':'Surface Enthalpy Flux due to dry adjustment'}, 
+    'efluxSfcConv'      : {'varname':        'EFLUXSFCCS', 'units':              'W/m2', 'coef':         1, 'name':'Surface Enthalpy Flux due to convective eddies'}, 
+    'efluxSfcPrLat'     : {'varname':         'EFLUXSFC2', 'units':              'W/m2', 'coef':         1, 'name':'Surface Enthalpy Flux due to latent heat of precipitation'}, 
+    'efluxSfcPrSen'     : {'varname':         'EFLUXSFC1', 'units':              'W/m2', 'coef':         1, 'name':'Surface Enthalpy Flux due to sensible heat of precipitation'}, 
+    'efluxSfcRad'       : {'varname':       'EFLUXSFCRAD', 'units':              'W/m2', 'coef':         1, 'name':'Surface Enthalpy Flux due to radiation'}, 
+    'efluxSfcTurb'      : {'varname':        'EFLUXSFCTS', 'units':              'W/m2', 'coef':         1, 'name':'Surface Enthalpy Flux due to turbulence'}, 
+    'efluxTOA'          : {'varname':          'EFLUXTOA', 'units':              'W/m2', 'coef':         1, 'name':'Net Enthalpy Flux at TOA'}, 
+    'iEadv'             : {'varname':       'TOTFORCEADV', 'units':              'W/m2', 'coef':         1, 'name':'Horizontal Advection of enthalpy integrated over the atmospheric column'}, 
+    'iEnud'             : {'varname':       'TOTFORCENUD', 'units':              'W/m2', 'coef':         1, 'name':'Enthalpy Tendency due to nudging integrated over the atmospheric column'}, 
+    'iEw'               : {'varname':           'ENERGYW', 'units':              'W/m2', 'coef':         1, 'name':'Vertical Advection of enthalpy integrated over the atmospheric column'}, 
+    'iMSEadv'           : {'varname':            'MSEADV', 'units':              'W/m2', 'coef':         1, 'name':'Horizontal Advection of moist static energy integrated over the atmospheric column'}, 
+    'iMSEnud'           : {'varname':            'MSENUD', 'units':              'W/m2', 'coef':         1, 'name':'Moist Static Energy Tendency due to nudging integrated over the atmospheric column'}, 
+    'iQadv'             : {'varname':       'TOTFORCQADV', 'units':           'kg/m2/s', 'coef':         1, 'name':'Horizontal Advection of moisture integrated over the atmospheric column'}, 
+    'iQnud'             : {'varname':       'TOTFORCQNUD', 'units':           'kg/m2/s', 'coef':         1, 'name':'Moisture Tendency due to nudging integrated over the atmospheric column'}, 
+    'iQw'               : {'varname':            'WATERW', 'units':           'kg/m2/s', 'coef':         1, 'name':'Vertical Advection of specific humidity integrated over the atmospheric column'}, 
+    'iTadv'             : {'varname':       'TOTFORCTADV', 'units':         'K kg/m2/s', 'coef':         1, 'name':'Horizontal Advection of temperature integrated over the atmospheric column'}, 
+    'iTnud'             : {'varname':       'TOTFORCTNUD', 'units':         'K kg/m2/s', 'coef':         1, 'name':'Temperature Tendency due to nudging integrated over the atmospheric column'}, 
+    'iUadv'             : {'varname':       'TOTFORCUADV', 'units':             'm2/s2', 'coef':         1, 'name':'Horizontal Advection of zonal wind integrated over the atmospheric column'}, 
+    'iUnud'             : {'varname':       'TOTFORCUNUD', 'units':             'm2/s2', 'coef':         1, 'name':'Zonal Wind Tendency due to nudging integrated over the atmospheric column'}, 
+    'iVadv'             : {'varname':       'TOTFORCVADV', 'units':             'm2/s2', 'coef':         1, 'name':'Horizontal Advection of meridional wind integrated over the atmospheric column'}, 
+    'iVnud'             : {'varname':       'TOTFORCVNUD', 'units':             'm2/s2', 'coef':         1, 'name':'Meridional Wind Tendency due to nudging integrated over the atmospheric column'}, 
+    'msefluxSfc'        : {'varname':        'MSEFLUXSFC', 'units':              'W/m2', 'coef':         1, 'name':'Net Moist Static Energy Flux at Surface'}, 
+    'qflux'             : {'varname':         'WATERFLUX', 'units':           'kg/m2/s', 'coef':         1, 'name':'Net Flux of water in the atmosphere'}, 
+    'qfluxEv'           : {'varname':        'WATERFLUXE', 'units':           'kg/m2/s', 'coef':         1, 'name':'Net Flux of water at Surface due to Evaporation'}, 
+    'qfluxPr'           : {'varname':        'WATERFLUXP', 'units':           'kg/m2/s', 'coef':         1, 'name':'Net Flux of water at Surface due to Precipitation'}, 
+# 12. Gaseous variables
+    'rCCL4'             : {'varname':              'ZCL4', 'units':             'kg/kg', 'coef':         1, 'name':'CCL4 Mixing Ratio'}, 
+    'rCFC11'            : {'varname':              'ZC11', 'units':             'kg/kg', 'coef':         1, 'name':'CFC11 Mixing Ratio'}, 
+    'rCFC12'            : {'varname':              'ZC12', 'units':             'kg/kg', 'coef':         1, 'name':'CFC12 Mixing Ratio'}, 
+    'rCFC22'            : {'varname':              'ZC22', 'units':             'kg/kg', 'coef':         1, 'name':'CFC22 Mixing Ratio'}, 
+    'rCH4'              : {'varname':              'ZCH4', 'units':             'kg/kg', 'coef':         1, 'name':'CH4 Mixing Ratio'}, 
+    'rCO2'              : {'varname':              'ZCO2', 'units':             'kg/kg', 'coef':         1, 'name':'CO2 Mixing Ratio'}, 
+    'rN2O'              : {'varname':              'ZN2O', 'units':             'kg/kg', 'coef':         1, 'name':'N2O Mixing Ratio'}, 
+    'rNO2'              : {'varname':              'ZNO2', 'units':             'kg/kg', 'coef':         1, 'name':'NO2 Mixing Ratio'}, 
+    'rO3'               : {'varname':              'ZOZN', 'units':             'kg/kg', 'coef':         1, 'name':'O3 Mixing Ratio'}, 
+# 13. Convective variables
+    'B_up'              : {'varname':              'B_UP', 'units':             'm s-2', 'coef':         1, 'name':'Updraft_Buoyancy'}, 
+    'Mf'                : {'varname':                'MF', 'units':        'kg m-2 s-1', 'coef':         1, 'name':'Convective Mass Flux'}, 
+    'T_up'              : {'varname':               'PTU', 'units':                 'K', 'coef':         1, 'name':'Convective Updraft Temperature'}, 
+    'Thu'               : {'varname':              'ZTHN', 'units':                 'K', 'coef':         1, 'name':'Updraft Potential Temperature'}, 
+    'Tu'                : {'varname':               'ZTN', 'units':                 'K', 'coef':         1, 'name':'Updraft Temperature'}, 
+    'ZINTEGMAX'         : {'varname':         'ZINTEGMAX', 'units':                 '-', 'coef':         1, 'name':'ZINTEGMAX'}, 
+    'ZKMAX'             : {'varname':             'ZKMAX', 'units':                 '-', 'coef':         1, 'name':'ZKMAX'}, 
+    'ZMMAX'             : {'varname':             'ZMMAX', 'units':                 '-', 'coef':         1, 'name':'ZMMAX'}, 
+    'ZS15'              : {'varname':              'ZS15', 'units':                 '-', 'coef':         1, 'name':'ZS15'}, 
+    'ZS16'              : {'varname':              'ZS16', 'units':                 '-', 'coef':         1, 'name':'ZS16'}, 
+    'ZTAU'              : {'varname':              'ZTAU', 'units':                 '-', 'coef':         1, 'name':'ZTAU'}, 
+    'ZWMAX'             : {'varname':             'ZWMAX', 'units':                 '-', 'coef':         1, 'name':'ZWMAX'}, 
+    'ZZMAX'             : {'varname':             'ZZMAX', 'units':                 '-', 'coef':         1, 'name':'ZZMAX'}, 
+    'aipcmt'            : {'varname':            'AIPCMT', 'units':                 '-', 'coef':         1, 'name':'Activity index of PCMT'}, 
+    'alpha'             : {'varname':              'ZALF', 'units':                 '-', 'coef':         1, 'name':'Closure coefficient'}, 
+    'alpha_dn'          : {'varname':             'PDDAL', 'units':                 '-', 'coef':         1, 'name':'Convective Downdraft Fraction'}, 
+    'alpha_up'          : {'varname':             'PUDAL', 'units':                 '-', 'coef':         1, 'name':'Convective Updraft Fraction'}, 
+    'buoy'              : {'varname':            'ZBUO_W', 'units':             'm s-2', 'coef':         1, 'name':'Convection Buoyancy used in Updraft Vertical Velocity Budget'}, 
+    'cape'              : {'varname':             'PCAPE', 'units':              'J/kg', 'coef':         1, 'name':'CAPE'}, 
+    'dTv_up'            : {'varname':        'TVUD-TVENV', 'units':                 'K', 'coef':         1, 'name':'Tv_updraft-Tv_env'}, 
+    'detr_u'            : {'varname':           'ZDETR_U', 'units':               's-1', 'coef':         1, 'name':'Convective Updraft Detrainment'}, 
+    'dw_Kd'             : {'varname':         'BILOM+TKD', 'units':            'Pa s-2', 'coef':         1, 'name':'Updraft Vertical Velocity Tendency due to Aerodynamic Drag'}, 
+    'dw_buoy'           : {'varname':       'BILOM+TBUOY', 'units':            'Pa s-2', 'coef':         1, 'name':'Updraft Vertical Velocity Tendency due to Vertical Buoyancy'}, 
+    'dw_entr'           : {'varname':       'BILOM+TENTR', 'units':            'Pa s-2', 'coef':         1, 'name':'Updraft Vertical Velocity Tendency due to Entrainment'}, 
+    'dw_fric'           : {'varname':       'BILOM+TFRIC', 'units':            'Pa s-2', 'coef':         1, 'name':'Updraft Vertical Velocity Tendency due to Friction'}, 
+    'dw_transp'         : {'varname':     'BILOM+TTRANSP', 'units':            'Pa s-2', 'coef':         1, 'name':'Updraft Vertical Velocity Tendency due to Vertical Transport'}, 
+    'entr_u'            : {'varname':           'ZENTR_U', 'units':               's-1', 'coef':         1, 'name':'Convective Updraft Entrainment'}, 
+    'eps_u'             : {'varname':        'ZEPSILON_U', 'units':               'm-1', 'coef':         1, 'name':'Fractional Convective Updraft Entrainment'}, 
+    'eps_u_org'         : {'varname':          'ZEPS_ORG', 'units':               'm-1', 'coef':         1, 'name':'Fractional Organised Convective Updraft Entrainment'}, 
+    'eps_u_tur'         : {'varname':          'ZEPS_TUR', 'units':               'm-1', 'coef':         1, 'name':'Fractional Turbulent Convective Updraft Entrainment'}, 
+    'knlab'             : {'varname':             'KNLAB', 'units':                 '-', 'coef':         1, 'name':'KNLAB'}, 
+    'knnd'              : {'varname':              'KNND', 'units':                 '-', 'coef':         1, 'name':'KNND'}, 
+    'omega_dn'          : {'varname':             'PDDOM', 'units':              'Pa/s', 'coef':         1, 'name':'Convective Downdraft Pressure Velocity'}, 
+    'omega_ref'         : {'varname':            'ZVVREF', 'units':              'Pa/s', 'coef':         1, 'name':'Reference Vertical Velocity'}, 
+    'omega_up'          : {'varname':             'PUDOM', 'units':              'Pa/s', 'coef':         1, 'name':'Convective Updraft Pressure Velocity'}, 
+    'qcu'               : {'varname':               'ZLN', 'units':             'kg/kg', 'coef':         1, 'name':'Updraft Condensed Water'}, 
+    'qv_up'             : {'varname':               'PQU', 'units':             'kg/kg', 'coef':         1, 'name':'Convective Updraft Specific Humidity'}, 
+    'qvu'               : {'varname':               'ZQN', 'units':             'kg/kg', 'coef':         1, 'name':'Updraft Specific Humidity'}, 
+    'w_dn'              : {'varname':              'ZDDW', 'units':               'm/s', 'coef':         1, 'name':'Convective Downdraft Velocity'}, 
+    'w_up'              : {'varname':               'ZWU', 'units':               'm/s', 'coef':         1, 'name':'Convective Updraft Velocity'}, 
+    'w_up_bud'          : {'varname':             'BILOM', 'units':            'Pa s-1', 'coef':         1, 'name':'Updraft Vertical Velocity used in Budget Equation'}, 
+# 14. Wake variables
+    'Cstar'             : {'varname':        'PWAKECSTAR', 'units':               'm/s', 'coef':         1, 'name':'Wake spreading velocity'}, 
+    'Mf_dn'             : {'varname':             'ZMDWN', 'units':           'kg/m2/s', 'coef':         1, 'name':'Downdraft Mass flux'}, 
+    'Mf_up'             : {'varname':              'ZMUP', 'units':           'kg/m2/s', 'coef':         1, 'name':'Updraft Mass flux'}, 
+    'Tw_undi'           : {'varname':           'ZTWUNDI', 'units':                 'K', 'coef':         1, 'name':'Wet-bulb Temperature in undisturbed area'}, 
+    'Tw_wake'           : {'varname':           'ZTWWAKE', 'units':                 'K', 'coef':         1, 'name':'Wet-bulb Temperature in wake'}, 
+    'ZCWAKE'            : {'varname':            'ZCWAKE', 'units':                 '-', 'coef':         1, 'name':'ZCWAKE'}, 
+    'ZMWAKE'            : {'varname':            'ZMWAKE', 'units':           'kg/m2/s', 'coef':         1, 'name':'ZMWAKE'}, 
+    'ZS12'              : {'varname':              'ZS12', 'units':                'Pa', 'coef':         1, 'name':'ZS12'}, 
+    'd_delta_q'         : {'varname':      'PWAKEDDELTAQ', 'units':           'kg/kg/s', 'coef':         1, 'name':'delta q tendency'}, 
+    'd_delta_t'         : {'varname':      'PWAKEDDELTAT', 'units':               'K/s', 'coef':         1, 'name':'delta T tendency'}, 
+    'd_delta_t_gw'      : {'varname':    'PWAKEDDELTATGW', 'units':               'K/s', 'coef':         1, 'name':' delta T tendency due to GW'}, 
+    'delta_q'           : {'varname':       'PWAKEDELTAQ', 'units':             'kg/kg', 'coef':         1, 'name':'delta q'}, 
+    'delta_t'           : {'varname':       'PWAKEDELTAT', 'units':                 'K', 'coef':         1, 'name':'delta T'}, 
+    'delta_th'          : {'varname':          'PWAKEDTH', 'units':                 'K', 'coef':         1, 'name':'Potential Temperature Difference'}, 
+    'dp_delt_omg'       : {'varname':    'PWAKEDPDELTOMG', 'units':                '/s', 'coef':         1, 'name':'vertical gradient of wake_omg'}, 
+    'dq_KE'             : {'varname':         'PWAKEDQKE', 'units':           'kg/kg/s', 'coef':         1, 'name':'differential moistening (wake-unperturbed) CONV'}, 
+    'dq_PBL'            : {'varname':        'PWAKEDQPBL', 'units':           'kg/kg/S', 'coef':         1, 'name':'differential moistening (wake-unperturbed) PBL'}, 
+    'dq_dn'             : {'varname':            'ZDQDWN', 'units':           'kg/kg/s', 'coef':         1, 'name':'qv tendendy due to downdrafts'}, 
+    'dq_up'             : {'varname':              'ZDQA', 'units':           'kg/kg/s', 'coef':         1, 'name':'qv tendency due to updrafts'}, 
+    'dq_wake'           : {'varname':           'PDQWAKE', 'units':               'K_s', 'coef':         1, 'name':'q tendency due to wake'}, 
+    'dq_wake2'          : {'varname':         'TENDWAKEQ', 'units':               'K_s', 'coef':         1, 'name':'q tendency due to wake (cptend_new)'}, 
+    'dt_KE'             : {'varname':         'PWAKEDTKE', 'units':               'K/s', 'coef':         1, 'name':'differential heating (wake-unperturbed) CONV'}, 
+    'dt_PBL'            : {'varname':        'PWAKEDTPBL', 'units':               'K/s', 'coef':         1, 'name':'differential heating (wake-unperturbed) PBL'}, 
+    'dt_dn'             : {'varname':            'ZDTDWN', 'units':               'K/s', 'coef':         1, 'name':'T tendendy due to downdrafts'}, 
+    'dt_up'             : {'varname':              'ZDTA', 'units':               'K/s', 'coef':         1, 'name':'T tendency due to updrafts'}, 
+    'dt_wake'           : {'varname':           'PDTWAKE', 'units':               'K/s', 'coef':         1, 'name':'T tendency due to wake'}, 
+    'dt_wake2'          : {'varname':         'TENDWAKET', 'units':               'K/s', 'coef':         1, 'name':'T tendency due to wake (cptend_new)'}, 
+    'hw'                : {'varname':            'PWAKEH', 'units':                 'm', 'coef':         1, 'name':'Wake depth'}, 
+    'omg_w'             : {'varname':          'PWAKEOMG', 'units':              'Pa/s', 'coef':         1, 'name':'Wake verticale velocity'}, 
+    'omgb'              : {'varname':             'POMGB', 'units':              'Pa/s', 'coef':         1, 'name':'LS Vertical Velocity'}, 
+    'omgb'              : {'varname':             'POMGB', 'units':              'Pa/s', 'coef':         1, 'name':'LS Vertical Velocity'}, 
+    'omgb_dth'          : {'varname':      'PWAKEOMGBDTH', 'units':               'K/s', 'coef':         1, 'name':'flux of delta_theta transported by LS omega'}, 
+    'q_undi'            : {'varname':            'PQUNDI', 'units':             'kg/kg', 'coef':         1, 'name':'Specific humidity in unperturbed area'}, 
+    'q_undi_pcmt'       : {'varname':            'ZQUNDI', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Humidity in undisturbed area (PCMT)'}, 
+    'q_wake_pcmt'       : {'varname':            'ZQWAKE', 'units':             'kg/kg', 'coef':         1, 'name':'Specific Humidity in wake (PCMT)'}, 
+    'qsat_undi'         : {'varname':         'ZQSATUNDI', 'units':             'kg/kg', 'coef':         1, 'name':'Saturation Specific Humidity in undisturbed area'}, 
+    'qsat_wake'         : {'varname':         'ZQSATWAKE', 'units':             'kg/kg', 'coef':         1, 'name':'Saturation Specific Humidity in wake'}, 
+    'qw_undi'           : {'varname':           'ZQWUNDI', 'units':             'kg/kg', 'coef':         1, 'name':'Wet-bulb Specific Humidity in undisturbed area'}, 
+    'qw_wake'           : {'varname':           'ZQWWAKE', 'units':             'kg/kg', 'coef':         1, 'name':'Wet-bulb Specific Humidity in wake'}, 
+    'sigd'              : {'varname':             'ZSIGD', 'units':                 '-', 'coef':         1, 'name':'Downdraft area fraction'}, 
+    'sigmaw'            : {'varname':            'PWAKES', 'units':                 '-', 'coef':         1, 'name':'wake fractional area'}, 
+    'spread_w'          : {'varname':       'PWAKESPREAD', 'units':               'K/s', 'coef':         1, 'name':'Spreading term in wake_delt'}, 
+    't_undi'            : {'varname':            'PTUNDI', 'units':                 'K', 'coef':         1, 'name':'Temperature in unperturbed area'}, 
+    't_undi_pcmt'       : {'varname':            'ZTUNDI', 'units':                 'K', 'coef':         1, 'name':'Temperature in undisturbed area (PCMT)'}, 
+    't_wake_pcmt'       : {'varname':            'ZTWAKE', 'units':                 'K', 'coef':         1, 'name':'Temperature in wake (PCMT)'}, 
+    'wake_fip'          : {'varname':          'PWAKEFIP', 'units':              'W/m2', 'coef':         1, 'name':'wake ALP'}, 
+    'wake_gfl'          : {'varname':          'PWAKEGFL', 'units':                 'm', 'coef':         1, 'name':'Wake Gust Front Length'}, 
+    'wake_pe'           : {'varname':           'PWAKEPE', 'units':              'J/kg', 'coef':         1, 'name':'Wake Potential Energy (WAPE)'}, 
+    'wdens'             : {'varname':         'PWAKEDENS', 'units':               '/m2', 'coef':         1, 'name':'Wake density'}, 
+# 15. Turbulence variables
+    'ECT0'              : {'varname':              'ECT0', 'units':                 '-', 'coef':         1, 'name':'ECT0'}, 
+    'ECT1'              : {'varname':              'ECT1', 'units':                 '-', 'coef':         1, 'name':'ECT1'}, 
+    'KU'                : {'varname':                'KU', 'units':                 '-', 'coef':         1, 'name':'KU'}, 
+    'LMECT'             : {'varname':             'LMECT', 'units':                 '-', 'coef':         1, 'name':'LMECT'}, 
+    'PECTCLS'           : {'varname':           'PECTCLS', 'units':                 '-', 'coef':         1, 'name':'PECTCLS'}, 
+    'PKCLS'             : {'varname':             'PKCLS', 'units':                 '-', 'coef':         1, 'name':'PKCLS'}, 
+    'PKUROV'            : {'varname':            'PKUROV', 'units':                 '-', 'coef':         1, 'name':'PKUROV'}, 
+    'PPRODTH'           : {'varname':           'PPRODTH', 'units':                 '-', 'coef':         1, 'name':'PPRODTH'}, 
+    'PUSLE'             : {'varname':             'PUSLE', 'units':                 '-', 'coef':         1, 'name':'PUSLE'}, 
+    'Q11'               : {'varname':              'ZQ11', 'units':                 '-', 'coef':         1, 'name':'Normalized saturation deficit'}, 
+    'Q11max'            : {'varname':            'ZQ1MAX', 'units':                 '-', 'coef':         1, 'name':'Maximum Normalized saturation deficit'}, 
+    'Q11min'            : {'varname':            'ZQ1MIN', 'units':                 '-', 'coef':         1, 'name':'Minimum Normalized saturation deficit'}, 
+    'TKEDIF'            : {'varname':            'TKEDIF', 'units':                 '-', 'coef':         1, 'name':'TKEDIF'}, 
+    'TKEDISS'           : {'varname':           'TKEDISS', 'units':                 '-', 'coef':         1, 'name':'TKEDISS'}, 
+    'TKEPRDY'           : {'varname':           'TKEPRDY', 'units':                 '-', 'coef':         1, 'name':'TKEPRDY'}, 
+    'TKEPRTH'           : {'varname':           'TKEPRTH', 'units':                 '-', 'coef':         1, 'name':'TKEPRTH'}, 
+    'TKETEND'           : {'varname':           'TKETEND', 'units':                 '-', 'coef':         1, 'name':'TKETEND'}, 
+    'TNECT_BUO'         : {'varname':         'TNECT_BUO', 'units':                 '-', 'coef':         1, 'name':'TNECT_BUO'}, 
+    'TNECT_DIF'         : {'varname':         'TNECT_DIF', 'units':                 '-', 'coef':         1, 'name':'TNECT_DIF'}, 
+    'TNECT_DIS'         : {'varname':         'TNECT_DIS', 'units':                 '-', 'coef':         1, 'name':'TNECT_DIS'}, 
+    'TNECT_DYN'         : {'varname':         'TNECT_DYN', 'units':                 '-', 'coef':         1, 'name':'TNECT_DYN'}, 
+    'acoef'             : {'varname':               'ZAA', 'units':                 '-', 'coef':         1, 'name':'a Coefficient'}, 
+    'igs'               : {'varname':            'ZIGMAS', 'units':             'kg/kg', 'coef':         1, 'name':'Subgrid Standard Deviation of s'}, 
+    'igs2'              : {'varname':           'ZIGMAS2', 'units':         '(kg/kg)^2', 'coef':         1, 'name':'Subgrid Variance of s'}, 
+    'igs2conv'          : {'varname':       'ZIGMAS2CONV', 'units':         '(kg/kg)^2', 'coef':         1, 'name':'Convective Subgrid Variance of s'}, 
+    'igs2turb'          : {'varname':       'ZIGMAS2TURB', 'units':         '(kg/kg)^2', 'coef':         1, 'name':'Turbulent Subgrid Variance of s'}, 
+    'mlen'              : {'varname':             'ZZLMF', 'units':            'm2 s-2', 'coef':         1, 'name':'Mixing Length*g'}, 
+    'sigc0'             : {'varname':        'PSIGCLOUD0', 'units':             'kg/kg', 'coef':         1, 'name':'PSIGCLOUD0'}, 
+    'sigc1'             : {'varname':        'PSIGCLOUD1', 'units':             'kg/kg', 'coef':         1, 'name':'PSIGCLOUD1'}, 
+    'sigs'              : {'varname':           'ZSIGMAS', 'units':             'kg/kg', 'coef':         1, 'name':'Subgrid Standard Deviation of s (LNEBECT)'}, 
+    'sigs2'             : {'varname':          'ZSIGMAS2', 'units':         '(kg/kg)^2', 'coef':         1, 'name':'Subgrid Variance of s (LNEBECT)'}, 
+    'sigs2conv'         : {'varname':      'ZSIGMAS2CONV', 'units':         '(kg/kg)^2', 'coef':         1, 'name':'Convective Subgrid Variance of s (LNEBECT)'}, 
+    'sigs2turb'         : {'varname':      'ZSIGMAS2TURB', 'units':         '(kg/kg)^2', 'coef':         1, 'name':'Turbulent Subgrid Variance of s (LNEBECT)'}, 
+# 16. COSP variables
+    'albisccp'          : {'varname':          'albisccp', 'units':                 '1', 'coef':         1, 'name':'albisccp'}, 
+    'atb532'            : {'varname':            'atb532', 'units':          'm-1 sr-1', 'coef':         1, 'name':'atb532'}, 
+    'boxptopisccp'      : {'varname':      'boxptopisccp', 'units':                'Pa', 'coef':         1, 'name':'boxptopisccp'}, 
+    'boxtauisccp'       : {'varname':       'boxtauisccp', 'units':                 '1', 'coef':         1, 'name':'boxtauisccp'}, 
+    'cfadDbze94'        : {'varname':        'cfadDbze94', 'units':                 '1', 'coef':         1, 'name':'cfadDbze94'}, 
+    'cfadLidarsr532'    : {'varname':    'cfadLidarsr532', 'units':                 '1', 'coef':         1, 'name':'cfadLidarsr532'}, 
+    'clMISR'            : {'varname':            'clMISR', 'units':                 '%', 'coef':         1, 'name':'clMISR'}, 
+    'clcalipso'         : {'varname':         'clcalipso', 'units':                 '%', 'coef':         1, 'name':'clcalipso'}, 
+    'clcalipso'         : {'varname':         'clcalipso', 'units':                 '%', 'coef':         1, 'name':'clcalipso'}, 
+    'clcalipso2'        : {'varname':        'clcalipso2', 'units':                 '%', 'coef':         1, 'name':'clcalipso2'}, 
+    'clcalipsoice'      : {'varname':      'clcalipsoice', 'units':                 '%', 'coef':         1, 'name':'clcalipsoice'}, 
+    'clcalipsoliq'      : {'varname':      'clcalipsoliq', 'units':                 '%', 'coef':         1, 'name':'clcalipsoliq'}, 
+    'clcalipsotmp'      : {'varname':      'clcalipsotmp', 'units':                 '%', 'coef':         1, 'name':'clcalipsotmp'}, 
+    'clcalipsotmpice'   : {'varname':   'clcalipsotmpice', 'units':                 '%', 'coef':         1, 'name':'clcalipsotmpice'}, 
+    'clcalipsotmpliq'   : {'varname':   'clcalipsotmpliq', 'units':                 '%', 'coef':         1, 'name':'clcalipsotmpliq'}, 
+    'clcalipsotmpun'    : {'varname':    'clcalipsotmpun', 'units':                 '%', 'coef':         1, 'name':'clcalipsotmpun'}, 
+    'clcalipsoun'       : {'varname':       'clcalipsoun', 'units':                 '%', 'coef':         1, 'name':'clcalipsoun'}, 
+    'clhcalipso'        : {'varname':        'clhcalipso', 'units':                 '%', 'coef':         1, 'name':'clhcalipso'}, 
+    'clhcalipsoice'     : {'varname':     'clhcalipsoice', 'units':                 '%', 'coef':         1, 'name':'clhcalipsoice'}, 
+    'clhcalipsoliq'     : {'varname':     'clhcalipsoliq', 'units':                 '%', 'coef':         1, 'name':'clhcalipsoliq'}, 
+    'clhcalipsoun'      : {'varname':      'clhcalipsoun', 'units':                 '%', 'coef':         1, 'name':'clhcalipsoun'}, 
+    'clhmodis'          : {'varname':          'clhmodis', 'units':                 '%', 'coef':         1, 'name':'clhmodis'}, 
+    'climodis'          : {'varname':          'climodis', 'units':                 '%', 'coef':         1, 'name':'climodis'}, 
+    'clisccp'           : {'varname':           'clisccp', 'units':                 '%', 'coef':         1, 'name':'clisccp'}, 
+    'cllcalipso'        : {'varname':        'cllcalipso', 'units':                 '%', 'coef':         1, 'name':'cllcalipso'}, 
+    'cllcalipsoice'     : {'varname':     'cllcalipsoice', 'units':                 '%', 'coef':         1, 'name':'cllcalipsoice'}, 
+    'cllcalipsoliq'     : {'varname':     'cllcalipsoliq', 'units':                 '%', 'coef':         1, 'name':'cllcalipsoliq'}, 
+    'cllcalipsoun'      : {'varname':      'cllcalipsoun', 'units':                 '%', 'coef':         1, 'name':'cllcalipsoun'}, 
+    'cllmodis'          : {'varname':          'cllmodis', 'units':                 '%', 'coef':         1, 'name':'cllmodis'}, 
+    'clmcalipso'        : {'varname':        'clmcalipso', 'units':                 '%', 'coef':         1, 'name':'clmcalipso'}, 
+    'clmcalipsoice'     : {'varname':     'clmcalipsoice', 'units':                 '%', 'coef':         1, 'name':'clmcalipsoice'}, 
+    'clmcalipsoliq'     : {'varname':     'clmcalipsoliq', 'units':                 '%', 'coef':         1, 'name':'clmcalipsoliq'}, 
+    'clmcalipsoun'      : {'varname':      'clmcalipsoun', 'units':                 '%', 'coef':         1, 'name':'clmcalipsoun'}, 
+    'clmmodis'          : {'varname':          'clmmodis', 'units':                 '%', 'coef':         1, 'name':'clmmodis'}, 
+    'clmodis'           : {'varname':           'clmodis', 'units':                 '%', 'coef':         1, 'name':'clmodis'}, 
+    'cltcalipso'        : {'varname':        'cltcalipso', 'units':                 '%', 'coef':         1, 'name':'cltcalipso'}, 
+    'cltcalipsoice'     : {'varname':     'cltcalipsoice', 'units':                 '%', 'coef':         1, 'name':'cltcalipsoice'}, 
+    'cltcalipsoliq'     : {'varname':     'cltcalipsoliq', 'units':                 '%', 'coef':         1, 'name':'cltcalipsoliq'}, 
+    'cltcalipsoun'      : {'varname':      'cltcalipsoun', 'units':                 '%', 'coef':         1, 'name':'cltcalipsoun'}, 
+    'cltisccp'          : {'varname':          'cltisccp', 'units':                 '%', 'coef':         1, 'name':'cltisccp'}, 
+    'cltlidarradar'     : {'varname':     'cltlidarradar', 'units':                 '%', 'coef':         1, 'name':'cltlidarradar'}, 
+    'cltmodis'          : {'varname':          'cltmodis', 'units':                 '%', 'coef':         1, 'name':'cltmodis'}, 
+    'clwmodis'          : {'varname':          'clwmodis', 'units':                 '%', 'coef':         1, 'name':'clwmodis'}, 
+    'dbze94'            : {'varname':            'dbze94', 'units':                 '1', 'coef':         1, 'name':'dbze94'}, 
+    'iwpmodis'          : {'varname':          'iwpmodis', 'units':            'kg m-2', 'coef':         1, 'name':'iwpmodis'}, 
+    'lidarBetaMol532'   : {'varname':   'lidarBetaMol532', 'units':          'm-1 sr-1', 'coef':         1, 'name':'lidarBetaMol532'}, 
+    'lwpmodis'          : {'varname':          'lwpmodis', 'units':            'kg m-2', 'coef':         1, 'name':'lwpmodis'}, 
+    'meantbclrisccp'    : {'varname':    'meantbclrisccp', 'units':                 'K', 'coef':         1, 'name':'meantbclrisccp'}, 
+    'meantbisccp'       : {'varname':       'meantbisccp', 'units':                 'K', 'coef':         1, 'name':'meantbisccp'}, 
+    'parasolRefl'       : {'varname':       'parasolRefl', 'units':                 '1', 'coef':         1, 'name':'parasolRefl'}, 
+    'pctisccp'          : {'varname':          'pctisccp', 'units':                'Pa', 'coef':         1, 'name':'pctisccp'}, 
+    'pctmodis'          : {'varname':          'pctmodis', 'units':                'Pa', 'coef':         1, 'name':'pctmodis'}, 
+    'reffclimodis'      : {'varname':      'reffclimodis', 'units':                 'm', 'coef':         1, 'name':'reffclimodis'}, 
+    'reffclwmodis'      : {'varname':      'reffclwmodis', 'units':                 'm', 'coef':         1, 'name':'reffclwmodis'}, 
+    'tauilogmodis'      : {'varname':      'tauilogmodis', 'units':                 '1', 'coef':         1, 'name':'tauilogmodis'}, 
+    'tauimodis'         : {'varname':         'tauimodis', 'units':                 '1', 'coef':         1, 'name':'tauimodis'}, 
+    'tauisccp'          : {'varname':          'tauisccp', 'units':                 '1', 'coef':         1, 'name':'tauisccp'}, 
+    'tautlogmodis'      : {'varname':      'tautlogmodis', 'units':                 '1', 'coef':         1, 'name':'tautlogmodis'}, 
+    'tautmodis'         : {'varname':         'tautmodis', 'units':                 '1', 'coef':         1, 'name':'tautmodis'}, 
+    'tauwlogmodis'      : {'varname':      'tauwlogmodis', 'units':                 '1', 'coef':         1, 'name':'tauwlogmodis'}, 
+    'tauwmodis'         : {'varname':         'tauwmodis', 'units':                 '1', 'coef':         1, 'name':'tauwmodis'}, 
+# 16.1 COSP input variables
+    'PEMIS_COSP'        : {'varname':        'PEMIS_COSP', 'units':                 '-', 'coef':         1, 'name':'PEMIS_COSP'}, 
+    'PLSM_COSP'         : {'varname':         'PLSM_COSP', 'units':                 '-', 'coef':         1, 'name':'PLSM_COSP'}, 
+    'PMU0_COSP'         : {'varname':         'PMU0_COSP', 'units':                 '-', 'coef':         1, 'name':'PMU0_COSP'}, 
+    'PTS_COSP'          : {'varname':          'PTS_COSP', 'units':                 '-', 'coef':         1, 'name':'PTS_COSP'}, 
+    'ZAPHIF_COSP'       : {'varname':       'ZAPHIF_COSP', 'units':                 '-', 'coef':         1, 'name':'ZAPHIF_COSP'}, 
+    'ZAPHI_COSP'        : {'varname':        'ZAPHI_COSP', 'units':                 '-', 'coef':         1, 'name':'ZAPHI_COSP'}, 
+    'ZAPH_COSP'         : {'varname':         'ZAPH_COSP', 'units':                 '-', 'coef':         1, 'name':'ZAPH_COSP'}, 
+    'ZAP_COSP'          : {'varname':          'ZAP_COSP', 'units':                 '-', 'coef':         1, 'name':'ZAP_COSP'}, 
+    'ZCLFRCC_COSP'      : {'varname':      'ZCLFRCC_COSP', 'units':                 '-', 'coef':         1, 'name':'ZCLFRCC_COSP'}, 
+    'ZCLFR_COSP'        : {'varname':        'ZCLFR_COSP', 'units':                 '-', 'coef':         1, 'name':'ZCLFR_COSP'}, 
+    'ZEMILW_COSP'       : {'varname':       'ZEMILW_COSP', 'units':                 '-', 'coef':         1, 'name':'ZEMILW_COSP'}, 
+    'ZFLCCRAIN_COSP'    : {'varname':    'ZFLCCRAIN_COSP', 'units':                 '-', 'coef':         1, 'name':'ZFLCCRAIN_COSP'}, 
+    'ZFLCCSNOW_COSP'    : {'varname':    'ZFLCCSNOW_COSP', 'units':                 '-', 'coef':         1, 'name':'ZFLCCSNOW_COSP'}, 
+    'ZFLLSRAIN_COSP'    : {'varname':    'ZFLLSRAIN_COSP', 'units':                 '-', 'coef':         1, 'name':'ZFLLSRAIN_COSP'}, 
+    'ZFLLSSNOW_COSP'    : {'varname':    'ZFLLSSNOW_COSP', 'units':                 '-', 'coef':         1, 'name':'ZFLLSSNOW_COSP'}, 
+    'ZLAT_COSP'         : {'varname':         'ZLAT_COSP', 'units':                 '-', 'coef':         1, 'name':'ZLAT_COSP'}, 
+    'ZLON_COSP'         : {'varname':         'ZLON_COSP', 'units':                 '-', 'coef':         1, 'name':'ZLON_COSP'}, 
+    'ZMRCCICE_COSP'     : {'varname':     'ZMRCCICE_COSP', 'units':                 '-', 'coef':         1, 'name':'ZMRCCICE_COSP'}, 
+    'ZMRCCLIQ_COSP'     : {'varname':     'ZMRCCLIQ_COSP', 'units':                 '-', 'coef':         1, 'name':'ZMRCCLIQ_COSP'}, 
+    'ZMRLSICE_COSP'     : {'varname':     'ZMRLSICE_COSP', 'units':                 '-', 'coef':         1, 'name':'ZMRLSICE_COSP'}, 
+    'ZMRLSLIQ_COSP'     : {'varname':     'ZMRLSLIQ_COSP', 'units':                 '-', 'coef':         1, 'name':'ZMRLSLIQ_COSP'}, 
+    'ZOZN_COSP'         : {'varname':         'ZOZN_COSP', 'units':                 '-', 'coef':         1, 'name':'ZOZN_COSP'}, 
+    'ZQ_COSP'           : {'varname':           'ZQ_COSP', 'units':                 '-', 'coef':         1, 'name':'ZQ_COSP'}, 
+    'ZRADIP_COSP'       : {'varname':       'ZRADIP_COSP', 'units':                 '-', 'coef':         1, 'name':'ZRADIP_COSP'}, 
+    'ZRADLP_COSP'       : {'varname':       'ZRADLP_COSP', 'units':                 '-', 'coef':         1, 'name':'ZRADLP_COSP'}, 
+    'ZRH_COSP'          : {'varname':          'ZRH_COSP', 'units':                 '-', 'coef':         1, 'name':'ZRH_COSP'}, 
+    'ZTAUSW_COSP'       : {'varname':       'ZTAUSW_COSP', 'units':                 '-', 'coef':         1, 'name':'ZTAUSW_COSP'}, 
+    'ZT_COSP'           : {'varname':           'ZT_COSP', 'units':                 '-', 'coef':         1, 'name':'ZT_COSP'}, 
+    'ZU_COSP'           : {'varname':           'ZU_COSP', 'units':                 '-', 'coef':         1, 'name':'ZU_COSP'}, 
+    'ZV_COSP'           : {'varname':           'ZV_COSP', 'units':                 '-', 'coef':         1, 'name':'ZV_COSP'}, 
+# 17. Miscellanenous
+    'Cp'                : {'varname':               'PCP', 'units':            'J/K/kg', 'coef':         1, 'name':'Heat Capacity of Air'}, 
+    'Lv'                : {'varname':               'PLH', 'units':              'J/kg', 'coef':         1, 'name':'Latent Heat of Vaporization'}, 
+}

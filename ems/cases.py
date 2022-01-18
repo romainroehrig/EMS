@@ -59,7 +59,8 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
 # AYOTTE Cases
 case = 'AYOTTE'
 cases.append(case)
-subcases[case] = ['00SC', '00WC', '03SC', '05SC', '05WC', '24F', '24SC']
+#subcases[case] = ['00SC', '00WC', '03SC', '05SC', '05WC', '24F', '24SC']
+subcases[case] = ['00SC', '00WC', '03SC', '05SC', '05WC', '24SC']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
