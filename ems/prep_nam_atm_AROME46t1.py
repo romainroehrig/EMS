@@ -56,6 +56,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
     for k in ('NPRGPEW', 'NPRGPNS', 'NPROC', 'NPRTRV', 'NPRTRW'):
         nam['NAMPAR0'][k] = ['1']
     nam['NAMPAR1']['NSTROUT'] = ['1']
+    nam['NAMPAR1']['NSTRIN'] = ['1']
     
     #Deactivate SLHD and COMAD
     for k in ('LSLHD_GFL', 'LSLHD_SPD', 'LSLHD_SVD', 'LSLHD_T', 'LSLHD_W',
@@ -79,6 +80,23 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
     
     #Deactivate spectral nudging
     nam['NEMELBC0A']['LESPCPL'] = ['FALSE']
+    
+    #Deactivate fullpos
+    nam['NAMCT0']['NFPOS'] = ['0']
+    nam['NAMCT1']['N1POS'] = ['0']
+    
+    #Remove GRIB API use ???
+    nam['NAMCT0']['LGRIB_API'] = ['.FALSE.']
+    
+    #Insure LELAM
+    nam['NAMARG']['LELAM'] = ['.TRUE.']
+    
+    #Control moisture convergence computation for French deep convection scheme (ARPEGE physics)
+    nam['NAMDYN']['NCOMP_CVGQ'] = ['2']
+
+    #grid-point / spectral   
+    nam['NAMGFL']['YQ_NL%LSP'] = ['.FALSE.']
+    nam['NAMGFL']['YQ_NL%LGP'] = ['.TRUE.']
 
     #Other mod
     for k in nam['NAMPAR1'].keys():
@@ -88,16 +106,16 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
         nam['NAMDYN'][k] = ['.FALSE.']
 
     # Aerosols and Ozone
-    #nam['NAMPHY']['LAEROSEA'] = ['.FALSE.']
-    #nam['NAMPHY']['LAEROLAN'] = ['.FALSE.']
-    #nam['NAMPHY']['LAEROSOO'] = ['.FALSE.']
-    #nam['NAMPHY']['LAERODES'] = ['.FALSE.']
+    nam['NAMPHY']['LAEROSEA'] = ['.FALSE.']
+    nam['NAMPHY']['LAEROLAN'] = ['.FALSE.']
+    nam['NAMPHY']['LAEROSOO'] = ['.FALSE.']
+    nam['NAMPHY']['LAERODES'] = ['.FALSE.']
 
-    #nam['NAMPHY']['LOZONE'] = ['.FALSE.']
-    #nam['NAMPHY']['LO3ABC'] = ['.FALSE.']
-    #nam['NAMPHY']['LO3FL'] = ['.FALSE.']
+    nam['NAMPHY']['LOZONE'] = ['.FALSE.']
+    nam['NAMPHY']['LO3ABC'] = ['.FALSE.']
+    nam['NAMPHY']['LO3FL'] = ['.FALSE.']
 
-    #nam['NAMPHY']['LRAYFM'] = ['.FALSE.']
+    nam['NAMPHY']['LRAYFM'] = ['.FALSE.']
     nam['NAMPHY']['LEDR'] = ['.FALSE.',]
 
     #nam['NAMPHY']['LRELAXT'] = ['.FALSE.']
@@ -148,6 +166,12 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
 
     # Update NAMDIM
     nn = 'NAMDIM'
+
+    # Update NAMFA
+    if 'NVGRIB' in nam['NAMFA'].keys(): del(nam['NAMFA']['NVGRIB'])
+
+    # Empty NAMDDH
+    nam['NAMDDH'] = {}
 
     # Update NAMCT1
     nn = 'NAMCT1'
