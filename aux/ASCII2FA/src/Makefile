@@ -10,8 +10,8 @@ OBJS	 =	acadfa1D_main.o \
 
 XRD	 =	/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/lib/libxrd.local.a
 XLA	 =      /cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/lib/libxla.local.a
-GRIBEX   =      /home/common/sync/gfortran/auxlibs/lib/libgribex.a 
-MPIDUMMY =      /home/common/sync/gfortran/auxlibs/lib/libmpidummy.a
+GRIBEX   =      /home/common/sync/gfortran/auxlibs-gcc-9.2.0/lib/libgribex.a 
+MPIDUMMY =      /home/common/sync/gfortran/auxlibs-gcc-9.2.0/lib/libmpidummy.a
 LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
 
 %.o:%.F90
