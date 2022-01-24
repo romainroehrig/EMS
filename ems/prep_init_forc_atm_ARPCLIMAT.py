@@ -279,6 +279,7 @@ def prep_init_forc_atm(
                        'tnua_adv':'du',
                        'tnva_adv':'dv',
                        'tnta_adv':'dT',
+                       'tnta_rad':'dT',
                        'tnqv_adv':'dq',
                        'ua_nud':'u',
                        'va_nud':'v',
@@ -362,6 +363,12 @@ def prep_init_forc_atm(
             var = 'tnta_adv'
             dataout_forc[var] = prep_forcing(var, wl=True)
             write_forcing_in_files(dataout_forc[var].data, files_names[var], wl=True)
+
+        elif attributes['radiation'] == 'tend':
+            var = 'tnta_rad'
+            dataout_forc[var] = prep_forcing(var, wl=True)
+            write_forcing_in_files(dataout_forc[var].data, files_names[var], wl=True)
+
 
         for var in ['ua','va','ta','qv']:
             attloc = 'nudging_{0}'.format(var)
