@@ -176,7 +176,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
         hfls = case.variables['hfls'].data
         hfss = case.variables['hfss'].data
         if surfaceForcingWind == 'ustar':
-            ustar = case.variables['ustar']
+            ustar = case.variables['ustar'].data
         elif surfaceForcingWind == 'z0':
             zz0 = case.variables['z0'].data[0]
         else:
