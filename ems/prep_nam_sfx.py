@@ -182,9 +182,11 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
         else:
             raise RuntimeError('surfaceForcingWind unexpected: ' + surfaceForcingWind)
 
-        try:
+        if 'ts_forc' in case.variables:
             tsforc = case.variables['ts_forc'].data
-        except KeyError:
+        elif 'tskin' in case.variables:
+            tsforc = case.variables['tskin'].data
+        else:
             tsforc = hfls*0. + case.variables['ta'].data[0,0]
     
         time = case.variables['hfls'].time
