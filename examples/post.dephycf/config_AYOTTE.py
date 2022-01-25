@@ -1,8 +1,14 @@
+#!/usr/bin/env python
+# -*- coding:UTF-8 -*-
+# Copyright (c) Météo France (2014-)
+# This software is governed by the CeCILL-C license under French law.
+# http://www.cecill.info
+
 #saveall = True
 saveall = False
 
 var2save = ['pf','zf','theta','u','v']
-var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','shf','tsurf','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','w_up','Mf','alpha_up','ustar','z0','dTv_up','B_up','eps_u','det_u']
+var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','rcl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','dTv_up','b_up','ent_u','det_u']
 
 convert2p = False
 #convert2z = True
