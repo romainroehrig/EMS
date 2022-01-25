@@ -7,14 +7,11 @@
 #saveall = True
 saveall = False
 
-#var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','lhfn','shf','tsurf','prw','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke']
-var2save = ['pf','zf','theta','temp','qv','hur','u','v','wap','rneb','cc','rain','lhf','shf','ustar','tsurf','prw','hur','Q1','Q2']
+var2save = ['pfull','zfull','theta','ta','qv','hur','ua','va','wap','cl','clt','pr','hfls','hfss','ustar','ts','prw','hur','Q1','Q2']
 
-#var2save = var2save + ['tntrlw','tntrsw','tntpbl','tntlscp','tntc','tntd','tnupbl','tnuc','tnud','tnvpbl','tnvc','tnvd','tntadv','tntnudg','tnugeo','tnvgeo','tendu','tendv','tendq','tendh']
 
 var2save = var2save + ['rsut','rsdt','rlut','rsds','rsus','rlus','rlds','rsutcs','rlutcs','rsdscs','rsuscs','rldscs','cltl','cltm','clth','lwp','iwp']
 
-#var2save = ['pf','zf','theta','qv']
 
 convert2p = True
 convert2z = False

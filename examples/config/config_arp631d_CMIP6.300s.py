@@ -10,7 +10,7 @@ GROUP = 'V631'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/bin'
+bindir = '/Users/romain/pack/arp603_export.01.MPIGNU1120.x.diag/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')
@@ -22,7 +22,7 @@ SFXNAM = os.path.join(REP_MUSC, 'namelist/SURFEX/nam.sfx.tl127.CMIP6.v631')
 
 # Model configuration
 vert_grid = os.path.join(REP_MUSC, 'grid/L91.dta')
-timestep = 900
+timestep = 300
 
 # Postprocessing
 dirpost = os.path.join(REP_MUSC,'post.dephycf')
