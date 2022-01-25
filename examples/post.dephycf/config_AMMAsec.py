@@ -1,7 +1,13 @@
+#!/usr/bin/env python
+# -*- coding:UTF-8 -*-
+# Copyright (c) Météo France (2014-)
+# This software is governed by the CeCILL-C license under French law.
+# http://www.cecill.info
+
 #saveall = True
 saveall = False
 
-var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','shf','tsurf','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','w_up','Mf','alpha_up','ustar','z0']
+var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','dTv_up','ta_up','qv_up','ent_up','det_up','b_up','ent_up_org','ent_up_turb','det_up_org','det_up_turb','lwp','tnta_turb','tnta_conv','tnta_micro','tnqv_turb','tnqv_micro','tnqv_conv','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp']
 
 convert2p = False
 convert2z = False
