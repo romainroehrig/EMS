@@ -142,7 +142,9 @@ else
     ./MASTER >lola 2>&1
 fi
 date
+set +e
 ls -l
+set -e
 
 #       **********************************
 #       *     Save model results         *
