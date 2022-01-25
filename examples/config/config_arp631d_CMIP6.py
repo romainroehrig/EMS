@@ -10,7 +10,7 @@ GROUP = 'V631'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/bin'
+bindir = '/Users/romain/pack/arp603_export.01.MPIGNU1120.x.diag/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')

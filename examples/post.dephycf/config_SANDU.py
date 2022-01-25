@@ -7,7 +7,7 @@
 #saveall = True
 saveall = False
 
-var2save = ['pfull','phalf','zfull','zhalf','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','rain','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','dTv_up','ta_up','qv_up','ent_up','det_up','b_up','ent_up_org','ent_up_tur','det_up_org','det_up_tur','lwp','iwp']
+var2save = ['pfull','phalf','zfull','zhalf','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','dTv_up','ta_up','qv_up','ent_up','det_up','b_up','ent_up_org','ent_up_turb','det_up_org','det_up_turb','lwp','iwp']
 
 
 convert2p = False
