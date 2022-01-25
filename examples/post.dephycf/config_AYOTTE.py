@@ -7,8 +7,7 @@
 #saveall = True
 saveall = False
 
-var2save = ['pf','zf','theta','u','v']
-var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','rcl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','dTv_up','b_up','ent_u','det_u']
+var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','dTv_up','b_up','ent_up','det_up']
 
 convert2p = False
 #convert2z = True
