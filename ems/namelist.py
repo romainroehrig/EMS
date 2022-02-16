@@ -31,7 +31,7 @@ def readarp(fin):
       toto = line.split('=')
       if len(toto) == 2:
         tmp = list(toto[1].strip().split(','))
-        tmp1 = [x.strip() for x in tmp if x is not('')]
+        tmp1 = [x.strip() for x in tmp if x != '']
         param = toto[0].strip().upper()
         namelist[nam_tmp][param] = tmp1 #toto[1].split(',')[0].strip()
       elif len(toto) == 1:
@@ -100,7 +100,7 @@ def readsurfex(fin):
         toto = line.split('=')
         if len(toto) == 2:
           tmp = list(toto[1].strip().split(','))
-          tmp1 = [x.strip() for x in tmp if x is not('')]
+          tmp1 = [x.strip() for x in tmp if x != '']
           param = toto[0].strip().upper()
           namelist[nam_tmp][param] = tmp1 #toto[1].split(',')[0].strip()
         elif len(toto) == 1:
@@ -120,7 +120,7 @@ def readsurfex(fin):
         toto = line[n+1:].split('=')
         if len(toto) == 2:
           tmp = list(toto[1].strip().split(','))
-          tmp1 = [x.strip() for x in tmp if x is not('')]
+          tmp1 = [x.strip() for x in tmp if x != '']
           param = toto[0].strip().upper()
           namelist[nam_tmp][param] = tmp1
         elif len(toto) == 1:
@@ -133,7 +133,7 @@ def readsurfex(fin):
         toto = line.split('=')
         if len(toto) == 2:
           tmp = list(toto[1].strip().split(','))
-          tmp1 = [x.strip() for x in tmp if x is not('')]
+          tmp1 = [x.strip() for x in tmp if x != '']
           param = toto[0].strip().upper()
           namelist[nam_tmp][param] = tmp1 #toto[1].split(',')[0].strip()
         elif len(toto) == 1:
