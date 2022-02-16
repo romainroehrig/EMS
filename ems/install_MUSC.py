@@ -266,7 +266,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
             t0 = perf(t0, 'Prepare SURFEX namelist')
 
         try:
-            os.symlink(os.path.join(ems._dirEMS, 'scripts/run.sh', 'run.sh'))
+            os.symlink(os.path.join(ems._dirEMS, 'scripts/run.sh'), 'run.sh')
         except OSError:
             pass
         except:
