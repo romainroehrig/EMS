@@ -6,18 +6,18 @@ REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
-GROUP = '46t1_op1.01'
+GROUP = '46t1_op1.11'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/46t1_op1.01.GFORTRAN610ECCOD.xfftw.musc/bin'
+bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/46t1_op1.11.MPIGFORTRAN920DBL.xfftw.musc/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
 #PGD
 #PREP
 ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 
 # Namelists
-ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/al46t1_arome-op1.01.nam-namel_previ_dyn_prod')
+ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/al46t1_arome-op1.11.nam-namel_previ_dyn_prod')
 #SFXNAM_prep
 #SFXNAM_run
 

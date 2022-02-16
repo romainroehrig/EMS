@@ -6,11 +6,11 @@ REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
-GROUP = 'V631'
+GROUP = 'V632'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/bin'
+bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp632_climat.02.MPIGNU930.cx/bin'
 MASTER = os.path.join(bindir, 'MASTER')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')
