@@ -5,7 +5,9 @@
 # http://www.cecill.info
 
 import os
-dirMUSC = os.getcwd()
+dirMUSC = os.getenv('DIRMUSC')
+if not(dirMUSC):
+    dirMUSC = os.getcwd()
 
 import argparse
 import importlib
