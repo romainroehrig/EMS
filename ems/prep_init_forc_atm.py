@@ -33,7 +33,7 @@ def prep_init_forc_atm(model, timestep, vertical_grid, **kwargs):
     #Look for the right implementation
     for name,pkg in zip(implemented, packages[feature]):
         if name == feature + '_' + model \
-          or (name == feature + '_GMAP' and model in ['AROME','ARPPNT','AROME46t1']):
+          or (name == feature + '_GMAP' and model in ['AROME','ARPPNT']):
             return pkg.prep_init_forc_atm(timestep, vertical_grid, **kwargs)
     # No suitable implementation is found
     msg = 'Suitable implementation of {0} not found for model {1}'.format(feature, model)
