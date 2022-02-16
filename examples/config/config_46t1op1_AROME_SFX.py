@@ -32,7 +32,7 @@ defaultConfigPost = 'config_default.py'
 caseDependent = True
 
 # EMS configuration
-model = 'AROME46t1'
+model = 'AROME'
 lforc_ascii = False
 lsurfex = True
 sfxfmt = 'FA'
