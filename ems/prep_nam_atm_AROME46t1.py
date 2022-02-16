@@ -99,7 +99,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
     nam['NAMGFL']['YQ_NL%LGP'] = ['.TRUE.']
 
     #Other mod
-    for k in nam['NAMPAR1'].keys():
+    for k in list(nam['NAMPAR1'].keys()):
         if k.replace(' ', '') == 'NDISTIO(12)':
             del nam['NAMPAR1'][k] #gfortran does not like this option (info from P. Marguinaud)
     for k in ('LADVF', 'LIMPF', 'LQMPD', 'LQMT', 'LQMVD'):

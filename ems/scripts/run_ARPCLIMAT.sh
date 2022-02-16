@@ -24,7 +24,12 @@ DIR=`pwd`
 OUTPUTDIR=$DIR/Output/LFA/
 OUTPUTDIR0=$DIR/Output/
 LISTINGDIR=$DIR/listings
-TMPDIR=$HOME/tmp/EXEMUSC
+
+if [ -z "$TMPDIR" ] ; then
+  TMPDIR=$HOME/tmp/EXEMUSC.$$
+else
+  TMPDIR=$TMPDIR/EXEMUSC.$$
+fi
 
 [ ! -d $LISTINGDIR ] && mkdir -p $LISTINGDIR
 [ ! -d $OUTPUTDIR ] && mkdir -p $OUTPUTDIR
