@@ -3,6 +3,28 @@
 set -e
 
 #####################################################
+# User specific defaults
+
+# EMS Version
+EMS_VERSION=2.3
+
+# Directory where EMS is installed
+REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
+
+# Directory where MUSC will be run
+REP_MUSC=$HOME/MUSC/V${EMS_VERSION}
+
+# Debug mode (0: unactivated, 1: activated)
+DEBUG=0
+
+# Testing. So fatr only on CNRM computer 
+# and for ARPEGE-Climat 6.3.2
+TESTS="n"
+
+#####################################################
+
+
+#####################################################
 # Usage
 #
 bold=$(tput bold)
@@ -19,21 +41,25 @@ ${bold}NAME${normal}
         ${PROGNAME} - Installation script for EMS - Environment for MUSC Simulations
 
 ${bold}USAGE${normal}
-        ${PROGNAME} [-i <install-directory>] [-r <muscrun-directory>]
-        [-v <ems-version>] [ -h ]
+        ${PROGNAME} [-i <install-directory>] [-r <musc-run-directory>]
+        [-v <ems-version>] [ -d ] [ -t ][ -h ]
 
 ${bold}DESCRIPTION${normal}
-        Desrctiption of what the EMS install script does
+        Description of what the EMS install script does
 
 ${bold}OPTIONS${normal}
         -i ${unline}install-directory${normal}
            PATH to where you want to install EMS
+           REP_EMS [$REP_EMS]
 
-        -r ${unline}muscrun-directory${normal}
+        -r ${unline}musc-run-directory${normal}
            PATH to where you want to run MUSC
+           REP_MUSC [$REP_MUSC]
 
         -v ${unline}ems-version${normal}
-           EMS_VERSION [2.3]
+           EMS_VERSION [$EMS_VERSION]
+        
+        -t Testing! Only on CNRM computer and for ARPEGE-Climat 6.3.2
 
         -d Debug! Add debug information with set -xv
 
@@ -43,20 +69,10 @@ USAGE
 }
 
 #####################################################
-# User specific defaults
-
-# EMS Version
-EMS_VERSION=2.3
-
-# Directory where EMS is installed
-REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
-
-# Directory where MUSC will be run
-REP_MUSC=$HOME/MUSC/V${EMS_VERSION}
+# Some defaults
 
 USAGE=0
-DEBUG=0
-TESTS="n"
+
 #####################################################
 
 while getopts i:r:v:dth option
