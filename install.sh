@@ -1,9 +1,49 @@
 #!/bin/bash
 
-set -evx
+set -e
 
 #####################################################
-# User specific
+# Usage
+#
+bold=$(tput bold)
+normal=$(tput sgr0)
+unline=$(tput smul)
+
+usage() {
+
+PROGNAME=`basename $0`
+
+cat << USAGE
+
+${bold}NAME${normal}
+        ${PROGNAME} - Installation script for EMS - Environment for MUSC Simulations
+
+${bold}USAGE${normal}
+        ${PROGNAME} [-i <install-directory>] [-r <muscrun-directory>]
+        [-v <ems-version>] [ -h ]
+
+${bold}DESCRIPTION${normal}
+        Desrctiption of what the EMS install script does
+
+${bold}OPTIONS${normal}
+        -i ${unline}install-directory${normal}
+           PATH to where you want to install EMS
+
+        -r ${unline}muscrun-directory${normal}
+           PATH to where you want to run MUSC
+
+        -v ${unline}ems-version${normal}
+           EMS_VERSION [2.2]
+
+        -d Debug! Add debug information with set -xv
+
+        -h Help! Print usage information.
+
+USAGE
+}
+
+#####################################################
+# User specific defaults
 
 # EMS Version
 EMS_VERSION=2.3
@@ -14,7 +54,46 @@ REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
 # Directory where MUSC will be run
 REP_MUSC=$HOME/MUSC/V${EMS_VERSION}
 
+USAGE=0
+DEBUG=0
+TESTS="n"
 #####################################################
+
+while getopts i:r:v:dth option
+do
+  case $option in
+    i)
+       REP_EMS=$OPTARG
+       ;;
+    r)
+       REP_MUSC=$OPTARG
+       ;;
+    v)
+       EMS_VERSION=$OPTARG
+       ;;
+    d)
+       DEBUG=1
+       ;;
+    t)
+       TESTS="y"
+       ;;
+    h)
+       USAGE=1
+       ;;
+    *)
+       USAGE=1
+       ;;
+  esac
+done
+
+if [ ${USAGE} -eq 1 ]; then
+  usage
+  exit 1
+fi
+
+if [ ${DEBUG} -eq 1 ]; then
+  set -vx
+fi
 
 DIR0=`pwd`
 
@@ -23,13 +102,13 @@ DIR0=`pwd`
 
 if [ -d "$REP_EMS" ]; then
   echo "REP_EMS="$REP_EMS
-  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install_ems.sh"
+  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install.sh"
   exit
 fi
 
 if [ -d "$REP_MUSC" ]; then
   echo "REP_MUSC="$REP_MUSC
-  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install_ems.sh"
+  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install.sh"
   exit
 fi
 
@@ -88,7 +167,7 @@ cd ..
 
 #####################################################
 # Some Testing
-testing="y"
+testing="$TESTS"
 
 test_arp631="y"
 
