@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -evx
 
@@ -47,7 +47,7 @@ rm -rf EMS-${EMS_VERSION}
 # Some compilation if you want
 compile="y"
 
-if [ $compile == "y" ]; then
+if [ $compile = "y" ]; then
 
   # lfa python library
   cd $REP_EMS/aux/lfa4py
@@ -92,10 +92,10 @@ testing="y"
 
 test_arp631="y"
 
-if [ $testing == "y" ]; then
+if [ $testing = "y" ]; then
 
   # Testing ARPEGE-Climat 6.3.1
-  if [ $test_arp631 == 'y' ]; then
+  if [ $test_arp631 = "y" ]; then
     cd $REP_MUSC
     source setenv
 
