@@ -100,10 +100,10 @@ if [ $testing = "y" ]; then
     source setenv
 
     MPLBACKEND=Agg ./MUSC.py -config config/config_arp632_CMIP6.py -case ARMCU -subcase REF
-    [ -f $REP_MUSC/ATM/V631/arp631_CMIP6/ARMCU/REF/initfile_L91 ] || echo "PROBLEM when preparing atmospheric files"
-    [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM when prepararing PGD"
-    [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM when preparing PREP"
-    [ -f $REP_MUSC/simulations/V631/arp631_CMIP6/ARMCU/REF/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM when running MUSC"
+    [ -f $REP_MUSC/ATM/V632/arp632_CMIP6/ARMCU/REF/initfile_L91 ] || echo "PROBLEM when preparing atmospheric files"
+    [ -f $REP_MUSC/SURFEX/V632/arp632_CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM when prepararing PGD"
+    [ -f $REP_MUSC/SURFEX/V632/arp632_CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM when preparing PREP"
+    [ -f $REP_MUSC/simulations/V632/arp632_CMIP6/ARMCU/REF/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM when running MUSC"
 
   fi
 
