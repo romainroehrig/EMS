@@ -33,7 +33,7 @@ ${bold}OPTIONS${normal}
            PATH to where you want to run MUSC
 
         -v ${unline}ems-version${normal}
-           EMS_VERSION [2.2]
+           EMS_VERSION [2.3]
 
         -d Debug! Add debug information with set -xv
 
