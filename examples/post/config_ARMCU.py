@@ -1,12 +1,8 @@
-#saveall = True
-saveall = False
-
-var2save = ['pf','zf','theta','qv','rneb']
+saveall = True
 
 #var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','shf','tsurf','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','w_up','Mf','alpha_up','ustar','z0','dTv_up','T_up','qv_up','eps_u','det_u','B_up','eps_u_org','eps_u_tur','det_u_org','det_u_tur','lwp','tntpbl','tntc','tntlscp','tnqvpbl','tnqvlscp','tnqvc','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp']
 
-#var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qr','rneb','cc','prw','rain','lhf','shf','tsurf',]
-#var2save = ['pf','zf','theta','temp','qv','rneb']
+var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qr','rneb','cc','prw','rain','lhf','shf','tsurf',]
 
 convert2p = False
 #convert2z = True
