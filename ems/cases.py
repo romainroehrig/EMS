@@ -156,6 +156,15 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
                              for subcase in subcases[case]}
 
 ####################################
+#### Transition from shallow to deep convection cases
+
+# Kuang and Bretherton (2006) Case
+case = 'KB2006'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
+####################################
 #### Deep convection cases
 
 # LBA case
