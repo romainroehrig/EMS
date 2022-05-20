@@ -26,8 +26,8 @@
 variables = {
 # 1. Dynamical and thermodynamical variables
     'hur'               : {'varname':               'PRH', 'units':                 '1', 'coef':         1, 'name':'relative_humidity'}, 
-    'hurl'              : {'varname':                '??', 'units':                 '1', 'coef':         1, 'name':'relative_humidity_wrt_liquid'}, 
-    'huri'              : {'varname':                '??', 'units':                 '1', 'coef':         1, 'name':'relative_humidity_wrt_ice'}, 
+    'hurl'              : {'varname':            'PRHWAT', 'units':                 '1', 'coef':         1, 'name':'relative_humidity_wrt_liquid'}, 
+    'huri'              : {'varname':            'PRHICE', 'units':                 '1', 'coef':         1, 'name':'relative_humidity_wrt_ice'}, 
     'pfull'             : {'varname':            'PAPRSF', 'units':                'Pa', 'coef':         1, 'name':'air_pressure_on_model_levels'}, 
     'phalf'             : {'varname':             'PAPRS', 'units':                'Pa', 'coef':         1, 'name':'air_pressure_on_model_half_levels'}, 
     'qi'                : {'varname':               'PQI', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_cloud_ice_water_in_air'}, 
