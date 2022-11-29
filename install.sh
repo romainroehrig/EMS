@@ -153,6 +153,16 @@ if [ $compile = "y" ]; then
   make
 
   # ascii2lfa binary
+  #The ASCII2FA_LIBS environment variable can be set (a default value is used if not set)
+  #If set, the variable should contain paths to all the neede lib. Below is an example to link
+  #ascii2fa with libraries from cycle 46t1op1
+  #ASCII2FA_LIBS="/home/common/opt/pack/shared/46t1_op1.01.MPIGFORTRAN920DBL.xfftw/lib/libifsaux.local.a \
+  #               /home/common/sync/gfortran/auxlibs-gcc-9.2.0.so/lib/libmpidummy.a \
+  #               /home/common/sync/gfortran/auxlibs-gcc-9.2.0.so/lib/libgribex.a \
+  #               /home/common/sync/gfortran/eccodes-2.18.0_gcc-9.2.0/lib/libeccodes.a \
+  #               /home/common/sync/gfortran/eccodes-2.18.0_gcc-9.2.0/lib/libeccodes_f90.a \
+  #               /home/common/opt/pack/shared/46t1_op1.01.MPIGFORTRAN920DBL.xfftw/lib/libalgor.local.a"
+  #export ASCII2FA_LIBS
   cd $REP_EMS/aux/ASCII2FA/src
   make all
   make clean
