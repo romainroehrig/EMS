@@ -130,14 +130,18 @@ fi
 
 #####################################################
 # Download and install EMS in REP_EMS
-[ -d $REP_EMS ] || mkdir -p $REP_EMS
-cd $REP_EMS
-
-wget https://github.com/romainroehrig/EMS/archive/V${EMS_VERSION}.tar.gz
-tar zxvf V${EMS_VERSION}.tar.gz
-rm -f V${EMS_VERSION}.tar.gz
-mv EMS-${EMS_VERSION}/* .
-rm -rf EMS-${EMS_VERSION}
+if [ "${EMS_VERSION}" == 'git' ]; then
+  git clone https://github.com/romainroehrig/EMS $REP_EMS
+else
+  [ -d $REP_EMS ] || mkdir -p $REP_EMS
+  cd $REP_EMS
+  
+  wget https://github.com/romainroehrig/EMS/archive/V${EMS_VERSION}.tar.gz
+  tar zxvf V${EMS_VERSION}.tar.gz
+  rm -f V${EMS_VERSION}.tar.gz
+  mv EMS-${EMS_VERSION}/* .
+  rm -rf EMS-${EMS_VERSION}
+fi
 
 # Some compilation if you want
 compile="y"
