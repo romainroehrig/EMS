@@ -79,7 +79,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
         for var in tosave:
             if var not in varnames:
                 logger.warning(var + ' not in provided varnames')
-            if varnames[var] not in variables:
+            elif varnames[var] not in variables:
                 logger.warning('{0}/{1} not in LFA files'.format(var,varnames[var]))
         tosave = [varnames[var] for var in tosave if var in varnames and varnames[var] in variables]
         tosave = set(tosave + ['PAPRS','PAPRSF','PAPHI','PAPHIF']) #adds some LFA variables which are mandatory
