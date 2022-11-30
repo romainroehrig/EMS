@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding:UTF-8 -*-
 # Copyright (c) Météo France (2014-)
 # This software is governed by the CeCILL-C license under French law.
@@ -100,9 +100,10 @@ def install_atm(model, case, subcase, filecase,
         os.symlink('nam1D_{0}'.format(vert_grid_name), 'nam1D')
         os.environ['OMP_NUM_THREADS'] = '1'
         os.symlink(ASCII2FA, 'ascii2fa')
-        result = os.system('./ascii2fa > ascii2fa_{0}.log 2>&1'.format(vert_grid_name))
+        logfile = 'ascii2fa_{0}.log'.format(vert_grid_name)
+        result = os.system('./ascii2fa > {0} 2>&1'.format(logfile))
         if os.WEXITSTATUS(result) != 0:
-            raise RuntimeError("Error during ascii2fa execution")
+            raise RuntimeError("Error during ascii2fa execution (log: {})".format(os.path.abspath(logfile)))
         os.rename('1D.file', 'initfile_{0}'.format(vert_grid_name))
         os.remove('nam1D')
     else:

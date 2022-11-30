@@ -44,23 +44,23 @@ implicit none
 ! -----
 ! I/O arguments
 ! -----
-integer, intent(in) :: ndgl, nsefre, nsmax
-integer, intent(in) :: kfax(20)
+INTEGER, intent(in) :: ndgl, nsefre, nsmax
+INTEGER, intent(in) :: kfax(20)
 
-real, intent(in)  :: ptrigs(ndgl), preal (ndgl)
-real, intent(out) :: pspec(nsefre)
+REAL, intent(in)  :: ptrigs(ndgl), preal (ndgl)
+REAL, intent(out) :: pspec(nsefre)
 
 ! -----
 ! local variables
 ! -----
       
-integer :: ifft, jn
-integer :: ilot, inc, isign
+INTEGER :: ifft, jn
+INTEGER :: ilot, inc, isign
 
 ! -----
 ! local arrays
 ! -----
-real :: zreal(ndgl + 2)
+REAL :: zreal(ndgl + 2)
 
 
 ! =====
@@ -70,8 +70,8 @@ real :: zreal(ndgl + 2)
 ! -----
 
 ! initialize I/O array with zeroes
+
 zreal(:)=0.
-pspec(:)=0.
 zreal(1:ndgl) = preal(1:ndgl) 
 
 ! -----
@@ -100,6 +100,5 @@ do jn = 0, nsmax
 enddo
 
 
-return
 end subroutine real2spec
 
