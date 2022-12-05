@@ -52,7 +52,10 @@ if config.convertkday:
 
 # Interpolation on pressure levels + time averages
 if config.convert2p:
-    os.system('./ems_convert2p.py')
+    if os.path.exists('convert2p.py') and not os.path.exists('./ems_convert2p.py'):
+        os.system('./convert2p.py')
+    else:
+        os.system('./ems_convert2p.py')
 
     fin = 'netcdf/Out_plevel.nc'
     if config.convertp1h:
@@ -74,7 +77,10 @@ if config.convert2p:
 
 # Interpolation en altitude levels + time averages
 if config.convert2z:
-    os.system('./ems_convert2z.py')
+    if os.path.exists('convert2z.py') and not os.path.exists('./ems_convert2z.py'):
+        os.system('./convert2z.py')
+    else:
+        os.system('./ems_convert2z.py')
     fin = 'netcdf/Out_zlevel.nc'
     if config.convertz1h:
         fout = 'netcdf/Out_1hourly_zlevel.nc'

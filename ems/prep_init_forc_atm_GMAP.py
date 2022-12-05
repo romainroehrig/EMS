@@ -115,6 +115,17 @@ def prep_init_forc_atm(
     nt, = case.variables['ps_forc'].data.shape
 
     #---------------------------------------------------------------
+    # Surface temperature
+    #---------------------------------------------------------------
+
+    if 'ts_forc' in case.variables:
+        variablesAux['SURFTEMPERATURE'] = case.variables['ts_forc'].data[0]
+    elif 'tskin' in case.variables:
+        variablesAux['SURFTEMPERATURE'] = case.variables['tskin'].data[0]
+    elif 'ta' in case.variables:
+        variablesAux['SURFTEMPERATURE'] = case.variables['ta'].data[0, 0]
+
+    #---------------------------------------------------------------
     # Half-level pressure
     #---------------------------------------------------------------
 
