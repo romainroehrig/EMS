@@ -19,7 +19,7 @@ ASCII2FA_LIBS ?= $(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
 %.o:%.F90
 	$(FC) $(F90FLAGS) -c $<
 
-all:    $(OBJS)
+all:	$(OBJS)
 	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(ASCII2FA_LIBS)
 	/bin/cp -f $(EXEC) ../bin/ascii2fa
 
