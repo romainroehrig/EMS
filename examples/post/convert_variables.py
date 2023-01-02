@@ -23,7 +23,7 @@ def write_vargroup(f, vargroup):
 
 f = open('variables_new.py','w')
 
-tmp = """#!/usr/bin/env python3
+tmp = """#!/usr/bin/env python
 # -*- coding:UTF-8 -*-
 # Copyright (c) Météo France (2014-)
 # This software is governed by the CeCILL-C license under French law.

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:UTF-8 -*-
 # Copyright (c) Météo France (2014-)
 # This software is governed by the CeCILL-C license under French law.
@@ -281,8 +281,6 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             else:
                 raise ValueError("For this case (surfaceForcing != 'surfaceFlux' on land), the land_type must be defined")
             nn='NAM_ISBA'
-            if not nn in nam:
-                nam[nn] = {}
             nam[nn]['XUNIF_CLAY'] = ['1.']
             nam[nn]['XUNIF_SAND'] = ['0.']
             nam[nn]['XUNIF_RUNOFFB'] = ['0.5']

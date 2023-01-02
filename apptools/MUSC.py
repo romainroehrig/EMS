@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:UTF-8 -*-
 # Copyright (c) Météo France (2014-)
 # This software is governed by the CeCILL-C license under French law.
@@ -14,7 +14,6 @@ import importlib
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)30s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-from pathlib import Path
 
 import ems
 import ems.cases as CC
@@ -189,7 +188,7 @@ if __name__ == '__main__':
                     ASCII2FA=ASCII2FA, lforc_ascii=lforc_ascii, lsurfex=lsurfex,
                     loverwrite=loverwrite, lupdate=lupdate_ATM)
 
-            Path(install_file).touch()
+            os.system('touch {0}'.format(install_file))
         else:
             logger.info('ATM data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_ATM))
 
@@ -206,7 +205,7 @@ if __name__ == '__main__':
                     repSFX, PGD, PREP, SFXNAM_prep,
                     loverwrite=loverwrite, lupdate=lupdate_SFX, ecoclimap=ecoclimap, sfxfmt=sfxfmt)
 
-            Path(install_file).touch()
+            os.system('touch {0}'.format(install_file))
         else:
             logger.info('SURFEX data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_SFX))
 
@@ -256,7 +255,7 @@ if __name__ == '__main__':
             install_MUSC.install_run(model,case,subcase,data_input,
                     repRUN,config,configOut,
                     loverwrite=loverwrite,lupdate=lupdate_RUN)
-            Path(install_file).touch()
+            os.system('touch {0}'.format(install_file))
         else:
             logger.info('Run data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_RUN))
 
