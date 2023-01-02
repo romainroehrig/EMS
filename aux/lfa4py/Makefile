@@ -1,5 +1,5 @@
 
-FFLAGS=-fconvert=big-endian -fbacktrace -fPIC -O2
+FFLAGS=-fconvert=big-endian -fbacktrace -fPIC -O2 -m64
 FC=gfortran
 GCC=gcc
 
