@@ -161,7 +161,7 @@
       IULNAM = 10
       IULOUT = 11
       LLGARD = .FALSE.
-
+      !
       ! not tunable aladin variables => compulsary values:
       CLMCA  = 'CADRE.STANDARD.E'
       IROTEQ = 0
@@ -181,7 +181,7 @@
       IDGL      = 4
       IBZONG    = 0
       INSMAX    = 1
-      IFLEV     = 100
+      IFLEV     = 200
       ZDELY     = 250000.
       CLFILEOUT = '1D.file'
       LMAP      = .FALSE.
@@ -216,7 +216,7 @@
       ZLONR = 0.
       ZLATR = 45.
       ! 2.2 Read namelist
-
+      !
       OPEN(IULNAM,FILE='nam1D',STATUS='OLD')
       READ(IULNAM,NAM1D)
       ZLON0 = ZLON0 /ZRTD
@@ -256,8 +256,8 @@
       READ(10,*) CBLOCK
 
       IF (CBLOCK.NE.'ETA') THEN
-         print*,'problem : the block ETA (A and B functions) is not present'
-         STOP
+        print*,'problem : the block ETA (A and B functions) is not present'
+        STOP
       ENDIF
 
       ! 3.2 Read vertical coefficients A,B
@@ -266,13 +266,13 @@
       ALLOCATE(ZVBH (0:IFLEV))
       READ(10,*)CBLOCK
       DO JLEV = 0,IFLEV
-       READ(10,*)ZVALH(JLEV)
-       ZVALH(JLEV) = ZVALH(JLEV) / ZP00
+        READ(10,*)ZVALH(JLEV)
+        ZVALH(JLEV) = ZVALH(JLEV) / ZP00
         WRITE(6,*)'JLEV ZVALH=',JLEV,ZVALH(JLEV)
       ENDDO
       READ(10,*)CBLOCK
       DO JLEV = 0,IFLEV
-       READ(10,*)ZVBH (JLEV)
+        READ(10,*)ZVBH (JLEV)
         WRITE(6,*)'JLEV ZVBH=',JLEV,ZVBH(JLEV)
       ENDDO
 
@@ -354,18 +354,6 @@
       IF (IREP.NE.0) STOP
 
       ! 4.3 Initialize the date
-! date pour Eurocs/ARM
-!      IDATE(1)  = 1997
-!      IDATE(2)  = 6
-!      IDATE(3)  = 21
-!      IDATE(4)  = 11
-!      IDATE(5)  = 30
-!      IDATE(6)  = 1
-!      IDATE(7)  = 0
-!      IDATE(8)  = 0
-!      IDATE(9)  = 0
-!      IDATE(10) = 0
-!      IDATE(11) = 0
 
       IDATE(1)  = IYEAR
       IDATE(2)  = IMONTH
@@ -382,15 +370,6 @@
       CALL FANDAR(IREP,IUFD,IDATE)
       IF (IREP.NE.0) STOP
 
-      ! 4.4 Impose no GRIB encoding (no packing)
-
-!      INGRIG = 0
-!      CALL FAVEUR(IREP,IUFD,INGRIB,INBPDG,INBCSP,
-!     &  ISTRON,IPUILA,IDMOPL)
-!      CALL FAGOTE(IREP,IUFD,INGRIG,INBPDG,INBCSP,
-!     &  ISTRON,IPUILA,IDMOPL)
-
-
       ! ----------------------------
       ! 5. Write data for ATMOSPHERE
       ! ----------------------------
@@ -398,8 +377,8 @@
       READ(10,*) CBLOCK
 
       IF (CBLOCK.NE.'ATMOSPHERE') THEN
-         print*,'problem : the block ATMOSPHERE is not present'
-         STOP
+        print*,'problem : the block ATMOSPHERE is not present'
+        STOP
       ENDIF
 
       !  Preparation for GP fields
@@ -416,7 +395,7 @@
       READ(10,*)
       READ(10,*)ZOROG
       DO J = 1,IDGL
-      ZOUT (J) = ZOROG*ZG
+        ZOUT (J) = ZOROG*ZG
       ENDDO
 
       CALL FAIENC(IREP,IUFD,'SURF',1,'GEOPOTENTIEL',ZOUT,LLCOSP)
@@ -447,10 +426,8 @@
         ZFFT(J) = ZOROG*ZG
       ENDDO
 
-       call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
+      call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
 
-      WRITE(6,*)'GEOP=',ZFFT(1)
-      WRITE(6,*)'ZOUT=',ZOUT
       CALL FAIENC (IREP,IUFD,'SPECSURF',1,'GEOPOTEN',ZOUT,LLCOSP)
 
       ! 5.3 Spectral Surface Pressure
@@ -461,9 +438,9 @@
         ZFFT(J) = ZSPT0
       ENDDO
 
-       call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
-      WRITE(6,*)'Ps=',ZFFT(1)
-      WRITE(6,*)'ZOUT=',ZOUT
+      call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
+      !WRITE(6,*)'Ps=',ZFFT(1)
+      !WRITE(6,*)'ZOUT=',ZOUT
       CALL FAIENC(IREP,IUFD,'SURF',1,'PRESSION',ZOUT,LLCOSP)
 
       !
@@ -472,16 +449,16 @@
       READ(10,*)
 !
       DO JLEV =1, IFLEV
-         READ(10,*) ZU
-         DO J = 1,IDGL
-            ZFFT(J) = ZU
-         ENDDO
-         WRITE (6,*)'JLEV UWIND',JLEV,ZFFT(1)
+        READ(10,*) ZU
+        DO J = 1,IDGL
+          ZFFT(J) = ZU
+        ENDDO
+        WRITE (6,*)'JLEV UWIND',JLEV,ZFFT(1)
 
         call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
 
-         CALL FAIENC (IREP,IUFD,'S',JLEV,'WIND.U.PHYS',ZOUT,LLCOSP)
-      END DO
+        CALL FAIENC (IREP,IUFD,'S',JLEV,'WIND.U.PHYS',ZOUT,LLCOSP)
+      ENDDO
 
       !
       ! 5.5 Spectral V-Wind
@@ -489,61 +466,62 @@
       READ(10,*)
 !
       DO JLEV =1, IFLEV
-             READ(10,*) ZV
+        READ(10,*) ZV
         DO J = 1,IDGL
-           ZFFT(J)=ZV
+          ZFFT(J)=ZV
         ENDDO
         WRITE (6,*)'JLEV VWIND',JLEV,ZFFT(1)
 
-         call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
+        call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
 
         CALL FAIENC (IREP,IUFD,'S',JLEV,'WIND.V.PHYS',ZOUT,LLCOSP)
-      END DO
+      ENDDO
 
       !
       ! 5.6 Spectral Temperature
       !
       READ(10,*)
-!
+      !
       DO JLEV =1, IFLEV
-          READ(10,*)ZT
+        READ(10,*)ZT
         DO J = 1,IDGL
           ZFFT(J)=ZT
         ENDDO
         WRITE(6,*)'JLEV TEMPE',JLEV,ZFFT(1)
-
-         call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
-
+        !
+        call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
+        !
         CALL FAIENC (IREP,IUFD,'S',JLEV,'TEMPERATURE',ZOUT,LLCOSP)
-      END DO
+      ENDDO
 
 
         ! 5.7 NH fields if LNHDYN
 
       IF (LNHDYN) THEN
       !
-         DO JLEV =1, IFLEV
+        DO JLEV =1, IFLEV
+          !
           ! Pressure Departure
           !
-            DO J = 1,IDGL
-               ZFFT(J) = 0.0
-            ENDDO
-
-           call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
-
-            CALL FAIENC (IREP,IUFD,'S',JLEV,'PRESS.DEPARTURE',ZOUT,LLCOSP)
-
+          DO J = 1,IDGL
+            ZFFT(J) = 0.0
+          ENDDO
+          !
+          call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
+          !
+          CALL FAIENC (IREP,IUFD,'S',JLEV,'PRESS.DEPARTURE',ZOUT,LLCOSP)
+          !
           ! Vertical divergence
           !
-            DO J = 1,IDGL
-               ZFFT(J) = 0.0
-            ENDDO
-
-           call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
-
-            CALL FAIENC (IREP,IUFD,'S',JLEV,'VERTIC.DIVERGENC',ZOUT,LLCOSP)
-
-         END DO
+          DO J = 1,IDGL
+            ZFFT(J) = 0.0
+          ENDDO
+          !
+          call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
+          !
+          CALL FAIENC (IREP,IUFD,'S',JLEV,'VERTIC.DIVERGENC',ZOUT,LLCOSP)
+          !
+        ENDDO
       ENDIF
       ! Finish 3D-spectral data
 
@@ -552,287 +530,342 @@
       !
       ! 5.7 Grid point or Spectral Humidity
       !
-
-print*,'LQVGRP=',LQVGRP
-print*,'LSPRT=',LSPRT
-!IF(LQVGRP) THEN
-
-
-   IF ( LSPRT ) THEN
-      ! Grid point specific humidity
-      LLCOSP = .FALSE.
-      ALLOCATE(ZOUT (IDGL))
-      ZOUT(:) = 0.
-
-      READ(10,*)
-      DO JLEV=1,IFLEV
-         READ(10,*) ZQ
-         DO J = 1,IDGL
-            ZOUT(J)=ZQ
-         ENDDO
-         WRITE (6,*)' JLEV HUMI',JLEV,ZOUT(1)
-         CALL FAIENC (IREP,IUFD,'S',JLEV,'HUMI.SPECIFI',ZOUT,LLCOSP)
-      ENDDO
-      DEALLOCATE (ZOUT)
-   ELSEIF (.NOT. LSPRT) THEN
+      print*,'LQVGRP=',LQVGRP
+      print*,'LSPRT=',LSPRT
+      !IF(LQVGRP) THEN
       !
-      ! 5.6 Spectral Humidity
-      !
-print*,'QV en spectral'
- WRITE(6,*)' Q_v en spectral'
-      ALLOCATE(ZOUT (NSEFRE))
-      ALLOCATE(ZFFT (IDGL)  )
-      ALLOCATE(ZWORK(IDGL+1))
-
-      LLCOSP =.TRUE.
-
-      READ(10,*)
-!
-      DO JLEV =1, IFLEV
-          READ(10,*)ZQ
-        DO J = 1,IDGL
-          ZFFT(J)=ZQ
-        ENDDO
-        WRITE(6,*)'JLEV HUMI',JLEV,ZFFT(1)
-
-        call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
-
-        CALL FAIENC (IREP,IUFD,'S',JLEV,'HUMI.SPECIFI',ZOUT,LLCOSP)
-      END DO
-
-      DEALLOCATE (ZOUT)
-      DEALLOCATE (ZFFT)
-      DEALLOCATE (ZWORK)
-   ENDIF
-
-!ENDIF
-
-      !
-      ! 5.8 Grid point specific cloud content
-      !
-      IF(LQCGRP) THEN
-         LLCOSP = .FALSE.
-         ALLOCATE(ZOUT (IDGL))
-         ZOUT(:) = 0.
-         READ(10,*)
-
+      IF ( LSPRT ) THEN
+        ! Grid point specific humidity
+        LLCOSP = .FALSE.
+        ALLOCATE(ZOUT (IDGL))
+        ZOUT(:) = 0.
+        !
+        READ(10,*)
         DO JLEV=1,IFLEV
           READ(10,*) ZQ
           DO J = 1,IDGL
             ZOUT(J)=ZQ
           ENDDO
-          WRITE (6,*)' JLEV QL',JLEV,ZOUT(1)
-          CALL FAIENC (IREP,IUFD,'S',JLEV,'CLOUD_WATER',ZOUT,LLCOSP)
-          CALL FAIENC (IREP,IUFD,'S',JLEV,'LIQUID_WATER',ZOUT,LLCOSP)
+          WRITE (6,*)' JLEV HUMI',JLEV,ZOUT(1)
+          CALL FAIENC (IREP,IUFD,'S',JLEV,'HUMI.SPECIFI',ZOUT,LLCOSP)
         ENDDO
         DEALLOCATE (ZOUT)
+      ELSEIF (.NOT. LSPRT) THEN
+        !
+        ! 5.6 Spectral Humidity
+        !
+        print*,'QV en spectral'
+        WRITE(6,*)' Q_v en spectral'
+        ALLOCATE(ZOUT (NSEFRE))
+        ALLOCATE(ZFFT (IDGL)  )
+        ALLOCATE(ZWORK(IDGL+1))
+        !
+        LLCOSP =.TRUE.
+        !
+        READ(10,*)
+        !
+        DO JLEV =1, IFLEV
+          READ(10,*)ZQ
+          DO J = 1,IDGL
+            ZFFT(J)=ZQ
+          ENDDO
+          WRITE(6,*)'JLEV HUMI',JLEV,ZFFT(1)
+          !
+          call real2spec(idgl,nsefre,insmax,trigs, ifax, ZFFT, ZOUT)
+          !
+          CALL FAIENC (IREP,IUFD,'S',JLEV,'HUMI.SPECIFI',ZOUT,LLCOSP)
+        ENDDO
+        !
+        DEALLOCATE (ZOUT)
+        DEALLOCATE (ZFFT)
+        DEALLOCATE (ZWORK)
+      ENDIF
+      !
+      !ENDIF
+      !
+      !
+      ! 5.8 Grid point specific cloud content
+      !
+      IF(LQCGRP) THEN 
+        !
+        READ(10,*) CBLOCK
+        print*,'CBLOCK=',CBLOCK
+        !
+        IF (CBLOCK.NE.'CLOUD_WATER') THEN
+          print*,&
+         & 'the block CLOUD_WATER is not present while it is expected'
+          STOP
+        ELSE
+          LLCOSP = .FALSE.      
+          ALLOCATE(ZOUT (IDGL))
+          ZOUT(:) = 0.                
+          DO JLEV=1,IFLEV
+            READ(10,*) ZQ
+            DO J = 1,IDGL
+              ZOUT(J)=ZQ
+            ENDDO
+            WRITE (6,*)' JLEV CLOUD_WATER',JLEV,ZOUT(1)
+            CALL FAIENC (IREP,IUFD,'S',JLEV,'CLOUD_WATER',ZOUT,LLCOSP)
+            CALL FAIENC (IREP,IUFD,'S',JLEV,'LIQUID_WATER',ZOUT,LLCOSP)
+          ENDDO 
+          DEALLOCATE (ZOUT)        
+        ENDIF
       ENDIF
       !
       ! 5.9 Grid point specific ice cristal content
-      !
+      ! 
       IF(LQIGRP) THEN
-         LLCOSP = .FALSE.
-         ALLOCATE(ZOUT (IDGL))
-         ZOUT(:) = 0.
-         READ(10,*)
-
-         DO JLEV=1,IFLEV
-          READ(10,*) ZQ
-          DO J = 1,IDGL
-            ZOUT(J)=ZQ
-           ENDDO
-          WRITE (6,*)' JLEV ICE_CRYSTAL',JLEV,ZOUT(1)
-          CALL FAIENC (IREP,IUFD,'S',JLEV,'ICE_CRYSTAL',ZOUT,LLCOSP)
-        ENDDO
-!
-!for LOPEZ
-!
-         DO JLEV=1,IFLEV
-          DO J = 1,IDGL
-            ZOUT(J)=0.0
-           ENDDO
-          WRITE (6,*)' JLEV SOLID_WATER',JLEV,ZOUT(1)
-          CALL FAIENC (IREP,IUFD,'S',JLEV,'SOLID_WATER',ZOUT,LLCOSP)
-         ENDDO
-         DEALLOCATE (ZOUT)
-      ENDIF
+        !
+        READ(10,*) CBLOCK
+        print*,'CBLOCK=',CBLOCK
+        !
+        IF (CBLOCK.NE.'ICE_CRYSTAL') THEN
+          print*, &
+         & 'the block ICE_CRYSTAL is not present while it is expected'
+          STOP
+        ELSE
+          LLCOSP = .FALSE.      
+          ALLOCATE(ZOUT (IDGL))
+          ZOUT(:) = 0.          
+          DO JLEV=1,IFLEV
+            READ(10,*) ZQ
+            DO J = 1,IDGL
+              ZOUT(J)=ZQ
+            ENDDO
+            WRITE (6,*)' JLEV ICE_CRYSTAL',JLEV,ZOUT(1)
+            CALL FAIENC (IREP,IUFD,'S',JLEV,'ICE_CRYSTAL',ZOUT,LLCOSP)
+            CALL FAIENC (IREP,IUFD,'S',JLEV,'SOLID_WATER',ZOUT,LLCOSP)
+          ENDDO 
+          DEALLOCATE (ZOUT)           
+        ENDIF
+      ENDIF 
       !
       ! 5.10 Grid point specific rain content
       !
-      IF(LQRGRP) THEN
-         LLCOSP = .FALSE.
-         ALLOCATE(ZOUT (IDGL))
-         ZOUT(:) = 0.
-
-         DO JLEV=1,IFLEV
+      IF(LQRGRP) THEN 
+        !
+        READ(10,*) CBLOCK
+        print*,'CBLOCK=',CBLOCK
+        !
+        IF (CBLOCK.NE.'RAIN') THEN
+          print*,'the block RAIN is not present while it is expected'
+          STOP
+        ELSE
+          LLCOSP = .FALSE.      
+          ALLOCATE(ZOUT (IDGL))
+          ZOUT(:) = 0.
+          DO JLEV=1,IFLEV
+            READ(10,*) ZQ          
             DO J = 1,IDGL
-               ZOUT(J)=0.0
+              ZOUT(J)=ZQ
             ENDDO
             WRITE (6,*)' JLEV RAIN',JLEV,ZOUT(1)
             CALL FAIENC (IREP,IUFD,'S',JLEV,'RAIN',ZOUT,LLCOSP)
-         ENDDO
-         DEALLOCATE (ZOUT)
+          ENDDO
+          DEALLOCATE (ZOUT)
+        ENDIF
       ENDIF
       !
       ! 5.11 Grid point specific snow content
       !
-      IF(LQSGRP) THEN
-         LLCOSP = .FALSE.
-         ALLOCATE(ZOUT (IDGL))
-         ZOUT(:) = 0.
-
-         DO JLEV=1,IFLEV
+      IF(LQSGRP) THEN  
+        !
+        READ(10,*) CBLOCK
+        print*,'CBLOCK=',CBLOCK
+        !
+        IF (CBLOCK.NE.'SNOW') THEN
+          print*,'the block SNOW is not present while it is expected'
+          STOP
+        ELSE   
+          LLCOSP = .FALSE.      
+          ALLOCATE(ZOUT (IDGL))
+          ZOUT(:) = 0.         
+          DO JLEV=1,IFLEV
+            READ(10,*) ZQ
             DO J = 1,IDGL
-               ZOUT(J)=0.0
+              ZOUT(J)=ZQ
             ENDDO
             WRITE (6,*)' JLEV SNOW',JLEV,ZOUT(1)
             CALL FAIENC (IREP,IUFD,'S',JLEV,'SNOW',ZOUT,LLCOSP)
-         ENDDO
-         DEALLOCATE (ZOUT)
+          ENDDO
+          DEALLOCATE (ZOUT)
+        ENDIF
       ENDIF
       !
       ! 5.12 Grid point specific graupel content
       !
-      IF(LQGGRP) THEN
-         LLCOSP = .FALSE.
-         ALLOCATE(ZOUT (IDGL))
-         ZOUT(:) = 0.
-
-         DO JLEV=1,IFLEV
+      IF(LQGGRP) THEN 
+        !
+        READ(10,*) CBLOCK
+        print*,'CBLOCK=',CBLOCK
+        !
+        IF (CBLOCK.NE.'GRAUPEL') THEN
+          print*,'the block GRAUPEL is not present while it is expected'
+          STOP
+        ELSE                 
+          LLCOSP = .FALSE.      
+          ALLOCATE(ZOUT (IDGL))
+          ZOUT(:) = 0.        
+          DO JLEV=1,IFLEV
+            READ(10,*) ZQ          
             DO J = 1,IDGL
-               ZOUT(J)=0.0
+              ZOUT(J)=ZQ
             ENDDO
             WRITE (6,*)' JLEV GRAUPEL',JLEV,ZOUT(1)
             CALL FAIENC (IREP,IUFD,'S',JLEV,'GRAUPEL',ZOUT,LLCOSP)
-         ENDDO
-         DEALLOCATE (ZOUT)
+          ENDDO
+          DEALLOCATE (ZOUT) 
+        ENDIF
       ENDIF
       !
       ! 5.13 Grid point cloud fraction
       !
-      IF(LCFGRP) THEN
-         LLCOSP = .FALSE.
-         ALLOCATE(ZOUT (IDGL))
-         ZOUT(:) = 0.
-
-         DO JLEV=1,IFLEV
+      IF(LCFGRP) THEN 
+        !
+        READ(10,*) CBLOCK
+        print*,'CBLOCK=',CBLOCK
+        !
+        IF (CBLOCK.NE.'CLOUD FRACTION') THEN
+          print*,&
+        & 'the block CLOUD FRACTION is not present while it is expected'
+          STOP
+        ELSE                 
+          LLCOSP = .FALSE.      
+          ALLOCATE(ZOUT (IDGL))
+          ZOUT(:) = 0.      
+          DO JLEV=1,IFLEV
+            READ(10,*) ZQ          
             DO J = 1,IDGL
-               ZOUT(J)=0.0
+              ZOUT(J)=ZQ
             ENDDO
             WRITE (6,*)' JLEV CLF',JLEV,ZOUT(1)
             CALL FAIENC (IREP,IUFD,'S',JLEV,' CLOUD FRACTION',ZOUT,LLCOSP)
-         ENDDO
-         DEALLOCATE (ZOUT)
+          ENDDO
+          DEALLOCATE (ZOUT)
+        ENDIF
       ENDIF
       !
       ! 5.14 Grid point SRC
       !
-      IF(LSRCGRP) THEN
-         LLCOSP = .FALSE.
-         ALLOCATE(ZOUT (IDGL))
-         ZOUT(:) = 0.
-
-         DO JLEV=1,IFLEV
+      IF(LSRCGRP) THEN 
+        !
+        READ(10,*) CBLOCK
+        print*,'CBLOCK=',CBLOCK
+        !
+        IF (CBLOCK.NE.'SRC') THEN
+          print*,'the block SRC is not present while it is expected'
+          STOP
+        ELSE                   
+          LLCOSP = .FALSE.      
+          ALLOCATE(ZOUT (IDGL))
+          ZOUT(:) = 0.        
+          DO JLEV=1,IFLEV
+            READ(10,*) ZQ           
             DO J = 1,IDGL
-               ZOUT(J)=0.0
+              ZOUT(J)=ZQ
             ENDDO
             WRITE (6,*)' JLEV SRC',JLEV,ZOUT(1)
             CALL FAIENC (IREP,IUFD,'S',JLEV,'SRC',ZOUT,LLCOSP)
-         ENDDO
-         DEALLOCATE (ZOUT)
+          ENDDO
+          DEALLOCATE (ZOUT)
+        ENDIF
       ENDIF
       !
       ! 7.15 Grid point TKE
       !
-      IF(LTKEGRP) THEN
-         LLCOSP = .FALSE.
-         ALLOCATE(ZOUT (IDGL))
-         ZOUT(:) = 0.
-         READ(10,*)
-         DO JLEV=1,IFLEV
-            READ(10,*) ZQ
-            DO J = 1,IDGL
-               ZOUT(J)=MAX(0.000001,ZQ)
-            ENDDO
-            WRITE (6,*)' JLEV TKE',JLEV,ZOUT(1)
-            CALL FAIENC (IREP,IUFD,'S',JLEV,'TKE',ZOUT,LLCOSP)
-         ENDDO
-         DEALLOCATE (ZOUT)
+      IF(LTKEGRP) THEN 
+         !
+         READ(10,*) CBLOCK
+         print*,'CBLOCK=',CBLOCK
+         !
+         IF (CBLOCK.NE.'TKE') THEN
+            print*,'the block TKE is not present'
+           !
+         ELSE
+           LLCOSP = .FALSE.      
+           ALLOCATE(ZOUT (IDGL))
+           ZOUT(:) = 0.                 
+           DO JLEV=1,IFLEV
+             READ(10,*) ZQ
+             DO J = 1,IDGL
+               !ZOUT(J)=MAX(0.000001,ZQ)
+               ZOUT(J)=ZQ
+             ENDDO
+             WRITE (6,*)' JLEV TKE',JLEV,ZOUT(1)
+             CALL FAIENC (IREP,IUFD,'S',JLEV,'TKE',ZOUT,LLCOSP)
+           ENDDO
+           DEALLOCATE (ZOUT)
+         ENDIF
       ENDIF
       ! ----------------------------
       ! 6. Write data for FORCING
       ! ----------------------------
       READ(10,*) CBLOCK
       print*,'CBLOCK=',CBLOCK
-
+      !
       IF (CBLOCK.NE.'FORCING') THEN
          print*,'the block FORCING is not present'
          !
       ELSE
-      !
-      !  Preparation for GP fields
-      !
-      LLCOSP = .FALSE.
-      ALLOCATE(ZOUT (IDGL))
-      ZOUT(:) = 0.
-      !
-      ! loop for forcing
-      !
-      DO JFORC=1,NFORC
-
-         !  FORCING no JFORC
-         WRITE(YRECFM,'(A4,I4.4)') 'FORC',JFORC
-         READ(10,*) FORCAGE
-         print*,'YRECFM=',YRECFM, FORCAGE
-         DO JLEV=1,IFLEV
+        !
+        !  Preparation for GP fields
+        !
+        LLCOSP = .FALSE.
+        ALLOCATE(ZOUT (IDGL))
+        ZOUT(:) = 0.
+        !
+        ! loop for forcing
+        !
+        DO JFORC=1,NFORC
+          !  FORCING no JFORC
+          WRITE(YRECFM,'(A4,I4.4)') 'FORC',JFORC
+          READ(10,*) FORCAGE
+          print*,'YRECFM=',YRECFM, FORCAGE
+          DO JLEV=1,IFLEV
             READ(10,*) ZZ
             DO J = 1,IDGL
-               ZOUT(J)=ZZ
+              ZOUT(J)=ZZ
             ENDDO
             WRITE (6,*)YRECFM,JLEV,ZOUT(1)
             CALL FAIENC (IREP,IUFD,'S',JLEV,YRECFM,ZOUT,LLCOSP)
-         ENDDO            
-      !
-      ENDDO
-      !
-      DEALLOCATE (ZOUT)
+          ENDDO            
+        !
+        ENDDO
+        !
+        DEALLOCATE (ZOUT)
       ENDIF
       ! ----------------------------
       ! 6. Write data for SURFACE FORCING
       ! ----------------------------
-
       READ(10,*) CBLOCK
       print*,'CBLOCK=',CBLOCK
-
+      !
       IF (CBLOCK.NE.'SURF.FORC') THEN
-         print*,'the block SURF. FORC is not present'
-         !
+        print*,'the block SURF. FORC is not present'
       ELSE
-      !
-      !  Preparation for GP fields
-      !
-      LLCOSP = .FALSE.      
-      ALLOCATE(ZOUT (IDGL))
-      ZOUT(:) = 0.
-      !
-      ! loop for forcing
-      !
-      DO JFORC=1,NFORCS
-
-         !  FORCING no JFORC
-         WRITE(YRECFM,'(A4,I4.4)') 'FORC',JFORC
-         print*,'YRECFM=',YRECFM
-         READ(10,*)
-         READ(10,*) ZZ
-         DO J = 1,IDGL
+        !
+        !  Preparation for GP fields
+        !
+        LLCOSP = .FALSE.      
+        ALLOCATE(ZOUT (IDGL))
+        ZOUT(:) = 0.
+        !
+        ! loop for forcing
+        !
+        DO JFORC=1,NFORCS
+          !  FORCING no JFORC
+          WRITE(YRECFM,'(A4,I4.4)') 'FORC',JFORC
+          print*,'YRECFM=',YRECFM
+          READ(10,*)
+          READ(10,*) ZZ
+          DO J = 1,IDGL
             ZOUT(J)=ZZ
-         ENDDO
-         WRITE (6,*)YRECFM,JLEV,ZOUT(1)
-         CALL FAIENC (IREP,IUFD,'SURF',1,YRECFM,ZOUT,LLCOSP)
-      !
-      ENDDO
-      !
-      DEALLOCATE (ZOUT)
+          ENDDO
+          WRITE (6,*)YRECFM,JLEV,ZOUT(1)
+          CALL FAIENC (IREP,IUFD,'SURF',1,YRECFM,ZOUT,LLCOSP)
+        ENDDO
+        !
+        DEALLOCATE (ZOUT)
       ENDIF
       ! ----------------------------
       ! 7. Write data for SURFACE MAX=100.
@@ -846,41 +879,42 @@ print*,'QV en spectral'
       ALLOCATE(ZOUT (IDGL))
       ZOUT(:) = 0.
       DO I=1,100
-         READ(10,'(A16)')CHAMP
-         IF (CHAMP.EQ.'STOP') THEN
-                 GOTO 999
-         ENDIF
-         READ(10,*)ZZ
-         print*,CHAMP(5:16),ZZ
-         DO J = 1,IDGL
-            ZOUT(J) = ZZ
-         ENDDO
-         CALL FAIENC(IREP,IUFD,CHAMP(1:4),JLEV,CHAMP(5:16),ZOUT,LLCOSP)
+        READ(10,'(A16)')CHAMP
+        IF (CHAMP.EQ.'STOP') THEN
+          GOTO 999
+        ENDIF
+        READ(10,*)ZZ
+        WRITE(6,*) 'ZZ',ZZ
+        print*,CHAMP(5:16),ZZ
+        DO J = 1,IDGL
+          ZOUT(J) = ZZ
+        ENDDO
+        CALL FAIENC(IREP,IUFD,CHAMP(1:4),JLEV,CHAMP(5:16),ZOUT,LLCOSP)
       ENDDO
       DEALLOCATE (ZOUT)
       !
       ! ---------
       ! 8. Finish
       ! ---------
-
+      !
       ! 8.1 Close the FA file
  999  WRITE(6,*)'FERMETURE DU FICHIER FA'
       LLOUT = .FALSE.
       CALL LFILAF(IREP,IUFD,LLOUT)
       CALL FAIRME(IREP,IUFD,'UNKNOWN')
-
+      !
       ! 8.2 The end
-
+      !
       IUFD   = IULOUT
       LLNOMM = .TRUE.
       LLERFA = .TRUE.
       LLIMST = .FALSE.
       INIMES = 2
       IBARP  = INART
-
+      !
       CALL FAITOU(IREP,IUFD,LLNOMM,CLFILEOUT,'UNKNOWN', &
      &            LLERFA,LLIMST,INIMES,IBARP,IBARI,CLMCA)
-
+      !
       DEALLOCATE(TRIGS)
       DEALLOCATE(NESN0)
       DEALLOCATE(NCPL4N)
@@ -888,11 +922,11 @@ print*,'QV en spectral'
       DEALLOCATE(IKMTMP)
       DEALLOCATE(ZVALH)
       DEALLOCATE(ZVBH)
-
-
+      !
+      !
       WRITE(6,*)
       WRITE(6,'(A)') 'END OF ACADFA'
       CLOSE (6)
       CLOSE(10)
-   STOP
-   END PROGRAM ACADFA1D_MAIN
+      STOP
+      END PROGRAM ACADFA1D_MAIN

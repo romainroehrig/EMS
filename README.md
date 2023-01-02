@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-* Python 2.\* or 3.\*
+* Python 3.\*
 * Python packages numpy, netCDF4 and matplotlib
 * GMAP tools in `/home/common/sync`
 
@@ -12,13 +12,13 @@ To install EMS on a CNRM computer, with access to the CNRM Lustre system:
 
    `wget https://raw.githubusercontent.com/romainroehrig/EMS/master/install.sh`
 
-2. Modify `install.sh`:
+2. Modify `install.sh`  (or execute `install.sh -h` to get its usage):
 
-   * Set `EMS_VERSION`, e.g., `EMS_VERSION=2.3`
+   * Set `EMS_VERSION`, e.g., `EMS_VERSION=2.4`
    * Set where you want to install EMS: default is `REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}`
    * Set where you want to run MUSC: default is `REP_MUSC=$HOME/MUSC/V${EMS_VERSION}`
 
-3. Execute `install.sh`. A test is done at the end with ARPEGE-Climat 6.3.1 for the ARMCU/REF case.
+3. Execute `install.sh`. A test is done at the end with ARPEGE-Climat 6.3.2 for the ARMCU/REF case.
 
 ## Using EMS
 1. Go in the `REP_MUSC` directory
