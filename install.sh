@@ -199,12 +199,12 @@ cd ..
 # Some Testing
 testing="$TESTS"
 
-test_arp631="y"
+test_arp632="y"
 
 if [ $testing = "y" ]; then
 
-  # Testing ARPEGE-Climat 6.3.1
-  if [ $test_arp631 = "y" ]; then
+  # Testing ARPEGE-Climat 6.3.2
+  if [ $test_arp632 = "y" ]; then
     cd $REP_MUSC
     source setenv
 

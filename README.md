@@ -3,7 +3,7 @@
 ## Prerequisites
 
 * Python 3.\*
-* Python packages numpy, netCDF4 and matplotlib
+* Python packages numpy, scipy, netCDF4 and matplotlib
 * GMAP tools in `/home/common/sync`
 
 ## Quick installation
@@ -12,7 +12,7 @@ To install EMS on a CNRM computer, with access to the CNRM Lustre system:
 
    `wget https://raw.githubusercontent.com/romainroehrig/EMS/master/install.sh`
 
-2. Modify `install.sh`  (or execute `install.sh -h` to get its usage):
+2. Modify `install.sh` (or execute `install.sh -h` to get its usage):
 
    * Set `EMS_VERSION`, e.g., `EMS_VERSION=2.4`
    * Set where you want to install EMS: default is `REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}`
