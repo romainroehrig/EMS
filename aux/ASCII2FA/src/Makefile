@@ -1,7 +1,9 @@
 # acadfa makefile
 
-FC	 =	gfortran
-F90FLAGS =  -fopenmp -fconvert=swap -fno-second-underscore -fbacktrace -m64 -fopenmp -gdwarf-3 -ffree-line-length-none -fno-sign-zero -fpic -fno-range-check -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -g -O2 -ftree-vectorize  -DADDRESS64 -fdefault-real-8
+FC	     =  gfortran
+F90FLAGS =  -fopenmp -fconvert=swap -fno-second-underscore -fbacktrace -m64 \
+            -gdwarf-3 -ffree-line-length-none -fno-sign-zero -fpic -fno-range-check -ffree-form \
+            -DLINUX -DLITTLE_ENDIAN -DLITTLE -g -O2 -ftree-vectorize  -DADDRESS64 -fdefault-real-8
 EXEC	 =	acadfa_exe
 
 OBJS	 =	acadfa1D_main.o \

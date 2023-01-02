@@ -12,7 +12,7 @@ To install EMS on a CNRM computer, with access to the CNRM Lustre system:
 
    `wget https://raw.githubusercontent.com/romainroehrig/EMS/master/install.sh`
 
-2. Modify `install.sh` (or execute `install.sh -h` to get its usage) :
+2. Modify `install.sh` (or execute `install.sh -h` to get its usage):
 
    * Set `EMS_VERSION`, e.g., `EMS_VERSION=2.4.mac`
    * Set where you want to install EMS: default is `REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}`
