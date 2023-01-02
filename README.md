@@ -3,7 +3,7 @@
 ## Prerequisites
 
 * Python 3.\*
-* Python packages numpy, netCDF4 and matplotlib
+* Python packages numpy, scipy, netCDF4 and matplotlib
 * GMAP tools in `/home/common/sync`
 
 ## Quick installation
