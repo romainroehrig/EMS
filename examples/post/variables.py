@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding:UTF-8 -*-
 # Copyright (c) Météo France (2014-)
 # This software is governed by the CeCILL-C license under French law.
@@ -145,7 +145,6 @@ variables = {
     'huss'              : {'varname':             'PQCLS', 'units':             'kg/kg', 'coef':         1, 'name':'2-meter Specific Humidity'}, 
     'pblh'              : {'varname':              'HCLA', 'units':                 'm', 'coef':         1, 'name':'Planetary Boundary Layer Height'}, 
     't2m'               : {'varname':             'PTCLS', 'units':                 'K', 'coef':         1, 'name':'2-meter Air Temperature'}, 
-    'ts'                : {'varname':               'PTS', 'units':                 'K', 'coef':         1, 'name':'Surface Temperature'}, 
     'uas'               : {'varname':             'PUCLS', 'units':               'm/s', 'coef':         1, 'name':'10-meter Zonal Wind'}, 
     'vas'               : {'varname':             'PVCLS', 'units':               'm/s', 'coef':         1, 'name':'10-meter Meridional Wind'}, 
 # 8. Physical tendencies

@@ -1,10 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding:UTF-8 -*-
 # Copyright (c) Météo France (2014-)
 # This software is governed by the CeCILL-C license under French law.
 # http://www.cecill.info
 
 import os
+import stat
+import subprocess
 import shutil
 import logging
 logger = logging.getLogger(__name__)
@@ -48,7 +50,8 @@ def install_atm(model, case, subcase, filecase,
     vert_grid_name = vert_grid_file.split('.')[0]
 
     if (loverwrite):
-        os.system('rm -rf ' + rep)
+        if os.path.exists(rep):
+            shutil.rmtree(rep)
 
     flagExist = os.path.exists(rep)
 
@@ -98,11 +101,13 @@ def install_atm(model, case, subcase, filecase,
                 save_init=True, file_init='init_{0}.nc'.format(vert_grid_name),
                 save_forc=True, file_forc='forc_{0}.nc'.format(vert_grid_name))
         os.symlink('nam1D_{0}'.format(vert_grid_name), 'nam1D')
-        os.environ['OMP_NUM_THREADS'] = '1'
         os.symlink(ASCII2FA, 'ascii2fa')
-        result = os.system('./ascii2fa > ascii2fa_{0}.log 2>&1'.format(vert_grid_name))
-        if os.WEXITSTATUS(result) != 0:
-            raise RuntimeError("Error during ascii2fa execution")
+        with open('ascii2fa_{0}.log'.format(vert_grid_name), 'w') as log:
+            p = subprocess.run('ascii2fa', cwd=rep, stderr=subprocess.STDOUT, stdout=log,
+                               env=dict(os.environ, OMP_NUM_THREADS='1'))
+            if p.returncode != 0:
+                raise RuntimeError("Error during ascii2fa execution (log: {})".format(os.path.abspath(log.name)))
+
         os.rename('1D.file', 'initfile_{0}'.format(vert_grid_name))
         os.remove('nam1D')
     else:
@@ -140,7 +145,8 @@ def install_sfx(model, case, subcase, filecase, repout,
     assert os.path.exists(PGD) and os.path.exists(PREP), "PGD and PREP executables must exist"
 
     if (loverwrite):
-        os.system('rm -rf ' + rep)
+        if os.path.exists(rep):
+            shutil.rmtree(rep)
 
     flagExist = os.path.exists(rep)
 
@@ -168,12 +174,14 @@ def install_sfx(model, case, subcase, filecase, repout,
         os.symlink('namsurf', 'OPTIONS.nam')
         for f in ['ecoclimapII_eu_covers_param.bin', 'ecoclimapI_covers_param.bin']:
             os.symlink(os.path.join('ecoclimap', f), f)
-        result = os.system('./PGD > PGD.log 2>&1')
-        if os.WEXITSTATUS(result) != 0:
-            raise RuntimeError("Error during PGD execution")
-        result = os.system('./PREP > PREP.log 2>&1')
-        if os.WEXITSTATUS(result) != 0:
-            raise RuntimeError("Error during PREP execution")
+        with open('PGD.log', 'w') as log:
+            p = subprocess.run('PGD', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+            if p.returncode != 0:
+                raise RuntimeError("Error during PGD execution (log: {})".format(os.path.abspath(log.name)))
+        with open('PREP.log', 'w') as log:
+            p = subprocess.run('PREP', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+            if p.returncode != 0:
+                raise RuntimeError("Error during PREP execution (log: {})".format(os.path.abspath(log.name)))
         for f in ['PGD.des', 'class_cover_data.tex', 'PREP.des']:
             try:
                 os.remove(f)
@@ -233,7 +241,8 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
 
 
     if (loverwrite):
-        os.system('rm -rf ' + rep)
+        if os.path.exists(rep):
+            shutil.rmtree(rep)
 
     flagExist = os.path.exists(rep)
 
@@ -242,9 +251,9 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         os.chdir(rep)
         os.makedirs('./listings/')
         os.symlink(filecase,'data_input.nc')
-        os.system('cp ' + config['namATMref'] + ' namATMref')
+        shutil.copy(config['namATMref'], 'namATMref')
         if config['lsurfex']:
-            os.system('cp ' + config['namSFXref'] + ' namSFXref')
+            shutil.copy(config['namSFXref'], 'namSFXref')
 
         t0 = perf(t0, 'First things')
 
@@ -306,8 +315,6 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
             g.write('installpost=True\n')
             g.write('runpost=True\n')
 
-        os.system('chmod u+x param_' + config['name'])
-
         # Preparation fichier d'execution de la simulation
         with open('exec.sh', 'w') as g:
             g.write('#!/bin/sh\n')
@@ -321,14 +328,15 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
             g.write('echo log file: logs/run_${CONFIG}.log\n')
             g.write('date')
 
-        os.system('chmod u+x exec.sh')
+        os.chmod('exec.sh', os.stat('exec.sh').st_mode | stat.S_IEXEC)
 
         t0 = perf(t0, 'Prepare Run')
 
         # Execution de la simulation
-        result = os.system('./exec.sh > exec.log 2>&1')
-        if os.WEXITSTATUS(result) != 0:
-            raise RuntimeError("Error during MUSC execution")
+        with open('exec.log', 'w') as log:
+            p = subprocess.run('exec.sh', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+            if p.returncode != 0:
+                raise RuntimeError("Error during MUSC execution (log: {})".format(os.path.abspath(log.name)))
 
         t0 = perf(t0, 'Execution')
 
@@ -338,9 +346,10 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         os.chdir(rep)
 
         # Execution de la simulation
-        result = os.system('./exec.sh > exec.log 2>&1')
-        if os.WEXITSTATUS(result) != 0:
-            raise RuntimeError("Error during MUSC execution")
+        with open('exec.log', 'w') as log:
+            p = subprocess.run('exec.sh', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+            if p.returncode != 0:
+                raise RuntimeError("Error during MUSC execution (log: {})".format(os.path.abspath(log.name)))
 
         t0 = perf(t0, 'Execution')
 
