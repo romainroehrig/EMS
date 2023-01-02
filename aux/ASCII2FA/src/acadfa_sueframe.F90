@@ -5,10 +5,24 @@
      &                    KGIV0,PELX,PELY,PEDELX,PEDELY,PEXWN,PEYWN, &
      &                    KDLUN,KDLUX,KDGUN,KDGUX,KBZONL,KBZONG,KFLEV, &
      &                    PVP00,PVALH,PVBH,KDOM,KS)
-      IMPLICIT LOGICAL(L)
-      CHARACTER*16 CDMCA
+      IMPLICIT NONE
+      CHARACTER(LEN=16) CDMCA
+      LOGICAL :: LDMAP, LDGARD
+      REAL ::  PEBETA, &
+     &         PELONR,PELATR,PELON1,PELAT1, &
+     &         PELON2,PELAT2,PELON0,PELAT0,PERPK, &
+     &         PELX,PELY,PEDELX,PEDELY,PEXWN,PEYWN
+      INTEGER :: &
+     &         KMSMAX,KSMAX,KDGL,KDLON, &
+     &         KROTEQ, &
+     &         KSOTRP, &
+     &         KGIV0, &
+     &         KDLUN,KDLUX,KDGUN,KDGUX,KBZONL,KBZONG,KFLEV, &
+     &         KDOM,KS
       REAL ZGEOM(18)
+      REAL ZSLAPO, ZCLOPO, ZSLOPO, ZCODIL
       INTEGER IDOM(8),ISUBTR(1)
+      INTEGER INLATI, INXLON, ITRONC, ITYPTR
       REAL ZVALH(2),ZVBH(2), PVALH(0:KFLEV), PVBH(0:KFLEV),PVP00
 !*       1.   DEFINE THE FRAME
       ZSLAPO = PEBETA
@@ -80,5 +94,4 @@
      &   INLATI,INXLON,IDOM,ISUBTR,ZGEOM,KFLEV,PVP00,ZVALH,ZVBH,LDGARD)
       ENDIF
 ! -------------------------------------------------------------------
-      RETURN
       END SUBROUTINE ACADFA_SUEFRAME

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding:UTF-8 -*-
 # Copyright (c) Météo France (2014-)
 # This software is governed by the CeCILL-C license under French law.
@@ -113,6 +113,17 @@ def prep_init_forc_atm(
     second = startDate.second
 
     nt, = case.variables['ps_forc'].data.shape
+
+    #---------------------------------------------------------------
+    # Surface temperature
+    #---------------------------------------------------------------
+
+    if 'ts_forc' in case.variables:
+        variablesAux['SURFTEMPERATURE'] = case.variables['ts_forc'].data[0]
+    elif 'tskin' in case.variables:
+        variablesAux['SURFTEMPERATURE'] = case.variables['tskin'].data[0]
+    elif 'ta' in case.variables:
+        variablesAux['SURFTEMPERATURE'] = case.variables['ta'].data[0, 0]
 
     #---------------------------------------------------------------
     # Half-level pressure
@@ -237,7 +248,10 @@ def prep_init_forc_atm(
             dataout_forc['tnta_adv'] = 0
         if case.attributes['radiation'] == 'tend':
             dataout_forc['tnta_rad'] = prep_forcing('tnta_rad')
-            dataout_forc['tnta_adv'] += dataout_forc['tnta_rad']
+            if dataout_forc['tnta_adv'] == 0:
+                dataout_forc['tnta_adv'] = dataout_forc['tnta_rad']
+            else:
+                dataout_forc['tnta_adv'] += dataout_forc['tnta_rad']
 
     if case.attributes['adv_qv'] == 1:
         nb_f += 1
@@ -374,7 +388,7 @@ def prep_init_forc_atm(
             write_forcing_in_nam1d(g, dataout_forc['tnua_adv'].data, 'U ADV', wl=True)
             write_forcing_in_nam1d(g, dataout_forc['tnva_adv'].data, 'V ADV', wl=True)
 
-        if case.attributes['adv_ta'] == 1:
+        if case.attributes['adv_ta'] == 1 or case.attributes['radiation'] == 'tend':
             write_forcing_in_nam1d(g, dataout_forc['tnta_adv'].data, 'T ADV', wl=True)
 
         if case.attributes['adv_qv'] == 1:

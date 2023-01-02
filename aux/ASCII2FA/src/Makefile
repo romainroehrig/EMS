@@ -1,7 +1,7 @@
 # acadfa makefile
 
 FC	 =	gfortran
-F90FLAGS =      -fopenmp -fconvert=swap -fno-second-underscore -fbacktrace -m64 -fopenmp -gdwarf-3 -ffree-line-length-none -fno-sign-zero -fpic -fno-range-check -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -g -O2 -ftree-vectorize  -DADDRESS64
+F90FLAGS =      -fopenmp -fconvert=swap -fno-second-underscore -fbacktrace -m64 -fopenmp -gdwarf-3 -ffree-line-length-none -fno-sign-zero -fpic -fno-range-check -ffree-form  -DLINUX -DLITTLE_ENDIAN -DLITTLE -g -O2 -ftree-vectorize  -DADDRESS64 -fdefault-real-8
 EXEC	 =	acadfa_exe
 
 OBJS	 =	acadfa1D_main.o \
@@ -12,13 +12,13 @@ XRD	 =	/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/
 XLA	 =      /cnrm/amacs/USERS/roehrig/share/EMS/pack/arp603_export.01.GFORTRAN610.cx/lib/libxla.local.a
 GRIBEX   =      /home/common/sync/gfortran/auxlibs-gcc-9.2.0/lib/libgribex.a 
 MPIDUMMY =      /home/common/sync/gfortran/auxlibs-gcc-9.2.0/lib/libmpidummy.a
-LIBS	 =	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
+ASCII2FA_LIBS	 ?=	$(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
 
 %.o:%.F90
 	$(FC) $(F90FLAGS) -c $<
 
 all:	$(OBJS)
-	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(LIBS)
+	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(ASCII2FA_LIBS)
 	/bin/cp -f $(EXEC) ../bin/ascii2fa
 
 clean:
