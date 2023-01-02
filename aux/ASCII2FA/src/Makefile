@@ -17,12 +17,12 @@ MPIDUMMY      = /cnrm/amacs/USERS/roehrig/share/EMS/libraries/auxlibs.3.7_gcc-9.
 ASCII2FA_LIBS ?= $(XRD) $(XLA) $(GRIBEX) $(MPIDUMMY)
 
 %.o:%.F90
-    $(FC) $(F90FLAGS) -c $<
+	$(FC) $(F90FLAGS) -c $<
 
 all:    $(OBJS)
-    $(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(ASCII2FA_LIBS)
-    /bin/cp -f $(EXEC) ../bin/ascii2fa
+	$(FC) $(F90FLAGS) -o $(EXEC) $(OBJS) $(ASCII2FA_LIBS)
+	/bin/cp -f $(EXEC) ../bin/ascii2fa
 
 clean:
-    /bin/rm -f $(EXEC) $(OBJS)
+	/bin/rm -f $(EXEC) $(OBJS)
 

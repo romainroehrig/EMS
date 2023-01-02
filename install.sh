@@ -21,6 +21,9 @@ DEBUG=0
 # and for ARPEGE-Climat 6.3.2
 TESTS="n"
 
+# Force to remove already installed directories
+REMOVE="n"
+
 #####################################################
 
 
@@ -42,7 +45,7 @@ ${bold}NAME${normal}
 
 ${bold}USAGE${normal}
         ${PROGNAME} [-i <install-directory>] [-r <musc-run-directory>]
-        [-v <ems-version>] [ -d ] [ -t ][ -h ]
+        [-v <ems-version>] [ -d ] [ -t ] [ -f ] [ -h ]
 
 ${bold}DESCRIPTION${normal}
         Description of what the EMS install script does
@@ -63,6 +66,9 @@ ${bold}OPTIONS${normal}
 
         -d Debug! Add debug information with set -xv
 
+        -f Force to remove already installed directories
+           that is $REP_EMS and $REP_MUSC
+
         -h Help! Print usage information.
 
 USAGE
@@ -75,7 +81,7 @@ USAGE=0
 
 #####################################################
 
-while getopts i:r:v:dth option
+while getopts i:r:v:dtfh option
 do
   case $option in
     i)
@@ -92,6 +98,9 @@ do
        ;;
     t)
        TESTS="y"
+       ;;
+    f)
+       REMOVE="y"
        ;;
     h)
        USAGE=1
@@ -119,13 +128,24 @@ DIR0=`pwd`
 if [ -d "$REP_EMS" ]; then
   echo "REP_EMS="$REP_EMS
   echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install.sh"
-  exit
+  echo "You can force removal of REP_EMS using the -f argument"
+  echo "!!! It may remove REP_MUSC if it exists !!!"
+  if [ "$REMOVE" == "y" ]; then
+    /bin/rm -r $REP_EMS
+  else
+    exit
+  fi
 fi
 
 if [ -d "$REP_MUSC" ]; then
   echo "REP_MUSC="$REP_MUSC
   echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install.sh"
-  exit
+  echo "You can force removal of REP_MUSC using the -f argument"
+  if [ "$REMOVE" == "y" ]; then
+    /bin/rm -r $REP_MUSC
+  else
+    exit
+  fi
 fi
 
 #####################################################

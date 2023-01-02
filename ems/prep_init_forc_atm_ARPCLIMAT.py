@@ -122,14 +122,14 @@ def prep_init_forc_atm(
         lines = f.readlines()
     nlev_out = len(lines) - 1
 
-    vah = np.zeros((nlev_out + 1), dtype=np.float)
-    vbh = np.zeros((nlev_out + 1), dtype=np.float)
+    vah = np.zeros((nlev_out + 1), dtype=np.float32)
+    vbh = np.zeros((nlev_out + 1), dtype=np.float32)
     for ilev in range(nlev_out + 1):
         line = lines[ilev].split()
         vah[ilev] = float(line[0])
         vbh[ilev] = float(line[1])
 
-    pph = np.zeros((nt,nlev_out + 1),dtype=np.float)
+    pph = np.zeros((nt,nlev_out + 1),dtype=np.float32)
     for ilev in range(nlev_out + 1):
         pph[:,ilev] = vah[ilev] + vbh[ilev]*case.variables['ps_forc'].data[:]	  
 
@@ -137,7 +137,7 @@ def prep_init_forc_atm(
     # Full-level pressure
     #---------------------------------------------------------------
 
-    ppf = np.zeros((nt, nlev_out), dtype=np.float)
+    ppf = np.zeros((nt, nlev_out), dtype=np.float32)
     pph = np.where(pph < 0.1,0.1,pph)
     for ilev in range(nlev_out):
         # For reproductibility with CNRM machines
