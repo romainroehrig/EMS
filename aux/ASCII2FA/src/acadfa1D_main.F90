@@ -134,7 +134,7 @@
 
 
       CHARACTER CLMCA*16, CLFILEOUT*40
-      CHARACTER CBLOCK*10, YRECFM*8
+      CHARACTER CBLOCK*12, YRECFM*8
       CHARACTER CHAMP*16
       CHARACTER FORCAGE*32
 
@@ -842,6 +842,8 @@
       !
       IF (CBLOCK.NE.'SURF.FORC') THEN
         print*,'the block SURF. FORC is not present'
+        print*,'just backspace and continue'
+        BACKSPACE(10)
       ELSE
         !
         !  Preparation for GP fields
@@ -884,7 +886,8 @@
           GOTO 999
         ENDIF
         READ(10,*)ZZ
-        WRITE(6,*) 'ZZ',ZZ
+        !WRITE(6,*) 'ZZ',ZZ
+        print*,CHAMP
         print*,CHAMP(5:16),ZZ
         DO J = 1,IDGL
           ZOUT(J) = ZZ
