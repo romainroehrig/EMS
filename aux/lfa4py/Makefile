@@ -1,5 +1,5 @@
 
-FFLAGS=-fconvert=big-endian -fbacktrace -fPIC -O2 -m64
+FFLAGS=-fconvert=big-endian -fbacktrace -fPIC -O2
 FC=gfortran
 GCC=gcc
 
@@ -18,10 +18,10 @@ lfa.o: lfa.f90 lfatail.h lfayom.h cllang.o caracteres_lfa.o
 	$(FC) -cpp -I. $(FFLAGS) -static -c $< -o $@
 
 liblfa.a: cllang.o caracteres_lfa.o lfa.o init_gfortran.o
-	ar r liblfa.a cllang.o caracteres_lfa.o lfa.o init_gfortran.o *.mod
+	ar r liblfa.a cllang.o caracteres_lfa.o lfa.o init_gfortran.o
 
 lfa4py.so: lfa4py.o liblfa.a
-	gfortran $(FFLAGS) -shared lfa4py.o -L. -l lfa -o lfa4py.so
+	gfortran $(FFLAGS) -shared lfa4py.o -L. -I. -l lfa -o lfa4py.so
 	rm -f *.o *.a *.mod
 
 clean: 

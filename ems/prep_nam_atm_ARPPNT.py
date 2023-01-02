@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding:UTF-8 -*-
 # Copyright (c) Météo France (2014-)
 # This software is governed by the CeCILL-C license under French law.
@@ -106,16 +106,16 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
         nam['NAMDYN'][k] = ['.FALSE.']
 
     # Aerosols and Ozone
-    nam['NAMPHY']['LAEROSEA'] = ['.FALSE.']
-    nam['NAMPHY']['LAEROLAN'] = ['.FALSE.']
-    nam['NAMPHY']['LAEROSOO'] = ['.FALSE.']
-    nam['NAMPHY']['LAERODES'] = ['.FALSE.']
+    #nam['NAMPHY']['LAEROSEA'] = ['.FALSE.']
+    #nam['NAMPHY']['LAEROLAN'] = ['.FALSE.']
+    #nam['NAMPHY']['LAEROSOO'] = ['.FALSE.']
+    #nam['NAMPHY']['LAERODES'] = ['.FALSE.']
 
-    nam['NAMPHY']['LOZONE'] = ['.FALSE.']
-    nam['NAMPHY']['LO3ABC'] = ['.FALSE.']
-    nam['NAMPHY']['LO3FL'] = ['.FALSE.']
+    #nam['NAMPHY']['LOZONE'] = ['.FALSE.']
+    #nam['NAMPHY']['LO3ABC'] = ['.FALSE.']
+    #nam['NAMPHY']['LO3FL'] = ['.FALSE.']
 
-    nam['NAMPHY']['LRAYFM'] = ['.FALSE.']
+    #nam['NAMPHY']['LRAYFM'] = ['.FALSE.']
     nam['NAMPHY']['LEDR'] = ['.FALSE.',]
 
     #nam['NAMPHY']['LRELAXT'] = ['.FALSE.']
