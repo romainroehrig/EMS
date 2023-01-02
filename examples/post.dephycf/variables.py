@@ -211,7 +211,7 @@ variables = {
     'tnta_radlwcs'      : {'varname':         'TENDLWTCS', 'units':             'K s-1', 'coef':         1, 'name':'tendency_of_air_temperarure_due_to_lw_clear_sky_radiation'}, 
     'tnta_radsw'        : {'varname':           'TENDSWT', 'units':             'K s-1', 'coef':         1, 'name':'tendency_of_air_temperarure_due_to_sw_radiation'}, 
     'tnta_radswcs'      : {'varname':         'TENDSWTCS', 'units':             'K s-1', 'coef':         1, 'name':'tendency_of_air_temperarure_due_to_sw_clear_sky_radiation'},
-    'tnta_cas'          : {'varname':            'TENDCT', 'units':             'K s-1', 'coef':         1, 'name':'tendendy_of_air_temperature_due_to_dry_convective_adjustment'}, 
+#    'tnta_cas'          : {'varname':            'TENDCT', 'units':             'K s-1', 'coef':         1, 'name':'tendendy_of_air_temperature_due_to_dry_convective_adjustment'}, 
     'tnta_other'        : {'varname':            'TENDMT', 'units':             'K s-1', 'coef':         1, 'name':'tendendy_of_air_temperature_due_to_other_processes'}, 
     'tnta_fccql'        : {'varname':        'TENDTFCCQL', 'units':             'K s-1', 'coef':         1, 'name':'tendendy_of_air_temperature_due_to_convective_rain_generation'}, 
     'tnta_fccqn'        : {'varname':        'TENDTFCCQN', 'units':             'K s-1', 'coef':         1, 'name':'tendendy_of_air_temperature_due_to_convective_snow_generation'}, 

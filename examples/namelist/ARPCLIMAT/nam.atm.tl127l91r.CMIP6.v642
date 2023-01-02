@@ -164,6 +164,7 @@
 &NAMDFI
 /
 &NAMDIA
+  LPHYTEND=.TRUE.,
 /
 &NAMDIF
 /
