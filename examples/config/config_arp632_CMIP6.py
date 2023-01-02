@@ -6,15 +6,15 @@ REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
-GROUP = 'V631'
+GROUP = 'V632'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/Users/romain/rootpack/arp603_export.01.MPIGNU1120.x/bin'
+bindir = '/Users/romain/rootpack/arp632_climat.02.MPIGNU1220.x/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')
-#ASCII2FA
+ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 
 # Namelists
 ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631')
