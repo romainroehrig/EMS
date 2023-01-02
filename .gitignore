@@ -1,5 +1,6 @@
 # Compiled Python files
 *.pyc
+**/__pycache__
 # Mac files
 **/.DS_Store
 # swp files

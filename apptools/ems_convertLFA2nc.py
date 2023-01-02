@@ -25,19 +25,11 @@ else:
     os.system('rm -f netcdf/*')
 
 
-# Dict for variable attributes
-varatts = {}
-for var in VV.varnames.keys():
-    varatts[var] = dict(varname=VV.varnames[var], 
-                        name=VV.names[var] if var in VV.names.keys() else VV.varnames[var], 
-                        units=VV.units[var] if var in VV.units.keys() else '-',
-                        coef=VV.coefs[var] if var in VV.coefs.keys() else 1)
-
 # From lfa to netcdf
 fin = 'netcdf/Out_klevel.nc'
 lfa2nc('LFA', fin,
        tosave=None if config.saveall else config.var2save,
-       varatts=varatts,
+       varatts=VV.variables,
        solib=solib)
 
 # Operations on model levels

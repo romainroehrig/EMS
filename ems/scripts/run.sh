@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #------------------------------------------------------------
 # 			INTIALISATION
@@ -9,6 +9,14 @@ export OMP_NUM_THREADS=1
 
 export DR_HOOK_IGNORE_SIGNALS=-1
 export DR_HOOK=0
+
+if [ $model = "AROME" ] || [ $model = "ARPPNT" ] ; then
+  export LIBRARY_PATH=$LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/common/sync/gcc/mpfr-3.1.3/lib:/home/common/sync/gcc/jasper-1.900.1/lib:/home/common/sync/gcc/torque:/opt/google/earth/pro
+  export C_INCLUDE_PATH=$C_INCLUDE_PATH:/usr/include/x86_64-linux-gnu
+  export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/include/x86_64-linux-gnu
+fi
+
 
 . ./param
 
@@ -24,7 +32,12 @@ DIR=`pwd`
 OUTPUTDIR=$DIR/Output/LFA/
 OUTPUTDIR0=$DIR/Output/
 LISTINGDIR=$DIR/listings
-TMPDIR=$HOME/tmp/EXEMUSC
+
+if [ -z "$TMPDIR" ] ; then
+  TMPDIR=$HOME/tmp/EXEMUSC.$$
+else
+  TMPDIR=$TMPDIR/EXEMUSC.$$
+fi
 
 [ ! -d $LISTINGDIR ] && mkdir -p $LISTINGDIR
 [ ! -d $OUTPUTDIR ] && mkdir -p $OUTPUTDIR
@@ -86,7 +99,7 @@ set -x
 ln -s $INITFILE ICMSH${EXP}INIT
 [ -n "$FORCING_FILES" ] && ln -s $FORCING_FILES files
 
-if [ $model == "ARPCLIMAT" ]; then
+if [ $model = "ARPCLIMAT" ]; then
     [ -n "$PREP" ] && ln -s  $PREP TEST.lfi
     [ -n "$PGD" ] && ln -s  $PGD PGD.lfi
 else
@@ -131,18 +144,20 @@ echo ' ALADIN job running '
 echo ''
 set -x
 
-[ ! $os == "Darwin" ] && ulimit -s unlimited
+[ ! $os = "Darwin" ] && ulimit -s unlimited
 
 unset LD_LIBRARY_PATH
 
 date
-if [ $model == "ARPCLIMAT" ]; then
+if [ $model = "ARPCLIMAT" ]; then
     ./MASTER -c001 -vmeteo -maladin -e${EXP} -t$TSTEP -f$NSTOP -asli  >lola 2>&1
 else
     ./MASTER >lola 2>&1
 fi
 date
+set +e
 ls -l
+set -e
 
 #       **********************************
 #       *     Save model results         *

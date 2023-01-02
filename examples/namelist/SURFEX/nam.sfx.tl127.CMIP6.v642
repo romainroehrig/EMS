@@ -1,0 +1,224 @@
+&NAM_FRAC              LECOCLIMAP   = T             ,
+                       XUNIF_TOWN   = 0.0           ,
+                       CFNAM_NATURE = 'frac_nat.asc',
+                       CFTYP_NATURE = 'ASCLLV'      ,
+                       CFNAM_SEA    = 'frac_sea.asc',
+                       CFTYP_SEA    = 'ASCLLV'      ,
+                       CFNAM_WATER  = 'frac_wat.asc',
+                       CFTYP_WATER  = 'ASCLLV'
+/
+&NAM_PGD_GRID          CGRID = 'GAUSS     '
+/
+&NAMDIM                NDGLG = 128
+/
+&NAMGEM                RMUCEN = 1.000,
+                       RLOCEN = 0.000,
+                       RSTRET = 1.0
+/
+&NAMRGRI
+     NRGRI( 1)=20,
+     NRGRI( 2)=30,
+     NRGRI( 3)=40,
+     NRGRI( 4)=48,
+     NRGRI( 5)=54,
+     NRGRI( 6)=64,
+     NRGRI( 7)=72,
+     NRGRI( 8)=80,
+     NRGRI( 9)=90,
+     NRGRI(10)=90,
+     NRGRI(11)=100,
+     NRGRI(12)=108,
+     NRGRI(13)=120,
+     NRGRI(14)=120,
+     NRGRI(15)=128,
+     NRGRI(16)=144,
+     NRGRI(17)=144,
+     NRGRI(18)=144,
+     NRGRI(19)=150,
+     NRGRI(20)=160,
+     NRGRI(21)=160,
+     NRGRI(22)=180,
+     NRGRI(23)=180,
+     NRGRI(24)=180,
+     NRGRI(25)=192,
+     NRGRI(26)=192,
+     NRGRI(27)=192,
+     NRGRI(28)=200,
+     NRGRI(29)=200,
+     NRGRI(30)=216,
+     NRGRI(31)=216,
+     NRGRI(32)=216,
+     NRGRI(33)=240,
+     NRGRI(34)=240,
+     NRGRI(35)=240,
+     NRGRI(36)=240,
+     NRGRI(37)=240,
+     NRGRI(38)=240,
+     NRGRI(39)=240,
+     NRGRI(40)=250,
+     NRGRI(41)=250,
+     NRGRI(42)=250,
+     NRGRI(43)=250,
+     NRGRI(44)=256,
+     NRGRI(45)=256,
+     NRGRI(46)=256,
+     NRGRI(47)=256,
+     NRGRI(48)=256,
+     NRGRI(49)=256,
+     NRGRI(50)=256,
+     NRGRI(51)=256,
+     NRGRI(52)=256,
+     NRGRI(53)=256,
+     NRGRI(54)=256,
+     NRGRI(55)=256,
+     NRGRI(56)=256,
+     NRGRI(57)=256,
+     NRGRI(58)=256,
+     NRGRI(59)=256,
+     NRGRI(60)=256,
+     NRGRI(61)=256,
+     NRGRI(62)=256,
+     NRGRI(63)=256,
+     NRGRI(64)=256
+/
+&NAM_PGD_SCHEMES       CNATURE = 'ISBA  '  , 
+                       CSEA    = 'SEAFLX'  , 
+                       CTOWN   = 'NONE  '  , 
+                       CWATER  = 'FLAKE '
+/
+&NAM_PGD_ARRANGE_COVER LWATER_TO_NATURE = T,
+                       LTOWN_TO_ROCK    = T
+/
+&NAM_COVER             YCOVER         = 'ecoclimap',
+                       YCOVERFILETYPE = 'DIRECT'   ,
+		       XRM_COVER      = 0.01       ,
+		       XRM_LAKE       = 0.05       ,
+                       LRM_RIVER      = T
+/
+&NAM_ECOCLIMAP2        LCLIM_LAI=T
+/
+&NAM_ZS                YZS           = 'topo'  ,
+                       YZSFILETYPE   = 'DIRECT'
+/
+&NAM_SEABATHY          XUNIF_SEABATHY = 0.
+/
+&NAM_ISBA              YCLAY          = 'clay'         ,
+                       YCLAYFILETYPE  = 'DIRECT'       ,   
+                       YSAND          = 'sand'         ,
+                       YSANDFILETYPE  = 'DIRECT'       ,
+		       YCTI           = 'topo_index'   ,
+		       YCTIFILETYPE   = 'DIRECT'       ,
+		       YSOC_TOP       = 'soc_top'      ,
+		       YSOC_SUB       = 'soc_sub'      ,
+		       YSOCFILETYPE   = 'DIRECT'       ,
+		       YPERM          = 'perm_glo_10km',
+		       YPERMFILETYPE  = 'DIRECT'       ,
+                       CPEDO_FUNCTION = 'CH78'         ,
+                       CISBA          = 'DIF'          ,
+                       CPHOTO         = 'AST'          ,
+                       LTR_ML         = T              ,
+                       NPATCH         = 12             ,
+                       NGROUND_LAYER  = 14
+/
+&NAM_DATA_FLAKE        YWATER_DEPTH         = 'lake_depth',
+                       YWATER_DEPTHFILETYPE = 'DIRECT'    ,
+                       XUNIF_EXTCOEF_WATER  = 0.5         ,
+		       XMAX_DEPTH           = 60.
+/
+&NAM_PREP_SURF_ATM     NYEAR        = 1850             ,
+                       NMONTH       = 1                ,
+                       NDAY         = 1                ,
+                       XTIME        = 0.               ,
+		       CFILEPGD     = 'restart_sfx_pgd',
+                       CFILEPGDTYPE = 'FA'             ,
+		       CFILE        = 'restart_sfx'    ,
+                       CFILETYPE    = 'FA'
+/
+&NAM_PREP_SEAFLUX      XSST_UNIF      = 280.16  ,
+                       CSEAICE_SCHEME = 'GELATO',
+                       XSSS_UNIF      = 0.0     ,
+                       XSIC_UNIF      = 0.0
+/
+&NAM_PREP_FLAKE        LCLIM_LAKE = F
+/
+&NAM_PREP_ISBA_SNOW    CSNOW          = '3-L',
+                       NSNOW_LAYER    = 12
+/
+&NAM_ISBA_SNOWn        LSNOWDRIFT = T
+/
+&NAM_SURF_ATM          LNOSOF        = T    ,
+                       LVERTSHIFT    = F    ,
+                       XVZ0CM        = 1.E-5,
+                       XRIMAX        = 0.2  ,
+                       XDELTA_MAX    = 0.9
+/
+&NAM_SURF_CSTS         XEMISSN       = 0.99  ,
+                       XALBCOEF_TA96 = 0.036 ,
+		       XALBSCA_WAT   = 0.065 ,
+                       XALBWAT       = 0.065 ,
+		       XEMISWAT      = 0.96  ,
+		       XALBWATICE    = 0.40  ,
+		       XALBSEAICE    = 0.71  ,
+		       XEMISWATICE   = 0.97  ,
+                       XHGLA         = 1.0E3 ,
+		       XWSNV         = 2.0
+/
+&NAM_SEAFLUXn          CSEA_FLUX     = 'ECUME6',
+                       CSEA_ALB      = 'RS14'  ,
+                       LPRECIP       = F       ,
+                       LPWG          = F       ,
+		       CINTERPOL_SST = 'LINEAR'
+/
+&NAM_SEAICEn           LDIAG_SEAICE  = T       ,
+                       CINTERPOL_SIC = 'LINEAR',
+                       XFREEZING_SST = -0.95   ,
+                       XSI_FLX_DRV   = -20.
+/
+&NAM_FLAKEn            LSEDIMENTS = F      ,
+                       LSKINTEMP  = T      ,
+                       CFLK_FLUX  = 'FLAKE',
+                       CFLK_ALB   = 'TA96'
+/
+&NAM_SSOn              CROUGH = 'Z01D'
+/
+&NAM_ISBAn             CC1DRY     = 'DEF ',
+                       CSCOND     = 'PL98',
+		       CSOILFRZ   = 'LWT' ,
+		       CDIFSFCOND = 'DEF ',
+		       CSNOWRES   = 'RIL' ,
+		       CALBEDO    = 'CM13',
+                       CROUGH     = 'NONE',
+		       CCPSURF    = 'DRY' ,
+		       LGLACIER   = T
+/
+&NAM_ISBA_AGSn         LNITRO_DILU = T
+/
+&NAM_SGH_ISBAn         CRUNOFF = 'SGH ',
+		       CRAIN   = 'SGH ',
+		       CHORT   = 'SGH ',
+                       LSOC    = T
+/
+&NAM_DIAG_SURF_ATMn    LDIAG_CMIP = T
+/
+&NAM_WRITE_SURF_ATM    LNOWRITE_CANOPY  = T,
+                       LNOWRITE_TEXFILE = T
+/
+&NAM_IO_OFFLINE        CSURF_FILETYPE = 'FA    ',
+/
+&NAM_IO_SURF_ARO       CFILETYPE            = 'FA    ',
+                       CTIMESERIES_FILETYPE = 'XIOS  ',
+                       LALLOW_ADD_DIM       = T
+/
+&NAM_OASIS             LOASIS      = T       ,
+                       CMODEL_NAME = 'surfex'
+/
+&NAM_SFX_LAND_CPL      XTSTEP_CPL_LAND = 3600.     ,
+                       CRUNOFF         = 'SXRUNOFF',
+                       CDRAIN          = 'SXDRAIN ',
+                       CTWS            = 'SXTWS'   ,
+                       CWTD            = 'SXWTD'   ,
+                       CFWTD           = 'SXFWTD'  ,
+                       CSRCFLOOD       = 'SXSRCFLD',
+                       CFFLOOD         = 'SXFFLD  ',
+                       CPIFLOOD        = 'SXPIFLD '
+/

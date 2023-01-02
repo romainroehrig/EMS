@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
-set -evx
+set -e
 
 #####################################################
-# User specific
+# User specific defaults
 
 # EMS Version
-EMS_VERSION=2.2
+EMS_VERSION=2.3
 
 # Directory where EMS is installed
 REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
@@ -14,7 +14,102 @@ REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
 # Directory where MUSC will be run
 REP_MUSC=$HOME/MUSC/V${EMS_VERSION}
 
+# Debug mode (0: unactivated, 1: activated)
+DEBUG=0
+
+# Testing. So fatr only on CNRM computer 
+# and for ARPEGE-Climat 6.3.2
+TESTS="n"
+
 #####################################################
+
+
+#####################################################
+# Usage
+#
+bold=$(tput bold)
+normal=$(tput sgr0)
+unline=$(tput smul)
+
+usage() {
+
+PROGNAME=`basename $0`
+
+cat << USAGE
+
+${bold}NAME${normal}
+        ${PROGNAME} - Installation script for EMS - Environment for MUSC Simulations
+
+${bold}USAGE${normal}
+        ${PROGNAME} [-i <install-directory>] [-r <musc-run-directory>]
+        [-v <ems-version>] [ -d ] [ -t ][ -h ]
+
+${bold}DESCRIPTION${normal}
+        Description of what the EMS install script does
+
+${bold}OPTIONS${normal}
+        -i ${unline}install-directory${normal}
+           PATH to where you want to install EMS
+           REP_EMS [$REP_EMS]
+
+        -r ${unline}musc-run-directory${normal}
+           PATH to where you want to run MUSC
+           REP_MUSC [$REP_MUSC]
+
+        -v ${unline}ems-version${normal}
+           EMS_VERSION [$EMS_VERSION]
+        
+        -t Testing! Only on CNRM computer and for ARPEGE-Climat 6.3.2
+
+        -d Debug! Add debug information with set -xv
+
+        -h Help! Print usage information.
+
+USAGE
+}
+
+#####################################################
+# Some defaults
+
+USAGE=0
+
+#####################################################
+
+while getopts i:r:v:dth option
+do
+  case $option in
+    i)
+       REP_EMS=$OPTARG
+       ;;
+    r)
+       REP_MUSC=$OPTARG
+       ;;
+    v)
+       EMS_VERSION=$OPTARG
+       ;;
+    d)
+       DEBUG=1
+       ;;
+    t)
+       TESTS="y"
+       ;;
+    h)
+       USAGE=1
+       ;;
+    *)
+       USAGE=1
+       ;;
+  esac
+done
+
+if [ ${USAGE} -eq 1 ]; then
+  usage
+  exit 1
+fi
+
+if [ ${DEBUG} -eq 1 ]; then
+  set -vx
+fi
 
 DIR0=`pwd`
 
@@ -23,13 +118,13 @@ DIR0=`pwd`
 
 if [ -d "$REP_EMS" ]; then
   echo "REP_EMS="$REP_EMS
-  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install_ems.sh"
+  echo "REP_EMS already exists. Please remove it or modify REP_EMS at the top of install.sh"
   exit
 fi
 
 if [ -d "$REP_MUSC" ]; then
   echo "REP_MUSC="$REP_MUSC
-  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install_ems.sh"
+  echo "REP_MUSC already exists. Please remove it or modify REP_MUSC at the top of install.sh"
   exit
 fi
 
@@ -47,7 +142,7 @@ rm -rf EMS-${EMS_VERSION}
 # Some compilation if you want
 compile="y"
 
-if [ $compile == "y" ]; then
+if [ $compile = "y" ]; then
 
   # lfa python library
   cd $REP_EMS/aux/lfa4py
@@ -88,22 +183,22 @@ cd ..
 
 #####################################################
 # Some Testing
-testing="y"
+testing="$TESTS"
 
 test_arp631="y"
 
-if [ $testing == "y" ]; then
+if [ $testing = "y" ]; then
 
   # Testing ARPEGE-Climat 6.3.1
-  if [ $test_arp631 == 'y' ]; then
+  if [ $test_arp631 = "y" ]; then
     cd $REP_MUSC
     source setenv
 
-    MPLBACKEND=Agg ./MUSC.py -config config/config_arp631_CMIP6.py -case ARMCU -subcase REF
-    [ -f $REP_MUSC/ATM/V631/arp631_CMIP6/ARMCU/REF/initfile_L91 ] || echo "PROBLEM when preparing atmospheric files"
-    [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM when prepararing PGD"
-    [ -f $REP_MUSC/SURFEX/V631/arp631_CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM when preparing PREP"
-    [ -f $REP_MUSC/simulations/V631/arp631_CMIP6/ARMCU/REF/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM when running MUSC"
+    MPLBACKEND=Agg ./MUSC.py -config config/config_arp632_CMIP6.py -case ARMCU -subcase REF
+    [ -f $REP_MUSC/ATM/V632/arp632_CMIP6/ARMCU/REF/initfile_L91 ] || echo "PROBLEM when preparing atmospheric files"
+    [ -f $REP_MUSC/SURFEX/V632/arp632_CMIP6/ARMCU/REF/PGD.lfi ] || echo "PROBLEM when prepararing PGD"
+    [ -f $REP_MUSC/SURFEX/V632/arp632_CMIP6/ARMCU/REF/PREP.lfi ] || echo "PROBLEM when preparing PREP"
+    [ -f $REP_MUSC/simulations/V632/arp632_CMIP6/ARMCU/REF/Output/netcdf/Out_klevel.nc ] || echo "PROBLEM when running MUSC"
 
   fi
 

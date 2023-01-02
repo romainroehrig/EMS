@@ -4,6 +4,9 @@
 # This software is governed by the CeCILL-C license under French law.
 # http://www.cecill.info
 
+import logging
+logger = logging.getLogger(__name__)
+
 def readarp(fin):
   """
     Read atmospheric namelist in fin and return a dictionary
@@ -28,14 +31,15 @@ def readarp(fin):
       toto = line.split('=')
       if len(toto) == 2:
         tmp = list(toto[1].strip().split(','))
-        tmp1 = [x.strip() for x in tmp if x is not('')]
+        tmp1 = [x.strip() for x in tmp if x != '']
         param = toto[0].strip().upper()
         namelist[nam_tmp][param] = tmp1 #toto[1].split(',')[0].strip()
       elif len(toto) == 1:
         tmp = toto[0].strip().split(',')[0]
         namelist[nam_tmp][param].append(tmp)
       else:
-        print 'case unexpected:', line
+        logger.error('case unexpected:', line)
+        raise ValueError
 
   return namelist
 
@@ -47,7 +51,7 @@ def writearp(nam,fout):
   f = open(fout,'w')
 
   for nn in sorted(nam.keys()):
-    print >>f, '&' + nn
+    f.write('&' + nn + '\n')
     for param in sorted(nam[nn].keys()):
       if param in ['CFP2DF(1)','CFP3DF(1)','CFPCFU(1)','CFPPHY(1)','CFPXFU(1)']:
         tmp = '  ' + param + '='	 
@@ -61,9 +65,9 @@ def writearp(nam,fout):
         tmp = '  ' + param + '='	    
         for val in nam[nn][param]:
           tmp = tmp + val + ','
-      print >>f, tmp	 
+      f.write(tmp + '\n')	 
      
-    print >>f, '/'
+    f.write('/\n')
 
 
   f.close()
@@ -96,14 +100,15 @@ def readsurfex(fin):
         toto = line.split('=')
         if len(toto) == 2:
           tmp = list(toto[1].strip().split(','))
-          tmp1 = [x.strip() for x in tmp if x is not('')]
+          tmp1 = [x.strip() for x in tmp if x != '']
           param = toto[0].strip().upper()
           namelist[nam_tmp][param] = tmp1 #toto[1].split(',')[0].strip()
         elif len(toto) == 1:
           tmp = toto[0].strip().split(',')[0]
           namelist[nam_tmp][param].append(tmp)
         else:
-          print 'case unexpected 1:', line
+          logger.error('case unexpected 1:', line)
+          raise ValueError
     else:
       #print tmp0[0]
       tmp1 = line.strip().split()
@@ -115,26 +120,28 @@ def readsurfex(fin):
         toto = line[n+1:].split('=')
         if len(toto) == 2:
           tmp = list(toto[1].strip().split(','))
-          tmp1 = [x.strip() for x in tmp if x is not('')]
+          tmp1 = [x.strip() for x in tmp if x != '']
           param = toto[0].strip().upper()
           namelist[nam_tmp][param] = tmp1
         elif len(toto) == 1:
           tmp = toto[0].strip().split(',')[0]
           namelist[nam_tmp][param].append(tmp)
         else:
-          print 'case unexpected 2:', line
+          logger.error('case unexpected 2:', line)
+          raise ValueError
       else:
         toto = line.split('=')
         if len(toto) == 2:
           tmp = list(toto[1].strip().split(','))
-          tmp1 = [x.strip() for x in tmp if x is not('')]
+          tmp1 = [x.strip() for x in tmp if x != '']
           param = toto[0].strip().upper()
           namelist[nam_tmp][param] = tmp1 #toto[1].split(',')[0].strip()
         elif len(toto) == 1:
           tmp = toto[0].strip().split(',')[0]
           namelist[nam_tmp][param].append(tmp)
         else:
-          print 'case unexpected 3:', line          
+          logger.error('case unexpected 3:', line)
+          raise ValueError
 
   return namelist
 
@@ -147,7 +154,7 @@ def writesurfex(nam,fout):
   f = open(fout,'w')
 
   for nn in sorted(nam.keys()):
-    print >>f, '&' + nn
+    f.write('&' + nn + '\n')
     for param in sorted(nam[nn].keys()):
       if len(param) <= 16:	    
         tmp = '  ' + param + ' '*(16-len(param)) +'= '	    
@@ -156,7 +163,7 @@ def writesurfex(nam,fout):
       for val in nam[nn][param]:
 #        print nn, param, val
         tmp = tmp + val + ','
-      print >>f, tmp	  
-    print >>f, '/'
+      f.write(tmp + '\n')
+    f.write('/\n')
 
   f.close()
