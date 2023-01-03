@@ -71,6 +71,13 @@ subcases[case] = ['REF']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
+# BLLAST Cases
+case = 'BLLAST'
+cases.append(case)
+subcases[case] = ['REF','NOADV','MESONH']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
+
 # AMMAsec Cases
 #case = 'AMMAsec'
 #cases.append(case)
