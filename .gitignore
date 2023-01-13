@@ -6,3 +6,6 @@
 # swp files
 *.swp 
 *.swo
+# Other compiled files
+*.o
+*.so
