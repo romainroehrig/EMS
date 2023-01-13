@@ -234,8 +234,9 @@ class Variable:
                 elif (levunits == 'km' and var2.level.units == 'km') or (levunits == 'm' and var2.level.units == 'm'):
                     levs2 = var2.level.data
                 else:
-                    logger.error("Unexpected case for levunits (var2): {0} {1}".forma(levunits, var2.level.units))
-                    raise ValueError("Unexpected case for levunits (var2): {0} {1}".forma(levunits, var2.level.units))
+                    logger.error("Unexpected case for levunits (var2): {0} {1}".format(levunits, var2.level.units))
+                    logger.error("it is possible that the vertical units for DEF and SCM files differ and the comparison cannot be plotted ")
+                    raise ValueError("Unexpected case for levunits (var2): {0} {1}".format(levunits, var2.level.units))
 
 
         if not(self.time is None) and not(self.level is None):
@@ -269,8 +270,8 @@ class Variable:
                         time = self.time.data/86400.
                         tunits = self.time.units.replace("seconds","days")
                     else:
-                        logger.error("timeunits unexpected for plotting: {0}".forma(timeunits))
-                        raise NotImplementedError("timeunits unexpected for plotting: {0}".forma(timeunits))
+                        logger.error("timeunits unexpected for plotting: {0}".format(timeunits))
+                        raise NotImplementedError("timeunits unexpected for plotting: {0}".format(timeunits))
 
                 plotbasics.plot2D(time,levs,self.data[:,:]*coef,
                         xlabel=tunits,
@@ -300,8 +301,8 @@ class Variable:
                             time2 = var2.time.data/86400.
                         tunits = self.time.units.replace("seconds","days")
                     else:
-                        logger.error("timeunits unexpected for plotting: {0}".forma(timeunits))
-                        raise NotImplementedError("timeunits unexpected for plotting: {0}".forma(timeunits))
+                        logger.error("timeunits unexpected for plotting: {0}".format(timeunits))
+                        raise NotImplementedError("timeunits unexpected for plotting: {0}".format(timeunits))
 
                 if var2 is None:
                     plotbasics.plot(time,self.data[:]*coef,
@@ -470,8 +471,8 @@ class Variable:
 
         else:
 
-            logger.error('Case unexpected for vertical interpolation of variable {0}'.forma(self.id))
-            raise ValueError('Case unexpected for vertical interpolation of variable {0}'.forma(self.id))
+            logger.error('Case unexpected for vertical interpolation of variable {0}'.format(self.id))
+            raise ValueError('Case unexpected for vertical interpolation of variable {0}'.format(self.id))
 
         return Variable(self.id, data=data, name=self.name, units=self.units,
                 level=_level, time=self.time,
@@ -521,6 +522,7 @@ class Variable:
         if height is not None and self.height is not None:
 
             hmax = np.max(self.height.data)
+            hmin = np.min(self.height.data)
             #print(hmax)
             #print(data.shape)
             #print(height.shape)
@@ -546,26 +548,37 @@ class Variable:
                 raise ValueError("Shape of given height array is unexpected: {0}".format(height.shape))
 
             #var2add.info()
-            #print(var2add.data.shape)
-            mask = var2add.height.data > hmax
-            #print(mask, mask.shape)
+            mask_up = var2add.height.data > hmax
+            mask_dn = var2add.height.data < hmin
 
-            nlev2add = np.sum(mask, axis=1)
-            if np.min(nlev2add) != np.max(nlev2add):
-                logger.error("Case unexpected: the number of level to add is not constant in time: min={0} max={1}".format(np.min(nlev2add), np.max(nlev2add)))
+            nlev2add_up = np.sum(mask_up, axis=1)
+            nlev2add_dn = np.sum(mask_dn, axis=1)
+            if np.min(nlev2add_up) != np.max(nlev2add_up):
+                logger.error("Case unexpected: the number of level to add is not constant in time: min={0} max={1}".format(np.min(nlev2add_up), np.max(nlev2add_up)))
                 raise NotImplementedError
-            nlev2add = int(nlev2add[0])
 
-            nlev_new = nlevin + nlev2add
+            if np.min(nlev2add_dn) != np.max(nlev2add_dn):
+                logger.error("Case unexpected: the number of level to add is not constant in time: min={0} max={1}".format(np.min(nlev2add_dn), np.max(nlev2add_dn)))
+                raise NotImplementedError
+
+            if np.max(nlev2add_dn) > 0 and np.max(nlev2add_up) > 0:
+                logger.error("Case unexpected: cannot add levels up and down at the same time")
+                raise NotImplementedError
+
+            nlev2add_up = int(nlev2add_up[0])
+            nlev2add_dn = int(nlev2add_dn[0])
+
+            nlev_new = nlevin + nlev2add_up + nlev2add_dn
 
             _data = np.zeros((ntin,nlev_new), dtype=np.float64)
-            _data[:,:nlevin] = self.data[:,:]
-            #print(self.id, _data[:,nlevin:].shape, var2add.data.shape, var2add.data[:,mask[0]].shape)
-            _data[:,nlevin:] = var2add.data[:,mask[0]]
+            _data[:,nlev2add_dn:(nlev2add_dn+nlevin)] = self.data[:,:]
+            _data[:,(nlev2add_dn+nlevin):] = var2add.data[:,mask_up[0]]
+            _data[:,:nlev2add_dn] = var2add.data[:,mask_dn[0]]
 
             _height = np.zeros((ntin,nlev_new), dtype=np.float64)
-            _height[:,:nlevin] = self.height.data[:,:]
-            _height[:,nlevin:] = var2add.height.data[:,mask[0]]
+            _height[:,nlev2add_dn:(nlev2add_dn+nlevin)] = self.height.data[:,:]
+            _height[:,(nlev2add_dn+nlevin):] = var2add.height.data[:,mask_up[0]]
+            _height[:,:nlev2add_dn] = var2add.height.data[:,mask_dn[0]]
             _height_id = self.height.id
             _height_units = self.height.units
 
@@ -579,8 +592,8 @@ class Variable:
 
         else:
 
-            logger.error('Case unexpected for vertical extension of variable {0}'.forma(self.id))
-            raise ValueError('Case unexpected for vertical extension of variable {0}'.forma(self.id))
+            logger.error('Case unexpected for vertical extension of variable {0}'.format(self.id))
+            raise ValueError('Case unexpected for vertical extension of variable {0}'.format(self.id))
 
         return Variable(self.id, data=_data, name=self.name, units=self.units,
                 level=_level, time=self.time,
