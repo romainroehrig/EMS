@@ -337,7 +337,7 @@ def prep_init_forc_atm(
             f.write(floatfmt.format(a) + '\n')
 
     with open(nam1d, 'w') as g:
-        g.write('&NAM1D')
+        g.write('&NAM1D\n')
         g.write('  LMAP    = .FALSE.,\n')
         g.write('  IFLEV   = {0},\n'.format(int(nlev_out)))
         g.write('  ZDELY   = 250000.,\n')
