@@ -325,7 +325,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
             g.write('. ./param\n')
             g.write('. ./run.sh > run_${CONFIG}.log 2>&1\n')
             g.write('mv run_${CONFIG}.log listings/\n')
-            g.write('echo log file: logs/run_${CONFIG}.log\n')
+            g.write('echo log file: listings/run_${CONFIG}.log\n')
             g.write('date')
 
         os.chmod('exec.sh', os.stat('exec.sh').st_mode | stat.S_IEXEC)
