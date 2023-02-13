@@ -16,6 +16,15 @@ import six
 
 from ems.lfa import lfareader
 
+isba_patch_variables = [x+'_patch' for x in ['area_fraction','lai','veg','tas','huss','hurs','sfcWind',
+                                             'rsds','rsus','rss','rlds','rlus','rls','rnet',
+                                             'hfls','hfsbl','hfss','hfdsl','hfdsn',
+                                             'potet','et','tran',
+                                             'ustar','tauu','tauv','tau',
+                                             'tg','ts','qs','mrsol','wg','wgi',
+                                             'albsrfc','z0','z0h']]
+isba_ground_variables = [x+'_isba' for x in ['tg','wg','wgi','mrsol','mrsll','mrsfl']]
+
 def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
     """
     Converts LFA files into netcdf file
@@ -46,6 +55,8 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
         variables = LFA0.listfields() #LFA variable names
         klev = LFA0.readfield('KLEV')[0] #levels number
         ncol = LFA0.readfield('NCOLUMNS')[0] if 'NCOLUMNS' in variables else None
+        nground = LFA0.readfield('NGROUND_LAYER')[0] if 'NGROUND_LAYER' in variables else None
+        npatch = LFA0.readfield('NPATCH')[0] if 'NPATCH' in variables else None
 
     # Special case of 4D variables which are written in lfa files over several 3D variables
     variables.extend([vv for vv in ['fracout', 'atb532',
@@ -53,6 +64,20 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
                                     'cfadDbze94', 'clisccp',
                                     'clmodis', 'clMISR'] if vv + '_001' in variables])
 
+    # Special case of ISBA variables with a patch dimension
+    variables.extend([vv for vv in isba_patch_variables if vv + '01' in variables])
+    if npatch is not None:
+        for var in isba_patch_variables:
+            for i in range(1,npatch+1):
+                vv = var + '%(i)2.2i'%{"i": i}
+                try:
+                    variables.remove(vv)
+                    #print(vv + ' removed')
+                except ValueError:
+                    pass
+                except:
+                    raise
+    
     if varatts is None:
         varnames = {k: k for k in variables}
         names = {k: k for k in variables}
@@ -79,6 +104,9 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
         for var in tosave:
             if var not in varnames:
                 logger.warning(var + ' not in provided varnames')
+                logger.warning('Adding generic information for ' + var)
+                varnames[var] = var
+                inv_varnames[var] = var
             elif varnames[var] not in variables:
                 logger.warning('{0}/{1} not in LFA files'.format(var,varnames[var]))
         tosave = [varnames[var] for var in tosave if var in varnames and varnames[var] in variables]
@@ -96,6 +124,9 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
     ltau = lplev7 = any([var in tosave for var in ['clisccp','clmodis']])
     lmisr = any([var in tosave for var in ['clMISR']])
     lalt40 = lalt40 or ldbze or lsratio
+    lsdepth = any([var in tosave for var in isba_ground_variables])\
+          or any([var in tosave for var in ['tg_patch','mrsol_patch','wg_patch','wgi_patch']])
+    lpatch = any([var in tosave for var in isba_patch_variables])
 
     # Init nectdf file
     f = netCDF4.Dataset(fileout, 'w', format='NETCDF3_CLASSIC')
@@ -195,7 +226,45 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
         cth16s.axis = 'Z'
         cth16s[:] = [1000. * x for x in [0., 0.25, 0.75, 1.25, 1.75, 2.25, 2.75,
                                          3.5, 4.5, 6., 8., 10., 12., 14.5, 16., 18.]]
-    
+    if nground is not None and lsdepth:
+        if nground == 14:
+            sdepth = f.createDimension('sdepth', nground)  
+            sdepth = f.createVariable('sdepth', 'f4', ('sdepth', ))
+            sdepth.long_name = 'soil depth'
+            sdepth.units = 'm'
+            #sdepth.axis = 'Z'
+            sdepth[:] = [0.01,0.04,0.10,0.20,0.40,0.60,0.80,1.00,1.50,2.00,3.00,5.00,8.00,12.0]
+        elif nground == 3:
+            slayer = f.createDimension('slayer', nground)  
+            slayer = f.createVariable('slayer', 'f4', ('slayer', ))
+            slayer.long_name = 'soil layer number'
+            slayer.units = '-'
+            #slayer.axis = 'Z'
+            slayer[:] = [1, 2, 3]
+            if 'tg_isba' in tosave or 'tg_patch' in tosave:
+                slayer2 = f.createDimension('slayer2', 2)  
+                slayer2 = f.createVariable('slayer2', 'f4', ('slayer2', ))
+                slayer2.long_name = 'soil layer number for temperature'
+                slayer2.units = '-'
+                #slayer2.axis = 'Z'
+                slayer2[:] = [1, 2]
+        elif nground == 2:
+            slayer = f.createDimension('slayer', nground)  
+            slayer = f.createVariable('slayer', 'f4', ('slayer', ))
+            slayer.long_name = 'soil layer number'
+            slayer.units = '-'
+            #slayer.axis = 'Z'
+            slayer[:] = [1, 2]
+        else:
+            raise ValueError('nground value unexpected: ' + str(nground))
+
+    if npatch is not None and lpatch:
+        patch = f.createDimension('patch', npatch)  
+        patch = f.createVariable('patch', 'f4', ('patch', ))
+        patch.long_name = 'patch number'
+        patch.units = '-'
+        patch[:] = list(range(1,npatch+1))
+
     time = f.createDimension('time', None)
     times = f.createVariable('time', 'f4', ('time', ))
     times.calendar = 'gregorian'
@@ -222,12 +291,20 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
         times[it] = float(nsssss + rstati)
 
         
-        for var in tosave:
+        for var in set(tosave):
             logger.debug('Reading variable {1}/{0}'.format(var,inv_varnames.get(var, var)))
             if var in ['fracout', 'atb532', 'cfadLidarsr532', 'dbze94', 'cfadDbze94', 'clisccp', 'clmodis', 'clMISR']:
                 raw = r.readfield(var + '_001')
+            elif var in isba_patch_variables:
+                raw = r.readfield(var + '01')
             else:
-                raw = r.readfield(var)
+                try:
+                    raw = r.readfield(var)
+                    lcontinue = False
+                except:
+                    logger.info('pass variable ' + var)
+                    lcontinue = True
+            if lcontinue: continue
             #if f.data_model == 'NETCDF3_CLASSIC' and raw.dtype == numpy.dtype('int64'):
             #    #int64 not supported by this netcdf format
             #    raw = raw.astype(numpy.int32)
@@ -240,9 +317,16 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
                 if len(raw) == 1:
                     axis = ('time')
                 if len(raw) == 2:
-                    axis = ('time', 'TOASurf')
-                    if topdown is None:
-                        topdown = f.createDimension('TOASurf', 2)
+                    if var in isba_ground_variables:
+                        axis = ('time', 'slayer2')
+                    else:
+                        axis = ('time', 'TOASurf')
+                        if topdown is None:
+                            topdown = f.createDimension('TOASurf', 2)
+                if len(raw) == 3 and var in isba_ground_variables:
+                    axis = ('time', 'slayer')
+                if nground is not None and nground > 3 and len(raw) == nground and var in isba_ground_variables:
+                    axis = ('time', 'sdepth')
                 if len(raw) == klev and not(var in ['fracout', 'atb532', 'cfadLidarsr532', 'dbze94',
                                                     'cfadDbze94', 'clisccp', 'clmodis', 'clMISR']):
                     axis = ('time', 'levf')
@@ -281,12 +365,33 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
                 if var in ['clMISR']:
                     axis = ('time', 'tau', 'cth16')
                     shape[var] = (7, 16)
+                if var in isba_patch_variables:
+                    if var in ['tg_patch','mrsol_patch','wg_patch','wgi_patch']:
+                        if nground == 2:
+                            axis = ('time','patch','slayer')
+                            shape[var] = (npatch, 2)
+                        elif nground == 3:
+                            if var == 'tg_patch':
+                                axis = ('time','patch','slayer2')
+                                shape[var] = (npatch, 2)
+                            else:
+                                axis = ('time','patch','slayer')
+                                shape[var] = (npatch, nground)
+                        else:
+                            axis = ('time','patch','sdepth')
+                            shape[var] = (npatch, nground)
+                    else:
+                        axis = ('time','patch')
+                        shape[var] = (npatch,)
 
                 if not isinstance(raw[0], six.string_types):
                     try:
                         missingValue = numpy.iinfo(raw.dtype).max
                     except ValueError:
                         missingValue = numpy.finfo(raw.dtype).max
+                    if 'isba' in var or var in isba_patch_variables:
+                        missingValue = numpy.float(1.e20)
+
                     data[var] = f.createVariable(inv_varnames.get(var, var),
                                                  raw.dtype, axis, fill_value=missingValue)
                     data[var].long_name = names.get(inv_varnames.get(var, None), var)
@@ -301,7 +406,16 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
                     for i in range(0, shape[var][0]):
                         vv = var + '_%(i)3.3i'%{"i": i+1}
                         datatmp[i,:] = r.readfield(vv)
+                elif var in isba_patch_variables:
+                    datatmp = numpy.zeros(shape[var], dtype=numpy.float)             
+                    for i in range(0, shape[var][0]):
+                        vv = var + '%(i)2.2i'%{"i": i+1}
+                        #print(vv)
+                        #print(r.readfield(vv).shape)
+                        #print(shape[var])
+                        datatmp[i] = r.readfield(vv)
                 else:
+                    #print(vv, len(raw), axis)
                     datatmp = raw[0] if len(raw) == 1 else raw
                 
                 logger.info('Writing variable {1}/{0}: {2} ({3})'.format(var,
