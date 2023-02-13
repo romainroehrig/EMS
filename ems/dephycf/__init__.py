@@ -12,11 +12,9 @@ __all__ = []
 
 __version__ = '1.0'
 
-__git_commit__ = '0148a25ebada6ba1f9a914c8e2e40c722b57b00f'
-
 __authors__ = ['Romain Roehrig']
 
-__contributors__ = ['Etienne Vignon']
+__contributors__ = ['Etienne Vignon', 'Fleur Couvreux', 'Catherine Rio', 'Maike Ahlgrimm']
 
 _dirDEPHYCF = os.path.dirname(os.path.abspath(__file__))
 

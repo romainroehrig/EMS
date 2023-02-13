@@ -264,7 +264,7 @@ def prep_init_forc_atm(
     #---------------------------------------------------------------
 
     if lforc_ascii:
-        timein = case.variables['pa_forc'].time
+        timein = case.variables['ps_forc'].time
         tmin = timein.data[0]
         tmax = timein.data[-1]
         timeout = np.arange(tmin, tmax+timestep, timestep, dtype=np.float64)

@@ -14,7 +14,7 @@ To install EMS on a CNRM computer, with access to the CNRM Lustre system:
 
 2. Modify `install.sh` (or execute `install.sh -h` to get its usage):
 
-   * Set `EMS_VERSION`, e.g., `EMS_VERSION=2.4.1`
+   * Set `EMS_VERSION`, e.g., `EMS_VERSION=2.4.2`
    * Set where you want to install EMS: default is `REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}`
    * Set where you want to run MUSC: default is `REP_MUSC=$HOME/MUSC/V${EMS_VERSION}`
 
