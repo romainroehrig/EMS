@@ -2493,7 +2493,6 @@ class Case:
                     height=height, pressure=pressure)
                 self.set_attribute('adv_rt',1)
 
-
         #---- Wind nudging
 
         for var in ['ua','va']:
