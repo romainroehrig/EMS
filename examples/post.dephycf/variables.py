@@ -350,7 +350,7 @@ variables = {
     'buoy'              : {'varname':            'ZBUO_W', 'units':             'm s-2', 'coef':         1, 'name':'Convection Buoyancy used in Updraft Vertical Velocity Budget'}, 
     'cape'              : {'varname':             'PCAPE', 'units':              'J/kg', 'coef':         1, 'name':'CAPE'}, 
     'dTv_up'            : {'varname':        'TVUD-TVENV', 'units':                 'K', 'coef':         1, 'name':'Tv_updraft-Tv_env'}, 
-    'detr_u'            : {'varname':           'ZDETR_U', 'units':               's-1', 'coef':         1, 'name':'Convective Updraft Detrainment'},
+    'det_u'             : {'varname':           'ZDETR_U', 'units':               's-1', 'coef':         1, 'name':'Convective Updraft Detrainment'},
  
     'dw_Kd'             : {'varname':         'BILOM+TKD', 'units':            'Pa s-2', 'coef':         1, 'name':'Updraft Vertical Velocity Tendency due to Aerodynamic Drag'}, 
     'dw_buoy'           : {'varname':       'BILOM+TBUOY', 'units':            'Pa s-2', 'coef':         1, 'name':'Updraft Vertical Velocity Tendency due to Vertical Buoyancy'}, 
