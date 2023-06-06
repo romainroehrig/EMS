@@ -11,3 +11,4 @@
 *.so
 # Perso
 **/tmp.sh
+aux/lfatools
