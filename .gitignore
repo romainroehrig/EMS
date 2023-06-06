@@ -9,3 +9,5 @@
 # Other compiled files
 *.o
 *.so
+# Perso
+**/tmp.sh

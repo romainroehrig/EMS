@@ -176,36 +176,32 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
 # Kuang and Bretherton (2006) Case
 case = 'KB2006'
 cases.append(case)
+subcases[case] = ['REF', 'MESONH']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
+
+# EUROCS CVP Guichard et al.
+case = 'EUROCS'
+cases.append(case)
 subcases[case] = ['REF']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
-####################################
-#### Deep convection cases
-
-# LBA case
-#case = 'LBA'
-#cases.append(case)
-#subcases[case] = ['REF','MesoNH']
-#data_input[case] = {}
-#data_input[case]['REF'] = rep0 + '/LBA/LBA_driver_FC_RR.nc'
-#data_input[case]['MesoNH'] = rep0 + '/LBA/LBA_driver_MesoNH_RR.nc'
-
-# ARMCVP case
-#case = 'ARMCVP'
-#cases.append(case)
-#subcases[case] = ['REF','NoRad','omg']
-#data_input[case] = {}
-#data_input[case]['REF'] = rep0 + '/ARMCVP/ARMCVP_FG.nc'
-#data_input[case]['NoRad'] = rep0 + '/ARMCVP/ARMCVP_FG_norad.nc'
-#data_input[case]['omg'] = rep0 + '/ARMCVP/ARMCVP_FG_omg.nc'
-
+# LBA Grabowski et al. (2006)
+case = 'LBA'
+cases.append(case)
+subcases[case] = ['REF']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
 # AMMA case
 case = 'AMMA'
 cases.append(case)
 subcases[case] = ['REF']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
+
+####################################
+#### Deep convection cases
 
 # CINDY-DYNAMO cases
 #case = 'CINDY-DYNAMO'
