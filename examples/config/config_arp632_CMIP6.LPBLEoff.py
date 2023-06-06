@@ -25,7 +25,7 @@ vert_grid = os.path.join(REP_MUSC, 'grid/L91.dta')
 timestep = 300
 
 # Postprocessing
-dirpost = os.path.join(REP_MUSC,'post.dephycf')
+dirpost = os.path.join(REP_MUSC,'post')
 variablesDict = 'variables.py'
 defaultConfigPost = 'config_default.py'
 caseDependent = True
