@@ -11,6 +11,7 @@ var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qr','qi','qsn','ql
 
 
 convert2p = False
+#convert2z = True
 convert2z = False
 
 convertkday = False
