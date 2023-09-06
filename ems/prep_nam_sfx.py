@@ -188,6 +188,16 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             tsforc = case.variables['tskin'].data
         else:
             tsforc = hfls*0. + case.variables['ta'].data[0,0]
+
+        try:
+            alb = case.variables['alb'].data[0]
+        except:
+            alb = 0.07
+
+        try:
+            emis = case.variables['emis'].data[0]
+        except:
+            emis = 1
     
         time = case.variables['hfls'].time
 
@@ -382,8 +392,8 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
         elif surfaceForcingWind == 'z0':
             nam[nn]['CUSTARTYPE'] = ["'Z0'"]
             nam[nn]['XZ0'] = [str(zz0)]
-        nam[nn]['XALB'] = ['0.07']
-        nam[nn]['XEMIS']  = ['1.']
+        nam[nn]['XALB'] = [str(alb),]
+        nam[nn]['XEMIS']  = [str(emis),]
         for it in range(nt):
             nam[nn]['XTIMET(%(ii)4.i)'%{"ii": it + 1}] = ['%(tt)6.2f'%{"tt": time.data[it]}]
         for it in range(nt):

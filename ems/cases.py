@@ -283,6 +283,13 @@ subcases[case] = ['LEG{0:0>2}A'.format(i) for i in [4, 5, 6, 7, 11, 12, 13, 14, 
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
+# ARPEGE
+case = 'ARPEGE'
+cases.append(case)
+subcases[case] = ['SODANKYLA_2018031512']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
+
 
 def available(case=None):
     """

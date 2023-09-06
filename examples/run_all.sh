@@ -26,4 +26,7 @@ MUSC.py -config $config -case SANDU  -subcase REF      $OPT
 MUSC.py -config $config -case SANDU  -subcase SLOW     $OPT
 MUSC.py -config $config -case SANDU  -subcase FAST     $OPT
 MUSC.py -config $config -case AMMA   -subcase REF      $OPT
+MUSC.py -config $config -case LBA    -subcase REF      $OPT
+MUSC.py -config $config -case EUROCS -subcase REF      $OPT
+MUSC.py -config $config -case KB2006 -subcase MESONH   $OPT
 MUSC.py -config $config -case DYNAMO -subcase NSA3A_D1 $OPT
