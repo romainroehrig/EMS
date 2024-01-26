@@ -10,14 +10,6 @@ export OMP_NUM_THREADS=1
 export DR_HOOK_IGNORE_SIGNALS=-1
 export DR_HOOK=0
 
-if [ $model = "AROME" ] || [ $model = "ARPPNT" ] ; then
-  export LIBRARY_PATH=$LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/common/sync/gcc/mpfr-3.1.3/lib:/home/common/sync/gcc/jasper-1.900.1/lib:/home/common/sync/gcc/torque:/opt/google/earth/pro
-  export C_INCLUDE_PATH=$C_INCLUDE_PATH:/usr/include/x86_64-linux-gnu
-  export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/include/x86_64-linux-gnu
-fi
-
-
 . ./param
 
 os=`uname`
@@ -211,7 +203,7 @@ then
   echo ''
   set -x
 
-  files2install='convertLFA2nc.py lfa2nc.py convert2p.py convert2z.py'
+  files2install='ems_convertLFA2nc.py lfa2nc.py ems_convert2p.py ems_convert2z.py'
 
   for file in $files2install
   do
@@ -237,7 +229,7 @@ then
 
   # seems necessary in some circumstances (deep shells?)
   unset PYTHONHOME
-  ./convertLFA2nc.py
+  ./ems_convertLFA2nc.py
 
 fi
 
