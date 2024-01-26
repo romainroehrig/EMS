@@ -20,6 +20,19 @@ To install EMS on a CNRM computer, with access to the CNRM Lustre system:
 
 3. Execute `install.sh`. A test is done at the end with ARPEGE-Climat 6.3.2 for the ARMCU/REF case.
 
+### Install using CMake
+```bash
+cd $HOME
+git clone git@github.com:ewhelan/EMS.git -b hirlam EMS_git/EMS
+cd EMS_git/EMS/
+mkdir build
+cd build/
+export EMS_DIR=$HOME/metapp/ems
+cmake .. -DCMAKE_INSTALL_PREFIX=$EMS_DIR && make && ctest && make install
+export PATH=${EMS_DIR}/bin:$PATH
+export PYTHONPATH=${EMS_DIR}
+```
+
 ## Using EMS
 1. Go in the `REP_MUSC` directory
 2. Source setenv to have the right PATH and PYTHONPATH environment variables
