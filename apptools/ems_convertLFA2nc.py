@@ -17,7 +17,7 @@ from ems.lfa2nc import lfa2nc
 import variables as VV
 import config
 
-solib = os.path.join(ems._dirEMS, '../aux/lfa4py/lfa4py.so')
+solib = os.path.join(ems._dirEMS, '../lib/liblfa4py.so')
 
 if not(os.path.exists('netcdf')):
     os.makedirs('netcdf')

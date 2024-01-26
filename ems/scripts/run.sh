@@ -215,7 +215,7 @@ then
 
   for file in $files2install
   do
-    ln -s $dirpost/$file
+    ln -s $EMS_DIR/bin/$file
   done
   ln -s $dirpost/$configpost config.py
   ln -s $dirpost/$variablesDict variables.py
