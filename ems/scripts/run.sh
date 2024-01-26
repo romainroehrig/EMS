@@ -209,7 +209,7 @@ then
   do
     ln -s $EMS_DIR/bin/$file
   done
-  ln -s $dirpost/$configpost config.py
+  ln -s $dirpost/$configpost post_config.py
   ln -s $dirpost/$variablesDict variables.py
 fi
 
@@ -229,6 +229,7 @@ then
 
   # seems necessary in some circumstances (deep shells?)
   unset PYTHONHOME
+  export PYTHONPATH=$(pwd):$PYTHONPATH
   ./ems_convertLFA2nc.py
 
 fi

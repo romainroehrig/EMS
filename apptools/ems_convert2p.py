@@ -9,7 +9,7 @@ import netCDF4 as nc
 import numpy as np
 from scipy import interpolate
 
-import config
+import post_config as config
 
 levout = config.levout
 levout = np.array(levout,dtype=np.double)
