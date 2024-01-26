@@ -103,7 +103,7 @@ def install_atm(model, case, subcase, filecase,
         os.symlink('nam1D_{0}'.format(vert_grid_name), 'nam1D')
         os.symlink(ASCII2FA, 'ascii2fa')
         with open('ascii2fa_{0}.log'.format(vert_grid_name), 'w') as log:
-            p = subprocess.run('ascii2fa', cwd=rep, stderr=subprocess.STDOUT, stdout=log,
+            p = subprocess.run('./ascii2fa', cwd=rep, stderr=subprocess.STDOUT, stdout=log,
                                env=dict(os.environ, OMP_NUM_THREADS='1'))
             if p.returncode != 0:
                 raise RuntimeError("Error during ascii2fa execution (log: {})".format(os.path.abspath(log.name)))
@@ -175,11 +175,11 @@ def install_sfx(model, case, subcase, filecase, repout,
         for f in ['ecoclimapII_eu_covers_param.bin', 'ecoclimapI_covers_param.bin']:
             os.symlink(os.path.join('ecoclimap', f), f)
         with open('PGD.log', 'w') as log:
-            p = subprocess.run('PGD', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+            p = subprocess.run('./PGD', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
             if p.returncode != 0:
                 raise RuntimeError("Error during PGD execution (log: {})".format(os.path.abspath(log.name)))
         with open('PREP.log', 'w') as log:
-            p = subprocess.run('PREP', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+            p = subprocess.run('./PREP', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
             if p.returncode != 0:
                 raise RuntimeError("Error during PREP execution (log: {})".format(os.path.abspath(log.name)))
         for f in ['PGD.des', 'class_cover_data.tex', 'PREP.des']:
@@ -334,7 +334,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
 
         # Execution de la simulation
         with open('exec.log', 'w') as log:
-            p = subprocess.run('exec.sh', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+            p = subprocess.run('./exec.sh', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
             if p.returncode != 0:
                 raise RuntimeError("Error during MUSC execution (log: {})".format(os.path.abspath(log.name)))
 
@@ -347,7 +347,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
 
         # Execution de la simulation
         with open('exec.log', 'w') as log:
-            p = subprocess.run('exec.sh', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+            p = subprocess.run('./exec.sh', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
             if p.returncode != 0:
                 raise RuntimeError("Error during MUSC execution (log: {})".format(os.path.abspath(log.name)))
 
