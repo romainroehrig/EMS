@@ -6,7 +6,7 @@ set -e
 # User specific defaults
 
 # EMS Version
-EMS_VERSION=2.4.3
+EMS_VERSION=2.4.4
 
 # Directory where EMS is installed
 REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
