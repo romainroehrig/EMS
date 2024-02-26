@@ -138,7 +138,8 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
     lat = case.variables['lat'].data[0]
     lon = case.variables['lon'].data[0]
 
-    surfaceForcing = attributes['surface_forcing_temp']
+    surfaceForcingTemp = attributes['surface_forcing_temp']
+    surfaceForcingMoisture = attributes['surface_forcing_moisture']
     surfaceType = attributes['surface_type']
     zorog = case.variables['orog'].data[0]
     startDate = case.start_date
@@ -150,12 +151,16 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
     second = startDate.second
     seconds = hour*3600.+minute*60.+second
 
-    if surfaceForcing == 'ts':
+    if surfaceForcingTemp == 'ts':
         tsinit = case.variables['ts'].data
         tsforc = case.variables['ts_forc'].data
         time = case.variables['ts_forc'].time
         if surfaceType in ['land','landice']:
-            zz0 = case.variables['z0'].data[0]
+            z0m = case.variables['z0'].data[0]
+            try:
+                z0h = case.variables['z0h'].data[0]
+            except:
+                z0h = z0m/10.
         try:
             alb = case.variables['alb'].data[0]
             lalb = True
@@ -171,16 +176,18 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
         except:
             lminSfcWind = False
             minSfcWind = 1. 
-    elif surfaceForcing == 'surface_flux':
+        if surfaceForcingMoisture == 'beta':
+            beta = case.variables['beta'].data
+    elif surfaceForcingTemp == 'surface_flux':
         surfaceForcingWind = attributes['surface_forcing_wind']
         hfls = case.variables['hfls'].data
         hfss = case.variables['hfss'].data
         if surfaceForcingWind == 'ustar':
             ustar = case.variables['ustar'].data
         elif surfaceForcingWind == 'z0':
-            zz0 = case.variables['z0'].data[0]
+            z0m = case.variables['z0'].data[0]
         else:
-            raise RuntimeError('surfaceForcingWind unexpected: ' + surfaceForcingWind)
+            raise ValueError('surfaceForcingWind unexpected: ' + surfaceForcingWind)
 
         if 'ts_forc' in case.variables:
             tsforc = case.variables['ts_forc'].data
@@ -211,25 +218,25 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
     # Setting surface properties
     nn='NAM_PGD_SCHEMES'
     if surfaceType == 'ocean':
-        if surfaceForcing == 'ts':
+        if surfaceForcingTemp == 'ts':
             nam[nn]['CSEA'] = ["'SEAFLX'"]
             nam2keep.append('NAM_DATA_SEAFLUX')
             nam2keep.append('NAM_PREP_SEAFLUX')
             nam2keep.append('NAM_SEAFLUXN')
-        elif surfaceForcing == 'surface_flux':
+        elif surfaceForcingTemp == 'surface_flux':
             nam[nn]['CSEA'] = ["'FLUX'"]
             nam2keep.append('NAM_IDEAL_FLUX')
         else:
-            raise RuntimeError('surfaceForcing unexpected: ' + surfaceForcing + ' for surfaceType: ' + surfaceType)
+            raise RuntimeError('surfaceForcingTemp unexpected: ' + surfaceForcingTemp + ' for surfaceType: ' + surfaceType)
     elif surfaceType in ['land','landice']:
-        if surfaceForcing == 'surface_flux':
+        if surfaceForcingTemp == 'surface_flux':
             logger.warning('This configuration does not work:')
-            logger.warning('surfaceType = ' + surfaceType + ' and surfaceForcing = ' + surfaceForcing)
+            logger.warning('surfaceType = ' + surfaceType + ' and surfaceForcingTemp = ' + surfaceForcingTemp)
             logger.warning('=> surfaceType is changed to ocean')
 #           nam[nn]['CNATURE'] = ["'FLUX'"]
             nam[nn]['CSEA'] = ["'FLUX'"]
             nam2keep.append('NAM_IDEAL_FLUX')
-        elif surfaceForcing == 'ts':
+        elif surfaceForcingTemp == 'ts':
             nam[nn]['CNATURE'] = ["'TSZ0'"]
             nam2keep.append('NAM_ISBA')
             nam2keep.append('NAM_PREP_ISBA')
@@ -239,7 +246,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             nam2keep.append('NAM_DATA_ISBA')
             nam2keep.append('NAM_DATA_TSZ0')
         else:
-            raise RuntimeError('surfaceForcing unexpected: ' + surfaceForcing + ' for surfaceType: ' + surfaceType)
+            raise RuntimeError('surfaceForcingTemp unexpected: ' + surfaceForcingTemp + ' for surfaceType: ' + surfaceType)
     else:
         raise RuntimeError('surfaceType unexpected: ' + surfaceType)
 
@@ -263,12 +270,12 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
         nam[nn]['NMONTH'] = [str(int(month))]
         nam[nn]['NDAY'] = [str(int(day))]
         nam[nn]['XTIME'] = [str(int(seconds))]
-        if surfaceForcing == 'ts':
+        if surfaceForcingTemp == 'ts':
             nam[nn]['XSST_UNIF'] = ['%(ts)6.2f'%{"ts":tsforc[0]}]
         else:
             nam[nn]['XSST_UNIF'] = ['300.']
     elif surfaceType in ['land','landice']:
-        if surfaceForcing == 'surface_flux':
+        if surfaceForcingTemp == 'surface_flux':
             nn='NAM_FRAC'
             nam[nn]['XUNIF_SEA'] = ['1.']
             nn = 'NAM_PREP_SEAFLUX'
@@ -278,10 +285,12 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             nam[nn]['NDAY'] = [str(int(day))]
             nam[nn]['XTIME'] = [str(int(seconds))]
             nam[nn]['XSST_UNIF'] = ['300.']
-        else:
+        elif surfaceForcingTemp == 'ts':
+            #
             nn='NAM_FRAC'
             nam[nn]['XUNIF_NATURE'] = ['1.']
             nam[nn]['LECOCLIMAP'] = ['.TRUE.']
+            #
             nn='NAM_COVER'
             del(nam[nn]['XUNIF_COVER(1)'])
             if surfaceType == 'landice':
@@ -289,53 +298,68 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             elif surfaceType == 'land':
                 nam[nn]['XUNIF_COVER(4)'] = ['1.'] # Bare land
             else:
-                raise ValueError("For this case (surfaceForcing != 'surfaceFlux' on land), the land_type must be defined")
+                raise ValueError("For this case (surfaceForcingTemp != 'surfaceFlux' on land), the land_type must be defined")
+            #
             nn='NAM_ISBA'
             if not nn in nam:
                 nam[nn] = {}
             nam[nn]['XUNIF_CLAY'] = ['1.']
             nam[nn]['XUNIF_SAND'] = ['0.']
             nam[nn]['XUNIF_RUNOFFB'] = ['0.5']
+            if surfaceForcingMoisture == 'beta' and beta[0] == 0:
+                nam[nn]['XUNIF_CLAY'] = ['0.1']
+                nam[nn]['XUNIF_SAND'] = ['0.1']
+                nam[nn]['XUNIF_RUNOFFB'] = ['0.5']
+            #
             nn = 'NAM_PREP_ISBA'
             nam[nn] = {}
+            nam[nn]['LISBA_CANOPY']=['.FALSE.']
             nam[nn]['NYEAR'] = [str(int(year))]
             nam[nn]['NMONTH'] = [str(int(month))]
             nam[nn]['NDAY'] = [str(int(day))]
             nam[nn]['XTIME'] = [str(int(seconds))]
-            if surfaceForcing == 'ts':
-                nam[nn]['XHUG_SURF'] = ['0.']
-                nam[nn]['XHUG_ROOT'] = ['0.']
-                nam[nn]['XHUG_DEEP'] = ['0.']
-                nam[nn]['XTG_SURF'] = ['%(ts)6.2f'%{"ts": tsforc[0]}]
-                nam[nn]['XTG_ROOT'] = ['%(ts)6.2f'%{"ts": tsforc[0]-0.7}]
-                nam[nn]['XTG_DEEP'] = ['%(ts)6.2f'%{"ts": tsforc[0]-0.7}]    
-                nam[nn]['XHUGI_SURF'] = ['0.']
-                nam[nn]['XHUGI_ROOT'] = ['0.']
-                nam[nn]['XHUGI_DEEP'] = ['0.']
-                nam[nn]['LISBA_CANOPY']=['.FALSE.']
-                nn='NAM_DATA_ISBA'
-                nam[nn] = {}
-                nam[nn]['NTIME'] = ['1']
-                for i in range(1,12+1):      
-                    nam[nn]['XUNIF_Z0(1,{0:>2})'.format(i)] = [str(zz0)]
-                nn='NAM_ISBA'
-                nam[nn] = {}
-                nam[nn]['CISBA'] = ["'2-L'"]
-                nam[nn]['CPHOTO'] = ["'NON'"]
-                nam[nn]['NGROUND_LAYER'] = ['2']
-                nam[nn]['NPATCH'] = ['1']
-                nam[nn]['XUNIF_CLAY'] = ['1.']
-                nam[nn]['XUNIF_RUNOFFB'] = ['0.5']
-                nam[nn]['XUNIF_SAND'] = ['0.']
-                #nn = 'NAM_ISBAN'
-                #nam[nn] = {}
-                #nam[nn]['LGLACIER'] = ['.TRUE.']
-                nn = 'NAM_PREP_ISBA_SNOW'
-                nam[nn] = {}
-                nam[nn]['CSNOW'] = ["'D95'"]
-     
+            nam[nn]['XTG_SURF'] = ['%(ts)6.2f'%{"ts": tsforc[0]}]
+            nam[nn]['XTG_ROOT'] = ['%(ts)6.2f'%{"ts": tsforc[0]}]
+            nam[nn]['XTG_DEEP'] = ['%(ts)6.2f'%{"ts": tsforc[0]}]
+            nam[nn]['XHUG_SURF'] = ['0.']
+            nam[nn]['XHUG_ROOT'] = ['0.']
+            nam[nn]['XHUG_DEEP'] = ['0.']
+            if surfaceForcingMoisture == 'beta' and beta[0] == 0:                        
+                nam[nn]['XHUG_SURF'] = ['-10.']
+                nam[nn]['XHUG_ROOT'] = ['-10.']
+                nam[nn]['XHUG_DEEP'] = ['-10.']  
+            nam[nn]['XHUGI_SURF'] = ['0.00001']
+            nam[nn]['XHUGI_ROOT'] = ['0.00001']
+            nam[nn]['XHUGI_DEEP'] = ['0.00001']
+            #
+            nn='NAM_DATA_ISBA'
+            nam[nn] = {}
+            nam[nn]['NTIME'] = ['1']
+            for i in range(1,12+1):      
+                nam[nn]['XUNIF_Z0(1,{0:>2})'.format(i)] = [str(z0m/z0h)]
+            nam[nn]['XUNIF_Z0_O_Z0H(1)'] = ['1.']
+            #
+            nn='NAM_ISBA'
+            nam[nn] = {}
+            nam[nn]['CISBA'] = ["'2-L'"]
+            nam[nn]['CPHOTO'] = ["'NON'"]
+            nam[nn]['NGROUND_LAYER'] = ['2']
+            nam[nn]['NPATCH'] = ['1']
+            nam[nn]['XUNIF_CLAY'] = ['1.']
+            nam[nn]['XUNIF_RUNOFFB'] = ['0.5']
+            nam[nn]['XUNIF_SAND'] = ['0.']
+            #nn = 'NAM_ISBAN'
+            #nam[nn] = {}
+            #nam[nn]['LGLACIER'] = ['.TRUE.']
+            nn = 'NAM_PREP_ISBA_SNOW'
+            nam[nn] = {}
+            nam[nn]['CSNOW'] = ["'D95'"]
+        else:
+            raise ValueError("Unknown surfaceForcingTemp:", surfaceForcingTemp)
+    else:
+        raise ValueError("Unknown surfaceType:", surfaceType)   
 
-    if surfaceForcing == 'ts':
+    if surfaceForcingTemp == 'ts':
         if surfaceType == 'ocean':
             nn = 'NAM_DATA_SEAFLUX'
             nam[nn] = {}
@@ -380,7 +404,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             nam[nn]['XUNIF_DHUGRD(%(ii)4.i)'%{"ii": nt}] = ['0.']
 
 
-    if surfaceForcing == 'surface_flux':
+    if surfaceForcingTemp == 'surface_flux':
         nn ='NAM_IDEAL_FLUX'
         nam[nn] = {}
         nam[nn]['NFORCF'] = [str(nt)]
@@ -391,7 +415,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             nam[nn]['CUSTARTYPE'] = ["'USTAR'"]
         elif surfaceForcingWind == 'z0':
             nam[nn]['CUSTARTYPE'] = ["'Z0'"]
-            nam[nn]['XZ0'] = [str(zz0)]
+            nam[nn]['XZ0'] = [str(z0m)]
         nam[nn]['XALB'] = [str(alb),]
         nam[nn]['XEMIS']  = [str(emis),]
         for it in range(nt):
