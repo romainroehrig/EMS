@@ -18,7 +18,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/ewhelan/EMS.git",
-    devbranch = "feature/start_github_pages_doc",
+    repo = "github.com/romainroehrig.git",
+    devbranch = "master",
     devurl = "master",
 )
