@@ -10,7 +10,7 @@ GROUP = 'V632'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/Users/romain/rootpack/arp632_climat.02.MPIGNU1220.x/bin'
+bindir = '/Users/romain/rootpack/arp632_climat.02.MPIGNU1230.x/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')

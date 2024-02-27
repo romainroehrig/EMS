@@ -1,11 +1,7 @@
 #!/bin/bash
 
-config=config/config_arp631_CMIP6.py
-#config=config/config_arp631d_CMIP6.py
-#config=config/config_arp631d_CMIP6.300s.py
-#config=config/config_arp631d_CMIP6.300s.L137.py
-#config=config/config_arp631d_CMIP6.L137.py
-#config=config/config_arp641ps8d_PS8.py
+#config=config/config_arp632_CMIP6.py
+config=config/config_arp632_CMIP6.300s.py
 
 OPT=''
 
