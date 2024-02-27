@@ -251,7 +251,7 @@ def prep_init_forc_atm(
             if dataout_forc['tnta_adv'] == 0:
                 dataout_forc['tnta_adv'] = dataout_forc['tnta_rad']
             else:
-                dataout_forc['tnta_adv'] += dataout_forc['tnta_rad']
+                dataout_forc['tnta_adv'].data += dataout_forc['tnta_rad'].data
 
     if case.attributes['adv_qv'] == 1:
         nb_f += 1
