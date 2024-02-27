@@ -8,7 +8,7 @@
 saveall = False
 
 
-var2save = ['pfull','zfull','theta','ta','ua','va','hfss','tke','ts','ustar','tntpbl','tnupbl','tnvpbl','ECT0','ECT1','TNECT_DYN','TNECT_BUO','TNECT_DIF','TNECT_DIS','KU']
+var2save = ['pfull','zfull','theta','qv','ta','ua','va','hfss','hfls','tke','ts','ustar','tntpbl','tnupbl','tnvpbl','ECT0','ECT1','TNECT_DYN','TNECT_BUO','TNECT_DIF','TNECT_DIS','KU']
 
 convert2p = False
 convert2z = True #False

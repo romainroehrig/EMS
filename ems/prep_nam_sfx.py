@@ -301,8 +301,14 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
                 raise ValueError("For this case (surfaceForcingTemp != 'surfaceFlux' on land), the land_type must be defined")
             #
             nn='NAM_ISBA'
-            if not nn in nam:
+            if nn not in nam:
                 nam[nn] = {}
+            nam[nn]['CISBA'] = ["'2-L'"]
+            nam[nn]['CPHOTO'] = ["'NON'"]
+            nam[nn]['NGROUND_LAYER'] = ['2']
+            nam[nn]['NPATCH'] = ['1']
+            if 'LTR_ML' in nam[nn]:
+                nam[nn]['LTR_ML'] = ['.FALSE.']
             nam[nn]['XUNIF_CLAY'] = ['1.']
             nam[nn]['XUNIF_SAND'] = ['0.']
             nam[nn]['XUNIF_RUNOFFB'] = ['0.5']
@@ -318,9 +324,9 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             nam[nn]['NMONTH'] = [str(int(month))]
             nam[nn]['NDAY'] = [str(int(day))]
             nam[nn]['XTIME'] = [str(int(seconds))]
-            nam[nn]['XTG_SURF'] = ['%(ts)6.2f'%{"ts": tsforc[0]}]
-            nam[nn]['XTG_ROOT'] = ['%(ts)6.2f'%{"ts": tsforc[0]}]
-            nam[nn]['XTG_DEEP'] = ['%(ts)6.2f'%{"ts": tsforc[0]}]
+            nam[nn]['XTG_SURF'] = ['%(ts)8.4f'%{"ts": tsforc[0]}]
+            nam[nn]['XTG_ROOT'] = ['%(ts)8.4f'%{"ts": tsforc[0]}]
+            nam[nn]['XTG_DEEP'] = ['%(ts)8.4f'%{"ts": tsforc[0]}]
             nam[nn]['XHUG_SURF'] = ['0.']
             nam[nn]['XHUG_ROOT'] = ['0.']
             nam[nn]['XHUG_DEEP'] = ['0.']
@@ -336,21 +342,13 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             nam[nn] = {}
             nam[nn]['NTIME'] = ['1']
             for i in range(1,12+1):      
-                nam[nn]['XUNIF_Z0(1,{0:>2})'.format(i)] = [str(z0m/z0h)]
-            nam[nn]['XUNIF_Z0_O_Z0H(1)'] = ['1.']
+                nam[nn]['XUNIF_Z0(1,{0:>2})'.format(i)] = [str(z0m),]
+            nam[nn]['XUNIF_Z0_O_Z0H(1)'] = [str(z0m/z0h),]
             #
-            nn='NAM_ISBA'
-            nam[nn] = {}
-            nam[nn]['CISBA'] = ["'2-L'"]
-            nam[nn]['CPHOTO'] = ["'NON'"]
-            nam[nn]['NGROUND_LAYER'] = ['2']
-            nam[nn]['NPATCH'] = ['1']
-            nam[nn]['XUNIF_CLAY'] = ['1.']
-            nam[nn]['XUNIF_RUNOFFB'] = ['0.5']
-            nam[nn]['XUNIF_SAND'] = ['0.']
-            #nn = 'NAM_ISBAN'
+            nn = 'NAM_ISBAN'
             #nam[nn] = {}
             #nam[nn]['LGLACIER'] = ['.TRUE.']
+            #
             nn = 'NAM_PREP_ISBA_SNOW'
             nam[nn] = {}
             nam[nn]['CSNOW'] = ["'D95'"]
