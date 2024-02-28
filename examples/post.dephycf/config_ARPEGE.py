@@ -7,8 +7,7 @@
 #saveall = True
 saveall = False
 
-
-var2save = ['pfull','zfull','theta','qv','ta','ua','va','hfss','hfls','hflsn','tke','ts','ustar','tntpbl','tnupbl','tnvpbl','ECT0','ECT1','TNECT_DYN','TNECT_BUO','TNECT_DIF','TNECT_DIS','KU']
+var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','dTv_up','ta_up','qv_up','ent_up','det_up','b_up','ent_up_org','ent_up_turb','det_up_org','det_up_turb','lwp','rsds','rsus','rlds','rlus']
 
 convert2p = False
 convert2z = False
@@ -32,7 +31,10 @@ for i in range(1,41):
 levout.reverse()
 
 # Pour convert2z, niveau en m
-levoutz = range(0,402,2)
+levoutz = []
+for i in range(0,401):
+  levoutz.append(i*50.)
+levoutz.reverse()
 
 # Niveau de print (0, 1 ou 2)
 verbose = 2

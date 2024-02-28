@@ -130,7 +130,7 @@ variables = {
     'evapi'             : {'varname':             'PFEVI', 'units':        'kg m-2 s-1', 'coef':         1, 'name':'Evaporation over frozen soil'}, 
     'evapn'             : {'varname':             'PFEVN', 'units':        'kg m-2 s-1', 'coef':         1, 'name':'Evaporation over snow (or ice) and frozen soil'}, 
     'hfls'              : {'varname':             'PFCLL', 'units':             'W m-2', 'coef':        -1, 'name':'surface_upward_latent_heat_flux'}, 
-    'lhfn'              : {'varname':             'PFCLN', 'units':             'W m-2', 'coef':         1, 'name':'Surface Latent Heat Flux over Snow or Ice'}, 
+    'hflsn'             : {'varname':             'PFCLN', 'units':             'W m-2', 'coef':         1, 'name':'Surface Latent Heat Flux over Snow or Ice'}, 
     'qsurf'             : {'varname':               'PQS', 'units':                 '1', 'coef':         1, 'name':'Surface saturated specific humidity (qsat(SST))'}, 
     'hfss'              : {'varname':              'PFCS', 'units':             'W m-2', 'coef':        -1, 'name':'surface_upward_sensible_heat_flux'}, 
     'tauu'              : {'varname':              'PSFU', 'units':        'kg m-1 s-2', 'coef':         1, 'name':'Surface zonal stress'}, 

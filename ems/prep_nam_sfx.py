@@ -230,10 +230,10 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             raise RuntimeError('surfaceForcingTemp unexpected: ' + surfaceForcingTemp + ' for surfaceType: ' + surfaceType)
     elif surfaceType in ['land','landice']:
         if surfaceForcingTemp == 'surface_flux':
-            logger.warning('This configuration does not work:')
-            logger.warning('surfaceType = ' + surfaceType + ' and surfaceForcingTemp = ' + surfaceForcingTemp)
-            logger.warning('=> surfaceType is changed to ocean')
-#           nam[nn]['CNATURE'] = ["'FLUX'"]
+            #logger.warning('This configuration does not work:')
+            #logger.warning('surfaceType = ' + surfaceType + ' and surfaceForcingTemp = ' + surfaceForcingTemp)
+            #logger.warning('=> surfaceType is changed to ocean')
+            nam[nn]['CNATURE'] = ["'FLUX'"]
             nam[nn]['CSEA'] = ["'FLUX'"]
             nam2keep.append('NAM_IDEAL_FLUX')
         elif surfaceForcingTemp == 'ts':
@@ -295,6 +295,9 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             del(nam[nn]['XUNIF_COVER(1)'])
             if surfaceType == 'landice':
                 nam[nn]['XUNIF_COVER(6)'] = ['1.'] # Permanent snow and ice 
+                if surfaceForcingMoisture == 'beta' and beta[0] == 0:
+                    nam[nn]['XUNIF_COVER(4)'] = ['1.'] # avoid sublimation of snow
+                    del(nam[nn]['XUNIF_COVER(6)'])
             elif surfaceType == 'land':
                 nam[nn]['XUNIF_COVER(4)'] = ['1.'] # Bare land
             else:
@@ -330,13 +333,16 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             nam[nn]['XHUG_SURF'] = ['0.']
             nam[nn]['XHUG_ROOT'] = ['0.']
             nam[nn]['XHUG_DEEP'] = ['0.']
+            nam[nn]['XHUGI_SURF'] = ['0.']
+            nam[nn]['XHUGI_ROOT'] = ['0.']
+            nam[nn]['XHUGI_DEEP'] = ['0.']
             if surfaceForcingMoisture == 'beta' and beta[0] == 0:                        
                 nam[nn]['XHUG_SURF'] = ['-10.']
                 nam[nn]['XHUG_ROOT'] = ['-10.']
-                nam[nn]['XHUG_DEEP'] = ['-10.']  
-            nam[nn]['XHUGI_SURF'] = ['0.00001']
-            nam[nn]['XHUGI_ROOT'] = ['0.00001']
-            nam[nn]['XHUGI_DEEP'] = ['0.00001']
+                nam[nn]['XHUG_DEEP'] = ['-10.']
+                nam[nn]['XHUGI_SURF'] = ['-10']
+                nam[nn]['XHUGI_ROOT'] = ['-10']
+                nam[nn]['XHUGI_DEEP'] = ['-10']
             #
             nn='NAM_DATA_ISBA'
             nam[nn] = {}

@@ -1,16 +1,10 @@
-#!/usr/bin/env python3
-# -*- coding:UTF-8 -*-
-# Copyright (c) Météo France (2014-)
-# This software is governed by the CeCILL-C license under French law.
-# http://www.cecill.info
-
 #saveall = True
 saveall = False
 
-
-var2save = ['pfull','zfull','theta','qv','ta','ua','va','hfss','hfls','hflsn','tke','ts','ustar','tntpbl','tnupbl','tnvpbl','ECT0','ECT1','TNECT_DYN','TNECT_BUO','TNECT_DIF','TNECT_DIS','KU']
+var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qr','rneb','cc','prw','rain','lhf','shf','tsurf',]
 
 convert2p = False
+#convert2z = True
 convert2z = False
 
 convertkday = False
@@ -32,7 +26,10 @@ for i in range(1,41):
 levout.reverse()
 
 # Pour convert2z, niveau en m
-levoutz = range(0,402,2)
+levoutz = []
+for i in range(0,401):
+  levoutz.append(i*50.)
+levoutz.reverse()
 
 # Niveau de print (0, 1 ou 2)
 verbose = 2
