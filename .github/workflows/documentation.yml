@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    if: github.repository == 'ewhelan/EMS'
+    if: github.repository == 'romainroehrig/EMS'
     permissions:
       contents: write
       statuses: write
