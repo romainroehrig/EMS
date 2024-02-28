@@ -438,7 +438,7 @@ def prep_init_forc_atm(
             if case.attributes['surface_forcing_wind'] == 'ustar':
                 write_forcing_in_nam1d(g, dataout_forc['hfls'].data, 'USTAR', wl=False)
 
-            if case.attributes['surface_forcing_temp'] == 'surface_flux' 
+            if case.attributes['surface_forcing_temp'] == 'surface_flux':
                 if 'ts' in dataout_forc:
                     write_forcing_in_nam1d(g, dataout_forc['ts'].data, 'RTS', wl=False)
                 elif 'tskin' in dataout_forc:
@@ -450,9 +450,9 @@ def prep_init_forc_atm(
             elif var == 'SURFGZ0.THERM' and z0h is not None:
                 write_profile_in_nam1d(g, 9.80665 * z0h, var, False)
             elif var == 'SURFIND.TERREMER':
-                if case.attributes['surfaceType'] == 'ocean':
+                if case.attributes['surface_type'] == 'ocean':
                     lsm = 0.
-                elif case.attributes['surfaceType'] in ['land','landice']:
+                elif case.attributes['surface_type'] in ['land','landice']:
                     lsm = 1.
                 write_profile_in_nam1d(g, lsm, var, False)
             else:
