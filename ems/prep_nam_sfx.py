@@ -230,10 +230,10 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             raise RuntimeError('surfaceForcingTemp unexpected: ' + surfaceForcingTemp + ' for surfaceType: ' + surfaceType)
     elif surfaceType in ['land','landice']:
         if surfaceForcingTemp == 'surface_flux':
-            logger.warning('This configuration does not work:')
-            logger.warning('surfaceType = ' + surfaceType + ' and surfaceForcingTemp = ' + surfaceForcingTemp)
-            logger.warning('=> surfaceType is changed to ocean')
-#           nam[nn]['CNATURE'] = ["'FLUX'"]
+            #logger.warning('This configuration does not work:')
+            #logger.warning('surfaceType = ' + surfaceType + ' and surfaceForcingTemp = ' + surfaceForcingTemp)
+            #logger.warning('=> surfaceType is changed to ocean')
+            nam[nn]['CNATURE'] = ["'FLUX'"]
             nam[nn]['CSEA'] = ["'FLUX'"]
             nam2keep.append('NAM_IDEAL_FLUX')
         elif surfaceForcingTemp == 'ts':

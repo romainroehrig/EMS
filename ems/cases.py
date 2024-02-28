@@ -286,7 +286,7 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
 # ARPEGE
 case = 'ARPEGE'
 cases.append(case)
-subcases[case] = ['SODANKYLA_2018031512']
+subcases[case] = ['SODANKYLA_2018031512','SODANKYLA_2018031512_NOFORC','SODANKYLA_2018031512_NOFORC_RAD','SODANKYLA_2018031512_NONUD']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
