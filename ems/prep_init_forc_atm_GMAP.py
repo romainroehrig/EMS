@@ -288,6 +288,14 @@ def prep_init_forc_atm(
         if case.attributes['surface_forcing_temp'] == 'surface_flux':
             nb_fs += 1
             dataout_forc['hfss'] = case.variables['hfss']
+            nb_fs +=1
+            if 'ts' in case.variables:
+                dataout_forc['ts'] = case.variables['ts']
+            elif 'tskin' in case.variables:
+                dataout_forc['ts'] = case.variables['tskin']
+            else:
+                logger.warning('No surface temperature provided. It is supposed to be constant in time and equal to 300 K')
+                dataout_forc['ts'] = case.variables['hfss']*0. + 300.
         else:
             raise NotImplementedError('surface_forcing_temp == {0} not implemented yet'.format(case.attributes['surface_forcing_temp']))
 
@@ -302,9 +310,16 @@ def prep_init_forc_atm(
             nb_fs += 1
             dataout_forc['ustar'] = case.variables['ustar']
         z0 = None
+        z0h = None
     elif case.attributes['surface_forcing_wind'] == 'z0':
         logger.warning('z0 is supposed to be constant in time')
         z0 = case.variables['z0'].data[0]
+        if 'z0h' in case.variables:
+            logger.warning('z0h is supposed to be constant in time')
+            z0h = case.variables['z0h'].data[0]
+        else:
+            logger.warning('z0h is supposed to be constant in time and equal to z0/10')
+            z0h = z0/10.
     elif case.attributes['surface_forcing_wind'] == 'none':
         # wind and z0 are computed interactively (ocean)
         z0 = None
@@ -423,11 +438,23 @@ def prep_init_forc_atm(
             if case.attributes['surface_forcing_wind'] == 'ustar':
                 write_forcing_in_nam1d(g, dataout_forc['hfls'].data, 'USTAR', wl=False)
 
+            if case.attributes['surface_forcing_temp'] == 'surface_flux' 
+                if 'ts' in dataout_forc:
+                    write_forcing_in_nam1d(g, dataout_forc['ts'].data, 'RTS', wl=False)
+                elif 'tskin' in dataout_forc:
+                    write_forcing_in_nam1d(g, dataout_forc['tskin'].data, 'RTS', wl=False)
+
         for var in variablesAux.keys():
             if var == 'SURFZ0.FOIS.G' and z0 is not None:
                 write_profile_in_nam1d(g, 9.80665 * z0, var, False)
-            elif var == 'SURFGZ0.THERM' and z0 is not None:
-                write_profile_in_nam1d(g, 9.80665 * z0 / 10., var, False)
+            elif var == 'SURFGZ0.THERM' and z0h is not None:
+                write_profile_in_nam1d(g, 9.80665 * z0h, var, False)
+            elif var == 'SURFIND.TERREMER':
+                if case.attributes['surfaceType'] == 'ocean':
+                    lsm = 0.
+                elif case.attributes['surfaceType'] in ['land','landice']:
+                    lsm = 1.
+                write_profile_in_nam1d(g, lsm, var, False)
             else:
                 write_profile_in_nam1d(g, variablesAux[var], var, False)
         
