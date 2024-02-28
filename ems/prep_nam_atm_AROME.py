@@ -297,6 +297,15 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
         if not(lsurfex):
             nam[nn]['RZ0_FORC'] = [str(case.variables['z0'].data[0])]
 
+    if attributes['surface_forcing_temp'] == 'surface_flux':
+        if not(lsurfex):
+            if 'ts' in case.variables:
+                nam[nn]['RTS_FORC'] = [str(case.variables['ts'].data[0])]
+            elif 'tskin' in case.variables:
+                nam[nn]['RTS_FORC'] = [str(case.variables['tskin'].data[0])]
+            else:
+                nam[nn]['RTS_FORC'] = ['300.',]
+
     if attributes['forc_geo'] == 1:
         nam['NAMCT0']['LSFORC']=['.TRUE.']
         nam[nn]['LGEOST_UV_FRC'] = ['.TRUE.']
@@ -387,9 +396,13 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
             j += 1
             nam[nn]["NLH_FORC_DEB"] = [str(int(1 + j * nt_f))]
             nam[nn]["NLH_FORC_NUM"] = [str(nt_f)]
+            j += 1
+            nam[nn]["NTS_FORC_DEB"] = [str(int(1 + j * nt_f))]
+            nam[nn]["NTS_FORC_NUM"] = [str(nt_f)]
             for it in range(nt_f):
                nam[nn]['NL_SH_ADV_TIME(   ' + str(int(it + 1)) + " )"] = [str(int(dt * it))]
                nam[nn]['NL_LH_ADV_TIME(   ' + str(int(it + 1)) + " )"] = [str(int(dt * it))]
+               nam[nn]['NL_TS_ADV_TIME(   ' + str(int(it + 1)) + " )"] = [str(int(dt * it))]
             nam['NAMPHYDS']['NSFORC'] = [str(int((j + 1) * nt_f))]
 
 
