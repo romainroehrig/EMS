@@ -1,0 +1,30 @@
+name: Documentation
+
+on:
+  push:
+    paths:
+      - doc/**
+  pull_request:
+    paths:
+      - doc/**
+
+jobs:
+  build:
+    if: github.repository == 'ewhelan/EMS'
+    permissions:
+      contents: write
+      statuses: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@latest
+        with:
+          version: '1.10'
+      - name: Install Julia dependencies
+        run: julia --project=doc/ -e 'using Pkg; Pkg.instantiate()'
+      - name: Build and deploy
+        env:
+          GITHUB_TOKEN: ${{  secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }} # For authentication with SSH deploy key
+        run: julia --project=doc/ doc/make.jl
+
