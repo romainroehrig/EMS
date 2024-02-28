@@ -24,7 +24,7 @@ data_input = {}
 
 # Get the CASES directory
 import ems
-rep0 = os.path.join(ems._dirEMS,'../data/CASES') 
+rep0 = os.path.join(ems._dirEMS,'../share/CASES') 
 
 # Some debug information
 logger.debug('-'*60)

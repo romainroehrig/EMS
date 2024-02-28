@@ -6,6 +6,10 @@
 # swp files
 *.swp 
 *.swo
+
+#CMake build directory
+build
+
 # Other compiled files
 *.o
 *.so
