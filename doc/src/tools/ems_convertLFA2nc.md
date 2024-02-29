@@ -1,4 +1,4 @@
-# ems\_convertLFA2nc.md
+# ems\_convertLFA2nc.py
 
 ## DESCRIPTION
 Depends on `liblfa4py.so` and `variables.py`

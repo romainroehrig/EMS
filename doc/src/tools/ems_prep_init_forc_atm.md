@@ -1,4 +1,4 @@
-# ems\_lfa2nc.md
+# ems\_prep\_init\_forc\_atm.py
 
 ## DESCRIPTION
 Create `nam1d` needed by `acadfa` to create ARPIFS restart
