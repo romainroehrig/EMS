@@ -2,9 +2,10 @@ using Documenter
 
 
 pages = [
-   "Introduction" => "introduction.md"
-   "Installation" => "installation.md"
-   "MUSC config" => "musc_config.md"
+   "Introduction" => "introduction.md",
+   "Installation" => "installation.md",
+   "MUSC config" => "musc_config.md",
+   "Vertical levels" => "vertical_levels.md"
 ]
 
 prettyurls = get(ENV, "CI", nothing) == "true"
