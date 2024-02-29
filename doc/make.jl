@@ -2,9 +2,9 @@ using Documenter
 
 
 pages = [
-   "Introduction" => "introduction.md"
-   "Installation" => "installation.md"
-   "MUSC configuration" => "musc_config.md"
+   "Introduction" => "introduction.md",
+   "Installation" => "installation.md",
+   "MUSC configuration" => "musc_config.md",
    "EMS Tools" => [
 	"MUSC.py" => "tools/ems_musc.md",
         "ems_list_cases.py" => "tools/ems_list_cases.md",
