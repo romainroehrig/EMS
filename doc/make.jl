@@ -2,9 +2,9 @@ using Documenter
 
 
 pages = [
-   "Introduction" => "introduction.md",
-   "Installation" => "installation.md",
-   "MUSC configuration" => "musc_config.md",
+   "Introduction" => "introduction.md"
+   "Installation" => "installation.md"
+   "MUSC configuration" => "musc_config.md"
    "EMS Tools" => [
 	"MUSC.py" => "tools/ems_musc.md",
         "ems_list_cases.py" => "tools/ems_list_cases.md",
@@ -15,7 +15,7 @@ pages = [
 	"ems_convert2p.py" => "tools/ems_convert2p.md",
         "ems_convert2z.py" => "tools/ems_convert2z.md",
         "ems_convertLFA2nc.py" => "tools/ems_convertLFA2nc.md"
-	],
+	]
    "References" => "references.md"
 ]
 
