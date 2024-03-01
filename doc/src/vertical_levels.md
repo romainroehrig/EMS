@@ -5,6 +5,11 @@ EMS can make use of vertical level definitions packaged with the software in `${
 ## Level descriptions
 | Name             | Description |
 | ---------------- | ------------|
+|L31.dta           |???          |
+|L60_AROME.dta     |60 level definition used operationally by AROME (Meteo France) |
+|L90_AROME.dta     |90 level definition used operationally by AROME (Meteo France) |
+|L91.dta           |???          |
+|L98.dta           |???          |
 |L105.dta          |???          |
 |L114.dta          |???          |
 |L137_CEP.dta      |137 level definition used operationally by IFS (ECMWF/CEP) |
@@ -13,13 +18,8 @@ EMS can make use of vertical level definitions packaged with the software in `${
 |L183.dta          |???          |
 |L191.dta          |???          |
 |L233.dta          |???          |
-|L31.dta           |???          |
 |L344.dta          |???          |
 |L346.dta          |???          |
-|L60_AROME.dta     |60 level definition used operationally by AROME (Meteo France) |
-|L90_AROME.dta     |90 level definition used operationally by AROME (Meteo France) |
-|L91.dta           |???          |
-|L98.dta           |???          |
 
 ## Creating your own veritcal levels
 Some information and tools to create your own vertical level definitions (dta files) ...
