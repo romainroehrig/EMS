@@ -194,7 +194,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
         elif 'tskin' in case.variables:
             tsforc = case.variables['tskin'].data
         else:
-            tsforc = hfls*0. + case.variables['ta'].data[0,0]
+            tsforc = hfls*0. + 310#case.variables['ta'].data[0,0]
 
         try:
             alb = case.variables['alb'].data[0]
