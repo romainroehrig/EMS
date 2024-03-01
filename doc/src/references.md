@@ -1,3 +1,0 @@
-#References
-
-Collect and reports/papers on EMS or MUSC here ...
