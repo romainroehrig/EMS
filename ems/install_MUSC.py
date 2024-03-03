@@ -260,6 +260,11 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
     if not(flagExist) or lupdate:
         os.chdir(rep)
 
+        # Removing link to previous exec_dir in case it exists
+        link_exec = 'exec_dir'
+        logger.debug(f'Remove {link_exec} if it exists (execution directory from a previous run attempt')
+        shutil.rmtree(link_exec, ignore_errors=True)
+
         # Preparation namelist
         NSTOP = ems.prep_nam_atm(model, 'data_input.nc',
                          config['namATMref'], config['TSTEP'],
@@ -336,6 +341,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         with open('exec.log', 'w') as log:
             p = subprocess.run('exec.sh', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
             if p.returncode != 0:
+                exec_error(rep, config)
                 raise RuntimeError("Error during MUSC execution (log: {})".format(os.path.abspath(log.name)))
 
         t0 = perf(t0, 'Execution')
@@ -349,6 +355,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         with open('exec.log', 'w') as log:
             p = subprocess.run('exec.sh', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
             if p.returncode != 0:
+                exec_error(rep, config)
                 raise RuntimeError("Error during MUSC execution (log: {})".format(os.path.abspath(log.name)))
 
         t0 = perf(t0, 'Execution')
@@ -362,3 +369,58 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
     logger.info('#'*40)
 
     t0 = perf(tinit, 'Total')
+
+def get_tmpdir(file):
+
+    with open(file) as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "TMPDIR" in line:
+             tmp = line.split('=')
+             return tmp[1].rsplit()[0]
+
+    return None
+
+def get_error(file):
+
+    with open(file) as f:
+        lines = f.readlines()
+
+    if "MASTER" in lines[-1]:
+        return "MUSC execution"
+
+    return "Unknown"
+
+def exec_error(rep, config):
+    """
+    Copy, move a few log files to help interpretation of an execution error (exec.sh)"
+    Try to interpret the error and provide the location of log files for further interpretation
+    """
+
+    logrun = 'run_{}.log'.format(config['name'])
+    listing_dir = os.path.join(rep, 'listings')
+    logrun_abs = os.path.join(listing_dir, logrun)
+
+    logger.debug(f'Moving {logrun} to {logrun_abs}')
+    shutil.move(logrun, logrun_abs)
+    tmpdir = get_tmpdir(logrun_abs)
+    logger.debug(f'TMPDIR is {tmpdir}')
+    os.symlink(os.path.join(tmpdir), 'exec_dir')
+    error = get_error(logrun_abs)
+    logger.debug('Copying lola and NODE.001_01 in listings directory')
+    shutil.copyfile(os.path.join(tmpdir,'lola'), os.path.join(listing_dir,'lola'))
+    shutil.copyfile(os.path.join(tmpdir,'NODE.001_01'), os.path.join(listing_dir,'NODE.001_01'))
+    logger.error("Error during " + error)
+    logger.error("First check in {}".format(logrun))
+    logger.error("If it is an error truly occuring during MASTER/MASTERODB execution:")
+    logger.error("Look at the following files:")
+    logger.error(" "*4 + f"{rep}/listings/lola")
+    logger.error(" "*4 + f"{rep}/listings/NODE.001_01")
+    logger.error("You may also need to check in the MUSC execution (temporary) directory:")
+    logger.error(" "*4 + tmpdir)
+    logger.error("Note a symbolic link to this directory has been created under:")
+    logger.error(" "*4 + os.path.join(rep, "exec_dir"))
+
+
+

@@ -1,0 +1,280 @@
+diff --git a/README.md b/README.md
+index 4cfde0e..cfa9bbe 100644
+--- a/README.md
++++ b/README.md
+@@ -14,7 +14,7 @@ To install EMS on a CNRM computer, with access to the CNRM Lustre system:
+ 
+ 2. Modify `install.sh` (or execute `install.sh -h` to get its usage):
+ 
+-   * Set `EMS_VERSION`, e.g., `EMS_VERSION=2.4.4.mac`
++   * Set `EMS_VERSION`, e.g., `EMS_VERSION=2.4.4`
+    * Set where you want to install EMS: default is `REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}`
+    * Set where you want to run MUSC: default is `REP_MUSC=$HOME/MUSC/V${EMS_VERSION}`
+ 
+diff --git a/apptools/MUSC.py b/apptools/MUSC.py
+index dc93555..f527360 100755
+--- a/apptools/MUSC.py
++++ b/apptools/MUSC.py
+@@ -61,7 +61,6 @@ if __name__ == '__main__':
+     parser.add_argument("--atm-only", help="Only install ATM files",    dest='atm_only', action="store_true")
+     parser.add_argument("--sfx-only", help="Only install SURFEX files", dest='sfx_only', action="store_true")
+     parser.add_argument("--run-only", help="Only run the simulation",   dest='run_only', action="store_true")
+-    parser.add_argument("--debug",    help="Active debug option",       dest='debug',    action="store_true")
+ 
+     # Getting arguments
+     args = parser.parse_args()
+@@ -74,13 +73,6 @@ if __name__ == '__main__':
+     lrun = args.run_only
+     lall = not(latm or lsfx or lrun)
+ 
+-    ldebug = args.debug
+-    if ldebug:
+-        logging.root.setLevel(logging.DEBUG)
+-        logger.debug('Execution in debug mode')
+-    else:
+-        logging.root.setLevel(logging.INFO)
+-
+     # check existence of config_file and then import it
+     if not(os.path.isfile(config_file)):
+         raise ValueError("The configuration file {0} does not exist".format(config_file))
+diff --git a/data/CASES/AMMA_REF_SCM_driver.nc b/data/CASES/AMMA_REF_SCM_driver.nc
+index 04729e0..a28c0e6 100644
+Binary files a/data/CASES/AMMA_REF_SCM_driver.nc and b/data/CASES/AMMA_REF_SCM_driver.nc differ
+diff --git a/data/CASES/KB2006_MESONH_SCM_driver.nc b/data/CASES/KB2006_MESONH_SCM_driver.nc
+index 4fe9458..5a1e228 100644
+Binary files a/data/CASES/KB2006_MESONH_SCM_driver.nc and b/data/CASES/KB2006_MESONH_SCM_driver.nc differ
+diff --git a/ems/dephycf/plotbasics.py b/ems/dephycf/plotbasics.py
+index 9757d2d..c041d56 100644
+--- a/ems/dephycf/plotbasics.py
++++ b/ems/dephycf/plotbasics.py
+@@ -9,7 +9,6 @@ Created on 27 November 2019
+ 
+ import numpy as np
+ import matplotlib.pyplot as plt
+-plt.set_loglevel('error')
+ 
+ def plot(x,y,x2=None,y2=None,xlim=None,ylim=None,xlabel=None,ylabel=None,title=None,rep_images=None,name=None,label="",label2="",yunits=None):
+     plt.plot(x,y,'k',label=label)
+diff --git a/ems/install_MUSC.py b/ems/install_MUSC.py
+index ac4c308..c769320 100644
+--- a/ems/install_MUSC.py
++++ b/ems/install_MUSC.py
+@@ -260,11 +260,6 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
+     if not(flagExist) or lupdate:
+         os.chdir(rep)
+ 
+-        # Removing link to previous exec_dir in case it exists
+-        link_exec = 'exec_dir'
+-        logger.debug(f'Remove {link_exec} if it exists (execution directory from a previous run attempt')
+-        shutil.rmtree(link_exec, ignore_errors=True)
+-
+         # Preparation namelist
+         NSTOP = ems.prep_nam_atm(model, 'data_input.nc',
+                          config['namATMref'], config['TSTEP'],
+@@ -341,7 +336,6 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
+         with open('exec.log', 'w') as log:
+             p = subprocess.run('exec.sh', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+             if p.returncode != 0:
+-                exec_error(rep, config)
+                 raise RuntimeError("Error during MUSC execution (log: {})".format(os.path.abspath(log.name)))
+ 
+         t0 = perf(t0, 'Execution')
+@@ -355,7 +349,6 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
+         with open('exec.log', 'w') as log:
+             p = subprocess.run('exec.sh', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+             if p.returncode != 0:
+-                exec_error(rep, config)
+                 raise RuntimeError("Error during MUSC execution (log: {})".format(os.path.abspath(log.name)))
+ 
+         t0 = perf(t0, 'Execution')
+@@ -369,58 +362,3 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
+     logger.info('#'*40)
+ 
+     t0 = perf(tinit, 'Total')
+-
+-def get_tmpdir(file):
+-
+-    with open(file) as f:
+-        lines = f.readlines()
+-
+-    for line in lines:
+-        if "TMPDIR" in line:
+-             tmp = line.split('=')
+-             return tmp[1].rsplit()[0]
+-
+-    return None
+-
+-def get_error(file):
+-
+-    with open(file) as f:
+-        lines = f.readlines()
+-
+-    if "MASTER" in lines[-1]:
+-        return "MUSC execution"
+-
+-    return "Unknown"
+-
+-def exec_error(rep, config):
+-    """
+-    Copy, move a few log files to help interpretation of an execution error (exec.sh)"
+-    Try to interpret the error and provide the location of log files for further interpretation
+-    """
+-
+-    logrun = 'run_{}.log'.format(config['name'])
+-    listing_dir = os.path.join(rep, 'listings')
+-    logrun_abs = os.path.join(listing_dir, logrun)
+-
+-    logger.debug(f'Moving {logrun} to {logrun_abs}')
+-    shutil.move(logrun, logrun_abs)
+-    tmpdir = get_tmpdir(logrun_abs)
+-    logger.debug(f'TMPDIR is {tmpdir}')
+-    os.symlink(os.path.join(tmpdir), 'exec_dir')
+-    error = get_error(logrun_abs)
+-    logger.debug('Copying lola and NODE.001_01 in listings directory')
+-    shutil.copyfile(os.path.join(tmpdir,'lola'), os.path.join(listing_dir,'lola'))
+-    shutil.copyfile(os.path.join(tmpdir,'NODE.001_01'), os.path.join(listing_dir,'NODE.001_01'))
+-    logger.error("Error during " + error)
+-    logger.error("First check in {}".format(logrun))
+-    logger.error("If it is an error truly occuring during MASTER/MASTERODB execution:")
+-    logger.error("Look at the following files:")
+-    logger.error(" "*4 + f"{rep}/listings/lola")
+-    logger.error(" "*4 + f"{rep}/listings/NODE.001_01")
+-    logger.error("You may also need to check in the MUSC execution (temporary) directory:")
+-    logger.error(" "*4 + tmpdir)
+-    logger.error("Note a symbolic link to this directory has been created under:")
+-    logger.error(" "*4 + os.path.join(rep, "exec_dir"))
+-
+-
+-
+diff --git a/ems/prep_nam_sfx.py b/ems/prep_nam_sfx.py
+index 0a513ab..4613837 100644
+--- a/ems/prep_nam_sfx.py
++++ b/ems/prep_nam_sfx.py
+@@ -194,7 +194,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
+         elif 'tskin' in case.variables:
+             tsforc = case.variables['tskin'].data
+         else:
+-            tsforc = hfls*0. + 310#case.variables['ta'].data[0,0]
++            tsforc = hfls*0. + case.variables['ta'].data[0,0]
+ 
+         try:
+             alb = case.variables['alb'].data[0]
+diff --git a/examples/config/config_arp632_CMIP6.300s.py b/examples/config/config_arp632_CMIP6.300s.py
+index e5fad0c..48c4ddf 100644
+--- a/examples/config/config_arp632_CMIP6.300s.py
++++ b/examples/config/config_arp632_CMIP6.300s.py
+@@ -10,8 +10,8 @@ GROUP = 'V632'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/arp632_climat.02.MPIGNU1230.x/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp632_climat.02.MPIGNU930.cx/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/config/config_arp632_CMIP6.LPBLEoff.py b/examples/config/config_arp632_CMIP6.LPBLEoff.py
+index 31068bf..aaf71a3 100644
+--- a/examples/config/config_arp632_CMIP6.LPBLEoff.py
++++ b/examples/config/config_arp632_CMIP6.LPBLEoff.py
+@@ -10,8 +10,8 @@ GROUP = 'V632'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/arp632_climat.02.MPIGNU1230.x/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp632_climat.02.MPIGNU930.cx/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/config/config_arp632_CMIP6.py b/examples/config/config_arp632_CMIP6.py
+index 6d8ec26..f4d133b 100644
+--- a/examples/config/config_arp632_CMIP6.py
++++ b/examples/config/config_arp632_CMIP6.py
+@@ -10,8 +10,8 @@ GROUP = 'V632'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/arp632_climat.02.MPIGNU1230.x/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp632_climat.02.MPIGNU930.cx/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/config/config_arp642.stab_CMIP6.LPBLEoff.py b/examples/config/config_arp642.stab_CMIP6.LPBLEoff.py
+index 9e9b83f..3a7f22b 100644
+--- a/examples/config/config_arp642.stab_CMIP6.LPBLEoff.py
++++ b/examples/config/config_arp642.stab_CMIP6.LPBLEoff.py
+@@ -10,8 +10,8 @@ GROUP = 'V642'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/pack/arp642_climat.00.MPIGNU1230.x.stab/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp642_climat.00.MPIGNU930.cx.stab/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/config/config_arp650_CMIP6.300s.py b/examples/config/config_arp650_CMIP6.300s.py
+index fe04f8f..8e90d8c 100644
+--- a/examples/config/config_arp650_CMIP6.300s.py
++++ b/examples/config/config_arp650_CMIP6.300s.py
+@@ -10,8 +10,8 @@ GROUP = 'V650'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/arp650_climat.00.MPIGNU1230.x/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp650_climat.00.MPIGNU930.cx/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/config/config_arp650_P7.RRTM.py b/examples/config/config_arp650_P7.RRTM.py
+index 28d7d0d..460bacf 100644
+--- a/examples/config/config_arp650_P7.RRTM.py
++++ b/examples/config/config_arp650_P7.RRTM.py
+@@ -10,8 +10,8 @@ GROUP = 'V650'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/arp650_climat.00.MPIGNU1230.x/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp650_climat.00.MPIGNU930.cx/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/post.dephycf/config_ARMCU.py b/examples/post.dephycf/config_ARMCU.py
+index 3afbd10..d4c53aa 100644
+--- a/examples/post.dephycf/config_ARMCU.py
++++ b/examples/post.dephycf/config_ARMCU.py
+@@ -7,9 +7,9 @@
+ #saveall = True
+ saveall = False
+ 
+-#var2save = ['pfull','zfull','theta','qv','cl']
++var2save = ['pfull','zfull','theta','qv','cl']
+ 
+-var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','dTv_up','ta_up','qv_up','ent_up','det_up','b_up','ent_up_org','ent_up_turb','det_up_org','det_up_turb','lwp','tnta_turb','tnta_conv','tnta_micro','tnqv_turb','tnqv_micro','tnqv_conv','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp']
++#var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','dTv_up','ta_up','qv_up','ent_up','det_up','b_up','ent_up_org','ent_up_turb','det_up_org','det_up_turb','lwp','tnta_turb','tnta_conv','tnta_micro','tnqv_turb','tnqv_micro','tnqv_conv','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp']
+ 
+ #var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qr','rneb','cc','prw','rain','lhf','shf','tsurf',]
+ #var2save = ['pf','zf','theta','temp','qv','rneb']
+diff --git a/install.sh b/install.sh
+index cb69878..56ad4f0 100755
+--- a/install.sh
++++ b/install.sh
+@@ -6,7 +6,7 @@ set -e
+ # User specific defaults
+ 
+ # EMS Version
+-EMS_VERSION=2.4.4.mac
++EMS_VERSION=2.4.4
+ 
+ # Directory where EMS is installed
+ REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}

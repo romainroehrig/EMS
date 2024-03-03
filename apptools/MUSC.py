@@ -61,6 +61,7 @@ if __name__ == '__main__':
     parser.add_argument("--atm-only", help="Only install ATM files",    dest='atm_only', action="store_true")
     parser.add_argument("--sfx-only", help="Only install SURFEX files", dest='sfx_only', action="store_true")
     parser.add_argument("--run-only", help="Only run the simulation",   dest='run_only', action="store_true")
+    parser.add_argument("--debug",    help="Active debug option",       dest='debug',    action="store_true")
 
     # Getting arguments
     args = parser.parse_args()
@@ -72,6 +73,13 @@ if __name__ == '__main__':
     lsfx = args.sfx_only    
     lrun = args.run_only
     lall = not(latm or lsfx or lrun)
+
+    ldebug = args.debug
+    if ldebug:
+        logging.root.setLevel(logging.DEBUG)
+        logger.debug('Execution in debug mode')
+    else:
+        logging.root.setLevel(logging.INFO)
 
     # check existence of config_file and then import it
     if not(os.path.isfile(config_file)):
