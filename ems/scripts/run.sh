@@ -146,7 +146,7 @@ set -x
 
 [ ! $os = "Darwin" ] && ulimit -s unlimited
 
-unset LD_LIBRARY_PATH
+#unset LD_LIBRARY_PATH
 
 date
 if [ $model = "ARPCLIMAT" ]; then
