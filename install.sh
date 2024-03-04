@@ -6,7 +6,7 @@ set -e
 # User specific defaults
 
 # EMS Version
-EMS_VERSION=2.4.4.mac
+EMS_VERSION=2.4.5.mac
 
 # Directory where EMS is installed
 REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
