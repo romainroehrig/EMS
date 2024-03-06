@@ -8,7 +8,7 @@ set -ex
 export OMP_NUM_THREADS=1
 
 export DR_HOOK_IGNORE_SIGNALS=-1
-export DR_HOOK=1
+export DR_HOOK=0
 
 if [ $model = "AROME" ] || [ $model = "ARPPNT" ] ; then
   export LIBRARY_PATH=$LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
@@ -150,8 +150,11 @@ unset LD_LIBRARY_PATH
 
 date
 if [ $model = "ARPCLIMAT" ]; then
+    export DR_HOOK_NOT_MPI=false
     ./MASTER -c001 -vmeteo -maladin -e${EXP} -t$TSTEP -f$NSTOP -asli  >lola 2>&1
 else
+    export DR_HOOK_NOT_MPI=true
+    export DR_HOOK=1
     ./MASTER >lola 2>&1
 fi
 date
