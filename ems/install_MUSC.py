@@ -405,12 +405,24 @@ def exec_error(rep, config):
     logger.debug(f'Moving {logrun} to {logrun_abs}')
     shutil.move(logrun, logrun_abs)
     tmpdir = get_tmpdir(logrun_abs)
-    logger.debug(f'TMPDIR is {tmpdir}')
+    logger.error(f'TMPDIR is {tmpdir}')
     os.symlink(os.path.join(tmpdir), 'exec_dir')
     error = get_error(logrun_abs)
     logger.debug('Copying lola and NODE.001_01 in listings directory')
-    shutil.copyfile(os.path.join(tmpdir,'lola'), os.path.join(listing_dir,'lola'))
-    shutil.copyfile(os.path.join(tmpdir,'NODE.001_01'), os.path.join(listing_dir,'NODE.001_01'))
+    lola_file = os.path.join(tmpdir,'lola')
+    if os.path.isfile(lola_file):
+        shutil.copyfile(lola_file, os.path.join(listing_dir,'lola'))
+    else:
+        logger.error(f'No lola file. Look at {logrun_abs}')
+        raise RuntimeError
+    node_file = os.path.join(tmpdir,'NODE.001_01')
+    if os.path.isfile(node_file):
+        shutil.copyfile(os.path.join(tmpdir,'NODE.001_01'), os.path.join(listing_dir,'NODE.001_01'))
+    else:
+        logger.error(f'No NODE.001_01. Look at:')
+        logger.error(f'    {logrun_abs}')
+        logger.error(f'    {listing_dir}/lola')
+        raise RuntimeError
     logger.error("Error during " + error)
     logger.error("First check in {}".format(logrun))
     logger.error("If it is an error truly occuring during MASTER/MASTERODB execution:")

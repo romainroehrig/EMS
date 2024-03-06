@@ -323,6 +323,7 @@ def prep_init_forc_atm(
     elif case.attributes['surface_forcing_wind'] == 'none':
         # wind and z0 are computed interactively (ocean)
         z0 = None
+        z0h = None
     else:
         raise NotImplementedError('surface_forcing_wind == {0} not implemented yet'.format(case.attributes['surface_forcing_wind']))
 

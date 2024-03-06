@@ -8,7 +8,7 @@ set -ex
 export OMP_NUM_THREADS=1
 
 export DR_HOOK_IGNORE_SIGNALS=-1
-export DR_HOOK=0
+export DR_HOOK=1
 
 if [ $model = "AROME" ] || [ $model = "ARPPNT" ] ; then
   export LIBRARY_PATH=$LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
