@@ -180,6 +180,12 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
 
     # Update NAMCT0
     nn = 'NAMCT0'
+    if 'LCONSERV' in nam[nn]:
+        del(nam[nn]['LCONSERV'])
+    if 'LCORWAT' in nam[nn]:
+        del(nam[nn]['LCORWAT'])
+    if 'NFRCORM' in nam[nn]:
+        del(nam[nn]['NFRCORM'])
 
     # Update NAMXFU
     nn = 'NAMXFU'
@@ -239,6 +245,8 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
         nam['NAERAD']['LSRTM'] =  ['.FALSE.']
         nam['NAERAD']['NSW'] = ['6']
         nam['NAERAD']['NOZOCL'] = ['2']
+        nam['NAERAD']['NLIQOPT'] = ['2']
+        nam['NAERAD']['NICEOPT'] = ['3']
 
     # MUSC Forcing
     nn = 'NAMLSFORC'
