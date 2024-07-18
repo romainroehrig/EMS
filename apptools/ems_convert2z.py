@@ -9,7 +9,7 @@ import netCDF4 as nc
 import numpy as np
 from scipy import interpolate
 
-import config
+import post_config as config
 
 levout = config.levoutz
 levout = np.array(levout,dtype=np.double)
@@ -59,7 +59,7 @@ dims_tmp[dim][:] = levout[:]
 var_tmp = {}
 for var in variables:
     if var not in dimensions:
-        print var
+        print(var)
         if len(fin[var].dimensions) == 2 and fin[var].dimensions[1] == 'levf':
 
             var_tmp[var] = fout.createVariable(var,'f4',('time','levz'),fill_value=missing_value)
