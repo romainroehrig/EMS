@@ -20,7 +20,7 @@ from ems.namelist import readarp, writearp
 
 lverbose = logger.getEffectiveLevel() == logging.DEBUG
 
-def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
+def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=None):
     """
     Prepare ARPEGE namelist for MUSC simulation, 
     given information in filecase,
@@ -73,7 +73,8 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
     nam['NAMDYN']['NSITER'] = ['0']
 
     #Deactivate NH dyn
-    nam['NAMCT0']['LNHEE'] = ['.FALSE.'] #because required input fields are absent
+    if cycle is not None and cycle < 49:
+        nam['NAMCT0']['LNHEE'] = ['.FALSE.'] #because required input fields are absent
     
     #Deactivate MPI
     nam['NAMPAR0']['LMPOFF'] = ['.TRUE.']
@@ -143,6 +144,10 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
     nam[nn]['YQ_NL%LGP'] = ['.TRUE.']
     nam[nn]['YQ_NL%NCOUPLING'] = ['0']
     nam[nn]['YQ_NL%NREQIN'] = ['1']
+    tmp = 'YQ_NL%LVWENO' 
+    if tmp in nam[nn]:
+        nam[nn][tmp] = ['.FALSE.',]
+
     for var in ['L', 'I', 'R', 'S', 'TKE']:
         nam[nn]['Y' + var + '_NL%LGP'] = ['.TRUE.']
         nam[nn]['Y' + var + '_NL%LGPINGP'] = ['.TRUE.']
@@ -156,6 +161,9 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False):
             nam[nn]['Y' + var + '_NL%NREQIN'] = ['1']
         else:
             nam[nn]['Y' + var + '_NL%NREQIN'] = ['0']
+        tmp = 'Y' + var + '_NL%LVWENO' 
+        if tmp in nam[nn]:
+            nam[nn][tmp] = ['.FALSE.',]
 
     # Update due to MUSC/ALADIN config
     nn = 'NAMDYN'

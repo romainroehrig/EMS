@@ -34,6 +34,7 @@ default = {
         #
         # EMS configuration
         'model': 'ARPCLIMAT',
+        'cycle': None,
         'lforc_ascii': True,
         'lsurfex': True,
         'loverwrite': False,
@@ -101,7 +102,7 @@ if __name__ == '__main__':
     atts = {}
     atts['EXPID'] = EXPID
     # First loop over attributes which have a default (see above)
-    for att in ['GROUP', 'model', 'ASCII2FA', 'lforc_ascii', 'lsurfex',
+    for att in ['GROUP', 'model', 'cycle', 'ASCII2FA', 'lforc_ascii', 'lsurfex',
                 'dirpost', 'variablesDict', 'defaultConfigPost', 'caseDependent',
                 'sfxfmt', 'ecoclimap', 'rrtm',
                 'loverwrite', 'lupdate_ATM', 'lupdate_SFX', 'lupdate_RUN']: 
@@ -136,6 +137,7 @@ if __name__ == '__main__':
     EXPID = atts['EXPID']
 
     model = atts['model']
+    cycle = atts['cycle']
 
     MASTER = atts['MASTER']
     ASCII2FA = atts['ASCII2FA']
@@ -225,6 +227,7 @@ if __name__ == '__main__':
         config = {}
         config['name'] = EXPID
         config['MASTER'] = MASTER
+        config['cycle'] = cycle
         config['ecoclimap'] = ecoclimap
         config['rrtm'] = rrtm
         config['sfxfmt'] = sfxfmt

@@ -219,6 +219,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
     logger.info('Case: ' + case + ' subcase: ' + subcase)
     logger.info('MASTER: ' + config['MASTER'])
     logger.info('Configuration name: ' + config['name'])
+    logger.info('Cycle:' + str(config['cycle']))
     logger.info('{0} reference namelist: {1}'.format(model, config['namATMref']))
     if config['lsurfex']:
         logger.info('SURFEX reference namelist: ' + config['namSFXref'])
@@ -271,7 +272,8 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         NSTOP = ems.prep_nam_atm(model, 'data_input.nc',
                          config['namATMref'], config['TSTEP'],
                          namout="namarp_{0}".format(config['name']),
-                         lsurfex=config['lsurfex'])
+                         lsurfex=config['lsurfex'],
+                         cycle=config['cycle'])
 
         t0 = perf(t0, 'Prepare {0} namelist'.format(model))
 

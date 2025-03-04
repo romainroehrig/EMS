@@ -5,7 +5,7 @@ attributes = OrderedDict([
         # Initial variables
         ###########################
         ('ps',       {'name': 'surface_air_pressure',                       'units': 'Pa', 'plotcoef': 0.01,  'plotunits': 'hPa'}),
-        ('zh',       {'name': 'height',                                     'units': 'm',  'plotcoef': 0.001, 'plotunits': 'km'}),
+        ('zh',       {'name': 'height_above_surface',                                     'units': 'm',  'plotcoef': 0.001, 'plotunits': 'km'}),
         ('pa',       {'name': 'air_pressure',                               'units': 'Pa', 'plotcoef': 0.01,  'plotunits': 'hPa'}),
         ('ua',       {'name': 'eastward_wind',                              'units': 'm s-1'}),
         ('va',       {'name': 'northward_wind',                             'units': 'm s-1'}),
@@ -34,7 +34,7 @@ attributes = OrderedDict([
         ('lat',     {'name': 'latitude',                     'units': 'degrees_north'}),
         ('lon',     {'name': 'longitude',                    'units': 'degrees_east'}),
         ('ps_forc', {'name': 'forcing_surface_air_pressure', 'units': 'Pa', 'plotcoef': 0.01,  'plotunits': 'hPa'}),
-        ('zh_forc', {'name': 'forcing_height',               'units': 'm',  'plotcoef': 0.001, 'plotunits': 'km'}),
+        ('zh_forc', {'name': 'forcing_height_above_surface', 'units': 'm',  'plotcoef': 0.001, 'plotunits': 'km'}),
         ('pa_forc', {'name': 'forcing_air_pressure',         'units': 'Pa', 'plotcoef': 0.01,  'plotunits': 'hPa'}),
         # Geostrophic forcings
         ('ug', {'name': 'geostrophic_eastward_wind',  'units': 'm s-1'}),

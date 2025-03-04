@@ -7,17 +7,19 @@
 #saveall = True
 saveall = False
 
-var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qi','qr','qsn','rneb','cc','prw','rain','lhf','lhfn','shf','tsurf','prw','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke']
+var2save = ['pfull','phalf','zfull','zhalf','dp','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','prw','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke']
 
-var2save = var2save + ['tntrlw','tntrsw','tntpbl','tntlscp','tntc','tntd','tnupbl','tnuc','tnud','tnvpbl','tnvc','tnvd','tntadv','tntnudg','tnugeo','tnvgeo','tendu','tendv','tendq','tendh']
+#var2save = var2save + ['tnta_radlw','tnta_radsw','tnta_turb','tnta_micro','tnta_conv','tnta_other','tnua_turb','tnua_conv','tnua_other','tnva_turb','tnva_conv','tnva_other','tnqv_conv','tnqv_turb','tnqv_micro','tnqv_other']
 
-var2save = var2save + ['ZTAU_ECUME','t2m','huss','uas','vas','O3','rO3','rCO2','rCH4','rN2O','rsdt','rsut','rlut','rsds','rsus','rsdscs','rsuscs','rlds','rlus','rldscs']
+#var2save = var2save + ['t2m','huss','uas','vas','O3','rO3','rCO2','rCH4','rN2O','rsdt','rsut','rlut','rsds','rsus','rsdscs','rsuscs','rlds','rlus','rldscs']
 
-convert2p = True
+var2save += ['PFP','evap','evapn','ZFP_CPTEND_NEW','ZEVAP_CPTEND_NEW','ZLIFT2_CPTEND_NEW','PEVAP_CPTEND_NEW','tnqt','tnql','tnqi','tnqr','tnqs','tnqlc','tnqic','tnqrc','tnqsnc','TOTAL_WATER','TOTAL_MASS','DRY_MASS']
+
+convert2p = False
 convert2z = False
 
 convertkday = False
-convertpday = True
+convertpday = False
 convertzday = False
 
 convertk1h = False
