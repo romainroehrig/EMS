@@ -27,6 +27,6 @@ examples/namelist/ARPPNT/nam.atm.cy48t1_op1.08.cmip.v4
 examples/namelist/ARPPNT/nam.atm.cy48t1_op1.08.cmip.v5
 examples/namelist/ARPPNT/nam.atm.cy49t1_op0.04
 # Files too big for github
-#data/rrtm/rrtm.const.02.tgz
-#data/rrtm/rrtm.const.04.tgz
-#data/rrtm/ecrad.cy49t1.tgz
+data/rrtm/rrtm.const.02.tgz
+data/rrtm/rrtm.const.04.tgz
+data/rrtm/ecrad.cy49t1.tgz
