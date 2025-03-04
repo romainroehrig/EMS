@@ -10,8 +10,8 @@ GROUP = 'V642'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp642_climat.00.MPIGNU930.cx.stab/bin'
-MASTER = os.path.join(bindir, 'MASTER')
+bindir = '/Users/romain/pack/arp642_climat.00.MPIGNU1230.x.stab/bin'
+MASTER = os.path.join(bindir, 'MASTERODB')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')
 ASCII2FA = os.path.join(bindir, 'ASCII2FA')
