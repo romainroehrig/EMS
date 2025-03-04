@@ -166,15 +166,13 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             lalb = True
         except:
             lalb = False
-        try:
-            lrce = attributes['RCE']
-        except:
-            lrce = False
+        
+        lrce = attributes['case_type'] == 'RCE'
         try: # Used only in case lrce
             lminSfcWind = attributes['minSurfaceWind'] >= 0.
             minSfcWind = attributes['minSurfaceWind']
         except:
-            lminSfcWind = False
+            lminSfcWind = True
             minSfcWind = 1. 
         if surfaceForcingMoisture == 'beta':
             beta = case.variables['beta'].data
@@ -233,7 +231,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             #logger.warning('This configuration does not work:')
             #logger.warning('surfaceType = ' + surfaceType + ' and surfaceForcingTemp = ' + surfaceForcingTemp)
             #logger.warning('=> surfaceType is changed to ocean')
-            nam[nn]['CNATURE'] = ["'FLUX'"]
+            #nam[nn]['CNATURE'] = ["'FLUX'"]
             nam[nn]['CSEA'] = ["'FLUX'"]
             nam2keep.append('NAM_IDEAL_FLUX')
         elif surfaceForcingTemp == 'ts':
@@ -385,16 +383,16 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             if lalb:
                 nam['NAM_SEAFLUXN']['CSEA_ALB'] = ["'UNIF'"]
                 nn = 'NAM_SURF_CSTS'
-                nam[nn]['XALBCOEF_TA96'] = [str(alb)]
-                nam[nn]['XALBSCA_WAT'] = [str(alb)]
-                nam[nn]['XALBWAT'] = [str(alb)]
+                nam[nn]['XALBCOEF_TA96'] = [f'{alb:4.3f}']
+                nam[nn]['XALBSCA_WAT'] = [f'{alb:4.3f}']
+                nam[nn]['XALBWAT'] = [f'{alb:4.3f}']
 
             if lrce:
                 nn = 'NAM_SURF_ATM'
-                nam[nn]['LALDTHRES'] = ['.TRUE.']
-                nam[nn]['XCISMIN'] = ['0.']
                 if lminSfcWind:
-                    nam[nn]['XVMODMIN'] = [str(minSfcWind)]
+                    nam[nn]['LALDTHRES'] = ['.TRUE.']
+                    nam[nn]['XCISMIN'] = ['0.']        
+                    nam[nn]['XVMODMIN'] = [f'{minSfcWind:6.3f}']
         
         elif surfaceType in ['land','landice']:
             nn = 'NAM_DATA_TSZ0'

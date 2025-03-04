@@ -397,7 +397,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
                     except ValueError:
                         missingValue = numpy.finfo(raw.dtype).max
                     if 'isba' in var or var in isba_patch_variables:
-                        missingValue = numpy.float(1.e20)
+                        missingValue = numpy.float32(1.e20)
 
                     data[var] = f.createVariable(inv_varnames.get(var, var),
                                                  raw.dtype, axis, fill_value=missingValue)
@@ -414,12 +414,12 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
             #Variable filling
             if not isinstance(raw[0], six.string_types):
                 if var in ['fracout', 'atb532', 'cfadLidarsr532', 'dbze94', 'cfadDbze94', 'clisccp', 'clmodis', 'clMISR']:
-                    datatmp = numpy.zeros(shape[var], dtype=numpy.float)             
+                    datatmp = numpy.zeros(shape[var], dtype=numpy.float32)             
                     for i in range(0, shape[var][0]):
                         vv = var + '_%(i)3.3i'%{"i": i+1}
                         datatmp[i,:] = r.readfield(vv)
                 elif var in isba_patch_variables:
-                    datatmp = numpy.zeros(shape[var], dtype=numpy.float)             
+                    datatmp = numpy.zeros(shape[var], dtype=numpy.float32)             
                     for i in range(0, shape[var][0]):
                         vv = var + '%(i)2.2i'%{"i": i+1}
                         #print(vv)

@@ -73,7 +73,7 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
 # BLLAST cases
 case = 'BLLAST'
 cases.append(case)
-subcases[case] = ['REF', 'NOADV', 'MESONH']
+subcases[case] = ['REF', 'NOADV', 'MESONH', 'B2024']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
@@ -200,6 +200,13 @@ subcases[case] = ['REF']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
+# DCS case
+case = 'DCS'
+cases.append(case)
+subcases[case] = ['W10S10']
+data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
+                             for subcase in subcases[case]}
+
 ####################################
 #### Deep convection cases
 
@@ -246,13 +253,13 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
 #data_input[case]['RH90'] = rep0 + '/Derbyshire/Derbyshire_RH90_driver_RR.nc'
 
 # RCE-MIP
-#case = 'RCEMIP'
-#cases.append(case)
-#subcases[case] = ['SST295','SST300','SST305','SST301.15','SST295_DEPHY','SST300_DEPHY','SST305_DEPHY','SST301.15_DEPHY']
-#data_input[case] = {}
-#for SST in [295,300,305,301.15]:
-#  data_input[case]['SST{0}'.format(SST)] = rep0 + '/RCEMIP/RCEMIP_SST{0}.nc'.format(SST)
-#  data_input[case]['SST{0}_DEPHY'.format(SST)] = rep0 + '/RCEMIP/RCEMIP_SST{0}_DEPHY.nc'.format(SST)
+case = 'RCEMIP'
+cases.append(case)
+subcases[case] = []
+data_input[case] = {}
+for SST in [295,300,305]:
+  subcases[case].append(f'SST{SST}')
+  data_input[case][f'SST{SST}'] = rep0 + '/{0}_SST{1}_SCM_driver.nc'.format(case,SST)
 
 # RCE
 #case = "RCE"
@@ -313,7 +320,7 @@ def available(case=None):
 def check(case,subcase):
     if not(case in cases):
         logger.error('case {0} is not known'.format(case))
-        logger.error('known cases: ' + cases)
+        logger.error('known cases: ' + str(cases))
         available()
         raise ValueError
 

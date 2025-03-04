@@ -103,7 +103,7 @@ def install_atm(model, case, subcase, filecase,
         os.symlink('nam1D_{0}'.format(vert_grid_name), 'nam1D')
         os.symlink(ASCII2FA, 'ascii2fa')
         with open('ascii2fa_{0}.log'.format(vert_grid_name), 'w') as log:
-            p = subprocess.run('ascii2fa', cwd=rep, stderr=subprocess.STDOUT, stdout=log,
+            p = subprocess.run('./ascii2fa', cwd=rep, stderr=subprocess.STDOUT, stdout=log,
                                env=dict(os.environ, OMP_NUM_THREADS='1'))
             if p.returncode != 0:
                 raise RuntimeError("Error during ascii2fa execution (log: {})".format(os.path.abspath(log.name)))
@@ -174,12 +174,14 @@ def install_sfx(model, case, subcase, filecase, repout,
         os.symlink('namsurf', 'OPTIONS.nam')
         for f in ['ecoclimapII_eu_covers_param.bin', 'ecoclimapI_covers_param.bin']:
             os.symlink(os.path.join('ecoclimap', f), f)
+        env_loc = os.environ.copy()
+        env_loc['DR_HOOK_NOT_MPI'] = 'true'
         with open('PGD.log', 'w') as log:
-            p = subprocess.run('PGD', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+            p = subprocess.run('./PGD', cwd=rep, stderr=subprocess.STDOUT, stdout=log, env=env_loc)
             if p.returncode != 0:
                 raise RuntimeError("Error during PGD execution (log: {})".format(os.path.abspath(log.name)))
         with open('PREP.log', 'w') as log:
-            p = subprocess.run('PREP', cwd=rep, stderr=subprocess.STDOUT, stdout=log)
+            p = subprocess.run('./PREP', cwd=rep, stderr=subprocess.STDOUT, stdout=log, env=env_loc)
             if p.returncode != 0:
                 raise RuntimeError("Error during PREP execution (log: {})".format(os.path.abspath(log.name)))
         for f in ['PGD.des', 'class_cover_data.tex', 'PREP.des']:
@@ -217,6 +219,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
     logger.info('Case: ' + case + ' subcase: ' + subcase)
     logger.info('MASTER: ' + config['MASTER'])
     logger.info('Configuration name: ' + config['name'])
+    logger.info('Cycle:' + str(config['cycle']))
     logger.info('{0} reference namelist: {1}'.format(model, config['namATMref']))
     if config['lsurfex']:
         logger.info('SURFEX reference namelist: ' + config['namSFXref'])
@@ -269,7 +272,8 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
         NSTOP = ems.prep_nam_atm(model, 'data_input.nc',
                          config['namATMref'], config['TSTEP'],
                          namout="namarp_{0}".format(config['name']),
-                         lsurfex=config['lsurfex'])
+                         lsurfex=config['lsurfex'],
+                         cycle=config['cycle'])
 
         t0 = perf(t0, 'Prepare {0} namelist'.format(model))
 
@@ -405,12 +409,24 @@ def exec_error(rep, config):
     logger.debug(f'Moving {logrun} to {logrun_abs}')
     shutil.move(logrun, logrun_abs)
     tmpdir = get_tmpdir(logrun_abs)
-    logger.debug(f'TMPDIR is {tmpdir}')
+    logger.error(f'TMPDIR is {tmpdir}')
     os.symlink(os.path.join(tmpdir), 'exec_dir')
     error = get_error(logrun_abs)
     logger.debug('Copying lola and NODE.001_01 in listings directory')
-    shutil.copyfile(os.path.join(tmpdir,'lola'), os.path.join(listing_dir,'lola'))
-    shutil.copyfile(os.path.join(tmpdir,'NODE.001_01'), os.path.join(listing_dir,'NODE.001_01'))
+    lola_file = os.path.join(tmpdir,'lola')
+    if os.path.isfile(lola_file):
+        shutil.copyfile(lola_file, os.path.join(listing_dir,'lola'))
+    else:
+        logger.error(f'No lola file. Look at {logrun_abs}')
+        raise RuntimeError
+    node_file = os.path.join(tmpdir,'NODE.001_01')
+    if os.path.isfile(node_file):
+        shutil.copyfile(os.path.join(tmpdir,'NODE.001_01'), os.path.join(listing_dir,'NODE.001_01'))
+    else:
+        logger.error(f'No NODE.001_01. Look at:')
+        logger.error(f'    {logrun_abs}')
+        logger.error(f'    {listing_dir}/lola')
+        raise RuntimeError
     logger.error("Error during " + error)
     logger.error("First check in {}".format(logrun))
     logger.error("If it is an error truly occuring during MASTER/MASTERODB execution:")
