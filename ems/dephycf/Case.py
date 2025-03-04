@@ -42,6 +42,7 @@ class Case:
 
     def __init__(self, caseid,
             lat=None, lon=None,
+            case_type="standard",
             startDate=startDate0, endDate=endDate0,
             surfaceType='ocean', zorog=0.,
             forcing_scale=-1):
@@ -53,6 +54,9 @@ class Case:
         # Latitude (degrees_noth) and Longitude (degrees_east)
         self.lat = lat
         self.lon = lon
+
+        # case type
+        self.case_type = case_type
 
         # Surface type
         self.surface_type = surfaceType
@@ -67,6 +71,7 @@ class Case:
 
         # Attributes
         self.attlist = ['case','title','reference','author','version','format_version','modifications','script','comment',
+                'case_type',
                 'start_date','end_date',
                 'forcing_scale',
                 'radiation',
@@ -82,6 +87,7 @@ class Case:
                 'modifications': "",
                 'script': "",
                 'comment': "",
+                'case_type': self.case_type,
                 'start_date': self.start_date.strftime('%Y-%m-%d %H:%M:%S'),
                 'end_date': self.end_date.strftime('%Y-%m-%d %H:%M:%S'),
                 'forcing_scale': self.forcing_scale,
@@ -181,6 +187,10 @@ class Case:
     def set_script(self,script):
 
         self.attributes['script'] = script
+
+    def set_case_type(self,case_type):
+
+        self.attributes['case_type'] = case_type
 
 ###################################################################################################
 #                  Generic removal/addition of a variable
@@ -295,13 +305,13 @@ class Case:
                     height = np.tile(levdata,(nt,1))
                     height_id = 'zh_{0}'.format(varid)
                     height_units = 'm'
-                    self.set_attribute('forc_z',1)
+                    self.set_attribute('forc_zh',1)
             elif levtype == 'pressure':
                 if pressure is None:
                     pressure = np.tile(levdata,(nt,1))
                     pressure_id = 'pa_{0}'.format(varid)
                     pressure_units = 'Pa'
-                    self.set_attribute('forc_p',1)
+                    self.set_attribute('forc_pa',1)
 
         ######################
         # Get variable attributes
@@ -1357,7 +1367,7 @@ class Case:
         self.add_forcing_variable('ts_forc',data,**kwargs)
 
         if 'ts' not in self.var_init_list:
-            if isinstance(data,float):
+            if isinstance(data,float) or isinstance(data,int):
                 self.add_init_ts(data,**kwargs)
             else:
                 self.add_init_ts(data[0],**kwargs)
@@ -1723,7 +1733,7 @@ class Case:
             rv = thermo.qt2rt(self.variables['qt'].data[0,:])
         elif 'rt' in self.var_init_list:
             logger.info('Assume rv=rt')
-            rv = selv.variables['rt'].data[0,:]
+            rv = self.variables['rt'].data[0,:]
         else:
             logger.error('Either qv, qt or rt should be defined to compute rv')
             raise ValueError('Either qv, qt or rt should be defined to compute rv')
@@ -1740,7 +1750,7 @@ class Case:
             rt = thermo.qt2rt(self.variables['qt'].data[0,:])
         elif 'rv' in self.var_init_list:
             logger.info('Assume rt=rv')
-            rt = selv.variables['rv'].data[0,:]
+            rt = self.variables['rv'].data[0,:]
         else:
             logger.error('Either qv, qt or rv should be defined to compute rt')
             raise ValueError('Either qv, qt or rv should be defined to compute rt')
@@ -2897,6 +2907,10 @@ class Case:
                 logger.error('shape unexpected for data : {0}'.format(data.shape))
                 raise ValueError
 
+    def extend_init_pressure(self, pa=None, **kwargs):
+        """Vertically extend the pressure"""
+
+        self.extend_variable('pa', data=pa, **kwargs)
 
     def extend_init_wind(self, u=None, v=None, **kwargs):
         """Vertically extend the two wind initial components"""
@@ -2938,6 +2952,11 @@ class Case:
         """Vertically extend the total water mixing ratio"""
 
         self.extend_variable('rt', data=rt, **kwargs)
+
+    def extend_init_hur(self, hur=None, **kwargs):
+        """Vertically extend the relative humidity"""
+
+        self.extend_variable('hur', data=hur, **kwargs)
 
     def extend_geostrophic_wind(self, ug=None, vg=None, **kwargs):
         """Vertically extend the geostrophic wind components"""
