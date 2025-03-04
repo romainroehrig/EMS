@@ -5,7 +5,7 @@ attributes = OrderedDict([
         # Initial variables
         ###########################
         ('ps',       {'name': 'surface_air_pressure',                       'units': 'Pa', 'plotcoef': 0.01,  'plotunits': 'hPa'}),
-        ('zh',       {'name': 'height_above_surface',                                     'units': 'm',  'plotcoef': 0.001, 'plotunits': 'km'}),
+        ('zh',       {'name': 'height_above_surface',                       'units': 'm',  'plotcoef': 0.001, 'plotunits': 'km'}),
         ('pa',       {'name': 'air_pressure',                               'units': 'Pa', 'plotcoef': 0.01,  'plotunits': 'hPa'}),
         ('ua',       {'name': 'eastward_wind',                              'units': 'm s-1'}),
         ('va',       {'name': 'northward_wind',                             'units': 'm s-1'}),

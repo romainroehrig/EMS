@@ -207,8 +207,6 @@ subcases[case] = ['W10S10']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 
-
-
 ####################################
 #### Deep convection cases
 
