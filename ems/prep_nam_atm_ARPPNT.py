@@ -103,7 +103,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     for k in list(nam['NAMPAR1'].keys()):
         if k.replace(' ', '') == 'NDISTIO(12)':
             del nam['NAMPAR1'][k] #gfortran does not like this option (info from P. Marguinaud)
-    #for k in ('LADVF', 'LIMPF', 'LQMPD', 'LQMT', 'LQMVD'):
     for k in ('LADVF', 'LIMPF', 'LQMT'):
         nam['NAMDYN'][k] = ['.FALSE.']
 
@@ -127,7 +126,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
 
     # Empty a few namelists
     for nn in ['NAMFPC', 'NAMFPD', 'NAMLSFORC', 'NAMFPSC2_DEP']:
-    #for nn in ['NAMFPC', 'NAMFPD', 'NAMLSFORC', 'NAMDYNA', 'NAMFPSC2_DEP']:
         del(nam[nn])
         nam[nn] = {}
 
@@ -138,7 +136,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     # Update NAMGFL
     nn = 'NAMGFL'
     nam[nn]['NGFL_FORC'] = ['0']
-    #nam[nn]['YCVGQ_NL%LCDERS'] = ['.TRUE.']
     nam[nn]['YCVGQ_NL%LCDERS'] = ['.FALSE.']
     nam[nn]['YCVGQ_NL%LSP'] = ['.FALSE.']      
     nam[nn]['YCVGQ_NL%LGP'] = ['.TRUE.']
@@ -156,7 +153,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
         nam[nn]['Y' + var + '_NL%LGPINGP'] = ['.TRUE.']
         nam[nn]['Y' + var + '_NL%LPHY'] = ['.FALSE.']
         nam[nn]['Y' + var + '_NL%NCOUPLING'] = ['0']
-        if var == 'TKE':
+        if vav == 'TKE':
             nam[nn]['Y' + var + '_NL%LADV'] = ['.FALSE.']
         else:
             nam[nn]['Y' + var + '_NL%LADV'] = ['.TRUE.']
