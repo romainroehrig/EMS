@@ -2,7 +2,7 @@
 # -*- coding:UTF-8 -*-
 
 import os
-REP_MUSC = '/home/gmgec/mrgc/roehrig/SAVE/MUSC/V2.4.6'
+REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
