@@ -153,7 +153,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
         nam[nn]['Y' + var + '_NL%LGPINGP'] = ['.TRUE.']
         nam[nn]['Y' + var + '_NL%LPHY'] = ['.FALSE.']
         nam[nn]['Y' + var + '_NL%NCOUPLING'] = ['0']
-        if vav == 'TKE':
+        if var == 'TKE':
             nam[nn]['Y' + var + '_NL%LADV'] = ['.FALSE.']
         else:
             nam[nn]['Y' + var + '_NL%LADV'] = ['.TRUE.']
