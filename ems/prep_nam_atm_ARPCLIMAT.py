@@ -20,7 +20,7 @@ from ems.namelist import readarp, writearp
 
 lverbose = logger.getEffectiveLevel() == logging.DEBUG
 
-def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True):
+def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True, cycle=None):
     """
     Prepare ARPEGE-Climat namelist for MUSC simulation, 
     given information in filecase,

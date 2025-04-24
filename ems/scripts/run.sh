@@ -7,25 +7,42 @@ set -ex
 
 export OMP_NUM_THREADS=1
 
-export DR_HOOK_IGNORE_SIGNALS=-1
+export DR_HOOK_IGNORE_SIGNALS=0
 export DR_HOOK=1
 export DR_HOOK_CATCH_SIGNALS=1
 
-if [ $model = "AROME" ] || [ $model = "ARPPNT" ] ; then
-  export LIBRARY_PATH=$LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/common/sync/gcc/mpfr-3.1.3/lib:/home/common/sync/gcc/jasper-1.900.1/lib:/home/common/sync/gcc/torque:/opt/google/earth/pro
-  export C_INCLUDE_PATH=$C_INCLUDE_PATH:/usr/include/x86_64-linux-gnu
-  export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/include/x86_64-linux-gnu
+mac=`hostname -s`
+mac=`echo ${mac::-1}`
+
+if [ $mac = "belenoslogin" ] ; then
+
+module () 
+{ 
+    eval `/usr/bin/modulecmd bash $*`
+}
+
+INTELONEAPI="intel/oneapi/2023.2"
+GCC=gcc/14.1.0
+MPIPACKAGE="mpi/2021.10.0"
+PYTHON=python/3.10.12
+set +e
+module purge                   2>/dev/null
+set -e
+module load $INTELONEAPI       2>/dev/null
+module load $MPIPACKAGE        2>/dev/null
+module load $GCC               2>/dev/null
+module load $PYTHON            2>/dev/null
+
+else
+
+  if [ $model = "AROME" ] || [ $model = "ARPPNT" ] ; then
+    export LIBRARY_PATH=$LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/common/sync/gcc/mpfr-3.1.3/lib:/home/common/sync/gcc/jasper-1.900.1/lib:/home/common/sync/gcc/torque:/opt/google/earth/pro
+    export C_INCLUDE_PATH=$C_INCLUDE_PATH:/usr/include/x86_64-linux-gnu
+    export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/include/x86_64-linux-gnu
+  fi    
+
 fi
-
-
-if [ $model = "AROME" ] || [ $model = "ARPPNT" ] ; then
-  export LIBRARY_PATH=$LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/common/sync/gcc/mpfr-3.1.3/lib:/home/common/sync/gcc/jasper-1.900.1/lib:/home/common/sync/gcc/torque:/opt/google/earth/pro
-  export C_INCLUDE_PATH=$C_INCLUDE_PATH:/usr/include/x86_64-linux-gnu
-  export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/include/x86_64-linux-gnu
-fi
-
 
 . ./param
 
@@ -91,6 +108,11 @@ if [ -n "$NAMSFX" ]; then
 
   ln -s $DIR/$NAMSFX EXSEG1.nam
   cat < EXSEG1.nam
+else
+cat << EOF > EXSEG1.nam
+&NAM_IO_SURF_ARO
+/
+EOF
 fi
 
 #       **********************************
@@ -154,8 +176,9 @@ echo ''
 set -x
 
 [ ! $os = "Darwin" ] && ulimit -s unlimited
+[ ! $os = "Darwin" ] && ulimit -c 0
 
-unset LD_LIBRARY_PATH
+#unset LD_LIBRARY_PATH
 
 date
 if [ $model = "ARPCLIMAT" ]; then
