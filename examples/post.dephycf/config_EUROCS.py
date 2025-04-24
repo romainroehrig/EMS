@@ -8,14 +8,19 @@
 saveall = False
 
 
-var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','b_up','dTv_up','ent_up','det_up']
-
-var2save = var2save + ['tntrlw','tntrsw','tntpbl','tntlscp','tntc','tntd','tnupbl','tnuc','tnud','tnvpbl','tnvc','tnvd','tntadv','tntnudg','tnugeo','tnvgeo','tendu','tendv','tendq','tendh']
-
-#var2save = var2save + ['delta_t','delta_q','dt_wake','dq_wake','dt_wake2','dq_wake2','omega_up','alpha_up','wake_fip','Cstar','hw','ZMWAKE','ZCWAKE','ZS12','ZCTH','ZMTH','ZALPTH','ZWUP','ZALPHAUP','sigmaw']
-
-#var2save = var2save + ['buoy','w_up_bud','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp','dTv_up','ZUDALWAKE','ZBUOWAKE','ZALFW','ZWWMWX','ZVVER','ZDOMEGA','ZWW','ZWX','ZMW','ZMX','ZMTOT']
-
+var2save = ['pfull','zfull']\
+    + ['theta','ta','qv','hur','ua','va','wap','ql','qi','qr','qsn','qlc','qic','qrc','qsnc','tke']\
+    + ['cl','clt','prw','iwp','lwp','rwp','swp','cwp']\
+    + ['iwp_rad','lwp_rad','cwp_rad','iwp_conv','lwp_conv','rwp_conv','swp_conv','cwp_conv']\
+    + ['pr','hfls','hfss','ustar','z0','ts',]\
+    + ['wa_up','mf_up','alpha_up','b_up','dTv_up','ent_up','det_up']\
+    + ['Q1','Q2']\
+    + ['tnta_diab','tnta_turb','tnta_micro','tnta_conv','tnta_radlw','tnta_radsw','tnta_other']\
+    + ['tnta_adv','tnta_nud']\
+    + ['tnqv_diab','tnqv_turb','tnqv_micro','tnqv_conv','tnqv_other']\
+    + ['tnqv_adv','tnqv_nud']\
+    + ['tnua_turb','tnua_conv','tnua_other','tnua_geo']\
+    + ['tnva_turb','tnva_conv','tnva_other','tnva_geo']
 
 convert2p = False
 convert2z = False

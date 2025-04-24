@@ -4,16 +4,25 @@
   do_3d_effects	= false,
   do_lw_side_emissivity   = true,
   do_3d_lw_multilayer_effects = false,
-  cloud_pdf_shape_name    = "Gamma",
-  sw_encroachment_name    = "Computed",
-  overlap_scheme_name     = "Exp-Ran",
+! liquid_model_name = "Slingo",           ! Liquid droplet scattering model: "Monochromatic", "HuStamnes", *"SOCRATES"*, "Slingo"
+! ice_model_name    = "Fu-IFS",             ! Ice particle scattering model: "Monochromatic", "Fu-PSRAD", "Fu-IFS", *"Baran"*, "Baran2016", "Baran2017", "Yi"
+  cloud_pdf_shape_name    = "Gamma",        ! To describe liquid water horizontal distribution: *"Gamma"*, "Lognormal"
+! sw_solver_name          = "Homogeneous",    ! Solver: "Homogeneous", *"McICA"*, "SPARTACUS", "Tripleclouds"
+! lw_solver_name          = "Homogeneous",    ! enable 3D effects
+  sw_encroachment_name    = "Computed",     ! "Maximum" = old behaviour (also "Minimum"/*"Computed"*)
+  overlap_scheme_name     = "Exp-Ran",      ! Cloud overlap: *"Exp-Ran"*, "Max-Ran", "Exp-Exp"
   overhead_sun_factor = 0.06,
+! do_lw_cloud_scattering 	= true,           ! Clouds scatter in the longwave?
+! do_lw_aerosol_scattering= true,           ! Aerosols scatter in the longwave?
   cloud_inhom_decorr_scaling = 0.5,
-  do_save_radiative_properties = false,
+  do_save_radiative_properties = false,     ! Save raw radiation properties in radiative_properties.nc?
+! Verbosity level: 0=none, 1=warning, 2=info, 3=progress, 4=detailed, 5=debug
   iverbose    	 	= 1, 
-  do_save_spectral_flux   = false,
-  do_save_gpoint_flux     = false,
-  gas_model_name          = "RRTMG-IFS",
+! use_aerosols        = false,          ! Include aerosols in radiation calculations?
+! n_aerosol_types         = 12,             
+  do_save_spectral_flux   = false,          ! Save spectral fluxes in output file?
+  do_save_gpoint_flux     = false,          ! Save fluxes per g-point in output file?
+  gas_model_name          = "RRTMG-IFS",    ! Gas model: "Monochromatic", *"RRTMG-IFS"*, "RRTMG-PSRAD"
   aerosol_optics_override_file_name = "aerosol_CNRM-CM6.nc"
 /
 &NACOBS
@@ -539,12 +548,12 @@
 &NAMPARAR
  XFRAC_UP_MAX=0.17,
  XCMF        = 0.14,
- XBETA1 =  1.00,
- XEPST =  0.0003,
- XDETR_LUP =  1.0,
- XDETR_CHI = 0.0050,
- XBDETR =  1.0,
- XA1    =  0.666,
+ XBETA1 =  1.00, ! ent org
+ XEPST =  0.0003,  ! ent turb
+ XDETR_LUP =  1.0, ! det dry
+ XDETR_CHI = 0.0050,! det moist
+ XBDETR =  1.0, ! det org
+ XA1    =  0.666, ! buo coeff
  XDRAG = 0.0015,
  XAUTOSH=2.5E-4,
  XAUTOKLND=0.4,

@@ -7,7 +7,7 @@ set -ex
 
 export OMP_NUM_THREADS=1
 
-export DR_HOOK_IGNORE_SIGNALS=-1
+export DR_HOOK_IGNORE_SIGNALS=0
 export DR_HOOK=1
 export DR_HOOK_CATCH_SIGNALS=1
 

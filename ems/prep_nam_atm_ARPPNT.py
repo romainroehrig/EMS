@@ -59,18 +59,18 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     nam['NAMPAR1']['NSTRIN'] = ['1']
     
     #Deactivate SLHD and COMAD
-    for k in ('LSLHD_GFL', 'LSLHD_SPD', 'LSLHD_SVD', 'LSLHD_T', 'LSLHD_W',
-              'LCOMADH', 'LCOMADV', 'LCOMAD_GFL', 'LCOMAD_SP', 'LCOMAD_SPD',
-              'LCOMAD_SVD', 'LCOMAD_T', 'LCOMAD_W'):
-        nam['NAMDYNA'][k] = ['.FALSE.']
+    #for k in ('LSLHD_GFL', 'LSLHD_SPD', 'LSLHD_SVD', 'LSLHD_T', 'LSLHD_W',
+    #          'LCOMADH', 'LCOMADV', 'LCOMAD_GFL', 'LCOMAD_SP', 'LCOMAD_SPD',
+    #          'LCOMAD_SVD', 'LCOMAD_T', 'LCOMAD_W'):
+    #    nam['NAMDYNA'][k] = ['.FALSE.']
     for k in nam['NAMGFL'].keys():
         if k.endswith('%LSLHD') or k.endswith('%LCOMAD'):
             nam['NAMGFL'][k] = ['.FALSE.']
 
     #Deactivate predictor-corrector
-    nam['NAMDYNA']['LPC_CHEAP'] = ['.FALSE.']
-    nam['NAMDYNA']['LPC_FULL'] = ['.FALSE.']
-    nam['NAMDYN']['NSITER'] = ['0']
+    #nam['NAMDYNA']['LPC_CHEAP'] = ['.FALSE.']
+    #nam['NAMDYNA']['LPC_FULL'] = ['.FALSE.']
+    #nam['NAMDYN']['NSITER'] = ['0']
 
     #Deactivate NH dyn
     if cycle is not None and cycle < 49:
@@ -80,7 +80,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     nam['NAMPAR0']['LMPOFF'] = ['.TRUE.']
     
     #Deactivate spectral nudging
-    nam['NEMELBC0A']['LESPCPL'] = ['FALSE']
+    #nam['NEMELBC0A']['LESPCPL'] = ['FALSE']
     
     #Deactivate fullpos
     nam['NAMCT0']['NFPOS'] = ['0']
@@ -103,7 +103,8 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     for k in list(nam['NAMPAR1'].keys()):
         if k.replace(' ', '') == 'NDISTIO(12)':
             del nam['NAMPAR1'][k] #gfortran does not like this option (info from P. Marguinaud)
-    for k in ('LADVF', 'LIMPF', 'LQMPD', 'LQMT', 'LQMVD'):
+    #for k in ('LADVF', 'LIMPF', 'LQMPD', 'LQMT', 'LQMVD'):
+    for k in ('LADVF', 'LIMPF', 'LQMT'):
         nam['NAMDYN'][k] = ['.FALSE.']
 
     # Aerosols and Ozone
@@ -117,7 +118,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     #nam['NAMPHY']['LO3FL'] = ['.FALSE.']
 
     #nam['NAMPHY']['LRAYFM'] = ['.FALSE.']
-    nam['NAMPHY']['LEDR'] = ['.FALSE.',]
+    #nam['NAMPHY']['LEDR'] = ['.FALSE.',]
 
     #nam['NAMPHY']['LRELAXT'] = ['.FALSE.']
     #nam['NAMPHY']['LRELAXW'] = ['.FALSE.']
@@ -125,7 +126,8 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     # Various update
 
     # Empty a few namelists
-    for nn in ['NAMFPC', 'NAMFPD', 'NAMLSFORC', 'NAMDYNA', 'NAMFPSC2_DEP']:
+    for nn in ['NAMFPC', 'NAMFPD', 'NAMLSFORC', 'NAMFPSC2_DEP']:
+    #for nn in ['NAMFPC', 'NAMFPD', 'NAMLSFORC', 'NAMDYNA', 'NAMFPSC2_DEP']:
         del(nam[nn])
         nam[nn] = {}
 
@@ -136,7 +138,8 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     # Update NAMGFL
     nn = 'NAMGFL'
     nam[nn]['NGFL_FORC'] = ['0']
-    nam[nn]['YCVGQ_NL%LCDERS'] = ['.TRUE.']
+    #nam[nn]['YCVGQ_NL%LCDERS'] = ['.TRUE.']
+    nam[nn]['YCVGQ_NL%LCDERS'] = ['.FALSE.']
     nam[nn]['YCVGQ_NL%LSP'] = ['.FALSE.']      
     nam[nn]['YCVGQ_NL%LGP'] = ['.TRUE.']
     nam[nn]['YQ_NL%LSP'] = ['.FALSE.']      
@@ -153,7 +156,10 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
         nam[nn]['Y' + var + '_NL%LGPINGP'] = ['.TRUE.']
         nam[nn]['Y' + var + '_NL%LPHY'] = ['.FALSE.']
         nam[nn]['Y' + var + '_NL%NCOUPLING'] = ['0']
-        nam[nn]['Y' + var + '_NL%LADV'] = ['.TRUE.']
+        if var == 'TKE':
+            nam[nn]['Y' + var + '_NL%LADV'] = ['.FALSE.']
+        else:
+            nam[nn]['Y' + var + '_NL%LADV'] = ['.TRUE.']
         nam[nn]['Y' + var + '_NL%LREQOUT'] = ['.TRUE.']
         nam[nn]['Y' + var + '_NL%LT1'] = ['.TRUE.']
         nam[nn]['Y' + var + '_NL%LQM'] = ['.TRUE.']
@@ -248,13 +254,21 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
 
     # Case with no radiation or radiation included in temperature advection
     if attributes['radiation'] in ['off', 'tend']:
-        nam['NAMPHY']['LRAYFM'] = ['.FALSE.']
-        nam['NAERAD']['LRRTM'] =  ['.FALSE.']
-        nam['NAERAD']['LSRTM'] =  ['.FALSE.']
-        nam['NAERAD']['NSW'] = ['6']
-        nam['NAERAD']['NOZOCL'] = ['2']
-        nam['NAERAD']['NLIQOPT'] = ['2']
-        nam['NAERAD']['NICEOPT'] = ['3']
+        for nn in ('NAERAD','RADIATION','NAMPARAR'):
+            if nn in nam: del(nam[nn])
+        #
+        nn = 'NAERAD'
+        nam[nn] = {}
+        nam[nn]['LRRTM'] =  ['.FALSE.']
+        nam[nn]['LSRTM'] =  ['.FALSE.']
+        nam[nn]['NSW'] = ['2']
+        #
+        nn = 'NAMPARAR'
+        nam[nn] = {}
+        nam[nn]['NSWB_MNH'] = ['2']
+        #
+        nn = 'NAMPHY'
+        nam[nn]['LRAYFM'] = ['.FALSE.']
 
     # MUSC Forcing
     nn = 'NAMLSFORC'
