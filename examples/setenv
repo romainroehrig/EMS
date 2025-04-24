@@ -1,2 +1,22 @@
+mac=`hostname -s`
+mac=`echo ${mac::-1}`
+
+if [ $mac = "belenoslogin" ] ; then
+
+module () 
+{ 
+    eval `/usr/bin/modulecmd bash $*`
+}
+
+INTELONEAPI="intel/oneapi/2023.2"
+GCC=gcc/14.1.0
+PYTHON=python/3.10.12
+module purge                   2>/dev/null
+module load $INTELONEAPI       2>/dev/null
+module load $GCC               2>/dev/null
+module load $PYTHON            2>/dev/null
+
+fi
+
 export PATH=__REP_EMS__/apptools:$PATH
 export PYTHONPATH=__REP_EMS__:$PYTHONPATH
