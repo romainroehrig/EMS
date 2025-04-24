@@ -1,0 +1,515 @@
+diff --git a/README.md b/README.md
+index 3baf927..7d19553 100644
+--- a/README.md
++++ b/README.md
+@@ -14,7 +14,7 @@ To install EMS on a CNRM computer, with access to the CNRM Lustre system:
+ 
+ 2. Modify `install.sh` (or execute `install.sh -h` to get its usage):
+ 
+-   * Set `EMS_VERSION`, e.g., `EMS_VERSION=2.4.6.mac`
++   * Set `EMS_VERSION`, e.g., `EMS_VERSION=2.4.6`
+    * Set where you want to install EMS: default is `REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}`
+    * Set where you want to run MUSC: default is `REP_MUSC=$HOME/MUSC/V${EMS_VERSION}`
+ 
+diff --git a/ems/prep_nam_atm_ARPPNT.py b/ems/prep_nam_atm_ARPPNT.py
+index 019230f..ad7f1ba 100644
+--- a/ems/prep_nam_atm_ARPPNT.py
++++ b/ems/prep_nam_atm_ARPPNT.py
+@@ -59,18 +59,18 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
+     nam['NAMPAR1']['NSTRIN'] = ['1']
+     
+     #Deactivate SLHD and COMAD
+-    #for k in ('LSLHD_GFL', 'LSLHD_SPD', 'LSLHD_SVD', 'LSLHD_T', 'LSLHD_W',
+-    #          'LCOMADH', 'LCOMADV', 'LCOMAD_GFL', 'LCOMAD_SP', 'LCOMAD_SPD',
+-    #          'LCOMAD_SVD', 'LCOMAD_T', 'LCOMAD_W'):
+-    #    nam['NAMDYNA'][k] = ['.FALSE.']
++    for k in ('LSLHD_GFL', 'LSLHD_SPD', 'LSLHD_SVD', 'LSLHD_T', 'LSLHD_W',
++              'LCOMADH', 'LCOMADV', 'LCOMAD_GFL', 'LCOMAD_SP', 'LCOMAD_SPD',
++              'LCOMAD_SVD', 'LCOMAD_T', 'LCOMAD_W'):
++        nam['NAMDYNA'][k] = ['.FALSE.']
+     for k in nam['NAMGFL'].keys():
+         if k.endswith('%LSLHD') or k.endswith('%LCOMAD'):
+             nam['NAMGFL'][k] = ['.FALSE.']
+ 
+     #Deactivate predictor-corrector
+-    #nam['NAMDYNA']['LPC_CHEAP'] = ['.FALSE.']
+-    #nam['NAMDYNA']['LPC_FULL'] = ['.FALSE.']
+-    #nam['NAMDYN']['NSITER'] = ['0']
++    nam['NAMDYNA']['LPC_CHEAP'] = ['.FALSE.']
++    nam['NAMDYNA']['LPC_FULL'] = ['.FALSE.']
++    nam['NAMDYN']['NSITER'] = ['0']
+ 
+     #Deactivate NH dyn
+     if cycle is not None and cycle < 49:
+@@ -80,7 +80,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
+     nam['NAMPAR0']['LMPOFF'] = ['.TRUE.']
+     
+     #Deactivate spectral nudging
+-    #nam['NEMELBC0A']['LESPCPL'] = ['FALSE']
++    nam['NEMELBC0A']['LESPCPL'] = ['FALSE']
+     
+     #Deactivate fullpos
+     nam['NAMCT0']['NFPOS'] = ['0']
+@@ -103,7 +103,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
+     for k in list(nam['NAMPAR1'].keys()):
+         if k.replace(' ', '') == 'NDISTIO(12)':
+             del nam['NAMPAR1'][k] #gfortran does not like this option (info from P. Marguinaud)
+-    for k in ('LADVF', 'LIMPF', 'LQMT'):
++    for k in ('LADVF', 'LIMPF', 'LQMPD', 'LQMT', 'LQMVD'):
+         nam['NAMDYN'][k] = ['.FALSE.']
+ 
+     # Aerosols and Ozone
+@@ -117,7 +117,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
+     #nam['NAMPHY']['LO3FL'] = ['.FALSE.']
+ 
+     #nam['NAMPHY']['LRAYFM'] = ['.FALSE.']
+-    #nam['NAMPHY']['LEDR'] = ['.FALSE.',]
++    nam['NAMPHY']['LEDR'] = ['.FALSE.',]
+ 
+     #nam['NAMPHY']['LRELAXT'] = ['.FALSE.']
+     #nam['NAMPHY']['LRELAXW'] = ['.FALSE.']
+@@ -125,7 +125,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
+     # Various update
+ 
+     # Empty a few namelists
+-    for nn in ['NAMFPC', 'NAMFPD', 'NAMLSFORC', 'NAMFPSC2_DEP']:
++    for nn in ['NAMFPC', 'NAMFPD', 'NAMLSFORC', 'NAMDYNA', 'NAMFPSC2_DEP']:
+         del(nam[nn])
+         nam[nn] = {}
+ 
+@@ -136,7 +136,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
+     # Update NAMGFL
+     nn = 'NAMGFL'
+     nam[nn]['NGFL_FORC'] = ['0']
+-    nam[nn]['YCVGQ_NL%LCDERS'] = ['.FALSE.']
++    nam[nn]['YCVGQ_NL%LCDERS'] = ['.TRUE.']
+     nam[nn]['YCVGQ_NL%LSP'] = ['.FALSE.']      
+     nam[nn]['YCVGQ_NL%LGP'] = ['.TRUE.']
+     nam[nn]['YQ_NL%LSP'] = ['.FALSE.']      
+@@ -153,10 +153,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
+         nam[nn]['Y' + var + '_NL%LGPINGP'] = ['.TRUE.']
+         nam[nn]['Y' + var + '_NL%LPHY'] = ['.FALSE.']
+         nam[nn]['Y' + var + '_NL%NCOUPLING'] = ['0']
+-        if vav == 'TKE':
+-            nam[nn]['Y' + var + '_NL%LADV'] = ['.FALSE.']
+-        else:
+-            nam[nn]['Y' + var + '_NL%LADV'] = ['.TRUE.']
++        nam[nn]['Y' + var + '_NL%LADV'] = ['.TRUE.']
+         nam[nn]['Y' + var + '_NL%LREQOUT'] = ['.TRUE.']
+         nam[nn]['Y' + var + '_NL%LT1'] = ['.TRUE.']
+         nam[nn]['Y' + var + '_NL%LQM'] = ['.TRUE.']
+@@ -251,21 +248,13 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
+ 
+     # Case with no radiation or radiation included in temperature advection
+     if attributes['radiation'] in ['off', 'tend']:
+-        for nn in ('NAERAD','RADIATION','NAMPARAR'):
+-            if nn in nam: del(nam[nn])
+-        #
+-        nn = 'NAERAD'
+-        nam[nn] = {}
+-        nam[nn]['LRRTM'] =  ['.FALSE.']
+-        nam[nn]['LSRTM'] =  ['.FALSE.']
+-        nam[nn]['NSW'] = ['2']
+-        #
+-        nn = 'NAMPARAR'
+-        nam[nn] = {}
+-        nam[nn]['NSWB_MNH'] = ['2']
+-        #
+-        nn = 'NAMPHY'
+-        nam[nn]['LRAYFM'] = ['.FALSE.']
++        nam['NAMPHY']['LRAYFM'] = ['.FALSE.']
++        nam['NAERAD']['LRRTM'] =  ['.FALSE.']
++        nam['NAERAD']['LSRTM'] =  ['.FALSE.']
++        nam['NAERAD']['NSW'] = ['6']
++        nam['NAERAD']['NOZOCL'] = ['2']
++        nam['NAERAD']['NLIQOPT'] = ['2']
++        nam['NAERAD']['NICEOPT'] = ['3']
+ 
+     # MUSC Forcing
+     nn = 'NAMLSFORC'
+diff --git a/examples/config/config_arp632_CMIP6.300s.py b/examples/config/config_arp632_CMIP6.300s.py
+index e5fad0c..48c4ddf 100644
+--- a/examples/config/config_arp632_CMIP6.300s.py
++++ b/examples/config/config_arp632_CMIP6.300s.py
+@@ -10,8 +10,8 @@ GROUP = 'V632'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/arp632_climat.02.MPIGNU1230.x/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp632_climat.02.MPIGNU930.cx/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/config/config_arp632_CMIP6.LPBLEoff.py b/examples/config/config_arp632_CMIP6.LPBLEoff.py
+index 31068bf..aaf71a3 100644
+--- a/examples/config/config_arp632_CMIP6.LPBLEoff.py
++++ b/examples/config/config_arp632_CMIP6.LPBLEoff.py
+@@ -10,8 +10,8 @@ GROUP = 'V632'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/arp632_climat.02.MPIGNU1230.x/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp632_climat.02.MPIGNU930.cx/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/config/config_arp632_CMIP6.py b/examples/config/config_arp632_CMIP6.py
+index 6d8ec26..f4d133b 100644
+--- a/examples/config/config_arp632_CMIP6.py
++++ b/examples/config/config_arp632_CMIP6.py
+@@ -10,8 +10,8 @@ GROUP = 'V632'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/arp632_climat.02.MPIGNU1230.x/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp632_climat.02.MPIGNU930.cx/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/config/config_arp642.stab_CMIP6.LPBLEoff.py b/examples/config/config_arp642.stab_CMIP6.LPBLEoff.py
+index 9e9b83f..3a7f22b 100644
+--- a/examples/config/config_arp642.stab_CMIP6.LPBLEoff.py
++++ b/examples/config/config_arp642.stab_CMIP6.LPBLEoff.py
+@@ -10,8 +10,8 @@ GROUP = 'V642'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/pack/arp642_climat.00.MPIGNU1230.x.stab/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp642_climat.00.MPIGNU930.cx.stab/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/config/config_arp650_CMIP6.300s.py b/examples/config/config_arp650_CMIP6.300s.py
+index fe04f8f..8e90d8c 100644
+--- a/examples/config/config_arp650_CMIP6.300s.py
++++ b/examples/config/config_arp650_CMIP6.300s.py
+@@ -10,8 +10,8 @@ GROUP = 'V650'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/arp650_climat.00.MPIGNU1230.x/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp650_climat.00.MPIGNU930.cx/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/config/config_arp650_P7.RRTM.py b/examples/config/config_arp650_P7.RRTM.py
+index 28d7d0d..460bacf 100644
+--- a/examples/config/config_arp650_P7.RRTM.py
++++ b/examples/config/config_arp650_P7.RRTM.py
+@@ -10,8 +10,8 @@ GROUP = 'V650'
+ # EXPID will be taken from this file name following the convention config_EXPID.py
+ 
+ # Binaries
+-bindir = '/Users/romain/rootpack/arp650_climat.00.MPIGNU1230.x/bin'
+-MASTER = os.path.join(bindir, 'MASTERODB')
++bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/arp650_climat.00.MPIGNU930.cx/bin'
++MASTER = os.path.join(bindir, 'MASTER')
+ PGD = os.path.join(bindir, 'PGD')
+ PREP = os.path.join(bindir, 'PREP')
+ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
+diff --git a/examples/post.dephycf/config_AMMA.py b/examples/post.dephycf/config_AMMA.py
+index cb21b0d..6ae32fe 100644
+--- a/examples/post.dephycf/config_AMMA.py
++++ b/examples/post.dephycf/config_AMMA.py
+@@ -7,22 +7,9 @@
+ #saveall = True
+ saveall = False
+ 
++var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','dTv_up','ta_up','qv_up','ent_up','det_up','b_up','ent_up_org','ent_up_turb','det_up_org','det_up_turb','lwp','iwp','tnqt','tnthl']
+ 
+-var2save = ['pfull','zfull']\
+-    + ['theta','ta','qv','hur','ua','va','wap','ql','qi','qr','qsn','qlc','qic','qrc','qsnc','tke']\
+-    + ['cl','clt','prw','iwp','lwp','rwp','swp','cwp']\
+-    + ['iwp_rad','lwp_rad','cwp_rad','iwp_conv','lwp_conv','rwp_conv','swp_conv','cwp_conv']\
+-    + ['pr','hfls','hfss','ustar','z0','ts',]\
+-    + ['wa_up','mf_up','alpha_up','b_up','dTv_up','ent_up','det_up']\
+-    + ['Q1','Q2']\
+-    + ['tnta_diab','tnta_turb','tnta_micro','tnta_conv','tnta_radlw','tnta_radsw','tnta_other']\
+-    + ['tnta_adv','tnta_nud']\
+-    + ['tnqv_diab','tnqv_turb','tnqv_micro','tnqv_conv','tnqv_other']\
+-    + ['tnqv_adv','tnqv_nud']\
+-    + ['tnua_turb','tnua_conv','tnua_other','tnua_geo']\
+-    + ['tnva_turb','tnva_conv','tnva_other','tnva_geo']
+-
+-convert2p = False
++convert2p = True #False
+ convert2z = False
+ 
+ convertkday = False
+diff --git a/examples/post.dephycf/config_EUROCS.py b/examples/post.dephycf/config_EUROCS.py
+index cb21b0d..ac935a4 100644
+--- a/examples/post.dephycf/config_EUROCS.py
++++ b/examples/post.dephycf/config_EUROCS.py
+@@ -8,19 +8,14 @@
+ saveall = False
+ 
+ 
+-var2save = ['pfull','zfull']\
+-    + ['theta','ta','qv','hur','ua','va','wap','ql','qi','qr','qsn','qlc','qic','qrc','qsnc','tke']\
+-    + ['cl','clt','prw','iwp','lwp','rwp','swp','cwp']\
+-    + ['iwp_rad','lwp_rad','cwp_rad','iwp_conv','lwp_conv','rwp_conv','swp_conv','cwp_conv']\
+-    + ['pr','hfls','hfss','ustar','z0','ts',]\
+-    + ['wa_up','mf_up','alpha_up','b_up','dTv_up','ent_up','det_up']\
+-    + ['Q1','Q2']\
+-    + ['tnta_diab','tnta_turb','tnta_micro','tnta_conv','tnta_radlw','tnta_radsw','tnta_other']\
+-    + ['tnta_adv','tnta_nud']\
+-    + ['tnqv_diab','tnqv_turb','tnqv_micro','tnqv_conv','tnqv_other']\
+-    + ['tnqv_adv','tnqv_nud']\
+-    + ['tnua_turb','tnua_conv','tnua_other','tnua_geo']\
+-    + ['tnva_turb','tnva_conv','tnva_other','tnva_geo']
++var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','b_up','dTv_up','ent_up','det_up']
++
++var2save = var2save + ['tntrlw','tntrsw','tntpbl','tntlscp','tntc','tntd','tnupbl','tnuc','tnud','tnvpbl','tnvc','tnvd','tntadv','tntnudg','tnugeo','tnvgeo','tendu','tendv','tendq','tendh']
++
++#var2save = var2save + ['delta_t','delta_q','dt_wake','dq_wake','dt_wake2','dq_wake2','omega_up','alpha_up','wake_fip','Cstar','hw','ZMWAKE','ZCWAKE','ZS12','ZCTH','ZMTH','ZALPTH','ZWUP','ZALPHAUP','sigmaw']
++
++#var2save = var2save + ['buoy','w_up_bud','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp','dTv_up','ZUDALWAKE','ZBUOWAKE','ZALFW','ZWWMWX','ZVVER','ZDOMEGA','ZWW','ZWX','ZMW','ZMX','ZMTOT']
++
+ 
+ convert2p = False
+ convert2z = False
+diff --git a/examples/post.dephycf/config_KB2006.py b/examples/post.dephycf/config_KB2006.py
+index cb21b0d..aa894d4 100644
+--- a/examples/post.dephycf/config_KB2006.py
++++ b/examples/post.dephycf/config_KB2006.py
+@@ -7,22 +7,15 @@
+ #saveall = True
+ saveall = False
+ 
++var2save = ['pfull','zfull','theta','qv','cl']
+ 
+-var2save = ['pfull','zfull']\
+-    + ['theta','ta','qv','hur','ua','va','wap','ql','qi','qr','qsn','qlc','qic','qrc','qsnc','tke']\
+-    + ['cl','clt','prw','iwp','lwp','rwp','swp','cwp']\
+-    + ['iwp_rad','lwp_rad','cwp_rad','iwp_conv','lwp_conv','rwp_conv','swp_conv','cwp_conv']\
+-    + ['pr','hfls','hfss','ustar','z0','ts',]\
+-    + ['wa_up','mf_up','alpha_up','b_up','dTv_up','ent_up','det_up']\
+-    + ['Q1','Q2']\
+-    + ['tnta_diab','tnta_turb','tnta_micro','tnta_conv','tnta_radlw','tnta_radsw','tnta_other']\
+-    + ['tnta_adv','tnta_nud']\
+-    + ['tnqv_diab','tnqv_turb','tnqv_micro','tnqv_conv','tnqv_other']\
+-    + ['tnqv_adv','tnqv_nud']\
+-    + ['tnua_turb','tnua_conv','tnua_other','tnua_geo']\
+-    + ['tnva_turb','tnva_conv','tnva_other','tnva_geo']
++var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','ta_up','qv_up','ent_up','det_up','b_up','ent_up_org','ent_up_turb','det_up_org','det_up_turb','lwp','tnta_turb','tnta_conv','tnta_micro','tnqv_turb','tnqv_micro','tnqv_conv','dw_buoy']
++
++#var2save = ['pf','zf','theta','temp','qv','u','v','wap','ql','qr','rneb','cc','prw','rain','lhf','shf','tsurf',]
++#var2save = ['pf','zf','theta','temp','qv','rneb']
+ 
+ convert2p = False
++#convert2z = True
+ convert2z = False
+ 
+ convertkday = False
+diff --git a/examples/post.dephycf/config_LBA.py b/examples/post.dephycf/config_LBA.py
+index cb21b0d..ac935a4 100644
+--- a/examples/post.dephycf/config_LBA.py
++++ b/examples/post.dephycf/config_LBA.py
+@@ -8,19 +8,14 @@
+ saveall = False
+ 
+ 
+-var2save = ['pfull','zfull']\
+-    + ['theta','ta','qv','hur','ua','va','wap','ql','qi','qr','qsn','qlc','qic','qrc','qsnc','tke']\
+-    + ['cl','clt','prw','iwp','lwp','rwp','swp','cwp']\
+-    + ['iwp_rad','lwp_rad','cwp_rad','iwp_conv','lwp_conv','rwp_conv','swp_conv','cwp_conv']\
+-    + ['pr','hfls','hfss','ustar','z0','ts',]\
+-    + ['wa_up','mf_up','alpha_up','b_up','dTv_up','ent_up','det_up']\
+-    + ['Q1','Q2']\
+-    + ['tnta_diab','tnta_turb','tnta_micro','tnta_conv','tnta_radlw','tnta_radsw','tnta_other']\
+-    + ['tnta_adv','tnta_nud']\
+-    + ['tnqv_diab','tnqv_turb','tnqv_micro','tnqv_conv','tnqv_other']\
+-    + ['tnqv_adv','tnqv_nud']\
+-    + ['tnua_turb','tnua_conv','tnua_other','tnua_geo']\
+-    + ['tnva_turb','tnva_conv','tnva_other','tnva_geo']
++var2save = ['pfull','zfull','theta','ta','qv','ua','va','wap','ql','qi','qr','qsn','cl','clt','prw','pr','hfls','hfss','ts','hur','Q1','Q2','qlc','qic','qrc','qsnc','tke','wa_up','mf_up','alpha_up','ustar','z0','b_up','dTv_up','ent_up','det_up']
++
++var2save = var2save + ['tntrlw','tntrsw','tntpbl','tntlscp','tntc','tntd','tnupbl','tnuc','tnud','tnvpbl','tnvc','tnvd','tntadv','tntnudg','tnugeo','tnvgeo','tendu','tendv','tendq','tendh']
++
++#var2save = var2save + ['delta_t','delta_q','dt_wake','dq_wake','dt_wake2','dq_wake2','omega_up','alpha_up','wake_fip','Cstar','hw','ZMWAKE','ZCWAKE','ZS12','ZCTH','ZMTH','ZALPTH','ZWUP','ZALPHAUP','sigmaw']
++
++#var2save = var2save + ['buoy','w_up_bud','dw_buoy','dw_fric','dw_Kd','dw_entr','dw_transp','dTv_up','ZUDALWAKE','ZBUOWAKE','ZALFW','ZWWMWX','ZVVER','ZDOMEGA','ZWW','ZWX','ZMW','ZMX','ZMTOT']
++
+ 
+ convert2p = False
+ convert2z = False
+diff --git a/examples/post.dephycf/variables.py b/examples/post.dephycf/variables.py
+index 97a645a..7add36d 100644
+--- a/examples/post.dephycf/variables.py
++++ b/examples/post.dephycf/variables.py
+@@ -33,20 +33,19 @@ variables = {
+     'dp'                : {'varname':             'PDELP', 'units':                'Pa', 'coef':         1, 'name':'thickness_of_model_layers'}, 
+     'qi'                : {'varname':               'PQI', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_cloud_ice_water_in_air'}, 
+     'qic'               : {'varname':           'PQICONV', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_convective_cloud_ice_water_in_air'}, 
+-    'qis'               : {'varname':             'PQILS', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_stratiform_cloud_ice_water_in_air'}, 
++    'qis'               : {'varname':                '??', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_stratiform_cloud_ice_water_in_air'}, 
+     'qirad'             : {'varname':              'PQLI', 'units':                 '1', 'coef':         1, 'name':'radiatively_active_ice_water_content'}, 
+ #    'ql'                : {'varname':               'PQLI_ACTURB', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_cloud_liquid_water_in_air'}, 
+     'ql'                : {'varname':               'PQL', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_cloud_liquid_water_in_air'}, 
+     'qlc'               : {'varname':           'PQLCONV', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_convective_cloud_liquid_water_in_air'}, 
+-    'qls'               : {'varname':             'PQLLS', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_stratiform_cloud_liquid_water_in_air'}, 
++    'qls'               : {'varname':                '??', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_stratiform_cloud_liquid_water_in_air'}, 
+     'qlrad'             : {'varname':              'PQLI', 'units':                 '1', 'coef':         1, 'name':'radiatively_active_liquid_water_content'},     
+     'qr'                : {'varname':               'PQR', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_rain_water_in_air'}, 
+     'qrc'               : {'varname':           'PQRCONV', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_convective_rain_water_in_air'}, 
+-    'qrs'               : {'varname':             'PQRLS', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_stratiform_rain_water_in_air'}, 
++    'qrs'               : {'varname':                '??', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_stratiform_rain_water_in_air'}, 
+     'qsat'              : {'varname':             'PQSAT', 'units':                 '1', 'coef':         1, 'name':'specific_humidity_at_saturation'}, 
+     'qsn'               : {'varname':              'PQSN', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_snow_water_in_air'}, 
+     'qsnc'              : {'varname':           'PQSCONV', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_convective_snow_water_in_air'}, 
+-    'qsns'              : {'varname':            'PQSNLS', 'units':                 '1', 'coef':         1, 'name':'mass_fraction_of_stratiform_snow_water_in_air'}, 
+     'qt'                : {'varname':                '??', 'units':                 '1', 'coef':         1, 'name':'total_water_content'}, 
+     'qv'                : {'varname':                'PQ', 'units':                 '1', 'coef':         1, 'name':'specific_humidity'}, 
+     'rho'               : {'varname':               'RHO', 'units':            'kg m-3', 'coef':         1, 'name':'air_volumic_mass'}, 
+@@ -144,20 +143,10 @@ variables = {
+     'z0h'               : {'varname':              'PZ0H', 'units':                 'm', 'coef':         1, 'name':'z0h'}, 
+     'zref'              : {'varname':             'PZREF', 'units':                 'm', 'coef':         1, 'name':'Altitude of the first atmospheric level'}, 
+ # 6. Vertically-integrated variables
+-    'cwp_rad'           : {'varname':            'CWPRAD', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_condensed_water_path_relevant_to_radiation'}, 
+-    'iwp_rad'           : {'varname':            'IWPRAD', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_ice_water_path_relevant_to_radiation'}, 
+-    'lwp_rad'           : {'varname':            'LWPRAD', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_liquid_water_path_relevant_to_radiation'}, 
+-    'cwp'               : {'varname':               'CWP', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_condensed_water_path'}, 
+-    'iwp'               : {'varname':               'IWP', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_ice_water_path'}, 
+-    'lwp'               : {'varname':               'LWP', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_liquid_water_path'}, 
+-    'rwp'               : {'varname':               'RWP', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_rain_water_path'}, 
+-    'swp'               : {'varname':               'SWP', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_snow_water_path'},
+-    'cwp_conv'          : {'varname':              'CWPC', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_condensed_water_path'}, 
+-    'iwp_conv'          : {'varname':              'IWPC', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_convective_ice_water_path'}, 
+-    'lwp_conv'          : {'varname':              'LWPC', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_convective_liquid_water_path'}, 
+-    'rwp_conv'          : {'varname':              'RWPC', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_convective_rain_water_path'}, 
+-    'swp_conv'          : {'varname':              'SWPC', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_convective_snow_water_path'},
+-    'prw'               : {'varname':               'WVP', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_water_vapor_path'}, 
++    'cwp'               : {'varname':               'CWP', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_condensed_water_content'}, 
++    'iwp'               : {'varname':               'IWP', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_ice_water_content'}, 
++    'lwp'               : {'varname':               'LWP', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_liquid_water_content'}, 
++    'prw'               : {'varname':               'WVP', 'units':             'kg/m2', 'coef':         1, 'name':'atmospheric_water_vapor_content'}, 
+ # 7. Near-surface variables
+     'hurs'              : {'varname':            'PRHCLS', 'units':                 '-', 'coef':         1, 'name':'2m_relative_humidity'}, 
+     'qvs'               : {'varname':             'PQCLS', 'units':                 '1', 'coef':         1, 'name':'2m_specific_humidity'}, 
+@@ -170,45 +159,43 @@ variables = {
+     'vas'               : {'varname':             'PVCLS', 'units':             'm s-1', 'coef':         1, 'name':'10m_northward_wind'}, 
+ # 8. Physical tendencies
+ # The following needs to be updated
+-    'Q1'                : {'varname':                'Q1', 'units':             'K s-1', 'coef':         1, 'name':'apparent_heat_source'}, 
+-    'Q2'                : {'varname':                'Q2', 'units':             'K s-1', 'coef':         1, 'name':'apparent_moisture_sink'}, 
+-    'QRad'              : {'varname':              'QRad', 'units':             'K s-1', 'coef':         1, 'name':'radiative_heating_rate'}, 
+-    'QRadcs'            : {'varname':            'QRadcs', 'units':             'K s-1', 'coef':         1, 'name':'radiative_heating_rate_assuming_clear_sky'}, 
++    'Q1'                : {'varname':                'Q1', 'units':             'K s-1', 'coef':         1, 'name':'Apparent Heat Source'}, 
++    'Q2'                : {'varname':                'Q2', 'units':             'K s-1', 'coef':         1, 'name':'Apparent Moisture Sink'}, 
++    'QRad'              : {'varname':              'QRad', 'units':             'K s-1', 'coef':         1, 'name':'Radiative Heating Rate'}, 
+     'tendh'             : {'varname':             'TENDH', 'units':                 '-', 'coef':         1, 'name':'TENDH'}, 
+     'tendq'             : {'varname':             'TENDQ', 'units':                 '-', 'coef':         1, 'name':'TENDQ'}, 
+     'tendu'             : {'varname':             'TENDU', 'units':                 '-', 'coef':         1, 'name':'TENDU'}, 
+     'tendv'             : {'varname':             'TENDV', 'units':                 '-', 'coef':         1, 'name':'TENDV'}, 
+ #
+     'tnqi'              : {'varname':            'TENDQI', 'units':               's-1', 'coef':         1, 'name':'Ice Water Tendency due to Physics'}, 
+-    'tnqi_conv'         : {'varname':        'TENDQICONV', 'units':               's-1', 'coef':         1, 'name':'Convective Ice Water Tendency due to Physics'}, 
+-    'tnqi_shconv'       : {'varname':      'TENDQISHCONV', 'units':               's-1', 'coef':         1, 'name':'Shallow Convection Ice Water Tendency due to Physics'}, 
++    'tnqic'             : {'varname':        'TENDQICONV', 'units':               's-1', 'coef':         1, 'name':'Convective Ice Water Tendency due to Physics'}, 
++    'tnqishc'           : {'varname':      'TENDQISHCONV', 'units':               's-1', 'coef':         1, 'name':'Shallow Convection Ice Water Tendency due to Physics'}, 
+ #
+     'tnql'              : {'varname':            'TENDQL', 'units':               's-1', 'coef':         1, 'name':'Liquid Water Tendency due to Physics'}, 
+-    'tnql_conv'         : {'varname':        'TENDQLCONV', 'units':               's-1', 'coef':         1, 'name':'Convective Liquid Water Tendency due to Physics'}, 
+-    'tnql_shconv'       : {'varname':      'TENDQLSHCONV', 'units':               's-1', 'coef':         1, 'name':'Shallow Convection Liquid Water Tendency due to Physics'},
++    'tnqlc'             : {'varname':        'TENDQLCONV', 'units':               's-1', 'coef':         1, 'name':'Convective Liquid Water Tendency due to Physics'}, 
++    'tnqlshc'           : {'varname':      'TENDQLSHCONV', 'units':               's-1', 'coef':         1, 'name':'Shallow Convection Liquid Water Tendency due to Physics'},
+ #
+     'tnqr'              : {'varname':            'TENDQR', 'units':               's-1', 'coef':         1, 'name':'Rain Tendency due to Physics'}, 
+-    'tnqr_conv'         : {'varname':        'TENDQRCONV', 'units':               's-1', 'coef':         1, 'name':'Convective Rain Tendency due to Physics'}, 
+-    'tnqr_shconv'       : {'varname':      'TENDQRSHCONV', 'units':               's-1', 'coef':         1, 'name':'Shallow Convection Rain Tendency due to Physics'}, 
++    'tnqrc'             : {'varname':        'TENDQRCONV', 'units':               's-1', 'coef':         1, 'name':'Convective Rain Tendency due to Physics'}, 
++    'tnqrshc'           : {'varname':      'TENDQRSHCONV', 'units':               's-1', 'coef':         1, 'name':'Shallow Convection Rain Tendency due to Physics'}, 
+ #
+     'tnqsn'             : {'varname':            'TENDQS', 'units':               's-1', 'coef':         1, 'name':'Snow Tendency due to Physics'}, 
+-    'tnqsn_conv'        : {'varname':        'TENDQSCONV', 'units':               's-1', 'coef':         1, 'name':'Convective Snow Tendency due to Physics'}, 
+-    'tnqsn_shconv'      : {'varname':      'TENDQSSHCONV', 'units':               's-1', 'coef':         1, 'name':'Shallow Convective Snow Tendency due to Physics'}, 
++    'tnqsnc'            : {'varname':        'TENDQSCONV', 'units':               's-1', 'coef':         1, 'name':'Convective Snow Tendency due to Physics'}, 
++    'tnqsnshc'          : {'varname':      'TENDQSSHCONV', 'units':               's-1', 'coef':         1, 'name':'Shallow Convective Snow Tendency due to Physics'}, 
+ #
+-    'tnqt'              : {'varname':                '??', 'units':               's-1', 'coef':         1, 'name':'tendency_of_total_water'}, 
+-    'tnqt_diab'         : {'varname':            'TENDQT', 'units':               's-1', 'coef':         1, 'name':'tendency_of_total_water_due_to_diabatic_processes'}, 
+-    'tnqt_conv'         : {'varname':           'TENDCQT', 'units':               's-1', 'coef':         1, 'name':'tendency_of_total_water_due_to_convection'}, 
+-    'tnqt_other'        : {'varname':           'TENDMQT', 'units':               's-1', 'coef':         1, 'name':'tendency_of_total_water_due_to_other_processes'}, 
+-    'tnqt_micro'        : {'varname':           'TENDSQT', 'units':               's-1', 'coef':         1, 'name':'tendency_of_total_water_due_to_microphysics'}, 
+-    'tnqt_turb'         : {'varname':           'TENDTQT', 'units':               's-1', 'coef':         1, 'name':'tendency_of_total_water_due_to_turbulence'}, 
+-    'tnqt_shconv'       : {'varname':         'TENDSHCQT', 'units':               's-1', 'coef':         1, 'name':'tendency_of_total_water_due_shallow_convection'}, 
++    'tnqt'              : {'varname':            'TENDQT', 'units':               's-1', 'coef':         1, 'name':'Total Water Tendency due to Physics'}, 
++    'tnqtc'             : {'varname':           'TENDCQT', 'units':               's-1', 'coef':         1, 'name':'Total Water Tendency due to Convection'}, 
++    'tnqtd'             : {'varname':           'TENDMQT', 'units':               's-1', 'coef':         1, 'name':'Total Water Tendency due to Other Processes'}, 
++    'tnqtlscp'          : {'varname':           'TENDSQT', 'units':               's-1', 'coef':         1, 'name':'Total Water Tendency due to Large-scale Condensation and Precipitation'}, 
++    'tnqtpbl'           : {'varname':           'TENDTQT', 'units':               's-1', 'coef':         1, 'name':'Total Water Tendency due to Turbulence'}, 
++    'tnqtshc'           : {'varname':         'TENDSHCQT', 'units':               's-1', 'coef':         1, 'name':'Total Water Tendency due to Shallow Convection'}, 
+ # 8.1 specific humidity tendencies
+     'tnqv'              : {'varname':                '??', 'units':               's-1', 'coef':         1, 'name':'tendency_of_specific_humidity'}, 
+     'tnqv_adv'          : {'varname':           'ZFQ_ADV', 'units':               's-1', 'coef':         1, 'name':'tendency_of_specific_humidity_due_to_advection'}, 
+     'tnqv_advh'         : {'varname':                '??', 'units':               's-1', 'coef':         1, 'name':'tendency_of_specific_humidity_due_to_horizontal_advection'}, 
+     'tnqv_advv'         : {'varname':                '??', 'units':               's-1', 'coef':         1, 'name':'tendency_of_specific_humidity_due_to_vertical_advection'}, 
+     'tnqv_nud'          : {'varname':           'ZFQ_NUD', 'units':               's-1', 'coef':         1, 'name':'tendency_of_specific_humidity_due_to_nudging'}, 
+-    'tnqv_diab'         : {'varname':             'TENDQ', 'units':               's-1', 'coef':         1, 'name':'tendency_of_specific_humidity_due_to_diabatic_processes'}, 
++    'tnqv_diab'         : {'varname':                '??', 'units':               's-1', 'coef':         1, 'name':'tendency_of_specific_humidity_due_to_diabatic_processes'}, 
+     'tnqv_conv'         : {'varname':            'TENDCQ', 'units':               's-1', 'coef':         1, 'name':'tendency_of_specific_humidity_due_to_convection'}, 
+     'tnqv_turb'         : {'varname':            'TENDTQ', 'units':               's-1', 'coef':         1, 'name':'tendency_of_specific_humidity_due_to_turbulence'}, 
+     'tnqv_micro'        : {'varname':            'TENDSQ', 'units':               's-1', 'coef':         1, 'name':'tendency_of_specific_humidity_due_to_microphysics'}, 
+@@ -219,11 +206,10 @@ variables = {
+     'tnta_advh'         : {'varname':                '??', 'units':             'K s-1', 'coef':         1, 'name':'tendendy_of_air_temperature_due_to_horizontal_advection'}, 
+     'tnta_advv'         : {'varname':                '??', 'units':             'K s-1', 'coef':         1, 'name':'tendendy_of_air_temperature_due_to_vertical_advection'}, 
+     'tnta_nud'          : {'varname':          'ZFT_NUDG', 'units':             'K s-1', 'coef':         1, 'name':'tendendy_of_air_temperature_due_to_nudging'}, 
+-    'tnta_diab'         : {'varname':             'TENDT', 'units':             'K s-1', 'coef':         1, 'name':'tendendy_of_air_temperature_due_to_diabatic_processes'}, 
++    'tnta_diab'         : {'varname':                'Q1', 'units':             'K s-1', 'coef':         1, 'name':'tendendy_of_air_temperature_due_to_diabatic_processes'}, 
+     'tnta_conv'         : {'varname':            'TENDCT', 'units':             'K s-1', 'coef':         1, 'name':'tendendy_of_air_temperature_due_to_convection'}, 
+     'tnta_micro'        : {'varname':            'TENDST', 'units':             'K s-1', 'coef':         1, 'name':'tendency_of_air_temperarure_due_to_microphysics'}, 
+     'tnta_turb'         : {'varname':            'TENDTT', 'units':             'K s-1', 'coef':         1, 'name':'tendency_of_air_temperarure_due_to_turbulence'}, 
+-    'tnta_rad'          : {'varname':            'TENDRT', 'units':             'K s-1', 'coef':         1, 'name':'tendency_of_air_temperarure_due_to_radiation'}, 
+     'tnta_radlw'        : {'varname':           'TENDLWT', 'units':             'K s-1', 'coef':         1, 'name':'tendency_of_air_temperarure_due_to_lw_radiation'}, 
+     'tnta_radlwcs'      : {'varname':         'TENDLWTCS', 'units':             'K s-1', 'coef':         1, 'name':'tendency_of_air_temperarure_due_to_lw_clear_sky_radiation'}, 
+     'tnta_radsw'        : {'varname':           'TENDSWT', 'units':             'K s-1', 'coef':         1, 'name':'tendency_of_air_temperarure_due_to_sw_radiation'}, 
+diff --git a/examples/setenv b/examples/setenv
+index cf1a48c..94541b5 100644
+--- a/examples/setenv
++++ b/examples/setenv
+@@ -1,22 +1,2 @@
+-mac=`hostname -s`
+-mac=`echo ${mac::-1}`
+-
+-if [ $mac = "belenoslogin" ] ; then
+-
+-module () 
+-{ 
+-    eval `/usr/bin/modulecmd bash $*`
+-}
+-
+-INTELONEAPI="intel/oneapi/2023.2"
+-GCC=gcc/14.1.0
+-PYTHON=python/3.10.12
+-module purge                   2>/dev/null
+-module load $INTELONEAPI       2>/dev/null
+-module load $GCC               2>/dev/null
+-module load $PYTHON            2>/dev/null
+-
+-fi
+-
+ export PATH=__REP_EMS__/apptools:$PATH
+ export PYTHONPATH=__REP_EMS__:$PYTHONPATH
+diff --git a/install.sh b/install.sh
+index 18ae923..27ed0b2 100755
+--- a/install.sh
++++ b/install.sh
+@@ -6,7 +6,7 @@ set -e
+ # User specific defaults
+ 
+ # EMS Version
+-EMS_VERSION=2.4.6.mac
++EMS_VERSION=2.4.6
+ 
+ # Directory where EMS is installed
+ REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
