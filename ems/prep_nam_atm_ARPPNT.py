@@ -276,7 +276,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     i = 0
     j = 0
 
-    timein = case.variables['pa_forc'].time
+    timein = case.variables['ps_forc'].time
     nt_f = timein.length
     if nt_f <= 1:
         dt = 0.
@@ -288,18 +288,17 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
                   'LUV_NUDG', 'LT_NUDG', 'LQV_NUDG']:
         nam[nn][param] = ['.FALSE.']
     nam[nn]['LMUSCLFA'] = ['.TRUE.']
+    nam['NAMCT0']['LSFORC'] = ['.TRUE.']
 
     # Important: the following must in the same order as in prep_init_forc_atm 
     # (consistently with nam1D)
 
     if attributes['adv_ua'] == 1 or attributes['adv_va'] == 1:
-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LUV_ADV_FRC'] = ['.TRUE.']
         logger.error('ERROR: Case not yet coded for adv_ua/adv_va = 1')
         raise NotImplementedError('U/V advection not yet validated')
 
     if attributes['adv_ta'] == 1 or attributes['radiation'] == 'tend':
-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LT_ADV_FRC'] = ['.TRUE.']
         nam[nn]['NT_ADV_DEB'] = [str(1 + i * nt_f)]
         nam[nn]['NT_ADV_NUM'] = [str(nt_f)]
@@ -308,7 +307,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
             nam[nn]['NL_T_ADV_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
 
     if attributes['adv_qv'] == 1:
-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LQV_ADV_FRC'] = ['.TRUE.']
         nam[nn]['NQV_ADV_DEB'] = [str(1 + i * nt_f)]
         nam[nn]['NQV_ADV_NUM'] = [str(nt_f)]
@@ -330,7 +328,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
                 nam[nn]['RTS_FORC'] = ['300.',]
 
     if attributes['forc_geo'] == 1:
-        nam['NAMCT0']['LSFORC']=['.TRUE.']
         nam[nn]['LGEOST_UV_FRC'] = ['.TRUE.']
         W = 7.2921e-5
         nam['NAMLSFORC']['RCORIO_FORC'] = [str(2. * W * math.sin(lat * math.pi / 180))]
@@ -346,7 +343,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
             nam[nn]['NL_GEOST_UV_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
 
     if attributes['forc_wa'] == 1:
-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LSW_FRC'] = ['TRUE']
         nam[nn]['NLSW_DEB'] = [str(1 + i * nt_f)]
         nam[nn]['NLSW_NUM'] = [str(nt_f)]
@@ -355,7 +351,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
             nam[nn]['NL_LSW_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
 
     elif attributes['forc_wap'] == 1:
-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LSOMEGA_FRC'] = ['.TRUE.']
         nam[nn]['NLSOMEGA_DEB'] = [str(1 + i * nt_f)]
         nam[nn]['NLSOMEGA_NUM'] = [str(nt_f)]
@@ -364,7 +359,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
             nam[nn]['NL_LSOMEGA_TIME(   ' + str(int(it + 1)) + ' )'] = [str(int(dt * it))]
 
     if attributes['nudging_ua'] > 0. or attributes['nudging_va'] > 0.:
-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LUV_NUDG'] = ['.TRUE.']
         nam[nn]['NU_NUDG_DEB'] = [str(1 + i * nt_f)]
         nam[nn]['NUV_NUDG_NUM'] = [str(nt_f)]
@@ -379,7 +373,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
         logger.warning('Nudging not yet fully validated')
 
     if attributes['nudging_ta'] > 0.:
-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LT_NUDG'] = ['.TRUE.']
         nam[nn]['NT_NUDG_DEB'] = [str(1 + i * nt_f)]
         nam[nn]['NT_NUDG_NUM'] = [str(nt_f)]
@@ -392,7 +385,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
         logger.warning('Nudging not yet fully validated')
 
     if attributes['nudging_qv'] > 0. :
-        nam['NAMCT0']['LSFORC'] = ['.TRUE.']
         nam[nn]['LQV_NUDG'] = ['.TRUE.']
         nam[nn]['NQV_NUDG_DEB'] = [str(1 + i * nt_f)]
         nam[nn]['NQV_NUDG_NUM'] = [str(nt_f)]

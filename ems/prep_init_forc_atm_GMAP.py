@@ -197,7 +197,7 @@ def prep_init_forc_atm(
     # Preparing forcings
     #---------------------------------------------------------------
 
-    timein = case.variables['pa_forc'].time
+    timein = case.variables['ps_forc'].time
     nt_f = timein.length
     if nt_f <= 1:
         dt = 0.

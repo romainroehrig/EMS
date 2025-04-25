@@ -18,5 +18,5 @@ module load $PYTHON            2>/dev/null
 
 fi
 
-export PATH=__REP_EMS__/apptools:$PATH
+export PATH=.:__REP_EMS__/apptools:$PATH
 export PYTHONPATH=__REP_EMS__:$PYTHONPATH
