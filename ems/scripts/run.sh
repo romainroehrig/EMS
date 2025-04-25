@@ -12,7 +12,9 @@ export DR_HOOK=1
 export DR_HOOK_CATCH_SIGNALS=1
 
 mac=`hostname -s`
+set +e
 mac=`echo ${mac::-1}`
+set -e
 
 if [ $mac = "belenoslogin" ] ; then
 
