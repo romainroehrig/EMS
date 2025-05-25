@@ -49,6 +49,12 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True, cycle=N
                 if obj == '.T.': nam[namin][param][i] = '.TRUE.'
                 if obj == '.F.': nam[namin][param][i] = '.FALSE.'
 
+    # To be deleted
+    del(nam['NAMDIA'])
+    nam['NAMDIA'] = {}
+    del(nam['NAMMCC'])
+    nam['NAMMCC'] = {}
+
     # Aerosols and Ozone
     nam['NAMPHY']['LAEROSUL'] = ['.FALSE.']
     nam['NAMPHY']['LAEROVOL'] = ['.FALSE.']
