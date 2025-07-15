@@ -9,6 +9,14 @@ rt2qt(rt, units='kg kg-1')
     Compute total water knowing total water mixing ratio
 qt2rt(qt, units='kg kg-1')
     Compute total water mixing ratio knowing total water
+hur2qt(hur, pressure, temp, units='kg kg-1')
+    Compute total water knowing relative humidity
+hur2rt(hur, pressure, temp, units='kg kg-1')
+    Compute total water mixing ratio knowing relative humidity
+qt2hur(qt, pressure, temp, units='kg kg-1')
+    Compute relative humidity knowin total water
+rt2hur(rt, pressure, temp, units='kg kg-1')
+    Compute relative humidity knowing total water mixing ratio
 advrt2advqt(rt=None, advrt=None, rt_units='kg kg-1')
     Compute total water advection knowing total water mixing ratio advection
 advqt2advrt(qt=None, advqt=None, qt_units='kg kg-1')
@@ -27,6 +35,8 @@ plev2zlev(plev, z, p)
     Compute the altitude of a given pressure level (interpolation)
 rh2qv(rh,temp,pres)
     Compute the specific humidity knowing the relative humidity
+td2qv(td,pres)
+    Compute the specific humidity knowing the dew-point temperature
 
 Created on 27 November 2019
 @author: Romain Roehrig
@@ -37,6 +47,15 @@ logger = logging.getLogger(__name__)
 
 import math
 import numpy as np
+
+try:
+    from metpy.calc import mixing_ratio_from_relative_humidity, relative_humidity_from_mixing_ratio
+    from metpy.units import units as Munits
+except ImportError:
+    logger.debug('Cannot load metpy library')
+    logger.debug('Using relative humidity is not yet possible without this library')
+except:
+    raise
 
 from . import constants as cc
 
@@ -89,6 +108,162 @@ def qt2rt(qt, units='kg kg-1'):
     else:
         logger.error('units unknown: {0}'.forma(units))
         raise ValueError('units unknown: {0}'.forma(units))
+
+#############################
+def hur2qt(hur, pressure, temp, units='kg kg-1'):
+    """Compute total water knowing relative humidity
+
+    Parameters
+    ----------
+    hur : float, array
+        Relative humidity (no units)
+    pressure : float, array
+        Air pressure (Pa)
+    temp : float, array
+        Air temperature (K)
+    units : str, optional
+        Total water mixing ratio units (default is kg kg-1)
+
+    Returns
+    -------
+    float, array
+        Total water (in units)
+    """
+
+    p_loc = pressure * Munits.Pa
+    temp_loc = temp * Munits.kelvin
+    
+    if isinstance(hur,float):
+        rv = float(mixing_ratio_from_relative_humidity(p_loc, temp_loc, hur))
+    else:
+        nlev, = hur.shape
+        rv = np.array([mixing_ratio_from_relative_humidity(p_loc[i], temp_loc[i], hur[i]) for i in range(nlev)])
+
+    if units == 'kg kg-1':
+        return rv/(1+rv)
+    elif units == 'g kg-1':
+        return rv/(1.+rv)*1000.
+    else:
+        logger.error('units unknown: {0}'.forma(units))
+        raise ValueError('units unknown: {0}'.forma(units))
+
+#############################
+def hur2rt(hur, pressure, temp, units='kg kg-1'):
+    """Compute total water mixing ratio knowing relative humidity
+
+    Parameters
+    ----------
+    hur : float, array
+        Relative humidity (no units)
+    pressure : float, array
+        Air pressure (Pa)
+    temp : float, array
+        Air temperature (K)
+    units : str, optional
+        Total water mixing ratio units (default is kg kg-1)
+
+    Returns
+    -------
+    float, array
+        Total water mixing ratio (in units)
+    """
+
+    p_loc = pressure * Munits.Pa
+    temp_loc = temp * Munits.kelvin
+    
+    if isinstance(hur,float):
+        rv = float(mixing_ratio_from_relative_humidity(p_loc, temp_loc, hur))
+    else:
+        nlev, = hur.shape
+        rv = np.array([mixing_ratio_from_relative_humidity(p_loc[i], temp_loc[i], hur[i]) for i in range(nlev)])
+
+    if units == 'kg kg-1':
+        return rv
+    elif units == 'g kg-1':
+        return rv*1000.
+    else:
+        logger.error('units unknown: {0}'.forma(units))
+        raise ValueError('units unknown: {0}'.forma(units))
+
+#############################
+def qt2hur(qt, pressure, temp, units='kg kg-1'):
+    """Compute relative humidity knowing total water
+
+    Parameters
+    ----------
+    qt : float, array
+        Total water (in units)
+    pressure : float, array
+        Air pressure (Pa)
+    temp : float, array
+        Air temperature (K)
+    units : str, optional
+        Total water units (default is kg kg-1)
+
+    Returns
+    -------
+    float, array
+        Relative humidityr (no units)
+    """
+
+    p_loc = pressure * Munits.Pa
+    temp_loc = temp * Munits.kelvin
+
+    if units == 'kg kg-1':
+        rv_loc = qt/(1.-qt)
+    elif units == 'g kg-1':
+        rv_loc = qt/1000./(1.-qt/1000.)
+    else:
+        logger.error('units unknown: {0}'.forma(units))
+        raise ValueError('units unknown: {0}'.forma(units))
+
+    if isinstance(qt,float):
+        hur = float(relative_humidity_from_mixing_ratio(p_loc, temp_loc, rv_loc))
+    else:
+        nlev, = qt.shape
+        hur = np.array([relative_humidity_from_mixing_ratio(p_loc[i], temp_loc[i], rv_loc[i]) for i in range(nlev)])
+
+    return hur
+
+#############################
+def rt2hur(rt, pressure, temp, units='kg kg-1'):
+    """Compute relative humidity knowing total water mixing ratio
+
+    Parameters
+    ----------
+    rt : float, array
+        Total water mixing ratio (in units)
+    pressure : float, array
+        Air pressure (Pa)
+    temp : float, array
+        Air temperature (K)
+    units : str, optional
+        Total water mixing ratio units (default is kg kg-1)
+
+    Returns
+    -------
+    float, array
+        Relative humidityr (no units)
+    """
+
+    p_loc = pressure * Munits.Pa
+    temp_loc = temp * Munits.kelvin
+
+    if units == 'kg kg-1':
+        rv_loc = rt*1.
+    elif units == 'g kg-1':
+        rv_loc = rt/1000.
+    else:
+        logger.error('units unknown: {0}'.forma(units))
+        raise ValueError('units unknown: {0}'.forma(units))
+
+    if isinstance(qt,float):
+        hur = float(relative_humidity_from_mixing_ratio(p_loc, temp_loc, rv_loc))
+    else:
+        nlev, =rt.shape
+        hur = np.array([relative_humidity_from_mixing_ratio(p_loc[i], temp_loc[i], rv_loc[i]) for i in range(nlev)])
+
+    return hur
 
 #############################
 def advrt2advqt(rt=None, advrt=None, rt_units='kg kg-1'):
@@ -284,7 +459,10 @@ def z2p(thetal=None, theta=None, ta=None,
             dz = z[ilev]- z[ilev-1]    
             integ = integ + (g/(R[ilev-1]*theta[ilev-1])+g/(R[ilev]*theta[ilev]))/2*dz
             tmp = ps**kappa-p0**kappa*kappa*integ
-            p[ilev] = math.exp(math.log(tmp)/kappa)
+            try: p[ilev] = math.exp(math.log(tmp)/kappa)
+            except:
+                print(ilev, z[ilev-1], z[ilev], theta[ilev-1], theta[ilev], R[ilev-1], R[ilev], integ, tmp)
+                raise
     else: # Use ta instead
         nlev, = ta.shape
 
@@ -437,7 +615,7 @@ def plev2zlev(plev, z, p):
     return zlev
 
 #############################
-def rh2qv(rh,temp,pres):
+def rh2qv_GG(rh,temp,pres):
     """Compute the specific humidity knowing the relative humidity
 
     Based on Goff-Gratch equation
@@ -477,3 +655,39 @@ def rh2qv(rh,temp,pres):
 
     # specific humidity in kg kg-1
     return (rh/100.0)*ws
+
+#############################
+def td2qv(td, pres, units='kg kg-1'):
+    """Compute specific humidity water knowing dew-point temperature
+
+    Parameters
+    ----------
+    td : float, array
+        Dew-point temperature (K)
+    pressure : float, array
+        Air pressure (Pa)
+    units : str, optional
+        Specific humidity units (default is kg kg-1)
+
+    Returns
+    -------
+    float, array
+        Specific humidity (in units)
+    """
+
+    p_loc = pressure * Munits.Pa
+    td_loc = td * Munits.kelvin
+    
+    if isinstance(td,float):
+        rv = float(specific_humidity_from_dewpoint(p_loc, td_loc))
+    else:
+        nlev, = td.shape
+        qv = np.array([specific_humidity_from_dewpoint(p_loc[i], td_loc[i]) for i in range(nlev)])
+
+    if units == 'kg kg-1':
+        return qv
+    elif units == 'g kg-1':
+        return qv*1000.
+    else:
+        logger.error('units unknown: {0}'.forma(units))
+        raise ValueError('units unknown: {0}'.forma(units))

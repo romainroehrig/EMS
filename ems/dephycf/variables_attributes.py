@@ -13,6 +13,7 @@ attributes = OrderedDict([
         ('theta',    {'name': 'air_potential_temperature',                  'units': 'K'}),
         ('thetav',   {'name': 'air_virtual_potential_temperature',          'units': 'K'}),
         ('thetal',   {'name': 'air_liquid_potential_temperature',           'units': 'K'}),
+        ('hur',      {'name': 'relative_humidity',                          'units': '1', 'plotcoef':  100., 'plotunits': '%'}),
         ('qv',       {'name': 'specific_humidity',                          'units': '1', 'plotcoef': 1000., 'plotunits': 'g kg-1'}),
         ('qt',       {'name': 'mass_fraction_of_water_in_air',              'units': '1', 'plotcoef': 1000., 'plotunits': 'g kg-1'}),
         ('ql',       {'name': 'mass_fraction_of_cloud_liquid_water_in_air', 'units': '1', 'plotcoef': 1000., 'plotunits': 'g kg-1'}),

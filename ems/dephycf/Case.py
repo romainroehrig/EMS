@@ -20,6 +20,16 @@ import netCDF4 as nc
 
 import numpy as np
 
+lhur = True
+try:
+    import metpy
+except ImportError:
+    logger.info('Cannot load metpy library')
+    logger.info('Using relative humidity is not yet possible without this library')
+    lhur = False
+except:
+    raise
+
 from .Axis import Axis
 from .Variable import Variable, read as readvar, interpol
 
@@ -36,7 +46,7 @@ endDate0 = datetime(1979,1,1,0,0,0)
 init_vars_1D = ['ps','ts','thetas']
 forc_vars_1D = ['ps_forc','hfss','hfls','ustar',\
                 'ts_forc','thetas_forc','tskin',\
-                'orog','lat','lon','z0','z0h','z0q','beta','alb','emis']
+                'orog','lat','lon','z0','z0h','z0q','beta','alb','emis','i0','sza']
 
 class Case:
 
@@ -152,7 +162,7 @@ class Case:
         self.lon = lon
 
         self.add_latitude(lat)
-        self.add_latitude(lon)
+        self.add_longitude(lon)
 
     def set_attribute(self,attid,attvalue):
 
@@ -214,7 +224,8 @@ class Case:
 
     def add_variable(self, varid, vardata, name=None, units=None,
             lev=None, levtype=None, levid=None,
-            height=None, pressure=None,
+            height=None, height_id=None, height_units=None,
+            pressure=None, pressure_id=None, pressure_units=None,
             time=None, timeid=None):
         """Add a variable to a Case object.
             
@@ -240,7 +251,7 @@ class Case:
         if varid in self.var_init_list + self.var_forcing_list:
             logger.debug('Variable {0} is already defined. It will be overwritten'.format(varid))
         else:
-            if varid in ['ps','zh','pa','ua','va','ta','theta','thetal','qv','qt','rv','rt','rl','ri','ql','qi','tke','ts']:
+            if varid in ['ps','zh','pa','ua','va','ta','theta','thetal','qv','qt','rv','rt','rl','ri','ql','qi','hur','tke','ts']:
                 self.var_init_list.append(varid)
             else:
                 self.var_forcing_list.append(varid)
@@ -292,12 +303,6 @@ class Case:
                 levAxis = Axis('lev_{0}'.format(varid),lev,name=lev_name,units=levunits)
             else:
                 levAxis = Axis(levid,lev,name='{0}'.format(levtype),units=levunits)
-
-        height_id = None
-        height_units = None
-
-        pressure_id = None
-        pressure_units = None
 
         if levAxis is not None:
             if levtype == 'altitude':
@@ -554,6 +559,31 @@ class Case:
         """
         self.set_attribute('ini_rt',1)
         self.add_init_variable('rt',vardata,**kwargs)
+
+    def add_init_hur(self,vardata,**kwargs):
+        """Add initial state variable for relative humidity to a Case object.
+        
+        Required argument:
+        vardata -- input data as a list or a numpy array.
+
+        See add_variable function for optional arguments.
+        Note that:
+        - hur has no units
+        - a level axis is required (lev optional argument).
+        - a levtype is required (levtype optional argument).
+        """
+        if not(lhur):
+            logger.error('Metpy library is not available')
+            logger.error('Relative humidity cannot be used as an initial variable')
+            raise NotImplementedError
+
+        if np.max(vardata) > 1:
+            logger.error('The given relative humidity has values greater than 1: ' + str(np.max(vardata)))
+            logger.error('Relative humidity should be given with no units, not in %')
+            raise ValueError
+
+        self.set_attribute('ini_hur',1)
+        self.add_init_variable('hur',vardata,**kwargs)
 
     def add_init_wind(self,u=None,v=None,ulev=None,vlev=None,**kwargs):
         """Add initial state variable for total water to a Case object.
@@ -1009,6 +1039,29 @@ class Case:
 
         self.add_forcing_variable('tnqv_adv',data,**kwargs)
 
+    def add_wind_advection(self,ua_adv=None, va_adv=None,**kwargs):
+        """ 
+        Add a wind advection to a Case object.
+        
+        Required argument:
+        data -- input data as a list or a numpy array.
+
+        See add_variable function for optional arguments.
+        Note that:
+        - a level axis is required (lev optional argument).
+        - a levtype is required (levtype optional argument).
+
+        If time is not provided, forcing is assumed constant in time.
+        """
+        
+        if ua_adv is not None:
+            self.add_forcing_variable('tnua_adv', ua_adv, **kwargs)
+        if va_adv is not None:
+            self.add_forcing_variable('tnva_adv', va_adv, **kwargs)
+
+        self.set_attribute('adv_ua',1)
+        self.set_attribute('adv_va',1)
+
     def add_qt_advection(self,data,**kwargs):
         """Add a total water advection to a Case object.
         
@@ -1351,6 +1404,20 @@ class Case:
 
         self.add_forcing_variable('tskin',data,**kwargs)
 
+    def add_rad_ts(self,data,**kwargs):
+        """Add a surface temperature for radiation to a Case object.
+        
+        This function sets a surface temperature for the radiation scheme.
+
+        Required argument:
+        data -- input data as a list or a numpy array.
+
+        If time is not provided, temperature is assumed constant in time.
+        """
+
+        self.set_attribute('surface_radiation_temp','ts')
+        self.add_forcing_variable('ts_forc',data,**kwargs)
+
     def add_forcing_ts(self,data,z0=None,z0h=None,z0q=None,**kwargs):
         """Add a surface temperature forcing to a Case object.
         
@@ -1642,8 +1709,8 @@ class Case:
                 logger.error('Pressure should be None to theta from ta')
                 raise ValueError('Pressure should be None to theta from ta')
             else:
-                 logger.info('Compute potential temperature from pressure and temperature')
-                 theta = thermo.t2theta(p=pressure.data[0,:], temp=self.variables['ta'].data[0,:])
+                logger.info('Compute potential temperature from pressure and temperature')
+                theta = thermo.t2theta(p=pressure.data[0,:], temp=self.variables['ta'].data[0,:])
         elif 'thetal' in self.var_init_list:
             logger.info('Assume theta=thetal')
             theta = self.variables['thetal'].data[0,:]
@@ -1700,9 +1767,20 @@ class Case:
         elif 'rt' in self.var_init_list:
             logger.info('Compute qt from rt and assume qv=qt')
             qv = thermo.rt2qt(self.variables['rt'].data[0,:])
+        elif 'hur' in self.var_init_list:
+            logger.info('Compute qv from hur')
+            if 'pa' not in self.variables:
+                logger.error('To convert hur in qv/qt/rv/rt, pressure is required')
+                raise ValueError('To convert hur in qv/qt/rv/rt, pressure is required')
+            if 'ta' not in self.variables:
+                logger.error('To convert hur in qv/qt/rv/rt, temperature is required')
+                raise ValueError('To convert hur in qv/qt/rv/rt, temperature is required')
+            qv = thermo.hur2qt(self.variables['hur'].data[0,:],
+                               self.variables['pa'].data[0,:],
+                               self.variables['ta'].data[0,:])
         else:
-            logger.error('Either qt, rv or rt should be defined to compute qv')
-            raise ValueError('Either qt, rv or rt should be defined to compute qv')
+            logger.error('Either hur, qt, rv or rt should be defined to compute qv')
+            raise ValueError('Either hur, qt, rv or rt should be defined to compute qv')
 
         return qv
 
@@ -1717,9 +1795,20 @@ class Case:
         elif 'rt' in self.var_init_list:
             logger.info('Compute qt from rt')
             qt = thermo.rt2qt(self.variables['rt'].data[0,:])
+        elif 'hur' in self.var_init_list:
+            logger.info('Compute qv from hur')
+            if 'pa' not in self.variables:
+                logger.error('To convert hur in qv/qt/rv/rt, pressure is required')
+                raise ValueError('To convert hur in qv/qt/rv/rt, pressure is required')
+            if 'ta' not in self.variables:
+                logger.error('To convert hur in qv/qt/rv/rt, temperature is required')
+                raise ValueError('To convert hur in qv/qt/rv/rt, temperature is required')
+            qt = thermo.hur2qt(self.variables['hur'].data[0,:],
+                               self.variables['pa'].data[0,:],
+                               self.variables['ta'].data[0,:])
         else:
-            logger.error('Either qv, rv or rt should be defined to compute qt')
-            raise ValueError('Either qv, rv or rt should be defined to compute qt')
+            logger.error('Either hur, qv, rv or rt should be defined to compute qt')
+            raise ValueError('Either hur, qv, rv or rt should be defined to compute qt')
 
         return qt
 
@@ -1734,9 +1823,20 @@ class Case:
         elif 'rt' in self.var_init_list:
             logger.info('Assume rv=rt')
             rv = self.variables['rt'].data[0,:]
+        elif 'hur' in self.var_init_list:
+            logger.info('Compute qv from hur')
+            if 'pa' not in self.variables:
+                logger.error('To convert hur in qv/qt/rv/rt, pressure is required')
+                raise ValueError('To convert hur in qv/qt/rv/rt, pressure is required')
+            if 'ta' not in self.variables:
+                logger.error('To convert hur in qv/qt/rv/rt, temperature is required')
+                raise ValueError('To convert hur in qv/qt/rv/rt, temperature is required')
+            rv = thermo.hur2rt(self.variables['hur'].data[0,:],
+                               self.variables['pa'].data[0,:],
+                               self.variables['ta'].data[0,:])                
         else:
-            logger.error('Either qv, qt or rt should be defined to compute rv')
-            raise ValueError('Either qv, qt or rt should be defined to compute rv')
+            logger.error('Either hur, qv, qt or rt should be defined to compute rv')
+            raise ValueError('Either hur, qv, qt or rt should be defined to compute rv')
 
         return rv
 
@@ -1751,11 +1851,57 @@ class Case:
         elif 'rv' in self.var_init_list:
             logger.info('Assume rt=rv')
             rt = self.variables['rv'].data[0,:]
+        elif 'hur' in self.var_init_list:
+            logger.info('Compute qv from hur')
+            if 'pa' not in self.variables:
+                logger.error('To convert hur in qv/qt/rv/rt, pressure is required')
+                raise ValueError('To convert hur in qv/qt/rv/rt, pressure is required')
+            if 'ta' not in self.variables:
+                logger.error('To convert hur in qv/qt/rv/rt, temperature is required')
+                raise ValueError('To convert hur in qv/qt/rv/rt, temperature is required')
+            rt = thermo.hur2rt(self.variables['hur'].data[0,:],
+                               self.variables['pa'].data[0,:],
+                               self.variables['ta'].data[0,:])             
         else:
-            logger.error('Either qv, qt or rv should be defined to compute rt')
-            raise ValueError('Either qv, qt or rv should be defined to compute rt')
+            logger.error('Either hur, qv, qt or rv should be defined to compute rt')
+            raise ValueError('Either hur, qv, qt or rv should be defined to compute rt')
 
         return rt
+
+    def compute_hur(self):
+
+        if 'pa' not in self.variables:
+            logger.error('To compute hur, pressure is required')
+            raise ValueError('To compute hur, pressure is required')
+        if 'ta' not in self.variables:
+            logger.error('To compute hur, temperature is required')
+            raise ValueError('To compute hur, temperature is required')
+
+        if 'qv' in self.var_init_list:
+            logger.info('Compute hur from qt')
+            hur = thermo.qt2hur(self.variables['qv'].data[0,:],
+                                self.variables['pa'].data[0,:],
+                                self.variables['ta'].data[0,:])
+        elif 'qt' in self.var_init_list:
+            logger.info('Compute hur from qt')
+            hur = thermo.qt2hur(self.variables['qt'].data[0,:],
+                                self.variables['pa'].data[0,:],
+                                self.variables['ta'].data[0,:])
+        elif 'rv' in self.var_init_list:
+            logger.info('Compute hur from rv')
+            hur = thermo.rt2hur(self.variables['rv'].data[0,:],
+                                self.variables['pa'].data[0,:],
+                                self.variables['ta'].data[0,:])
+        elif 'rt' in self.var_init_list:
+            logger.info('Compute hur from rt')
+            hur = thermo.rt2hur(self.variables['rt'].data[0,:],
+                                self.variables['pa'].data[0,:],
+                                self.variables['ta'].data[0,:])
+        else:
+            logger.error('Either qv, qt or rv should be defined to compute hur')
+            raise ValueError('Either qv, qt or rv should be defined to compute hur')
+
+        return hur
 
     def compute_tnta_adv(self):
 
@@ -2347,7 +2493,7 @@ class Case:
         # Initial state variables
         ##################################
 
-        for var in ['zh','pa','ua','va','ta','theta','thetal','qv','qt','rv','rt','rl','ri','ql','qi','tke']:
+        for var in ['zh','pa','ua','va','ta','theta','thetal','qv','qt','rv','rt','rl','ri','ql','qi','hur','tke']:
             if var in self.var_init_list:
                 pass 
             elif var == 'theta':
@@ -2373,6 +2519,10 @@ class Case:
                 self.add_init_variable(var, rt, lev=levAxis, height=height, pressure=pressure)
             elif var in ['rl','ri','ql','qi','tke']:
                 self.add_init_variable(var, self.variables['ua'].data*0, lev=levAxis, height=height, pressure=pressure)
+            elif var in ['hur']:
+                if lhur:
+                    hur = self.compute_hur()
+                    self.add_init_variable(var, hur, lev=levAxis, height=height, pressure=pressure)
             else:
                 logger.error('Case unexpected: variable {0} have to be defined'.format(var))
                 raise ValueError('Case unexpected: variable {0} have to be defined'.format(var))
@@ -2568,6 +2718,28 @@ class Case:
                     lev=level, time=time,
                     height=height, pressure=pressure)
                 self.set_attribute('adv_rt',1)
+
+        #---- Large-scale wind advection
+        atts = ['adv_ua', 'adv_va']
+        flag = False
+        for att in atts:
+            if att in self.attlist and self.attributes[att] == 1:
+                flag = True
+
+        if flag:
+            # large-scale advection of humidity is active. All humidity variables are added, if needed.
+            if 'tnua_adv' not in self.var_forcing_list:
+                uaadv = self.variables['tnua_adv'].data
+                self.add_variable('tnua_adv', uaadv,
+                                  lev=level, time=time,
+                                  height=height, pressure=pressure)
+                self.set_attribute('adv_ua', 1)
+            if 'tnva_adv' not in self.var_forcing_list:
+                vaadv = self.variables['tnva_adv'].data
+                self.add_variable('tnva_adv', vaadv,
+                                  lev=level, time=time,
+                                  height=height, pressure=pressure)
+                self.set_attribute('adv_va', 1)
 
         #---- Wind nudging
 
@@ -2978,7 +3150,7 @@ class Case:
     def extend_temperature_advection(self, temp_adv=None, **kwargs):
         """Vertically extend the temperature large-scale advection"""
 
-        self.extend_variable('tnt_adv', data=temp_adv, **kwargs)
+        self.extend_variable('tnta_adv', data=temp_adv, **kwargs)
 
     def extend_theta_advection(self, theta_adv=None, **kwargs):
         """Vertically extend the potential temperature large-scale advection"""
@@ -3004,6 +3176,12 @@ class Case:
         """Vertically extend the water vapor mixing ratio large-scale advection"""
 
         self.extend_variable('tnrv_adv', data=rv_adv, **kwargs)
+
+    def extend_wind_advection(self, ua_adv=None, va_adv=None, **kwargs):
+        """Vertically extend the two wind initial components"""
+
+        self.extend_variable('tnua_adv', data=ua_adv, **kwargs)
+        self.extend_variable('tnva_adv', data=va_adv, **kwargs)
 
     def extend_rt_advection(self, rt_adv=None, **kwargs):
         """Vertically extend the total water mixing ratio large-scale advection"""
