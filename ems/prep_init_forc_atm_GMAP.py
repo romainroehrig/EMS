@@ -232,10 +232,10 @@ def prep_init_forc_atm(
     nb_f = 0
 
     # Not yet defined in DEPHY format
-    case.attributes['adv_ua'] = 0
-    case.attributes['adv_va'] = 0
+    #case.attributes['adv_ua'] = 0
+    #case.attributes['adv_va'] = 0
     if case.attributes['adv_ua'] == 1 or case.attributes['adv_va'] == 1:
-        raise NotImplementedError('U/V advection not yet validated')
+        #raise NotImplementedError('U/V advection not yet validated')
         nb_f += 2
         for var in ['tnua_adv', 'tnva_adv']:
             dataout_forc[var] = prep_forcing(var)
@@ -400,7 +400,7 @@ def prep_init_forc_atm(
         g.write('FORCING\n')
 
         if case.attributes['adv_ua'] == 1:
-            raise NotImplementedError('U/V advection not yet validated')
+            #raise NotImplementedError('U/V advection not yet validated')
             write_forcing_in_nam1d(g, dataout_forc['tnua_adv'].data, 'U ADV', wl=True)
             write_forcing_in_nam1d(g, dataout_forc['tnva_adv'].data, 'V ADV', wl=True)
 

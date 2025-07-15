@@ -127,7 +127,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True, cycle=N
 
     # Update NAMCT0
     nn = 'NAMCT0'
-    #nam[nn]['LAPRXPK'] = ['.FALSE.']
+    nam[nn]['LAPRXPK'] = ['.FALSE.']
     nam[nn]['LCALLSFX'] = ['.TRUE.']
     nam[nn]['LCORWAT'] = ['.FALSE.']
     nam[nn]['LELAM'] = ['.TRUE.']
@@ -135,11 +135,11 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True, cycle=N
     nam[nn]['LREGETA'] = ['.TRUE.']
     nam[nn]['LRPLANE'] = ['.TRUE.']
     nam[nn]['LSFORC'] = ['.TRUE.']
-    #nam[nn]['LVERTFE'] = ['.FALSE.']
+    nam[nn]['LVERTFE'] = ['.FALSE.']
     nam[nn]['LSFXORO'] = ['.FALSE.']
     tmp = list(nam[nn].keys())
     for param in tmp:
-        if param[0] == 'N' and param != 'NVSCH':
+        if param[0] == 'N':# and param != 'NVSCH':
             del(nam[nn][param])
 
     nam[nn]['NCONF'] = ['1']
@@ -217,6 +217,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True, cycle=N
                   'NLSOMEGA_NUM', 'NLSW_NUM',
                   'NQV_ADV_NUM', 'NQV_NUDG',
                   'NT_ADV_NUM', 'NT_NUDG',
+                  'NU_ADV_NUM', 'NV_ADV_NUM',
                   'NU_NUDG', 'NV_NUDG']:
         nam[nn][param] = ['-1',]
 
