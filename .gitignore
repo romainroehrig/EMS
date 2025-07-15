@@ -10,7 +10,7 @@
 *.o
 *.so
 # Perso
-aux/lfatools
+aux/lfatools/
 examples/namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631.NDPSFI
 examples/namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631.sorted
 examples/namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v642.sorted
@@ -29,7 +29,7 @@ examples/namelist/ARPPNT/nam.atm.cy48t1_op1.08.cmip.v5
 examples/namelist/ARPPNT/nam.atm.cy49t1_op0.04
 examples/namelist/ARPPNT/L1_FCST_HYD_SL2_VFD_ARPPHY1D.nam.sorted
 examples/namelist/ARPPNT/L1_FCST_HYD_SL2_VFD_ARPPHY1D.nam.sorted.v1
-examples/namelist/ARPCLIMAT/TUNARP2
+examples/namelist/ARPCLIMAT/TUNARP2/
 # Files too big for github
 data/rrtm/rrtm.const.02.tgz
 data/rrtm/rrtm.const.04.tgz
