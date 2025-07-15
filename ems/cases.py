@@ -145,7 +145,7 @@ data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase
 # FIRE case
 case = 'FIRE'
 cases.append(case)
-subcases[case] = ['REF']
+subcases[case] = ['REF', 'MESONH', 'TEST', 'TESTgeo', 'TESTmnh']
 data_input[case] = {subcase: rep0 + '/{0}_{1}_SCM_driver.nc'.format(case,subcase)
                              for subcase in subcases[case]}
 

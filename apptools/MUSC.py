@@ -15,6 +15,7 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)30s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 from pathlib import Path
+import shutil
 
 import ems
 import ems.cases as CC
@@ -90,6 +91,7 @@ if __name__ == '__main__':
 
     try:
         os.remove('./config.py')
+        shutil.rmtree('__pycache__')
     except OSError:
         pass
     except:
