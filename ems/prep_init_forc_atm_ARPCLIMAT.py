@@ -345,7 +345,7 @@ def prep_init_forc_atm(
             dataout_forc[var] = prep_forcing(var, wl=True)
             write_forcing_in_files(dataout_forc[var].data, files_names[var], wl=True)
 
-        for var in ['qv']: #['u','v','qv']:
+        for var in ['qv','ua','va']:
             attloc = 'adv_{0}'.format(var)
             varloc = 'tn{0}_adv'.format(var)
             if attributes[attloc]:
