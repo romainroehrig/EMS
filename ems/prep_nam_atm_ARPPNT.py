@@ -52,7 +52,8 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
                 if obj == '__NCOMBFLEN__': nam[namin][param][i] = '1800000'
     
     #Replace some strings by suitable values
-    nam['NAMIO_SERV']['NPROC_IO'] = ['0']
+    if 'NAMIO_SERV' in nam.keys():
+        nam['NAMIO_SERV']['NPROC_IO'] = ['0']
     for k in ('NPRGPEW', 'NPRGPNS', 'NPROC', 'NPRTRV', 'NPRTRW'):
         nam['NAMPAR0'][k] = ['1']
     nam['NAMPAR1']['NSTROUT'] = ['1']
@@ -125,8 +126,10 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     # Various update
 
     # Empty a few namelists
-    for nn in ['NAMFPC', 'NAMFPD', 'NAMLSFORC', 'NAMFPSC2_DEP']:
-        del(nam[nn])
+    for nn in ['NAMFPC', 'NAMFPD', 'NAMLSFORC', 'NAMFPSC2_DEP','NEMCT0','NEMDIM','NEMDYN','NEMELBC0A','NEMELBC0B']:
+        try: del(nam[nn])
+        except KeyError: pass
+        except: raise
         nam[nn] = {}
 
     # Add a few namelists
@@ -227,6 +230,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     lon = case.variables['lon'].data[0]
 
     # Setting latitude and longitude
+    if 'NEMGEO' not in nam.keys(): nam['NEMGEO'] = {}
     nam['NEMGEO']['RLAT_ACAD'] = [str(float(lat))]
     nam['NEMGEO']['RLON_ACAD'] = [str(float(lon))]
 

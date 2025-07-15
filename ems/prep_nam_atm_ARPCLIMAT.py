@@ -50,8 +50,8 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True, cycle=N
                 if obj == '.F.': nam[namin][param][i] = '.FALSE.'
 
     # To be deleted
-    del(nam['NAMDIA'])
-    nam['NAMDIA'] = {}
+    #del(nam['NAMDIA'])
+    #nam['NAMDIA'] = {}
     del(nam['NAMMCC'])
     nam['NAMMCC'] = {}
 
