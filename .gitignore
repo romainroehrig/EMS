@@ -10,7 +10,7 @@
 *.o
 *.so
 # Perso
-aux/lfatools
+aux/lfatools/
 examples/namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631.NDPSFI
 examples/namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631.sorted
 examples/namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v642.sorted
