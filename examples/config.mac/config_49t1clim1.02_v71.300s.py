@@ -2,37 +2,38 @@
 # -*- coding:UTF-8 -*-
 
 import os
-REP_MUSC = '__REP_MUSC__'
+REP_MUSC = '/Users/romain/MUSC/dev.mac'
 
 ############# Begin editing
 
-GROUP = '46t1_op1.11'
+GROUP = 'V71'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/46t1_op1.11.MPIGFORTRAN920DBL.xfftw.musc/bin'
+bindir = '/Users/romain/pack/49t1_clim1.01.MPIGNU1230.y.musc.v3/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')
 ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 
 # Namelists
-ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/al46t1_arome-op1.11.nam-namel_previ_dyn_prod')
-SFXNAM_prep = os.path.join(REP_MUSC, 'namelist/SURFEX/al46t1_arome-op1.01.nam-namel_prep')
-SFXNAM_run = os.path.join(REP_MUSC, 'namelist/SURFEX/al46t1_arome-op1.01.nam-namel_previ_surfex_prod')
+ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.AGCM.tl127l91r.cy49t1_clim1.02')
+SFXNAM_prep = os.path.join(REP_MUSC, 'namelist/SURFEX/nam.sfx.AGCM.tl127r.cy49t1_clim1.02')
+SFXNAM_run = os.path.join(REP_MUSC, 'namelist/SURFEX/nam.sfx.AGCM.tl127r.cy49t1_clim1.02')
 
 # Model configuration
-vert_grid = os.path.join(REP_MUSC, 'grid/L90_AROME.dta')
-timestep = 50
+vert_grid = os.path.join(REP_MUSC, 'grid/L91.dta')
+timestep = 300
 
 # Postprocessing
-dirpost = os.path.join(REP_MUSC,'post')
+dirpost = os.path.join(REP_MUSC,'post.dephycf')
 variablesDict = 'variables.py'
 defaultConfigPost = 'config_default.py'
 caseDependent = True
 
 # EMS configuration
-model = 'AROME'
+model = 'ARPPNT'
+cycle = 49
 lforc_ascii = False
 lsurfex = True
 sfxfmt = 'FA'
@@ -43,5 +44,9 @@ lupdate_RUN = True
 
 # ecoclimap data
 #ecoclimap
+
+# rrtm data
+rrtm = '/Users/romain/dev/EMS/data/rrtm/ecrad.cy49t1.tgz'
+#rrtm = '/Users/romain/dev/EMS/data/rrtm/rrtm.const.04.tgz'
 
 ############# End editing

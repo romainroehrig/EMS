@@ -6,38 +6,39 @@ REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
-GROUP = 'V632'
+GROUP = '46t1_op1.11'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/Users/romain/rootpack/arp632_climat.02.MPIGNU1230.x/bin'
+bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/46t1_op1.11.MPIGFORTRAN920DBL.xfftw.musc/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
-PGD = os.path.join(bindir, 'PGD')
-PREP = os.path.join(bindir, 'PREP')
+#PGD
+#PREP
 ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 
 # Namelists
-ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.tl127l91r.CMIP6.v631.LPBLEoff')
-SFXNAM = os.path.join(REP_MUSC, 'namelist/SURFEX/nam.sfx.tl127.CMIP6.v631')
+ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/al46t1_arome-op1.11.nam-namel_previ_dyn_prod')
+#SFXNAM_prep
+#SFXNAM_run
 
 # Model configuration
-vert_grid = os.path.join(REP_MUSC, 'grid/L91.dta')
-timestep = 300
+vert_grid = os.path.join(REP_MUSC, 'grid/L90_AROME.dta')
+timestep = 50
 
 # Postprocessing
-dirpost = os.path.join(REP_MUSC,'post')
+dirpost = os.path.join(REP_MUSC,'post.dephycf')
 variablesDict = 'variables.py'
 defaultConfigPost = 'config_default.py'
 caseDependent = True
 
 # EMS configuration
-model = 'ARPCLIMAT'
-#lascii_forc
-lsurfex = True
+model = 'AROME'
+lforc_ascii = False
+lsurfex = False
 #sfxfmt
 loverwrite = True
 lupdate_ATM = True
-lupdate_SFX = True
+#lupdate_SFX
 lupdate_RUN = True
 
 # ecoclimap data
