@@ -17,22 +17,22 @@ MASTER = os.path.join(bindir, 'MASTERODB')
 ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 
 # Namelists
-ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/al46t1_arome-op1.11.nam-namel_previ_dyn_prod')
+ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPPNT/cy46t1_op1.01.nam-namelistfcp')
 #SFXNAM_prep
 #SFXNAM_run
 
 # Model configuration
-vert_grid = os.path.join(REP_MUSC, 'grid/L90_AROME.dta')
-timestep = 50
+vert_grid = os.path.join(REP_MUSC, 'grid/L105.dta')
+timestep = 300
 
 # Postprocessing
-dirpost = os.path.join(REP_MUSC,'post')
+dirpost = os.path.join(REP_MUSC,'post.dephycf')
 variablesDict = 'variables.py'
 defaultConfigPost = 'config_default.py'
 caseDependent = True
 
 # EMS configuration
-model = 'AROME'
+model = 'ARPPNT'
 lforc_ascii = False
 lsurfex = False
 #sfxfmt

@@ -6,27 +6,27 @@ REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
-GROUP = '49t1_clim1.01'
+GROUP = 'V71'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/home/gmgec/mrgc/roehrig/pack/cy49t1_clim1.01.IMPIIFCI2302DPCLIM.y.musc/bin'
+bindir = '/home/gmgec/mrgc/roehrig/pack/cy49t1_clim1.02.IMPIIFC2302DP.y.musc/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
-#PGD
-#PREP
+PGD = os.path.join(bindir, 'PGD')
+PREP = os.path.join(bindir, 'PREP')
 ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 
 # Namelists
-ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPPNT/L1_FCST_HYD_SL2_VFD_ARPPHY1D.nam.sorted.v1')
-#SFXNAM_prep
-#SFXNAM_run
+ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.AGCM.tl127l91r.cy49t1_clim1.02')
+SFXNAM_prep = os.path.join(REP_MUSC, 'namelist/SURFEX/nam.sfx.AGCM.tl127r.cy49t1_clim1.02')
+SFXNAM_run = SFXNAM_prep
 
 # Model configuration
-vert_grid = os.path.join(REP_MUSC, 'grid/L105.dta')
-timestep = 300
+vert_grid = os.path.join(REP_MUSC, 'grid/L91.dta')
+timestep = 900
 
 # Postprocessing
-dirpost = os.path.join(REP_MUSC,'post')
+dirpost = os.path.join(REP_MUSC,'post.dephycf')
 variablesDict = 'variables.py'
 defaultConfigPost = 'config_default.py'
 caseDependent = True
@@ -35,16 +35,17 @@ caseDependent = True
 model = 'ARPPNT'
 cycle = 49
 lforc_ascii = False
-lsurfex = False
-#sfxfmt
+lsurfex = True
+sfxfmt = 'FA'
 loverwrite = True
 lupdate_ATM = True
-#lupdate_SFX
+lupdate_SFX = True
 lupdate_RUN = True
 
 # ecoclimap data
 #ecoclimap
 
-rrtm = '/scratch/work/roehrig/atm/rrtm/rrtm.const.04.tgz'
+# rrtm data
+rrtm = '/scratch/work/roehrig/atm/rrtm/ecrad.cy49t1.tgz'
 
 ############# End editing

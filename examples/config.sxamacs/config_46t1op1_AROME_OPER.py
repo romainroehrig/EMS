@@ -12,21 +12,21 @@ GROUP = '46t1_op1.11'
 # Binaries
 bindir = '/cnrm/amacs/USERS/roehrig/share/EMS/pack/46t1_op1.11.MPIGFORTRAN920DBL.xfftw.musc/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
-PGD = os.path.join(bindir, 'PGD')
-PREP = os.path.join(bindir, 'PREP')
+#PGD
+#PREP
 ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 
 # Namelists
 ATMNAM = os.path.join(REP_MUSC, 'namelist/AROME/al46t1_arome-op1.11.nam-namel_previ_dyn_prod')
-SFXNAM_prep = os.path.join(REP_MUSC, 'namelist/SURFEX/al46t1_arome-op1.01.nam-namel_prep')
-SFXNAM_run = os.path.join(REP_MUSC, 'namelist/SURFEX/al46t1_arome-op1.01.nam-namel_previ_surfex_prod')
+#SFXNAM_prep
+#SFXNAM_run
 
 # Model configuration
 vert_grid = os.path.join(REP_MUSC, 'grid/L90_AROME.dta')
 timestep = 50
 
 # Postprocessing
-dirpost = os.path.join(REP_MUSC,'post')
+dirpost = os.path.join(REP_MUSC,'post.dephycf')
 variablesDict = 'variables.py'
 defaultConfigPost = 'config_default.py'
 caseDependent = True
@@ -34,11 +34,11 @@ caseDependent = True
 # EMS configuration
 model = 'AROME'
 lforc_ascii = False
-lsurfex = True
-sfxfmt = 'FA'
+lsurfex = False
+#sfxfmt
 loverwrite = True
 lupdate_ATM = True
-lupdate_SFX = True
+#lupdate_SFX
 lupdate_RUN = True
 
 # ecoclimap data

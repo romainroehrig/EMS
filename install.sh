@@ -6,7 +6,8 @@ set -e
 # User specific defaults
 
 # EMS Version
-EMS_VERSION=2.4.8
+EMS_VERSION=2.5
+config=sxamacs # sxamacs, belenos, or mac
 
 # Directory where EMS is installed
 REP_EMS=$HOME/Tools/EMS/V${EMS_VERSION}
@@ -61,7 +62,10 @@ ${bold}OPTIONS${normal}
 
         -v ${unline}ems-version${normal}
            EMS_VERSION [$EMS_VERSION]
-        
+
+        -c Which config to use (sxamaxs, belenos or mac)
+           config [$config]
+
         -t Testing! Only on CNRM computer and for ARPEGE-Climat 6.3.2
 
         -d Debug! Add debug information with set -xv
@@ -92,6 +96,9 @@ do
        ;;
     v)
        EMS_VERSION=$OPTARG
+       ;;
+    c)
+       config=$OPTARG
        ;;
     d)
        DEBUG=1
@@ -178,7 +185,13 @@ fi
 # Prepare what is needed to run MUSC simulations in REP_MUSC
 [ -d "$REP_MUSC" ] || mkdir -p $REP_MUSC
 cd $REP_MUSC
-cp -r $REP_EMS/examples/* .
+
+for f in config.$config grid namelist post post.dephycf setenv
+do
+  cp -r $REP_EMS/examples/$f .
+done
+mv config.$config config
+
 ln -s $REP_EMS/apptools/MUSC.py
 
 for ff in convertLFA2nc.py lfa2nc.py convert2p.py convert2z.py 
