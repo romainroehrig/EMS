@@ -1,8 +1,8 @@
 mac=`hostname -s`
 mac=`echo ${mac::-1}`
-cycle=$1
+cycle=`echo ${1:0}`
 
-if [ $mac = "belenoslogin" ] && [ $cycle = "49"] ; then
+if [ $mac = "belenoslogin" ] && [ $cycle = "49" ] ; then
 
 module () 
 { 
