@@ -31,7 +31,6 @@ examples/namelist/ARPPNT/nam.atm.cy49t1_op0.04
 examples/namelist/ARPPNT/L1_FCST_HYD_SL2_VFD_ARPPHY1D.nam.sorted
 examples/namelist/ARPCLIMAT/TUNARP2/
 # Files too big for github
-data/rrtm/rrtm.const.02.tgz
 data/rrtm/rrtm.const.04.tgz
 data/rrtm/ecrad.cy49t1.tgz
 #
