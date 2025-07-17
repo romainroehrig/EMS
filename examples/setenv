@@ -1,6 +1,6 @@
 mac=`hostname -s`
 mac=`echo ${mac::-1}`
-cycle=`echo ${1:0}`
+cycle=`echo ${1:-0}`
 
 if [ $mac = "belenoslogin" ] && [ $cycle = "49" ] ; then
 
