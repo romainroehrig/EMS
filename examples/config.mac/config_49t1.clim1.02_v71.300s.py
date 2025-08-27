@@ -2,7 +2,7 @@
 # -*- coding:UTF-8 -*-
 
 import os
-REP_MUSC = '/Users/romain/MUSC/dev.mac'
+REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
@@ -10,7 +10,7 @@ GROUP = 'V71'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/Users/romain/pack/49t1_clim1.01.MPIGNU1230.y.musc.v3/bin'
+bindir = '/Users/romain/pack/49t1_clim1.02.MPIGNU1230.y.musc/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')
@@ -19,7 +19,7 @@ ASCII2FA = os.path.join(bindir, 'ASCII2FA')
 # Namelists
 ATMNAM = os.path.join(REP_MUSC, 'namelist/ARPCLIMAT/nam.atm.AGCM.tl127l91r.cy49t1_clim1.02')
 SFXNAM_prep = os.path.join(REP_MUSC, 'namelist/SURFEX/nam.sfx.AGCM.tl127r.cy49t1_clim1.02')
-SFXNAM_run = os.path.join(REP_MUSC, 'namelist/SURFEX/nam.sfx.AGCM.tl127r.cy49t1_clim1.02')
+SFXNAM_run = SFXNAM_prep
 
 # Model configuration
 vert_grid = os.path.join(REP_MUSC, 'grid/L91.dta')
@@ -47,6 +47,5 @@ lupdate_RUN = True
 
 # rrtm data
 rrtm = '/Users/romain/dev/EMS/data/rrtm/ecrad.cy49t1.tgz'
-#rrtm = '/Users/romain/dev/EMS/data/rrtm/rrtm.const.04.tgz'
 
 ############# End editing
