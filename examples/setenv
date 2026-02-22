@@ -1,21 +1,34 @@
 mac=`hostname -s`
 mac=`echo ${mac::-1}`
-cycle=`echo ${1:-0}`
+cycle=`echo ${1:-37}`
+echo "cycle=$cycle"
 
-if [ $mac = "belenoslogin" ] && [ $cycle = "49" ] ; then
+if [ $mac = "belenoslogin" ] ; then
 
 module () 
 { 
     eval `/usr/bin/modulecmd bash $*`
 }
+ 
+  if [ $cycle = "37" ] ; then
 
-INTELONEAPI="intel/oneapi/2023.2"
-GCC=gcc/14.1.0
-PYTHON=python/3.10.12
-module purge                   2>/dev/null
-module load $INTELONEAPI       2>/dev/null
-module load $GCC               2>/dev/null
-module load $PYTHON            2>/dev/null
+    INTEL="intel/2018.5.274"
+    PYTHON=python/3.10.12
+    module purge                   2>/dev/null
+    module load $INTEL             2>/dev/null
+    module load $PYTHON            2>/dev/null
+
+  elif [ $cycle = "49" ] ; then
+
+    INTELONEAPI="intel/oneapi/2023.2"
+    GCC=gcc/14.1.0
+    PYTHON=python/3.10.12
+    module purge                   2>/dev/null
+    module load $INTELONEAPI       2>/dev/null
+    module load $GCC               2>/dev/null
+    module load $PYTHON            2>/dev/null
+
+  fi
 
 fi
 

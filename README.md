@@ -26,6 +26,10 @@ To install EMS on a CNRM computer, with access to the CNRM Lustre system:
 
    `source setenv`
 
+   If you are on belenos using cycle 49 (default is 37, i.e. ARPEGE-Climat 6.3+), source setenv as follow
+   
+   `source setenv 49`
+
 3. You can manage your own namelists (`namelist` directory), vertical grid (`grid` directory) and MUSC configuration files (`config` directory), and postprocessing (`post` directory).
 
 4. Run MUSC:
