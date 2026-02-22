@@ -407,7 +407,7 @@ def lfa2nc(dirin, fileout, tosave=None, solib=None, varatts=None):
                     try:
                         data[var].coordinates = coordinates
                     except:
-                        logger.warning('Coordinates is not defined for variable', var)
+                        logger.warning('Coordinates is not defined for variable' + var)
                     data[var].original_name = var
                     
 

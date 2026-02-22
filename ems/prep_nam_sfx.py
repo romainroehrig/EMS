@@ -166,13 +166,15 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             lalb = True
         except:
             lalb = False
-        
-        lrce = attributes['case_type'] == 'RCE'
+        try:
+            lrce = attributes['case_type'] == 'RCE'
+        except:
+            lrce = False
         try: # Used only in case lrce
             lminSfcWind = attributes['minSurfaceWind'] >= 0.
             minSfcWind = attributes['minSurfaceWind']
         except:
-            lminSfcWind = True
+            lminSfcWind = False
             minSfcWind = 1. 
         if surfaceForcingMoisture == 'beta':
             beta = case.variables['beta'].data
@@ -228,10 +230,6 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             raise RuntimeError('surfaceForcingTemp unexpected: ' + surfaceForcingTemp + ' for surfaceType: ' + surfaceType)
     elif surfaceType in ['land','landice']:
         if surfaceForcingTemp == 'surface_flux':
-            #logger.warning('This configuration does not work:')
-            #logger.warning('surfaceType = ' + surfaceType + ' and surfaceForcingTemp = ' + surfaceForcingTemp)
-            #logger.warning('=> surfaceType is changed to ocean')
-            #nam[nn]['CNATURE'] = ["'FLUX'"]
             nam[nn]['CSEA'] = ["'FLUX'"]
             nam2keep.append('NAM_IDEAL_FLUX')
         elif surfaceForcingTemp == 'ts':
@@ -269,7 +267,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
         nam[nn]['NDAY'] = [str(int(day))]
         nam[nn]['XTIME'] = [str(int(seconds))]
         if surfaceForcingTemp == 'ts':
-            nam[nn]['XSST_UNIF'] = ['%(ts)6.2f'%{"ts":tsforc[0]}]
+            nam[nn]['XSST_UNIF'] = ['%(ts)8.4f'%{"ts":tsforc[0]}]
         else:
             nam[nn]['XSST_UNIF'] = ['300.']
     elif surfaceType in ['land','landice']:
@@ -369,7 +367,7 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             nam[nn]['NTIME_SST'] = [str(nt)]
 
             for it in range(nt):
-                nam[nn]['XUNIF_SST(%(ii)4.i)'%{"ii": it + 1}] = ['%(ts)6.2f'%{"ts": tsforc[it]}]
+                nam[nn]['XUNIF_SST(%(ii)4.i)'%{"ii": it + 1}] = ['%(ts)8.4f'%{"ts": tsforc[it]}]
 
             for it in range(nt):
                 nam[nn]['CFTYP_SST(%(ii)4.i)'%{"ii": it + 1}] = ["'DIRECT'"]

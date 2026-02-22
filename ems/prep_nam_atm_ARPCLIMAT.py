@@ -49,9 +49,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True, cycle=N
                 if obj == '.T.': nam[namin][param][i] = '.TRUE.'
                 if obj == '.F.': nam[namin][param][i] = '.FALSE.'
 
-    # To be deleted
-    #del(nam['NAMDIA'])
-    #nam['NAMDIA'] = {}
     del(nam['NAMMCC'])
     nam['NAMMCC'] = {}
 
@@ -108,7 +105,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True, cycle=N
     except KeyError:
         pass      
     nam[nn]['VMAX1'] = ['100.']
-    nam[nn]['VMAX2'] = ['120.']
+    nam[nn]['VMAX2'] = ['400.']
 
     # Update NAMDIM
     nn = 'NAMDIM'
@@ -139,7 +136,7 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True, cycle=N
     nam[nn]['LSFXORO'] = ['.FALSE.']
     tmp = list(nam[nn].keys())
     for param in tmp:
-        if param[0] == 'N':# and param != 'NVSCH':
+        if param[0] == 'N':
             del(nam[nn][param])
 
     nam[nn]['NCONF'] = ['1']
@@ -186,8 +183,8 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True, cycle=N
     # Determine NSTOP
     endDate = case.end_date
     tmp = endDate-startDate
-    tmp = tmp.total_seconds()/3600
-    NSTOP = 'h' + str(int(tmp))
+    tmp = tmp.total_seconds()/timestep
+    NSTOP = 't' + str(int(tmp)+1)
     logger.debug('NSTOP: ' + NSTOP)
 
     nam['NAMRIP']['NINDAT'] = [startDate.strftime('%Y%m%d')]

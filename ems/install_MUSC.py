@@ -32,7 +32,8 @@ def perf(tin, s):
 def install_atm(model, case, subcase, filecase,
                 repout, vert_grid, timestep=None, 
                 ASCII2FA=os.path.join(ems._dirEMS, '../aux/ASCII2FA/bin/ascii2fa'),
-                lforc_ascii=True, lsurfex=True, loverwrite=False, lupdate=False):
+                lforc_ascii=True, lsurfex=True, loverwrite=False, lupdate=False,
+                lno_optim=False):
 
     """ Prepare files of atmospheric initial conditions and forcing needed to run MUSC """
 
@@ -84,11 +85,14 @@ def install_atm(model, case, subcase, filecase,
             dirforc = None
 
         # Directory for diagnostics
-        dirdiags = 'images/'
-        dirdiags = os.path.join(rep,dirdiags)
-        if os.path.exists(dirdiags):
-            shutil.rmtree(dirdiags)
-        os.mkdir(dirdiags)
+        if lno_optim:
+            dirdiags = 'images/'
+            dirdiags = os.path.join(rep,dirdiags)
+            if os.path.exists(dirdiags):
+                shutil.rmtree(dirdiags)
+            os.mkdir(dirdiags)
+        else:
+            dirdiags = None
 
         # Prepare restart and forcing
         ems.prep_init_forc_atm(model,
@@ -98,8 +102,8 @@ def install_atm(model, case, subcase, filecase,
                 logps=(model == 'AROME' or model == 'ARPPNT'),
                 lforc_ascii=lforc_ascii, lsurfex=lsurfex,
                 dirforc=dirforc, dirdiags=dirdiags,
-                save_init=True, file_init='init_{0}.nc'.format(vert_grid_name),
-                save_forc=True, file_forc='forc_{0}.nc'.format(vert_grid_name))
+                save_init=lno_optim, file_init='init_{0}.nc'.format(vert_grid_name),
+                save_forc=lno_optim, file_forc='forc_{0}.nc'.format(vert_grid_name))
         os.symlink('nam1D_{0}'.format(vert_grid_name), 'nam1D')
         os.symlink(ASCII2FA, 'ascii2fa')
         with open('ascii2fa_{0}.log'.format(vert_grid_name), 'w') as log:

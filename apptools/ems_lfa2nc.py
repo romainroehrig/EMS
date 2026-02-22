@@ -16,7 +16,7 @@ if __name__ == '__main__':
                         "The share lib can be compiled with the EMS source code, or compiled " + \
                         "with gmkpack (-p libs4py) or taken in the epygram directory.")
     parser.add_argument("-d", type=str, dest='dirlfa', help="directory containing the LFA files")
-    parser.add_argument('-o', type=str, dext='ncout', help='netcdf file to produce')
+    parser.add_argument('-o', type=str, dest='ncout', help='netcdf file to produce')
     parser.add_argument('-v', action='store_true', dest='verbose', help='Add verbosity')
     args = parser.parse_args()
     if args.verbose:

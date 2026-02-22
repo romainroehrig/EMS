@@ -8,6 +8,9 @@ import os
 dirMUSC = os.getenv('DIRMUSC')
 if not(dirMUSC):
     dirMUSC = os.getcwd()
+dirWORK = os.getenv('DIRWORK')
+if not(dirWORK):
+    dirWORK = dirMUSC
 
 import argparse
 import importlib
@@ -64,6 +67,7 @@ if __name__ == '__main__':
     parser.add_argument("--sfx-only", help="Only install SURFEX files", dest='sfx_only', action="store_true")
     parser.add_argument("--run-only", help="Only run the simulation",   dest='run_only', action="store_true")
     parser.add_argument("--debug",    help="Active debug option",       dest='debug',    action="store_true")
+    parser.add_argument("--no-optim",    help="Active optimized run",   dest='no_optim', action="store_false")
 
     # Getting arguments
     args = parser.parse_args()
@@ -82,6 +86,8 @@ if __name__ == '__main__':
         logger.debug('Execution in debug mode')
     else:
         logging.root.setLevel(logging.INFO)
+
+    lno_optim = args.no_optim
 
     # check existence of config_file and then import it
     if not(os.path.isfile(config_file)):
@@ -180,12 +186,11 @@ if __name__ == '__main__':
     logger.info('For {0}/{1} case'.format(case,subcase))
 
     # Where to prepare atmospheric input data
-    #repATM = os.path.join(dirMUSC, 'ATM', model)
-    repATM = os.path.join(dirMUSC, 'ATM', GROUP, EXPID)
+    repATM = os.path.join(dirWORK, 'ATM', GROUP, EXPID)
     # Where to prepare surfex input data
-    repSFX = os.path.join(dirMUSC, 'SURFEX', GROUP, EXPID)
+    repSFX = os.path.join(dirWORK, 'SURFEX', GROUP, EXPID)
     # Where to install run data
-    repRUN = os.path.join(dirMUSC, 'simulations', GROUP, EXPID)
+    repRUN = os.path.join(dirWORK, 'simulations', GROUP, EXPID)
 
     ########## Prepare Atmospheric input data
 
@@ -199,7 +204,8 @@ if __name__ == '__main__':
             install_MUSC.install_atm(model, case, subcase, data_input, 
                     repATM, vert_grid, timestep, 
                     ASCII2FA=ASCII2FA, lforc_ascii=lforc_ascii, lsurfex=lsurfex,
-                    loverwrite=loverwrite, lupdate=lupdate_ATM)
+                    loverwrite=loverwrite, lupdate=lupdate_ATM,
+                    lno_optim=lno_optim)
 
             Path(install_file).touch()
         else:
@@ -274,5 +280,4 @@ if __name__ == '__main__':
             logger.info('Run data for {0}/{1} already installed, loverwrite={2}, lupdate={3}'.format(case, subcase, loverwrite, lupdate_RUN))
 
     os.remove("./config.py")
-    #os.remove("./config.pyc")
  

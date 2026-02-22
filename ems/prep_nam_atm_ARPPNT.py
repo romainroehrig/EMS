@@ -60,18 +60,9 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     nam['NAMPAR1']['NSTRIN'] = ['1']
     
     #Deactivate SLHD and COMAD
-    #for k in ('LSLHD_GFL', 'LSLHD_SPD', 'LSLHD_SVD', 'LSLHD_T', 'LSLHD_W',
-    #          'LCOMADH', 'LCOMADV', 'LCOMAD_GFL', 'LCOMAD_SP', 'LCOMAD_SPD',
-    #          'LCOMAD_SVD', 'LCOMAD_T', 'LCOMAD_W'):
-    #    nam['NAMDYNA'][k] = ['.FALSE.']
     for k in nam['NAMGFL'].keys():
         if k.endswith('%LSLHD') or k.endswith('%LCOMAD'):
             nam['NAMGFL'][k] = ['.FALSE.']
-
-    #Deactivate predictor-corrector
-    #nam['NAMDYNA']['LPC_CHEAP'] = ['.FALSE.']
-    #nam['NAMDYNA']['LPC_FULL'] = ['.FALSE.']
-    #nam['NAMDYN']['NSITER'] = ['0']
 
     #Deactivate NH dyn
     if cycle is not None and cycle < 49:
@@ -80,8 +71,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     #Deactivate MPI
     nam['NAMPAR0']['LMPOFF'] = ['.TRUE.']
     
-    #Deactivate spectral nudging
-    #nam['NEMELBC0A']['LESPCPL'] = ['FALSE']
     
     #Deactivate fullpos
     nam['NAMCT0']['NFPOS'] = ['0']
@@ -106,22 +95,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
             del nam['NAMPAR1'][k] #gfortran does not like this option (info from P. Marguinaud)
     for k in ('LADVF', 'LIMPF', 'LQMT'):
         nam['NAMDYN'][k] = ['.FALSE.']
-
-    # Aerosols and Ozone
-    #nam['NAMPHY']['LAEROSEA'] = ['.FALSE.']
-    #nam['NAMPHY']['LAEROLAN'] = ['.FALSE.']
-    #nam['NAMPHY']['LAEROSOO'] = ['.FALSE.']
-    #nam['NAMPHY']['LAERODES'] = ['.FALSE.']
-
-    #nam['NAMPHY']['LOZONE'] = ['.FALSE.']
-    #nam['NAMPHY']['LO3ABC'] = ['.FALSE.']
-    #nam['NAMPHY']['LO3FL'] = ['.FALSE.']
-
-    #nam['NAMPHY']['LRAYFM'] = ['.FALSE.']
-    #nam['NAMPHY']['LEDR'] = ['.FALSE.',]
-
-    #nam['NAMPHY']['LRELAXT'] = ['.FALSE.']
-    #nam['NAMPHY']['LRELAXW'] = ['.FALSE.']
 
     # Various update
 
