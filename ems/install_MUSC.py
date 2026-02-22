@@ -223,7 +223,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
     logger.info('Case: ' + case + ' subcase: ' + subcase)
     logger.info('MASTER: ' + config['MASTER'])
     logger.info('Configuration name: ' + config['name'])
-    logger.info('Cycle:' + str(config['cycle']))
+    logger.info('Cycle: ' + str(config['cycle']))
     logger.info('{0} reference namelist: {1}'.format(model, config['namATMref']))
     if config['lsurfex']:
         logger.info('SURFEX reference namelist: ' + config['namSFXref'])
