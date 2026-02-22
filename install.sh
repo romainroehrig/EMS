@@ -6,7 +6,7 @@ set -e
 # User specific defaults
 
 # EMS Version
-EMS_VERSION=2.5.1
+EMS_VERSION=2.5.2
 config=sxamacs # sxamacs, belenos, or mac
 
 # Directory where EMS is installed
