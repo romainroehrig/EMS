@@ -186,7 +186,7 @@ fi
 [ -d "$REP_MUSC" ] || mkdir -p $REP_MUSC
 cd $REP_MUSC
 
-for f in config.$config grid namelist post post.dephycf setenv
+for f in config.$config grid namelist post post.dephycf setenv run_all.sh
 do
   cp -r $REP_EMS/examples/$f .
 done
