@@ -5,24 +5,30 @@ config=config/config_arp632_CMIP6.300s.py
 
 OPT=''
 
-MUSC.py -config $config -case ARMCU  -subcase REF      $OPT
-MUSC.py -config $config -case AYOTTE -subcase 00SC     $OPT
-MUSC.py -config $config -case AYOTTE -subcase 00WC     $OPT
-MUSC.py -config $config -case AYOTTE -subcase 03SC     $OPT
-MUSC.py -config $config -case AYOTTE -subcase 05SC     $OPT
-MUSC.py -config $config -case AYOTTE -subcase 05WC     $OPT
-MUSC.py -config $config -case AYOTTE -subcase 24SC     $OPT
-MUSC.py -config $config -case IHOP   -subcase REF      $OPT
-MUSC.py -config $config -case SCMS   -subcase REF      $OPT
-MUSC.py -config $config -case RICO   -subcase SHORT    $OPT
-MUSC.py -config $config -case BOMEX  -subcase REF      $OPT
-MUSC.py -config $config -case MPACE  -subcase REF      $OPT
-MUSC.py -config $config -case FIRE   -subcase REF      $OPT
-MUSC.py -config $config -case SANDU  -subcase REF      $OPT
-MUSC.py -config $config -case SANDU  -subcase SLOW     $OPT
-MUSC.py -config $config -case SANDU  -subcase FAST     $OPT
-MUSC.py -config $config -case AMMA   -subcase REF      $OPT
-MUSC.py -config $config -case LBA    -subcase REF      $OPT
-MUSC.py -config $config -case EUROCS -subcase REF      $OPT
-MUSC.py -config $config -case KB2006 -subcase MESONH   $OPT
-MUSC.py -config $config -case DYNAMO -subcase NSA3A_D1 $OPT
+cases=( "ARMCU:REF"
+        "AYOTTE:00SC 00WC 03SC 05SC 05WC 24SC"
+        "IHOP:REF"
+        "SCMS:REF"
+        "RICO:SHORT"
+        "BOMEX:REF"
+        "MPACE:REF"
+        "FIRE:REF"
+        "SANDU:REF SLOW FAST"
+        "AMMA:REF"
+        "LBA:REF"
+        "EUROCS:REF"
+        "KB2006:MESONH"
+        "DYNAMO:NSA3A_D1")
+
+for tmp in "${cases[@]}"
+do
+    CC="${tmp%%:*}"
+    subcases="${tmp##*:}"
+    for SC in $subcases
+    do
+        echo "##################################################################"
+        echo "################## $CC $SC"
+        echo "MUSC.py -config $config -case $CC -subcase $SC $OPT"
+        MUSC.py -config $config -case $CC -subcase $SC $OPT
+    done
+done
