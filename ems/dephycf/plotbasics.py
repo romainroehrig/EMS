@@ -9,6 +9,8 @@ Created on 27 November 2019
 
 import os
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 plt.set_loglevel('error')
 

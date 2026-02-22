@@ -184,7 +184,8 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=True, cycle=N
     endDate = case.end_date
     tmp = endDate-startDate
     tmp = tmp.total_seconds()/timestep
-    NSTOP = 't' + str(int(tmp)+1)
+    #NSTOP = 't' + str(int(tmp)+1)
+    NSTOP = 't' + str(int(tmp))
     logger.debug('NSTOP: ' + NSTOP)
 
     nam['NAMRIP']['NINDAT'] = [startDate.strftime('%Y%m%d')]
