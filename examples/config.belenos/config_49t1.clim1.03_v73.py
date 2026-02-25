@@ -36,6 +36,7 @@ model = 'ARPPNT'
 cycle = 49
 lforc_ascii = False
 lsurfex = True
+surfex_version = 9
 sfxfmt = 'FA'
 loverwrite = True
 lupdate_ATM = True

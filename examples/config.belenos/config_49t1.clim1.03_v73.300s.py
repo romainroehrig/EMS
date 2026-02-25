@@ -2,7 +2,7 @@
 # -*- coding:UTF-8 -*-
 
 import os
-REP_MUSC = '/Users/romain/MUSC/V2.5'
+REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
@@ -10,7 +10,7 @@ GROUP = 'V73'
 # EXPID will be taken from this file name following the convention config_EXPID.py
 
 # Binaries
-bindir = '/Users/romain/pack/49t1_clim1.03.MPIGNU1230.y.musc/bin'
+bindir = '/home/gmgec/mrgc/roehrig/pack/cy49t1_clim1.03.IMPIIFC2302DP.y.musc/bin'
 MASTER = os.path.join(bindir, 'MASTERODB')
 PGD = os.path.join(bindir, 'PGD')
 PREP = os.path.join(bindir, 'PREP')
@@ -47,6 +47,6 @@ lupdate_RUN = True
 #ecoclimap
 
 # rrtm data
-rrtm = '/Users/romain/dev/EMS/data/rrtm/ecrad.cy49t1.tgz'
+rrtm = '/scratch/work/roehrig/atm/rrtm/ecrad.cy49t1.tgz'
 
 ############# End editing

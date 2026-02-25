@@ -23,7 +23,7 @@ SFXNAM_run = SFXNAM_prep
 
 # Model configuration
 vert_grid = os.path.join(REP_MUSC, 'grid/L91.dta')
-timestep = 300
+timestep = 900
 
 # Postprocessing
 dirpost = os.path.join(REP_MUSC,'post.dephycf')

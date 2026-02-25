@@ -126,7 +126,7 @@ def install_sfx(model, case, subcase, filecase, repout,
                 PGD, PREP, namref, 
                 loverwrite=False, lupdate=False,
                 ecoclimap=os.path.join(ems._dirEMS, '../data/ecoclimap_cnrm_cm6.02'),
-                sfxfmt='LFI'):
+                sfxfmt='LFI', surfex_version=8):
 
     """ Prepare files of atmospheric initial conditions and forcing needed to run MUSC """
 
@@ -170,7 +170,8 @@ def install_sfx(model, case, subcase, filecase, repout,
         os.chdir(rep)
 
         # Preparation namelist SURFEX
-        ems.prep_nam_sfx("data_input.nc", namref, namout="namsurf", sfxfmt=sfxfmt)
+        ems.prep_nam_sfx("data_input.nc", namref, namout="namsurf",
+            sfxfmt=sfxfmt, surfex_version=surfex_version)
     
         t0 = perf(t0, 'Prepare SURFEX namelist')
 
@@ -226,6 +227,7 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
     logger.info('Cycle: ' + str(config['cycle']))
     logger.info('{0} reference namelist: {1}'.format(model, config['namATMref']))
     if config['lsurfex']:
+        logger.info('SURFEX version: {0}'.format(config['surfex_version']))
         logger.info('SURFEX reference namelist: ' + config['namSFXref'])
         logger.info('Ecoclimap directory: ' + config['ecoclimap'])
         logger.info('SURFEX PGD/PREP format: ' + config['sfxfmt'])
@@ -283,7 +285,8 @@ def install_run(model,case,subcase,filecase,repout,config,configOut,loverwrite=F
 
         # Preparation namelist SURFEX
         if config['lsurfex']:
-            ems.prep_nam_sfx(filecase, config['namSFXref'], namout="namsfx_" + config['name'], sfxfmt=config['sfxfmt'])
+            ems.prep_nam_sfx(filecase, config['namSFXref'], namout="namsfx_" + config['name'],
+                sfxfmt=config['sfxfmt'], surfex_version=config['surfex_version'])
 
             t0 = perf(t0, 'Prepare SURFEX namelist')
 

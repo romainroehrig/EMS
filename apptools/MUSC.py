@@ -41,6 +41,7 @@ default = {
         'cycle': None,
         'lforc_ascii': True,
         'lsurfex': True,
+        'surfex_version': 8,
         'loverwrite': False,
         'lupdate_ATM': True,
         'lupdate_SFX': True,
@@ -112,7 +113,7 @@ if __name__ == '__main__':
     # First loop over attributes which have a default (see above)
     for att in ['GROUP', 'model', 'cycle', 'ASCII2FA', 'lforc_ascii', 'lsurfex',
                 'dirpost', 'variablesDict', 'defaultConfigPost', 'caseDependent',
-                'sfxfmt', 'ecoclimap', 'rrtm',
+                'surfex_version', 'sfxfmt', 'ecoclimap', 'rrtm',
                 'loverwrite', 'lupdate_ATM', 'lupdate_SFX', 'lupdate_RUN']: 
         try:
             atts[att] = CM.__dict__[att]
@@ -156,6 +157,7 @@ if __name__ == '__main__':
 
     lforc_ascii = atts['lforc_ascii']
     lsurfex = atts['lsurfex']
+    surfex_version = atts['surfex_version']
     if lsurfex:
         SFXNAM_prep = atts['SFXNAM_prep']
         SFXNAM_run = atts['SFXNAM_run']
@@ -222,7 +224,7 @@ if __name__ == '__main__':
             # Installing
             install_MUSC.install_sfx(model, case, subcase, data_input,
                     repSFX, PGD, PREP, SFXNAM_prep,
-                    loverwrite=loverwrite, lupdate=lupdate_SFX, ecoclimap=ecoclimap, sfxfmt=sfxfmt)
+                    loverwrite=loverwrite, lupdate=lupdate_SFX, ecoclimap=ecoclimap, sfxfmt=sfxfmt, surfex_version=surfex_version)
 
             Path(install_file).touch()
         else:
@@ -242,6 +244,7 @@ if __name__ == '__main__':
         config['vert_grid'] = vert_grid
         config['TSTEP'] = timestep
         config['lsurfex'] = lsurfex
+        config['surfex_version'] = surfex_version
         config['namATMref'] = ATMNAM
         config['initfile'] = os.path.join(repATM, case, subcase, 'initfile_{0}'.format(vert_grid_name))
         if model == 'ARPCLIMAT':

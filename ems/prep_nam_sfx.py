@@ -15,7 +15,7 @@ from ems.namelist import readsurfex, writesurfex
 
 lverbose = logger.getEffectiveLevel() == logging.DEBUG
 
-def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
+def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI', surfex_version=8):
     """
     Prepare SURFEX namelist for MUSC simulation, 
     given information in filecase,
@@ -323,22 +323,32 @@ def prep_nam_sfx(ncfile, namin, namout='namsurf', sfxfmt='LFI'):
             nam[nn]['NMONTH'] = [str(int(month))]
             nam[nn]['NDAY'] = [str(int(day))]
             nam[nn]['XTIME'] = [str(int(seconds))]
-            nam[nn]['XTG_SURF'] = ['%(ts)8.4f'%{"ts": tsforc[0]}]
-            nam[nn]['XTG_ROOT'] = ['%(ts)8.4f'%{"ts": tsforc[0]}]
-            nam[nn]['XTG_DEEP'] = ['%(ts)8.4f'%{"ts": tsforc[0]}]
-            nam[nn]['XHUG_SURF'] = ['0.']
-            nam[nn]['XHUG_ROOT'] = ['0.']
-            nam[nn]['XHUG_DEEP'] = ['0.']
-            nam[nn]['XHUGI_SURF'] = ['0.']
-            nam[nn]['XHUGI_ROOT'] = ['0.']
-            nam[nn]['XHUGI_DEEP'] = ['0.']
-            if surfaceForcingMoisture == 'beta' and beta[0] == 0:                        
-                nam[nn]['XHUG_SURF'] = ['-10.']
-                nam[nn]['XHUG_ROOT'] = ['-10.']
-                nam[nn]['XHUG_DEEP'] = ['-10.']
-                nam[nn]['XHUGI_SURF'] = ['-10']
-                nam[nn]['XHUGI_ROOT'] = ['-10']
-                nam[nn]['XHUGI_DEEP'] = ['-10']
+            if surfex_version < 9:
+                nam[nn]['XTG_SURF'] = ['%(ts)8.4f'%{"ts": tsforc[0]}]
+                nam[nn]['XTG_ROOT'] = ['%(ts)8.4f'%{"ts": tsforc[0]}]
+                nam[nn]['XTG_DEEP'] = ['%(ts)8.4f'%{"ts": tsforc[0]}]
+                nam[nn]['XHUG_SURF'] = ['0.']
+                nam[nn]['XHUG_ROOT'] = ['0.']
+                nam[nn]['XHUG_DEEP'] = ['0.']
+                nam[nn]['XHUGI_SURF'] = ['0.']
+                nam[nn]['XHUGI_ROOT'] = ['0.']
+                nam[nn]['XHUGI_DEEP'] = ['0.']
+                if surfaceForcingMoisture == 'beta' and beta[0] == 0:                        
+                    nam[nn]['XHUG_SURF'] = ['-10.']
+                    nam[nn]['XHUG_ROOT'] = ['-10.']
+                    nam[nn]['XHUG_DEEP'] = ['-10.']
+                    nam[nn]['XHUGI_SURF'] = ['-10']
+                    nam[nn]['XHUGI_ROOT'] = ['-10']
+                    nam[nn]['XHUGI_DEEP'] = ['-10']
+            else:
+                nam[nn]['NINFILES'] = ['14']
+                nam[nn]['XUNIF_TG_SOIL'] = [','.join(['%(ts)8.4f'%{"ts": tsforc[0]} for i in range(0,14)])]
+                nam[nn]['XUNIF_HUG_SOIL'] = [','.join(['0.' for i in range(0,14)])]
+                nam[nn]['XUNIF_HUGI_SOIL'] = [','.join(['0.' for i in range(0,14)])]
+                if surfaceForcingMoisture == 'beta' and beta[0] == 0:
+                    nam[nn]['XUNIF_HUG_SOIL'] = [','.join(['-10.' for i in range(0,14)])]
+                    nam[nn]['XUNIF_HUGI_SOIL'] = [','.join(['-10.' for i in range(0,14)])]
+
             #
             nn='NAM_DATA_ISBA'
             nam[nn] = {}
