@@ -293,6 +293,8 @@ def prep_init_forc_atm(
                 dataout_forc['ts'] = case.variables['ts']
             elif 'tskin' in case.variables:
                 dataout_forc['ts'] = case.variables['tskin']
+            elif 'ts_forc' in case.variables:
+                dataout_forc['ts'] = case.variables['ts_forc']
             else:
                 logger.warning('No surface temperature provided. It is supposed to be constant in time and equal to 300 K')
                 dataout_forc['ts'] = case.variables['hfss']*0. + 300.
