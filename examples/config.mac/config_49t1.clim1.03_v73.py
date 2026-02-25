@@ -2,7 +2,7 @@
 # -*- coding:UTF-8 -*-
 
 import os
-REP_MUSC = '/Users/romain/MUSC/V2.5'
+REP_MUSC = '__REP_MUSC__'
 
 ############# Begin editing
 
