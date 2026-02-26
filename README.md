@@ -8,9 +8,12 @@
 
 ## Quick installation
 To install EMS on a CNRM computer, with access to the CNRM Lustre system:
-1. Get the installation script: 
 
+1. Get the installation script: 
+   
    `wget https://raw.githubusercontent.com/romainroehrig/EMS/master/install.sh`
+   
+   You should make this script executable: `chmod u+x install.sh`
 
 2. Modify `install.sh` (or execute `install.sh -h` to get its usage):
 
