@@ -149,6 +149,7 @@ if [ -n "$RRTM" ]; then
     ln -s $RRTM rrtm.tgz
     tar zxf rrtm.tgz
 fi
+unset DATA # Environment variable used to read radiation scheme input
 
 #       **********************************
 #       *            For SURFEX          *
