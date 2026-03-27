@@ -74,7 +74,6 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     
     #Deactivate fullpos
     nam['NAMCT0']['NFPOS'] = ['0']
-    nam['NAMCT1']['N1POS'] = ['0']
     
     #Remove GRIB API use ???
     nam['NAMCT0']['LGRIB_API'] = ['.FALSE.']
@@ -161,9 +160,14 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
     del(nam[nn])
     nam[nn] = {}
     nam[nn]['LRFILAF'] = ['.FALSE.']
+    # deactivate full-pos
     nam[nn]['N1POS'] = ['0']
+    # deactivate restarts
     nam[nn]['N1RES'] = ['0']
     nam[nn]['N1SFXHIS'] = ['0']
+    # deactivate gpnorms/spnorms
+    nam[nn]['N1GDI'] = ['0']
+    nam[nn]['N1SDI'] = ['0']
 
     # Update NAMCT0
     nn = 'NAMCT0'
@@ -222,6 +226,12 @@ def prep_nam_atm(ncfile, namin, timestep, namout='namarp', lsurfex=False, cycle=
 
     nam['NAMRIP']['TSTEP'] = [str(timestep)]
     nam['NAMRIP']['CSTOP'] = ["'{0}'".format(NSTOP)]
+
+    NSTEP = int(tmp*3600/timestep)
+    print('NSTEP=',NSTEP)
+    nam['NAMCT0']['NFRHIS'] = [str(NSTEP)]
+    for att in ['NFPOS','NFRGDI','NFRPOS','NFRSDI','NFRSFXHIS','NHISTS(0)','NPOSTS(0)','NSFXHISTS(0)']:
+        del(nam['NAMCT0'][att])
     #nam['NAMRIP']['NINDAT'] = [startDate.strftime('%Y%m%d')]
     #nam['NAMRIP']['NSSSSS'] = [str(int(hour * 3600 + minute * 60 + second))]
 
