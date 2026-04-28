@@ -163,7 +163,11 @@ else
   [ -d $REP_EMS ] || mkdir -p $REP_EMS
   cd $REP_EMS
   
-  wget https://github.com/romainroehrig/EMS/archive/V${EMS_VERSION}.tar.gz
+  if [ "$config" == "belenos" ]; then
+    wget --ca-certificate=/opt/softs/certificats/proxy1_1.pem https://github.com/romainroehrig/EMS/archive/V${EMS_VERSION}.tar.gz
+  else
+    wget https://github.com/romainroehrig/EMS/archive/V${EMS_VERSION}.tar.gz
+  fi
   tar zxvf V${EMS_VERSION}.tar.gz
   rm -f V${EMS_VERSION}.tar.gz
   mv EMS-${EMS_VERSION}/* .

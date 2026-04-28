@@ -12,6 +12,10 @@ To install EMS on a CNRM computer, with access to the CNRM Lustre system:
 1. Get the installation script: 
    
    `wget https://raw.githubusercontent.com/romainroehrig/EMS/master/install.sh`
+
+   In case you are working on belenos, you may need to add an certificate option:
+
+   `wget --ca-certificate=/opt/softs/certificats/proxy1_1.pem https://raw.githubusercontent.com/romainroehrig/EMS/master/install.sh`
    
    You should make this script executable: `chmod u+x install.sh`
 
