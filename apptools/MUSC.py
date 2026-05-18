@@ -98,12 +98,12 @@ if __name__ == '__main__':
 
     try:
         os.remove('./config.py')
-        shutil.rmtree('__pycache__')
-    except OSError:
+    except FileNotFoundError:
         pass
     except:
         raise
 
+    shutil.rmtree('__pycache__', ignore_errors=True)
     os.symlink(config_file,"./config.py")
     import config as CM
 
