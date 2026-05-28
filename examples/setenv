@@ -1,9 +1,9 @@
 mac=`hostname -s`
-mac=`echo ${mac:0:7}`
+mac=`echo ${mac:0:6}`
 cycle=`echo ${1:-37}`
 echo "cycle=$cycle"
 
-if [ $mac = "belenos" ] ; then
+if [ $mac = "beleno" ] ; then
 
 module () 
 { 

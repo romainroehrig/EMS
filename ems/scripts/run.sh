@@ -13,10 +13,10 @@ export DR_HOOK_CATCH_SIGNALS=1
 
 mac=`hostname -s`
 set +e
-mac=`echo ${mac::-1}`
+mac=`echo ${mac:0:6}`
 set -e
 
-if [ $mac = "belenoslogin" ] ; then
+if [ $mac = "beleno" ] ; then
 
 module () 
 { 
